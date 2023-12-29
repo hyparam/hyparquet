@@ -1,0 +1,49 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "plugins": ["import", "jsdoc"],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "warn",
+    "arrow-spacing": "error",
+    "camelcase": "error",
+    "comma-spacing": "error",
+    "comma-dangle": ["error", "always-multiline"],
+    "eol-last": "error",
+    "eqeqeq": "error",
+    "func-style": ["error", "declaration"],
+    "import/order": [
+      "error",
+      {
+        "alphabetize": {
+          "caseInsensitive": true,
+          "order": "asc"
+        },
+        "groups": [["builtin", "external"], "internal", "parent", "sibling", "index"]
+      }
+    ],
+    "indent": ["error", 2],
+    "jsdoc/check-param-names": "error",
+    "jsdoc/check-property-names": "error",
+    "jsdoc/check-tag-names": "error",
+    "jsdoc/no-types": "error",
+    "jsdoc/sort-tags": "error",
+    "no-multi-spaces": "error",
+    "no-trailing-spaces": "error",
+    "no-var": "error",
+    "object-curly-spacing": ["error", "always"],
+    "prefer-const": "error",
+    "prefer-destructuring": ["error", {"object": true, "array": false}],
+    "prefer-promise-reject-errors": "error",
+    "require-await": "error",
+    "quotes": ["error", "single"],
+    "semi": ["error", "never"],
+    "sort-imports": ["error", {
+      "ignoreDeclarationSort": true,
+      "ignoreMemberSort": false,
+      "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
+    }]
+  }
+}
