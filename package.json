@@ -1,0 +1,26 @@
+{
+  "name": "hyparquet",
+  "version": "0.1.0",
+  "description": "parquet file parser for javascript",
+  "keywords": [
+    "parquet",
+    "parser"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyparam/hyllama"
+  },
+  "main": "dist/hyparquet.js",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "types": "dist/hyparquet.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "5.3.3"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "lib": ["esnext", "dom"],
+    "outDir": "dist",
+    "sourceMap": true,
+    "target": "esnext",
+  },
+  "include": ["src"]
+}
