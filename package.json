@@ -19,11 +19,13 @@
   "types": "dist/hyparquet.d.ts",
   "scripts": {
     "build": "tsc",
+    "coverage": "vitest run --coverage",
     "lint": "eslint . --ext .ts",
     "test": "vitest run"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "6.16.0",
+    "@vitest/coverage-v8": "1.1.0",
     "eslint": "8.56.0",
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-jsdoc": "46.9.1",
