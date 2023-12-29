@@ -7,6 +7,7 @@
   "plugins": ["import", "jsdoc"],
   "rules": {
     "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
     "arrow-spacing": "error",
     "camelcase": "error",
     "comma-spacing": "error",
@@ -30,6 +31,7 @@
     "jsdoc/check-tag-names": "error",
     "jsdoc/no-types": "error",
     "jsdoc/sort-tags": "error",
+    "no-constant-condition": "warn",
     "no-multi-spaces": "error",
     "no-trailing-spaces": "error",
     "no-var": "error",
