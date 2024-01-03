@@ -9,6 +9,8 @@ JavaScript parser for [Apache Parquet](https://parquet.apache.org) files.
 
 Apache Parquet is an open source, column-oriented data file format designed for efficient data storage and retrieval.
 
+Dependency free since 2023!
+
 ## References
 
  - https://github.com/apache/parquet-format

@@ -1,11 +1,4 @@
-/**
- * Represents a decoded value, and includes the number of bytes read.
- * This is used to read data from the file and advance a virtual file pointer.
- */
-interface Decoded<T> {
-  value: T
-  byteLength: number
-}
+import { Decoded } from './types'
 
 // TCompactProtocol types
 const CompactType = {

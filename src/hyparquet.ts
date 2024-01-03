@@ -1,3 +1,5 @@
+import { parquetMetadata } from './metadata'
+
 /**
  * Read parquet data rows from a file
  *
@@ -5,5 +7,6 @@
  * @returns array of rows
  */
 export function parquetRead(arrayBuffer: ArrayBuffer): any[][] {
+  const metadata = parquetMetadata(arrayBuffer)
   throw new Error('not implemented')
 }
