@@ -63,18 +63,18 @@ describe('deserializeTCompactProtocol function', () => {
     // Mark the end of the structure
     view.setUint8(index, 0x00) // STOP field
 
-    const [bufferLength, result] = deserializeTCompactProtocol(buffer)
-    expect(bufferLength).toBe(index + 1)
+    const { byteLength, value } = deserializeTCompactProtocol(buffer)
+    expect(byteLength).toBe(index + 1)
 
     // Assertions for each basic type
-    expect(result.field_1).toBe(true) // TRUE
-    expect(result.field_2).toBe(false) // FALSE
-    expect(result.field_3).toBe(0x7f) // BYTE
-    expect(result.field_4).toBe(0x7fff) // I16
-    expect(result.field_5).toBe(0x7fffffff) // I32
-    expect(result.field_6).toBe(BigInt('0x7fffffffffffffff')) // I64
-    expect(result.field_7).toBeCloseTo(123.456) // DOUBLE
-    expect(result.field_8).toBe('Hello, Thrift!') // STRING
+    expect(value.field_1).toBe(true) // TRUE
+    expect(value.field_2).toBe(false) // FALSE
+    expect(value.field_3).toBe(0x7f) // BYTE
+    expect(value.field_4).toBe(0x7fff) // I16
+    expect(value.field_5).toBe(0x7fffffff) // I32
+    expect(value.field_6).toBe(BigInt('0x7fffffffffffffff')) // I64
+    expect(value.field_7).toBeCloseTo(123.456) // DOUBLE
+    expect(value.field_8).toBe('Hello, Thrift!') // STRING
   })
 
 })

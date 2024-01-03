@@ -4,6 +4,7 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended"
   ],
+  "ignorePatterns": ["dist/"],
   "plugins": ["import", "jsdoc"],
   "rules": {
     "@typescript-eslint/no-explicit-any": "warn",

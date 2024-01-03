@@ -1,3 +1,12 @@
+/**
+ * Represents a decoded value, and includes the number of bytes read.
+ * This is used to read data from the file and advance a virtual file pointer.
+ */
+interface Decoded<T> {
+  value: T
+  byteLength: number
+}
+
 // TCompactProtocol types
 const CompactType = {
   STOP: 0,
@@ -19,16 +28,16 @@ const CompactType = {
 /**
  * Parse TCompactProtocol
  */
-export function deserializeTCompactProtocol(buffer: ArrayBuffer): [number, Record<string, any>] {
+export function deserializeTCompactProtocol(buffer: ArrayBuffer): Decoded<Record<string, any>> {
   const view = new DataView(buffer)
-  let index = 0
+  let byteLength = 0
   let lastFid = 0
-  const result: Record<string, any> = {}
+  const value: Record<string, any> = {}
 
-  while (index < buffer.byteLength) {
+  while (byteLength < buffer.byteLength) {
     // Parse each field based on its type and add to the result object
-    const [type, fid, newIndex, newLastFid] = readFieldBegin(view, index, lastFid)
-    index = newIndex
+    const [type, fid, newIndex, newLastFid] = readFieldBegin(view, byteLength, lastFid)
+    byteLength = newIndex
     lastFid = newLastFid
 
     if (type === CompactType.STOP) {
@@ -37,11 +46,11 @@ export function deserializeTCompactProtocol(buffer: ArrayBuffer): [number, Recor
 
     // Handle the field based on its type
     let fieldValue
-    [fieldValue, index] = readElement(view, type, index)
-    result[`field_${fid}`] = fieldValue
+    [fieldValue, byteLength] = readElement(view, type, byteLength)
+    value[`field_${fid}`] = fieldValue
   }
 
-  return [ index, result ]
+  return { value, byteLength }
 }
 
 /**
