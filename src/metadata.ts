@@ -1,12 +1,11 @@
-import { deserializeTCompactProtocol } from './thrift'
-import type { FileMetaData, SchemaElement } from './types'
+import { deserializeTCompactProtocol } from './thrift.js'
+import type { FileMetaData, SchemaElement } from './types.ts'
 
 /**
  * Read parquet header, metadata, and schema information from a file
  * @param arrayBuffer parquet file contents
  * @returns metadata object
  */
-/* eslint-disable camelcase */
 export function parquetMetadata(arrayBuffer: ArrayBuffer): FileMetaData {
   // DataView for easier manipulation of the buffer
   const view = new DataView(arrayBuffer)
@@ -109,4 +108,23 @@ export function schemaElement(schema: SchemaElement[], name: string[]): any {
     throw new Error(`schema element not found: ${name}`)
   }
   return element
+}
+
+/**
+ * Replace bigints with numbers.
+ */
+export function castBigInts(obj: any): any {
+  if (typeof obj === 'bigint') {
+    return Number(obj)
+  } else if (Array.isArray(obj)) {
+    return obj.map(castBigInts)
+  } else if (typeof obj === 'object') {
+    const newObj = {}
+    for (const key of Object.keys(obj)) {
+      newObj[key] = castBigInts(obj[key])
+    }
+    return newObj
+  } else {
+    return obj
+  }
 }

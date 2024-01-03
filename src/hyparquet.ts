@@ -1,4 +1,4 @@
-import { parquetMetadata } from './metadata'
+import { parquetMetadata } from './metadata.js'
 
 /**
  * Read parquet data rows from a file

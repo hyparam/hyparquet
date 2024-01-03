@@ -1,4 +1,4 @@
-import { Decoded } from './types'
+import type { Decoded } from './types.ts'
 
 // TCompactProtocol types
 const CompactType = {

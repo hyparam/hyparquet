@@ -2,6 +2,7 @@
   "compilerOptions": {
     "declaration": true,
     "lib": ["esnext", "dom"],
+    "module": "nodenext",
     "outDir": "dist",
     "sourceMap": true,
     "target": "esnext",
