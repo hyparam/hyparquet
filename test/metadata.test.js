@@ -2,8 +2,13 @@ import { promises as fs } from 'fs'
 import { describe, expect, it } from 'vitest'
 import { castBigInts, parquetMetadata } from '../src/metadata'
 
-// Helper function to read .parquet file into ArrayBuffer
-async function readFileToArrayBuffer(filePath: string): Promise<ArrayBuffer> {
+/**
+ * Helper function to read .parquet file into ArrayBuffer
+ *
+ * @param {string} filePath
+ * @returns {Promise<ArrayBuffer>}
+ */
+async function readFileToArrayBuffer(filePath) {
   const buffer = await fs.readFile(filePath)
   return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength)
 }

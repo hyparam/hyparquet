@@ -1,4 +1,7 @@
 {
+  "env": {
+    "node": true
+  },
   "parser": "@typescript-eslint/parser",
   "extends": [
     "eslint:recommended",
@@ -30,7 +33,8 @@
     "jsdoc/check-param-names": "error",
     "jsdoc/check-property-names": "error",
     "jsdoc/check-tag-names": "error",
-    "jsdoc/no-types": "error",
+    "jsdoc/require-param-type": "warn",
+    "jsdoc/require-returns-type": "warn",
     "jsdoc/sort-tags": "error",
     "no-constant-condition": "off",
     "no-multi-spaces": "error",
