@@ -3,8 +3,9 @@ import type { FileMetaData, SchemaElement } from './types.ts'
 
 /**
  * Read parquet header, metadata, and schema information from a file
- * @param arrayBuffer parquet file contents
- * @returns metadata object
+ *
+ * @param {ArrayBuffer} arrayBuffer parquet file contents
+ * @returns {FileMetaData} metadata object
  */
 export function parquetMetadata(arrayBuffer: ArrayBuffer): FileMetaData {
   // DataView for easier manipulation of the buffer
@@ -99,8 +100,12 @@ export function parquetMetadata(arrayBuffer: ArrayBuffer): FileMetaData {
 
 /**
  * Get the schema element with the given name.
+ *
+ * @param {SchemaElement[]} schema parquet schema
+ * @param {string[]} name path to the element
+ * @returns {SchemaElement} schema element
  */
-export function schemaElement(schema: SchemaElement[], name: string[]): any {
+export function schemaElement(schema: SchemaElement[], name: string[]): SchemaElement {
   function key(name: string[]) { return name.join('.') }
   const schemaElementByName = new Map(schema.map(se => [se.name, se]))
   const element = schemaElementByName.get(key(name))
@@ -114,6 +119,9 @@ export function schemaElement(schema: SchemaElement[], name: string[]): any {
  * Replace bigints with numbers.
  * When parsing parquet files, bigints are used to represent 64-bit integers.
  * However, JSON does not support bigints, so it's helpful to convert to numbers.
+ *
+ * @param {unknown} obj object to convert
+ * @returns {unknown} converted object
  */
 export function toJson(obj: unknown): unknown {
   if (typeof obj === 'bigint') {
