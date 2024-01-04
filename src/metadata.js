@@ -1,13 +1,13 @@
 import { deserializeTCompactProtocol } from './thrift.js'
-import type { FileMetaData, SchemaElement } from './types.ts'
 
 /**
  * Read parquet header, metadata, and schema information from a file
  *
+ * @typedef {import("./types.js").FileMetaData} FileMetaData
  * @param {ArrayBuffer} arrayBuffer parquet file contents
  * @returns {FileMetaData} metadata object
  */
-export function parquetMetadata(arrayBuffer: ArrayBuffer): FileMetaData {
+export function parquetMetadata(arrayBuffer) {
   // DataView for easier manipulation of the buffer
   const view = new DataView(arrayBuffer)
 
@@ -33,7 +33,7 @@ export function parquetMetadata(arrayBuffer: ArrayBuffer): FileMetaData {
 
   // Parse parquet metadata from thrift data
   const version = metadata.field_1
-  const schema = metadata.field_2.map((field: any) => ({
+  const schema = metadata.field_2.map((/** @type {any} */ field) => ({
     type: field.field_1,
     type_length: field.field_2,
     repetition_type: field.field_3,
@@ -45,8 +45,8 @@ export function parquetMetadata(arrayBuffer: ArrayBuffer): FileMetaData {
     field_id: field.field_9,
   }))
   const num_rows = metadata.field_3
-  const row_groups = metadata.field_4.map((rowGroup: any) => ({
-    columns: rowGroup.field_1.map((column: any) => ({
+  const row_groups = metadata.field_4.map((/** @type {any} */ rowGroup) => ({
+    columns: rowGroup.field_1.map((/** @type {any} */ column) => ({
       file_path: column.field_1,
       file_offset: column.field_2,
       meta_data: column.field_3 && {
@@ -67,7 +67,7 @@ export function parquetMetadata(arrayBuffer: ArrayBuffer): FileMetaData {
           null_count: column.field_3.field_12.field_3,
           distinct_count: column.field_3.field_12.field_4,
         },
-        encoding_stats: column.field_3.field_13?.map((encodingStat: any) => ({
+        encoding_stats: column.field_3.field_13?.map((/** @type {any} */ encodingStat) => ({
           page_type: encodingStat.field_1,
           encoding: encodingStat.field_2,
           count: encodingStat.field_3,
@@ -76,13 +76,13 @@ export function parquetMetadata(arrayBuffer: ArrayBuffer): FileMetaData {
     })),
     total_byte_size: rowGroup.field_2,
     num_rows: rowGroup.field_3,
-    sorting_columns: rowGroup.field_4?.map((sortingColumn: any) => ({
+    sorting_columns: rowGroup.field_4?.map((/** @type {any} */ sortingColumn) => ({
       column_idx: sortingColumn.field_1,
       descending: sortingColumn.field_2,
       nulls_first: sortingColumn.field_3,
     })),
   }))
-  const key_value_metadata = metadata.field_5?.map((keyValue: any) => ({
+  const key_value_metadata = metadata.field_5?.map((/** @type {any} */ keyValue) => ({
     key: keyValue.field_1,
     value: keyValue.field_2,
   }))
@@ -99,38 +99,21 @@ export function parquetMetadata(arrayBuffer: ArrayBuffer): FileMetaData {
 }
 
 /**
- * Get the schema element with the given name.
- *
- * @param {SchemaElement[]} schema parquet schema
- * @param {string[]} name path to the element
- * @returns {SchemaElement} schema element
- */
-export function schemaElement(schema: SchemaElement[], name: string[]): SchemaElement {
-  function key(name: string[]) { return name.join('.') }
-  const schemaElementByName = new Map(schema.map(se => [se.name, se]))
-  const element = schemaElementByName.get(key(name))
-  if (!element) {
-    throw new Error(`schema element not found: ${name}`)
-  }
-  return element
-}
-
-/**
  * Replace bigints with numbers.
  * When parsing parquet files, bigints are used to represent 64-bit integers.
  * However, JSON does not support bigints, so it's helpful to convert to numbers.
  *
- * @param {unknown} obj object to convert
+ * @param {any} obj object to convert
  * @returns {unknown} converted object
  */
-export function toJson(obj: any): unknown {
+export function toJson(obj) {
   if (typeof obj === 'bigint') {
     return Number(obj)
   } else if (Array.isArray(obj)) {
     return obj.map(toJson)
   } else if (obj instanceof Object) {
     /** @type {Record<string, unknown>} */
-    const newObj: Record<string, unknown> = {}
+    const newObj = {}
     for (const key of Object.keys(obj)) {
       newObj[key] = toJson(obj[key])
     }
