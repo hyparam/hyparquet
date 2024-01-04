@@ -9,7 +9,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hyparam/hyparquet"
+    "url": "git+https://github.com/hyparam/hyparquet.git"
   },
   "main": "src/hyparquet.js",
   "files": [
