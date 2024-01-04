@@ -46,7 +46,7 @@ export enum FieldRepetitionType {
   REPEATED = 2,
 }
 
-enum ConvertedType {
+export enum ConvertedType {
   UTF8 = 0,
   MAP = 1,
   MAP_KEY_VALUE = 2,
