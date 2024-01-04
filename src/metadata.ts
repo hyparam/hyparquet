@@ -112,16 +112,18 @@ export function schemaElement(schema: SchemaElement[], name: string[]): any {
 
 /**
  * Replace bigints with numbers.
+ * When parsing parquet files, bigints are used to represent 64-bit integers.
+ * However, JSON does not support bigints, so it's helpful to convert to numbers.
  */
-export function castBigInts(obj: any): any {
+export function toJson(obj: unknown): unknown {
   if (typeof obj === 'bigint') {
     return Number(obj)
   } else if (Array.isArray(obj)) {
-    return obj.map(castBigInts)
+    return obj.map(toJson)
   } else if (typeof obj === 'object') {
     const newObj = {}
     for (const key of Object.keys(obj)) {
-      newObj[key] = castBigInts(obj[key])
+      newObj[key] = toJson(obj[key])
     }
     return newObj
   } else {

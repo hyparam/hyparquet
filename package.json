@@ -20,17 +20,19 @@
   "scripts": {
     "build": "tsc",
     "coverage": "vitest run --coverage",
+    "demo": "http-server -o",
     "lint": "eslint . --ext .ts",
     "test": "vitest run"
   },
   "devDependencies": {
     "@types/node": "20.10.6",
     "@typescript-eslint/eslint-plugin": "6.17.0",
-    "@vitest/coverage-v8": "1.1.1",
+    "@vitest/coverage-v8": "1.1.2",
     "eslint": "8.56.0",
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-jsdoc": "48.0.2",
+    "http-server": "14.1.1",
     "typescript": "5.3.3",
-    "vitest": "1.1.1"
+    "vitest": "1.1.2"
   }
 }

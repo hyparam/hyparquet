@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>hyparquet parquet file parser</title>
+    <style>
+      #dropzone {
+        position: absolute;
+        bottom: 10px;
+        box-sizing: border-box;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        border: 2px dashed #08e;
+        border-radius: 10px;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #444;
+        font-family: sans-serif;
+        font-size: 20px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+      }
+      .over {
+        background-color: lightblue;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="dropzone">Drop .parquet file here</div>
+    <script type="module">
+      import { parquetMetadata, toJson } from './dist/metadata.js'
+
+      const dropZone = document.getElementById('dropzone')
+
+      dropZone.addEventListener('dragover', e => {
+        e.preventDefault()
+        e.dataTransfer.dropEffect = 'copy'
+        dropZone.classList.add('over')
+      })
+
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('over')
+      })
+
+      dropZone.addEventListener('drop', e => {
+        e.preventDefault() // prevent dropped file from being "downloaded"
+        dropZone.classList.remove('over')
+
+        const files = e.dataTransfer.files
+        if (files.length > 0) {
+          const file = files[0]
+          const reader = new FileReader()
+          reader.onload = async (e) => {
+            const arrayBuffer = e.target.result
+            const metadata = toJson(parquetMetadata(arrayBuffer))
+            console.log(metadata)
+            // display metadata
+            dropZone.innerText = file.name
+            dropZone.innerText += `\n${JSON.stringify(metadata, null, 2)}`
+          }
+          reader.onerror = e => {
+            console.error('Error reading file', e)
+            dropZone.innerText = `Error reading file\n${e.target.error}`
+          }
+          reader.readAsArrayBuffer(file)
+        }
+      })
+    </script>
+  </body>
+</html>

@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs'
 import { describe, expect, it } from 'vitest'
-import { castBigInts, parquetMetadata } from '../src/metadata'
+import { parquetMetadata, toJson } from '../src/metadata'
 
 /**
  * Helper function to read .parquet file into ArrayBuffer
@@ -56,7 +56,7 @@ describe('parquetMetadata', () => {
       created_by: 'DuckDB',
     }
 
-    const casted = castBigInts(result)
+    const casted = toJson(result)
     expect(casted).toEqual(expectedMetadata)
   })
 
