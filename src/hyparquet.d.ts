@@ -15,3 +15,13 @@ export function parquetRead(arrayBuffer: ArrayBuffer): any[][]
  * @returns {FileMetaData} metadata object
  */
 export function parquetMetadata(arrayBuffer: ArrayBuffer): any
+
+/**
+ * Decompress snappy data.
+ * Accepts an output buffer to avoid allocating a new buffer for each call.
+ *
+ * @param {Uint8Array} inputArray compressed data
+ * @param {Uint8Array} outputArray output buffer
+ * @returns {boolean} true if successful
+ */
+export function snappyUncompress(inputArray: Uint8Array, outputArray: Uint8Array): boolean

@@ -1,6 +1,9 @@
 import { parquetMetadata } from './metadata.js'
 export { parquetMetadata }
 
+import { snappyUncompress } from './snappy.js'
+export { snappyUncompress }
+
 /**
  * Read parquet data rows from a file
  *
