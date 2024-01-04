@@ -21,7 +21,7 @@
     "build": "tsc && cp src/*.js dist",
     "coverage": "vitest run --coverage",
     "demo": "http-server -o",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint . --ext .ts,.js",
     "test": "vitest run"
   },
   "devDependencies": {

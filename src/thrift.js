@@ -1,5 +1,3 @@
-import type { Decoded } from './types.d.ts'
-
 // TCompactProtocol types
 const CompactType = {
   STOP: 0,
@@ -21,15 +19,17 @@ const CompactType = {
 /**
  * Parse TCompactProtocol
  *
+ * @typedef {import("./types.js").Decoded<T>} Decoded
+ * @template T
  * @param {ArrayBuffer} arrayBuffer
  * @returns {Decoded<Record<string, any>>}
  */
-export function deserializeTCompactProtocol(arrayBuffer: ArrayBuffer): Decoded<Record<string, any>> {
+export function deserializeTCompactProtocol(arrayBuffer) {
   const view = new DataView(arrayBuffer)
   let byteLength = 0
   let lastFid = 0
   /** @type {Record<string, any>} */
-  const value: Record<string, any> = {}
+  const value = {}
 
   while (byteLength < arrayBuffer.byteLength) {
     // Parse each field based on its type and add to the result object
@@ -58,7 +58,7 @@ export function deserializeTCompactProtocol(arrayBuffer: ArrayBuffer): Decoded<R
  * @param {number} index
  * @returns {[any, number]} [value, newIndex]
  */
-function readElement(view: DataView, type: number, index: number): [any, number] {
+function readElement(view, type, index) {
   switch (type) {
   case CompactType.TRUE:
     return [true, index]
@@ -93,7 +93,7 @@ function readElement(view: DataView, type: number, index: number): [any, number]
   }
   case CompactType.STRUCT: {
     /** @type {Record<string, any>} */
-    const structValues: Record<string, any> = {}
+    const structValues = {}
     let structLastFid = 0
     while (true) {
       let structFieldType, structFid, structIndex
@@ -134,7 +134,7 @@ function readElement(view: DataView, type: number, index: number): [any, number]
  * @param {number} index
  * @returns {[number, number]} [value, newIndex]
  */
-function readVarInt(view: DataView, index: number): [number, number] {
+function readVarInt(view, index) {
   let result = 0
   let shift = 0
   while (true) {
@@ -154,7 +154,7 @@ function readVarInt(view: DataView, index: number): [number, number] {
  * @param {number} index
  * @returns {[bigint, number]} [value, newIndex]
  */
-function readVarBigInt(view: DataView, index: number): [bigint, number] {
+function readVarBigInt(view, index) {
   let result = BigInt(0)
   let shift = BigInt(0)
   while (true) {
@@ -175,7 +175,7 @@ function readVarBigInt(view: DataView, index: number): [bigint, number] {
  * @param {number} index
  * @returns {[number, number]} [value, newIndex]
  */
-function readZigZag(view: DataView, index: number): [number, number] {
+function readZigZag(view, index) {
   const [zigzag, newIndex] = readVarInt(view, index)
   // convert zigzag to int
   const value = (zigzag >>> 1) ^ -(zigzag & 1)
@@ -190,7 +190,7 @@ function readZigZag(view: DataView, index: number): [number, number] {
  * @param {number} index
  * @returns {[bigint, number]} [value, newIndex]
  */
-function readZigZagBigInt(view: DataView, index: number): [bigint, number] {
+function readZigZagBigInt(view, index) {
   const [zigzag, newIndex] = readVarBigInt(view, index)
   // convert zigzag to int
   const value = (zigzag >> BigInt(1)) ^ -(zigzag & BigInt(1))
@@ -203,7 +203,7 @@ function readZigZagBigInt(view: DataView, index: number): [bigint, number] {
  * @param {number} byte
  * @returns {number}
  */
-function getCompactType(byte: number): number {
+function getCompactType(byte) {
   return byte & 0x0f
 }
 
@@ -215,7 +215,7 @@ function getCompactType(byte: number): number {
  * @param {number} lastFid
  * @returns {[number, number, number, number]} [type, fid, newIndex, newLastFid]
  */
-function readFieldBegin(view: DataView, index: number, lastFid: number): [number, number, number, number] {
+function readFieldBegin(view, index, lastFid) {
   const type = view.getUint8(index++)
   if ((type & 0x0f) === CompactType.STOP) {
     // STOP also ends a struct
@@ -240,7 +240,7 @@ function readFieldBegin(view: DataView, index: number, lastFid: number): [number
  * @param {number} index
  * @returns {[number, number, number]} [type, size, newIndex]
  */
-function readCollectionBegin(view: DataView, index: number): [number, number, number] {
+function readCollectionBegin(view, index) {
   const sizeType = view.getUint8(index++)
   const size = sizeType >> 4
   const type = getCompactType(sizeType)
@@ -257,7 +257,7 @@ function readCollectionBegin(view: DataView, index: number): [number, number, nu
  * @param {number} n
  * @returns {number[]}
  */
-export function toVarInt(n: number): number[] {
+export function toVarInt(n) {
   let idx = 0
   const varInt = []
   while (true) {
