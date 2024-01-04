@@ -18,7 +18,7 @@
   "type": "module",
   "types": "dist/hyparquet.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp src/*.js dist",
     "coverage": "vitest run --coverage",
     "demo": "http-server -o",
     "lint": "eslint . --ext .ts",

@@ -28,7 +28,8 @@ export function deserializeTCompactProtocol(arrayBuffer: ArrayBuffer): Decoded<R
   const view = new DataView(arrayBuffer)
   let byteLength = 0
   let lastFid = 0
-  const value = {}
+  /** @type {Record<string, any>} */
+  const value: Record<string, any> = {}
 
   while (byteLength < arrayBuffer.byteLength) {
     // Parse each field based on its type and add to the result object
@@ -91,7 +92,8 @@ function readElement(view: DataView, type: number, index: number): [any, number]
     return [listValues, index]
   }
   case CompactType.STRUCT: {
-    const structValues = {}
+    /** @type {Record<string, any>} */
+    const structValues: Record<string, any> = {}
     let structLastFid = 0
     while (true) {
       let structFieldType, structFid, structIndex

@@ -123,13 +123,14 @@ export function schemaElement(schema: SchemaElement[], name: string[]): SchemaEl
  * @param {unknown} obj object to convert
  * @returns {unknown} converted object
  */
-export function toJson(obj: unknown): unknown {
+export function toJson(obj: any): unknown {
   if (typeof obj === 'bigint') {
     return Number(obj)
   } else if (Array.isArray(obj)) {
     return obj.map(toJson)
-  } else if (typeof obj === 'object') {
-    const newObj = {}
+  } else if (obj instanceof Object) {
+    /** @type {Record<string, unknown>} */
+    const newObj: Record<string, unknown> = {}
     for (const key of Object.keys(obj)) {
       newObj[key] = toJson(obj[key])
     }
