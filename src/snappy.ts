@@ -2,6 +2,13 @@ const WORD_MASK = [0, 0xff, 0xffff, 0xffffff, 0xffffffff]
 
 /**
  * Copy bytes from one array to another
+ *
+ * @param {Uint8Array} fromArray source array
+ * @param {number} fromPos source position
+ * @param {Uint8Array} toArray destination array
+ * @param {number} toPos destination position
+ * @param {number} length number of bytes to copy
+ * @returns {void}
  */
 function copyBytes(fromArray: Uint8Array, fromPos: number, toArray: Uint8Array, toPos: number, length: number) {
   for (let i = 0; i < length; i++) {
@@ -11,6 +18,12 @@ function copyBytes(fromArray: Uint8Array, fromPos: number, toArray: Uint8Array, 
 
 /**
  * Copy bytes within an array
+ *
+ * @param {Uint8Array} array source and destination array
+ * @param {number} pos source position
+ * @param {number} offset offset back from current position to read
+ * @param {number} length number of bytes to copy
+ * @returns {void}
  */
 function selfCopyBytes(array: Uint8Array, pos: number, offset: number, length: number) {
   for (let i = 0; i < length; i++) {
@@ -22,9 +35,9 @@ function selfCopyBytes(array: Uint8Array, pos: number, offset: number, length: n
  * Decompress snappy data.
  * Accepts an output buffer to avoid allocating a new buffer for each call.
  *
- * @param inputArray compressed data
- * @param outputArray output buffer
- * @returns true if successful
+ * @param {Uint8Array} inputArray compressed data
+ * @param {Uint8Array} outputArray output buffer
+ * @returns {boolean} true if successful
  */
 export function snappyUncompress(inputArray: Uint8Array, outputArray: Uint8Array): boolean {
   const inputLength = inputArray.byteLength
