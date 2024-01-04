@@ -19,7 +19,7 @@ const CompactType = {
 /**
  * Parse TCompactProtocol
  *
- * @typedef {import("./types.js").Decoded<T>} Decoded
+ * @typedef {import("./types.d.ts").Decoded<T>} Decoded
  * @template T
  * @param {ArrayBuffer} arrayBuffer
  * @returns {Decoded<Record<string, any>>}

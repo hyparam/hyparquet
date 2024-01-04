@@ -11,18 +11,18 @@
     "type": "git",
     "url": "https://github.com/hyparam/hyparquet"
   },
-  "main": "dist/hyparquet.js",
+  "main": "src/hyparquet.js",
   "files": [
-    "dist"
+    "src"
   ],
   "type": "module",
-  "types": "dist/hyparquet.d.ts",
+  "types": "src/hyparquet.d.ts",
   "scripts": {
-    "build": "tsc && cp src/*.js dist",
     "coverage": "vitest run --coverage",
     "demo": "http-server -o",
-    "lint": "eslint . --ext .ts,.js",
-    "test": "vitest run"
+    "lint": "eslint .",
+    "test": "vitest run",
+    "typecheck": "tsc"
   },
   "devDependencies": {
     "@types/node": "20.10.6",

@@ -3,7 +3,7 @@ import { deserializeTCompactProtocol } from './thrift.js'
 /**
  * Read parquet header, metadata, and schema information from a file
  *
- * @typedef {import("./types.js").FileMetaData} FileMetaData
+ * @typedef {import("./types.d.ts").FileMetaData} FileMetaData
  * @param {ArrayBuffer} arrayBuffer parquet file contents
  * @returns {FileMetaData} metadata object
  */

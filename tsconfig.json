@@ -4,11 +4,11 @@
     "checkJs": true,
     "lib": ["esnext", "dom"],
     "module": "nodenext",
-    "outDir": "dist",
+    "noEmit": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
-    "sourceMap": true,
     "strict": true,
     "target": "esnext",
   },
-  "include": ["src"]
+  "include": ["src", "test"]
 }

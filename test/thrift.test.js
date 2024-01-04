@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { deserializeTCompactProtocol, toVarInt } from '../src/thrift'
+import { deserializeTCompactProtocol, toVarInt } from '../src/thrift.js'
 
 describe('deserializeTCompactProtocol function', () => {
 
