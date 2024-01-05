@@ -8,7 +8,7 @@ import { toJson } from './toJson.js'
 export { toJson }
 
 /**
- * Read parquet data rows from a file
+ * Read parquet data rows from a buffer.
  *
  * @param {ArrayBuffer} arrayBuffer parquet file contents
  * @returns {any[][]} row data
