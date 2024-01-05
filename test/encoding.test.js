@@ -89,3 +89,5 @@ describe('readPlain', () => {
     expect(() => readPlain(dataView, invalidType, 1, 0)).toThrow(`Unhandled type: ${invalidType}`)
   })
 })
+
+// TODO: Add tests for readData

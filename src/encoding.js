@@ -2,6 +2,9 @@ import { ParquetEncoding, ParquetType } from './constants.js'
 import { readVarInt } from './thrift.js'
 
 /**
+ * Return type with bytes read.
+ * This is useful to advance an offset through a buffer.
+ *
  * @typedef {import("./types.d.ts").Decoded<T>} Decoded
  * @template T
  */

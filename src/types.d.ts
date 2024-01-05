@@ -142,3 +142,42 @@ interface SortingColumn {
   descending: boolean
   nulls_first: boolean
 }
+
+// Parquet file header types
+export interface PageHeader {
+  type: PageType
+  uncompressed_page_size: number
+  compressed_page_size: number
+  crc?: number
+  data_page_header?: DataPageHeader
+  index_page_header?: IndexPageHeader
+  dictionary_page_header?: DictionaryPageHeader
+  data_page_header_v2?: DataPageHeaderV2
+}
+
+export interface DataPageHeader {
+  num_values: number
+  encoding: Encoding
+  definition_level_encoding: Encoding
+  repetition_level_encoding: Encoding
+  statistics?: Statistics
+}
+
+interface IndexPageHeader {}
+
+export interface DictionaryPageHeader {
+  num_values: number
+  encoding: Encoding
+  is_sorted?: boolean
+}
+
+interface DataPageHeaderV2 {
+  num_values: number
+  num_nulls: number
+  num_rows: number
+  encoding: Encoding
+  definition_levels_byte_length: number
+  repetition_levels_byte_length: number
+  is_compressed?: boolean
+  statistics?: Statistics
+}
