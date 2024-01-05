@@ -134,7 +134,7 @@ function readElement(view, type, index) {
  * @param {number} index
  * @returns {[number, number]} [value, newIndex]
  */
-function readVarInt(view, index) {
+export function readVarInt(view, index) {
   let result = 0
   let shift = 0
   while (true) {
