@@ -4,7 +4,9 @@
   "description": "parquet file parser for javascript",
   "keywords": [
     "parquet",
-    "parser"
+    "parser",
+    "snappy",
+    "thrift"
   ],
   "license": "MIT",
   "repository": {

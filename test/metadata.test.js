@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs'
 import { describe, expect, it } from 'vitest'
-import { parquetMetadata, toJson } from '../src/metadata.js'
+import { parquetMetadata } from '../src/metadata.js'
+import { toJson } from '../src/toJson.js'
 
 /**
  * Helper function to read .parquet file into ArrayBuffer

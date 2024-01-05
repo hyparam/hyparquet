@@ -4,6 +4,9 @@ export { parquetMetadata }
 import { snappyUncompress } from './snappy.js'
 export { snappyUncompress }
 
+import { toJson } from './toJson.js'
+export { toJson }
+
 /**
  * Read parquet data rows from a file
  *
