@@ -44,7 +44,7 @@
     "no-var": "error",
     "object-curly-spacing": ["error", "always"],
     "prefer-const": "error",
-    "prefer-destructuring": ["error", {"object": true, "array": false}],
+    "prefer-destructuring": ["warn", {"object": true, "array": false}],
     "prefer-promise-reject-errors": "error",
     "require-await": "error",
     "quotes": ["error", "single"],

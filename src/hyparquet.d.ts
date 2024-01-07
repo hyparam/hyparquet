@@ -1,3 +1,5 @@
+export { FileMetaData } from './types'
+
 /**
  * Read parquet data rows from a file
  *
