@@ -14,7 +14,7 @@ export function parquetRead(arrayBuffer: ArrayBuffer): any[][]
  * @param {ArrayBuffer} arrayBuffer parquet file contents
  * @returns {FileMetaData} metadata object
  */
-export function parquetMetadata(arrayBuffer: ArrayBuffer): any
+export function parquetMetadata(arrayBuffer: ArrayBuffer): FileMetaData
 
 /**
  * Decompress snappy data.
