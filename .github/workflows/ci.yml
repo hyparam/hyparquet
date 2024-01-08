@@ -4,11 +4,23 @@ on:
   push:
 
 jobs:
-  hyparquet:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - run: npm i
       - run: npm run lint
-      - run: npm run typecheck
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm i
+      - run: tsc
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm i
       - run: npm test
