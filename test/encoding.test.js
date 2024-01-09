@@ -26,7 +26,7 @@ describe('readPlain', () => {
   })
 
   it('reads INT96 values correctly', () => {
-    const buffer = new ArrayBuffer(12) // 12 bytes for a single INT96 value
+    const buffer = new ArrayBuffer(12)
     const dataView = new DataView(buffer)
 
     // Example INT96 value split into 64-bit low part and 32-bit high part

@@ -308,7 +308,8 @@ function readRle(dataView, offset, header, bitWidth) {
  * @returns {Decoded<number[]>} array of bit-packed values
  */
 function readBitPacked(dataView, offset, header, bitWidth, remaining) {
-  let count = (header >> 1) * 8
+  // extract number of values to read from header
+  let count = (header >> 1) << 3
   const mask = maskForBits(bitWidth)
 
   let data = dataView.getUint8(offset)
@@ -318,20 +319,24 @@ function readBitPacked(dataView, offset, header, bitWidth, remaining) {
   /** @type {number[]} */
   const value = []
 
+  // read values
   while (count) {
+    // if we have crossed a byte boundary, shift the data
     if (right > 8) {
       right -= 8
       left -= 8
       data >>= 8
     } else if (left - right < bitWidth) {
-      // read next byte
-      data |= (dataView.getUint8(offset + byteLength) << left)
+      // if we don't have bitWidth number of bits to read, read next byte
+      data |= dataView.getUint8(offset + byteLength) << left
       byteLength++
       left += 8
     } else {
-      // don't write more than num rows
+      // otherwise, read bitWidth number of bits
+      // don't write more than remaining number of rows
+      // even if there are still bits to read
       if (remaining > 0) {
-        // emit value
+        // emit value by shifting off to the right and masking
         value.push((data >> right) & mask)
         remaining--
       }
@@ -340,6 +345,7 @@ function readBitPacked(dataView, offset, header, bitWidth, remaining) {
     }
   }
 
+  // return values and number of bytes read
   return { value, byteLength }
 }
 
