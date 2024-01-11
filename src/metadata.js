@@ -26,6 +26,9 @@ export function parquetMetadata(arrayBuffer) {
   if (metadataLength <= 0 || metadataLength > metadataLengthOffset) {
     throw new Error('parquet file invalid metadata length')
   }
+  if (metadataLength > view.byteLength - 8) {
+    throw new Error('parquet file metadata length exceeds file size')
+  }
 
   const metadataOffset = metadataLengthOffset - metadataLength
   const metadataBuffer = view.buffer.slice(metadataOffset, metadataLengthOffset)
