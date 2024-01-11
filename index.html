@@ -4,66 +4,106 @@
     <meta charset="UTF-8">
     <title>hyparquet parquet file parser</title>
     <style>
-      #dropzone {
-        position: absolute;
-        bottom: 10px;
+      * {
         box-sizing: border-box;
-        top: 10px;
-        left: 10px;
-        right: 10px;
-        border: 2px dashed #08e;
-        border-radius: 10px;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        display: flex;
+        font-family: sans-serif;
+        height: 100vh;
+      }
+      nav {
+        width: 300px;
         padding: 10px;
+      }
+      h1 {
+        font-size: 20pt;
+      }
+      h2 {
+        font-size: 12pt;
+      }
+      p {
+        margin: 10px 0;
+      }
+      label {
+        height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #444;
-        font-family: sans-serif;
         font-size: 20px;
-        overflow-y: auto;
-        white-space: pre-wrap;
+      }
+      #dropzone {
+        border: 2px dashed #08e;
+        border-radius: 10px;
+        flex: 1;
+        margin: 10px;
+        padding: 10px;
+        color: #444;
+        overflow: auto;
       }
       .over {
         background-color: lightblue;
       }
+      .error {
+        color: #c11;
+      }
     </style>
   </head>
   <body>
-    <div id="dropzone">Drop .parquet file here</div>
+    <nav>
+      <h1>hyparquet</h1>
+      <h2>parquet file parser</h2>
+      <p>
+        This is a simple online demo of the <a href="https://github.com/hyparam/hyparquet">hyparquet</a> parser for apache parquet files.
+      </p>
+      <p>
+        Drag and drop a parquet file onto the dropzone to see parquet file metadata.
+      </p>
+      <ul>
+        <li><a href="https://github.com/hyparam/hyparquet">github</a></li>
+        <li><a href="https://www.npmjs.com/package/hyparquet">npm</a></li>
+      </ul>
+    </nav>
+    <div id="dropzone">
+      <label>Drop .parquet file here</label>
+    </div>
+
     <script type="module">
       import { parquetMetadata, toJson } from './src/hyparquet.js'
 
-      const dropZone = document.getElementById('dropzone')
-
-      dropZone.addEventListener('dragover', e => {
+      dropzone.addEventListener('dragover', e => {
         e.preventDefault()
         e.dataTransfer.dropEffect = 'copy'
-        dropZone.classList.add('over')
+        dropzone.classList.add('over')
       })
 
-      dropZone.addEventListener('dragleave', () => {
-        dropZone.classList.remove('over')
+      dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('over')
       })
 
-      dropZone.addEventListener('drop', e => {
+      dropzone.addEventListener('drop', e => {
         e.preventDefault() // prevent dropped file from being "downloaded"
-        dropZone.classList.remove('over')
+        dropzone.classList.remove('over')
 
         const files = e.dataTransfer.files
         if (files.length > 0) {
           const file = files[0]
           const reader = new FileReader()
           reader.onload = async (e) => {
-            const arrayBuffer = e.target.result
-            const metadata = toJson(parquetMetadata(arrayBuffer))
-            console.log(metadata)
-            // display metadata
-            dropZone.innerText = file.name
-            dropZone.innerText += `\n${JSON.stringify(metadata, null, 2)}`
+            try {
+              const arrayBuffer = e.target.result
+              const data = toJson(parquetMetadata(arrayBuffer))
+              // display metadata
+              dropzone.innerHTML = `<strong>${file.name}</strong><pre>${JSON.stringify(data, null, 2)}</pre>`
+            } catch (e) {
+              dropzone.innerHTML = `<strong>${file.name}</strong><div class="error">Error parsing file\n${e}</div>`
+            }
           }
           reader.onerror = e => {
             console.error('Error reading file', e)
-            dropZone.innerText = `Error reading file\n${e.target.error}`
+            dropzone.innerText = `Error reading file\n${e.target.error}`
           }
           reader.readAsArrayBuffer(file)
         }
