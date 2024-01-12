@@ -22,6 +22,8 @@ describe('parquetMetadata', () => {
     // Parquet v1 from DuckDB
     const expectedMetadata = {
       version: 1,
+      created_by: 'DuckDB',
+      metadata_length: 149,
       schema: [
         { repetition_type: 0, name: 'duckdb_schema', num_children: 1 },
         { type: 6, repetition_type: 1, name: 'ADDRTYPE', converted_type: 0 },
@@ -55,7 +57,6 @@ describe('parquetMetadata', () => {
           num_rows: 10,
         },
       ],
-      created_by: 'DuckDB',
     }
 
     const casted = toJson(result)
@@ -69,6 +70,8 @@ describe('parquetMetadata', () => {
     // Parquet v2 from pandas with 2 row groups
     const expectedMetadata = {
       version: 2,
+      created_by: 'parquet-cpp-arrow version 14.0.2',
+      metadata_length: 1602,
       schema: [
         {
           repetition_type: 0,
@@ -153,7 +156,6 @@ describe('parquetMetadata', () => {
           // value: base64
         },
       ],
-      created_by: 'parquet-cpp-arrow version 14.0.2',
     }
 
     const casted = toJson(result)

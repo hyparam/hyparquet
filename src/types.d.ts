@@ -15,6 +15,7 @@ export interface FileMetaData {
   row_groups: RowGroup[]
   key_value_metadata?: KeyValue[]
   created_by?: string
+  metadata_length: number
 }
 
 export interface SchemaElement {
