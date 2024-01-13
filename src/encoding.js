@@ -174,7 +174,7 @@ export function readPlain(dataView, type, count, offset = 0) {
   } else if (type === ParquetType.FIXED_LEN_BYTE_ARRAY) {
     return readPlainByteArrayFixed(dataView, offset, count)
   } else {
-    throw new Error(`Unhandled type: ${type}`)
+    throw new Error(`parquet unhandled type: ${type}`)
   }
 }
 
@@ -234,7 +234,7 @@ export function readRleBitPackedHybrid(dataView, offset, width, length, numValue
   let byteLength = 0
   if (!length) {
     length = dataView.getInt32(offset, true)
-    if (length < 0) throw new Error(`invalid rle/bitpack length ${length}`)
+    if (length < 0) throw new Error(`parquet invalid rle/bitpack length ${length}`)
     byteLength += 4
   }
   const value = []
@@ -285,7 +285,7 @@ function readRle(dataView, offset, header, bitWidth) {
     readValue = dataView.getUint32(offset, true)
     byteLength += 4
   } else {
-    throw new Error(`invalid rle width ${width}`)
+    throw new Error(`parquet invalid rle width ${width}`)
   }
 
   // repeat value count times

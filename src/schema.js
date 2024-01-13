@@ -42,7 +42,7 @@ export function schemaElement(schema, name) {
   for (const part of name) {
     const child = tree.children.find(child => child.element.name === part)
     if (!child) {
-      throw new Error(`schema element not found: ${name}`)
+      throw new Error(`parquet schema element not found: ${name}`)
     }
     tree = child
   }

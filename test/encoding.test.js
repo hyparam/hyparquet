@@ -86,7 +86,7 @@ describe('readPlain', () => {
   it('throws an error for unhandled types', () => {
     const dataView = new DataView(new ArrayBuffer(0))
     const invalidType = 999
-    expect(() => readPlain(dataView, invalidType, 1, 0)).toThrow(`Unhandled type: ${invalidType}`)
+    expect(() => readPlain(dataView, invalidType, 1, 0)).toThrow(`parquet unhandled type: ${invalidType}`)
   })
 })
 

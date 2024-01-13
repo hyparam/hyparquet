@@ -26,7 +26,7 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
   if (dictionary_page_offset === undefined || data_page_offset < dictionary_page_offset) {
     columnOffset = data_page_offset
   }
-  columnOffset = Number(columnOffset) // cast bigint to number
+  columnOffset = Number(columnOffset)
 
   // parse column data
   let valuesSeen = 0
@@ -37,7 +37,7 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
     // parse column header
     const { value: header, byteLength: headerLength } = parquetHeader(arrayBuffer, columnOffset + byteOffset)
     byteOffset += headerLength
-    if (!header || header.compressed_page_size === undefined) throw new Error('header is undefined')
+    if (!header || header.compressed_page_size === undefined) throw new Error('parquet header is undefined')
 
     // read compressed_page_size bytes starting at offset
     const compressedBytes = new Uint8Array(
@@ -45,23 +45,23 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
     )
     // decompress bytes
     let page
-    const uncompressed_page_size = Number(header.uncompressed_page_size) // TODO: unsafe cast
+    const uncompressed_page_size = Number(header.uncompressed_page_size)
     if (codec === CompressionCodec.GZIP) {
-      throw new Error('GZIP compression not supported')
+      throw new Error('parquet gzip compression not supported')
     } else if (codec === CompressionCodec.SNAPPY) {
       page = new Uint8Array(uncompressed_page_size)
       snappyUncompress(compressedBytes, page)
     } else if (codec === CompressionCodec.LZO) {
-      throw new Error('LZO compression not supported')
+      throw new Error('parquet lzo compression not supported')
     }
     if (!page || page.length !== uncompressed_page_size) {
-      throw new Error('decompressed page size does not match header')
+      throw new Error('parquet decompressed page size does not match header')
     }
 
     // parse page data by type
     if (header.type === PageType.DATA_PAGE) {
       const daph = header.data_page_header
-      if (!daph) throw new Error('data page header is undefined')
+      if (!daph) throw new Error('parquet data page header is undefined')
 
       const { definitionLevels, repetitionLevels, value } = readDataPage(page, daph, schema, columnMetadata)
       valuesSeen += daph.num_values
@@ -112,7 +112,7 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
       return values
     } else if (header.type === PageType.DICTIONARY_PAGE) {
       const diph = header.dictionary_page_header
-      if (!diph) throw new Error('dictionary page header is undefined')
+      if (!diph) throw new Error('parquet dictionary page header is undefined')
 
       dictionary = readDictionaryPage(page, diph, schema, columnMetadata)
     } else {

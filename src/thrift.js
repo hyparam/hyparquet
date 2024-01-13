@@ -118,7 +118,7 @@ function readElement(view, type, index) {
     return [uuid, index]
   }
   default:
-    throw new Error(`Unhandled type: ${type}`)
+    throw new Error(`thrift unhandled type: ${type}`)
   }
 }
 
