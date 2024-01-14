@@ -20,3 +20,9 @@ export const ParquetEncoding = {
   RLE_DICTIONARY: 8,
   BYTE_STREAM_SPLIT: 9,
 }
+
+export const FieldRepetitionType = {
+  REQUIRED: 0,
+  OPTIONAL: 1,
+  REPEATED: 2,
+}

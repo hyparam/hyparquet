@@ -1,4 +1,4 @@
-import { FieldRepetitionType } from './types.js'
+import { FieldRepetitionType } from './constants.js'
 
 /**
  * @typedef {import('./types.js').SchemaElement} SchemaElement
