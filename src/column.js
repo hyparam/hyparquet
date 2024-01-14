@@ -5,6 +5,7 @@ import { snappyUncompress } from './snappy.js'
 import { CompressionCodec, Encoding, PageType } from './types.js'
 
 /**
+ * @typedef {import('./types.js').ArrayBufferLike} ArrayBufferLike
  * @typedef {import('./types.js').SchemaElement} SchemaElement
  * @typedef {import('./types.js').ColumnMetaData} ColumnMetaData
  * @typedef {import('./types.js').RowGroup} RowGroup

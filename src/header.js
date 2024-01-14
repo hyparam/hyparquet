@@ -11,16 +11,14 @@ import { deserializeTCompactProtocol } from './thrift.js'
 /**
  * Read parquet header from a buffer.
  *
+ * @typedef {import("./types.d.ts").ArrayBufferLike} ArrayBufferLike
  * @typedef {import("./types.d.ts").PageHeader} PageHeader
- * @param {ArrayBuffer} arrayBuffer parquet file contents
+ * @param {ArrayBufferLike} arrayBuffer parquet file contents
  * @param {number} offset offset to start reading from
  * @returns {Decoded<PageHeader>} metadata object and bytes read
  */
 export function parquetHeader(arrayBuffer, offset) {
-  // DataView for easier manipulation of the buffer
-  const view = new DataView(arrayBuffer)
-
-  const headerBuffer = view.buffer.slice(offset)
+  const headerBuffer = arrayBuffer.slice(offset)
   const { value: header, byteLength } = deserializeTCompactProtocol(headerBuffer)
 
   // Parse parquet header from thrift data
