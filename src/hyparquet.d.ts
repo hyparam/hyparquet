@@ -25,7 +25,7 @@ export function parquetRead(arrayBuffer: ArrayBuffer): any[][]
  * @param {number} initialFetchSize initial fetch size in bytes (default 512kb)
  * @returns {Promise<FileMetaData>} metadata object
  */
-export async function parquetMetadataAsync(asyncBuffer: ArrayBuffer, initialFetchSize: number = 1 << 19 /* 512kb */): Promise<FileMetaData>
+export async function parquetMetadataAsync(asyncBuffer: AsyncBuffer, initialFetchSize: number = 1 << 19 /* 512kb */): Promise<FileMetaData>
 
 /**
  * Read parquet metadata from a buffer
