@@ -17,6 +17,7 @@
       nav {
         width: 300px;
         padding: 10px;
+        overflow-y: auto;
       }
       h1 {
         font-size: 20pt;
@@ -49,12 +50,41 @@
       .error {
         color: #c11;
       }
+      #layout {
+        margin-top: 20px;
+      }
+      #layout div {
+        background-color: rgba(0, 0, 0, 0.05);
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 12px;
+        margin-top: 4px;
+        padding: 4px;
+        word-break: break-all;
+      }
+      .cell {
+        display: flex;
+      }
+      .cell label {
+        font-size: 12px;
+        font-weight: normal;
+        flex: 1;
+        justify-content: flex-start;
+      }
+      #layout div ul {
+        list-style: none;
+      }
+      #layout div li {
+        font-size: 10px;
+        padding: 2px 4px;
+        text-align: right;
+      }
     </style>
   </head>
   <body>
     <nav>
       <h1>hyparquet</h1>
-      <h2>parquet file parser</h2>
+      <h2>parquet file reader</h2>
       <p>
         This is a simple online demo of the <a href="https://github.com/hyparam/hyparquet">hyparquet</a> parser for apache parquet files.
       </p>
@@ -65,6 +95,7 @@
         <li><a href="https://github.com/hyparam/hyparquet">github</a></li>
         <li><a href="https://www.npmjs.com/package/hyparquet">npm</a></li>
       </ul>
+      <div id="layout"></div>
     </nav>
     <div id="dropzone">
       <label>Drop .parquet file here</label>
@@ -94,11 +125,48 @@
           reader.onload = async (e) => {
             try {
               const arrayBuffer = e.target.result
-              const data = toJson(parquetMetadata(arrayBuffer))
+              const metadata = toJson(parquetMetadata(arrayBuffer))
+
+              console.log('metadata', metadata)
+
+              function group(name) {
+                return `<div>${name}`
+              }
+              function cell(name, start, bytes, end) {
+                return `<div class="cell"><label>${name}</label><ul><li>start ${start}</li><li>bytes ${bytes}</li><li>end ${end}</li></div>`
+              }
+
+              // render file layout
+              let html = '<h2>File layout</h2>'
+              html += cell('PAR1', 0, 4, 4)  // magic number
+              for (const rowGroupIndex in metadata.row_groups) {
+                const rowGroup = metadata.row_groups[rowGroupIndex]
+                html += group(`Row group ${rowGroupIndex} (${rowGroup.total_byte_size} bytes)`)
+                for (const column of rowGroup.columns) {
+                  const columnName = column.meta_data.path_in_schema.join('.')
+
+                  let columnOffset = column.meta_data.dictionary_page_offset
+                  if (!columnOffset || column.meta_data.data_page_offset < columnOffset) {
+                    columnOffset = column.meta_data.data_page_offset
+                  }
+                  columnOffset = Number(columnOffset)
+                  const bytes = column.meta_data.total_compressed_size
+                  const end = columnOffset + bytes
+                  html += cell(`Column ${columnName}`, columnOffset, bytes, end)
+                }
+                html += '</div>'
+              }
+              const metadataStart = arrayBuffer.byteLength - metadata.metadata_length - 4
+              html += cell('Metadata', metadataStart, metadata.metadata_length, arrayBuffer.byteLength - 4)
+              html += cell('PAR1', arrayBuffer.byteLength - 4, 4, arrayBuffer.byteLength) // magic number
+              layout.innerHTML = html
+
               // display metadata
-              dropzone.innerHTML = `<strong>${file.name}</strong><pre>${JSON.stringify(data, null, 2)}</pre>`
+              dropzone.innerHTML = `<strong>${file.name}</strong>`
+              dropzone.innerHTML += `<pre>${JSON.stringify(metadata, null, 2)}</pre>`
             } catch (e) {
-              dropzone.innerHTML = `<strong>${file.name}</strong><div class="error">Error parsing file\n${e}</div>`
+              dropzone.innerHTML = `<strong>${file.name}</strong>`
+              dropzone.innerHTML += `<div class="error">Error parsing file\n${e}</div>`
             }
           }
           reader.onerror = e => {
