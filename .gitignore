@@ -3,3 +3,4 @@ package-lock.json
 coverage
 dist
 *.tgz
+example.parquet

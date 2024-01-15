@@ -16,9 +16,10 @@ Dependency free since 2023!
 ## Features
 
 - Designed to work with huge ML datasets (things like [starcoder](https://huggingface.co/datasets/bigcode/starcoderdata))
-- Loads metadata separately from data
+- Can load metadata separately from data
 - Data can be filtered by row and column ranges
 - Only fetches the data needed
+- Written in JavaScript, checked with TypeScript
 - Fast data loading for large scale ML applications
 - Bring data visualization closer to the user, in the browser
 
@@ -50,7 +51,7 @@ const { parquetMetadata } = await import('hyparquet')
 const fs = await import('fs')
 
 const buffer = fs.readFileSync('example.parquet')
-const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength)
+const arrayBuffer = new Uint8Array(buffer).buffer
 const metadata = parquetMetadata(arrayBuffer)
 ```
 
