@@ -62,7 +62,7 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
       const daph = header.data_page_header
       if (!daph) throw new Error('parquet data page header is undefined')
 
-      const { definitionLevels, repetitionLevels, value } = readDataPage(page, daph, schema, columnMetadata)
+      const { definitionLevels, repetitionLevels, value: dataPage } = readDataPage(page, daph, schema, columnMetadata)
       valuesSeen += daph.num_values
 
       // construct output values: skip nulls and construct lists
@@ -75,7 +75,7 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
         const isNull = columnMetadata && !isRequired(schema, [columnMetadata.path_in_schema[0]])
         const nullValue = false // TODO: unused?
         const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
-        values = assembleObjects(definitionLevels, repetitionLevels, value, isNull, nullValue, maxDefinitionLevel, rowIndex[0])
+        values = assembleObjects(definitionLevels, repetitionLevels, dataPage, isNull, nullValue, maxDefinitionLevel, rowIndex[0])
       } else if (definitionLevels) {
         const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
         // Use definition levels to skip nulls
@@ -84,8 +84,10 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
         const decoder = new TextDecoder()
         for (let i = 0; i < definitionLevels.length; i++) {
           if (definitionLevels[i] === maxDefinitionLevel) {
-            if (index > value.length) throw new Error('parquet index out of bounds')
-            let v = value[index++]
+            if (index > dataPage.length) {
+              throw new Error(`parquet index ${index} exceeds data page length ${dataPage.length}`)
+            }
+            let v = dataPage[index++]
             // map to dictionary value
             if (dictionary) {
               v = dictionary[v]
@@ -104,13 +106,13 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
         }
       } else {
         // TODO: use dictionary
-        values = value
+        values = dataPage
       }
 
-      // check that we are at the end of the page
-      if (values.length !== daph.num_values) {
-        throw new Error('parquet column length does not match page header')
-      }
+      // TODO: check that we are at the end of the page
+      // values.length !== daph.num_values isn't right. In cases like arrays,
+      // you need the total number of children, not the number of top-level values.
+
       rowData.push(...Array.from(values))
     } else if (header.type === PageType.DICTIONARY_PAGE) {
       const diph = header.dictionary_page_header
@@ -123,7 +125,7 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
     byteOffset += header.compressed_page_size
   }
   if (rowData.length !== Number(rowGroup.num_rows)) {
-    throw new Error('parquet column length does not match row group length')
+    throw new Error(`parquet column length ${rowData.length} does not match row group length ${rowGroup.num_rows}}`)
   }
   return rowData
 }
