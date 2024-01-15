@@ -1,4 +1,4 @@
-export { FileMetaData } from './types'
+export { AsyncBuffer, FileMetaData } from './types'
 
 /**
  * Read parquet data rows from a file
@@ -8,11 +8,28 @@ export { FileMetaData } from './types'
  */
 export function parquetRead(arrayBuffer: ArrayBuffer): any[][]
 
+/**
+ * Read parquet metadata from an async buffer.
+ *
+ * An AsyncBuffer is like an ArrayBuffer, but the slices are loaded
+ * asynchronously, possibly over the network.
+ *
+ * To make this efficient, we initially request the last 512kb of the file,
+ * which is likely to contain the metadata. If the metadata length exceeds the
+ * initial fetch, 512kb, we request the rest of the metadata from the AsyncBuffer.
+ *
+ * This ensures that we either make one 512kb initial request for the metadata,
+ * or two requests for exactly the metadata size.
+ *
+ * @param {AsyncBuffer} asyncBuffer parquet file contents
+ * @param {number} initialFetchSize initial fetch size in bytes (default 512kb)
+ * @returns {Promise<FileMetaData>} metadata object
+ */
+export async function parquetMetadataAsync(asyncBuffer: ArrayBuffer, initialFetchSize: number = 1 << 19 /* 512kb */): Promise<FileMetaData>
 
 /**
- * Read parquet header, metadata, and schema information from a file
+ * Read parquet metadata from a buffer
  *
- * @typedef {import("./hyparquet.js").FileMetaData} FileMetaData
  * @param {ArrayBuffer} arrayBuffer parquet file contents
  * @returns {FileMetaData} metadata object
  */

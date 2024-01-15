@@ -1,5 +1,5 @@
-import { parquetMetadata } from './metadata.js'
-export { parquetMetadata }
+import { parquetMetadata, parquetMetadataAsync } from './metadata.js'
+export { parquetMetadata, parquetMetadataAsync }
 
 import { snappyUncompress } from './snappy.js'
 export { snappyUncompress }

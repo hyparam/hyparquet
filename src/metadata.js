@@ -1,9 +1,50 @@
 import { deserializeTCompactProtocol } from './thrift.js'
 
 /**
- * Read parquet header, metadata, and schema information from a file
+ * Read parquet metadata from an async buffer.
  *
+ * An AsyncBuffer is like an ArrayBuffer, but the slices are loaded
+ * asynchronously, possibly over the network.
+ *
+ * To make this efficient, we initially request the last 512kb of the file,
+ * which is likely to contain the metadata. If the metadata length exceeds the
+ * initial fetch, 512kb, we request the rest of the metadata from the AsyncBuffer.
+ *
+ * This ensures that we either make one 512kb initial request for the metadata,
+ * or two requests for exactly the metadata size.
+ *
+ * @typedef {import("./types.d.ts").AsyncBuffer} AsyncBuffer
  * @typedef {import("./types.d.ts").FileMetaData} FileMetaData
+ * @param {AsyncBuffer} asyncBuffer parquet file contents
+ * @param {number} initialFetchSize initial fetch size in bytes
+ * @returns {Promise<FileMetaData>} metadata object
+ */
+export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = 1 << 19 /* 512kb */) {
+  // fetch last bytes (footer) of the file
+  const footerOffset = asyncBuffer.byteLength - initialFetchSize
+  const footerBuffer = await asyncBuffer.slice(footerOffset)
+  // check if metadata size fits inside the initial fetch
+  const footerView = new DataView(footerBuffer)
+  const metadataLength = footerView.getUint32(footerBuffer.byteLength - 8, true)
+  if (metadataLength + 8 > initialFetchSize) {
+    // fetch the rest of the metadata
+    const metadataOffset = asyncBuffer.byteLength - metadataLength - 8
+    const metadataBuffer = await asyncBuffer.slice(metadataOffset, footerOffset)
+    // combine the buffers
+    const combinedBuffer = new ArrayBuffer(metadataLength + 8)
+    const combinedView = new Uint8Array(combinedBuffer)
+    combinedView.set(new Uint8Array(metadataBuffer), 0)
+    combinedView.set(new Uint8Array(footerBuffer), footerOffset - metadataOffset)
+    return parquetMetadata(combinedBuffer)
+  } else {
+    // parse metadata from the footer
+    return parquetMetadata(footerBuffer)
+  }
+}
+
+/**
+ * Read parquet metadata from a buffer
+ *
  * @param {ArrayBuffer} arrayBuffer parquet file contents
  * @returns {FileMetaData} metadata object
  */
@@ -22,12 +63,13 @@ export function parquetMetadata(arrayBuffer) {
   // Parquet files store metadata at the end of the file
   // Metadata length is 4 bytes before the last PAR1
   const metadataLengthOffset = view.byteLength - 8
-  const metadataLength = view.getUint32(view.byteLength - 8, true)
+  const metadataLength = view.getUint32(metadataLengthOffset, true)
   if (metadataLength <= 0) {
-    throw new Error('parquet invalid metadata length')
+    throw new Error(`parquet invalid metadata length ${metadataLength}`)
   }
   if (metadataLength > view.byteLength - 8) {
-    throw new Error('parquet metadata length exceeds buffer size')
+    // {metadata}, metadata_length, PAR1
+    throw new Error(`parquet metadata length ${metadataLength} exceeds available buffer ${view.byteLength - 8}`)
   }
 
   const metadataOffset = metadataLengthOffset - metadataLength
