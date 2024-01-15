@@ -22,6 +22,19 @@ Dependency free since 2023!
 - Fast data loading for large scale ML applications
 - Bring data visualization closer to the user, in the browser
 
+Why make a new parquet parser in javascript?
+First, existing libraries like [parquetjs](https://github.com/ironSource/parquetjs) are officially "inactive".
+Importantly, they do not support the kind of stream processing needed to make a really performant parser in the browser.
+And finally, no dependencies means that hyparquet is lean, and easy to package and deploy.
+
+## Demo
+
+Online parquet file reader demo available at:
+
+https://hyparam.github.io/hyparquet/
+
+Demo source: [index.html](index.html)
+
 ## Installation
 
 ```bash
