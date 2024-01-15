@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { describe, expect, it } from 'vitest'
-import { parquetMetadata, parquetMetadataAsync } from '../src/metadata.js'
+import { parquetMetadata, parquetMetadataAsync } from '../src/hyparquet.js'
 import { toJson } from '../src/toJson.js'
 
 /**
@@ -29,13 +29,13 @@ function fileToAsyncBuffer(filePath) {
 }
 
 describe('parquetMetadata', () => {
-  it('should correctly decode metadata from addrtype-missing-value.parquet', async () => {
+  it('should parse metadata from addrtype-missing-value.parquet', async () => {
     const arrayBuffer = await readFileToArrayBuffer('test/files/addrtype-missing-value.parquet')
     const result = parquetMetadata(arrayBuffer)
     expect(toJson(result)).toEqual(addrtypeMetadata)
   })
 
-  it('should correctly decode metadata from rowgroups.parquet', async () => {
+  it('should parse metadata from rowgroups.parquet', async () => {
     const arrayBuffer = await readFileToArrayBuffer('test/files/rowgroups.parquet')
     const result = parquetMetadata(arrayBuffer)
     expect(toJson(result)).containSubset(rowgroupsMetadata)
@@ -63,13 +63,13 @@ describe('parquetMetadata', () => {
 })
 
 describe('parquetMetadataAsync', () => {
-  it('should correctly decode metadata from addrtype-missing-value.parquet', async () => {
+  it('should parse metadata asynchronously from addrtype-missing-value.parquet', async () => {
     const asyncBuffer = fileToAsyncBuffer('test/files/addrtype-missing-value.parquet')
     const result = await parquetMetadataAsync(asyncBuffer)
     expect(toJson(result)).toEqual(addrtypeMetadata)
   })
 
-  it('should correctly decode metadata from rowgroups.parquet', async () => {
+  it('should parse metadata asynchronously from rowgroups.parquet', async () => {
     const asyncBuffer = fileToAsyncBuffer('test/files/rowgroups.parquet')
     // force two fetches
     const result = await parquetMetadataAsync(asyncBuffer, 1609)

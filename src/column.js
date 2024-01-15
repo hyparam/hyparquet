@@ -1,8 +1,8 @@
+import { CompressionCodec, Encoding, PageType } from './constants.js'
 import { assembleObjects, readDataPage, readDictionaryPage } from './datapage.js'
 import { parquetHeader } from './header.js'
 import { getMaxDefinitionLevel, isRequired } from './schema.js'
 import { snappyUncompress } from './snappy.js'
-import { CompressionCodec, Encoding, PageType } from './types.js'
 
 /**
  * @typedef {import('./types.js').ArrayBufferLike} ArrayBufferLike

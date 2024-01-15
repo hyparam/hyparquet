@@ -1,6 +1,6 @@
+import { Encoding, ParquetType } from './constants.js'
 import { readData, readPlain, readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel, isRequired, skipDefinitionBytes } from './schema.js'
-import { Encoding, ParquetType } from './types.js'
 
 const skipNulls = false // TODO
 
