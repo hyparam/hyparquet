@@ -64,9 +64,6 @@ export function parquetMetadata(arrayBuffer) {
   // Metadata length is 4 bytes before the last PAR1
   const metadataLengthOffset = view.byteLength - 8
   const metadataLength = view.getUint32(metadataLengthOffset, true)
-  if (metadataLength <= 0) {
-    throw new Error(`parquet invalid metadata length ${metadataLength}`)
-  }
   if (metadataLength > view.byteLength - 8) {
     // {metadata}, metadata_length, PAR1
     throw new Error(`parquet metadata length ${metadataLength} exceeds available buffer ${view.byteLength - 8}`)
