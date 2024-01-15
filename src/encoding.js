@@ -226,7 +226,7 @@ export function readData(dataView, encoding, offset, count, bitWidth) {
  * @param {DataView} dataView - buffer to read data from
  * @param {number} offset - offset to start reading from the DataView
  * @param {number} width - width of each bit-packed group
- * @param {number} length - length of the encoded data
+ * @param {number | undefined} length - length of the encoded data
  * @param {number} numValues - number of values to read
  * @returns {Decoded<number[]>} array of rle/bit-packed values
  */

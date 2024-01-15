@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { ParquetType } from '../src/constants.js'
-import { readPlain } from '../src/encoding.js'
+import { readPlain, readRleBitPackedHybrid } from '../src/encoding.js'
 
 describe('readPlain', () => {
 
@@ -90,4 +90,35 @@ describe('readPlain', () => {
   })
 })
 
-// TODO: Add tests for readData
+describe('readRleBitPackedHybrid', () => {
+  it('reads RLE bit-packed hybrid values with explicit length', () => {
+    // Example buffer: 1 RLE group followed by 1 bit-packed group
+    // RLE values: true x3
+    // Bit-packed values: false, false, true
+    const buffer = new ArrayBuffer(4)
+    const dataView = new DataView(buffer)
+    dataView.setUint8(0, 0b00000110) // RLE header for 3 true values
+    dataView.setUint8(1, 0b00000001) // RLE value (true)
+    dataView.setUint8(2, 0b00000011) // Bit-packed header for 3 values
+    dataView.setUint8(3, 0b00000100) // Bit-packed values (false, false, true)
+
+    const { byteLength, value } = readRleBitPackedHybrid(dataView, 0, 1, 3, 6)
+    expect(byteLength).toBe(4)
+    expect(value).toEqual([1, 1, 1, 0, 0, 1])
+  })
+
+  it('reads RLE bit-packed hybrid values with implicit length', () => {
+    // Example buffer: same as previous test, but with implicit length
+    const buffer = new ArrayBuffer(8)
+    const dataView = new DataView(buffer)
+    dataView.setInt32(0, 3, true) // length 3 little-endian
+    dataView.setUint8(4, 0b00000110) // RLE header for 3 true values
+    dataView.setUint8(5, 0b00000001) // RLE value (true)
+    dataView.setUint8(6, 0b00000011) // Bit-packed header for 3 values
+    dataView.setUint8(7, 0b00000100) // Bit-packed values (false, false, true)
+
+    const { byteLength, value } = readRleBitPackedHybrid(dataView, 0, 1, undefined, 6)
+    expect(byteLength).toBe(8)
+    expect(value).toEqual([1, 1, 1, 0, 0, 1])
+  })
+})
