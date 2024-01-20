@@ -1,4 +1,4 @@
-export { AsyncBuffer, FileMetaData } from './types'
+export { AsyncBuffer, FileMetaData, SchemaTree } from './types'
 
 /**
  * Read parquet data rows from a file-like object.
@@ -38,7 +38,7 @@ export async function parquetRead(options: ParquetReadOptions): Promise<void>
  *
  * @param {AsyncBuffer} asyncBuffer parquet file contents
  * @param {number} initialFetchSize initial fetch size in bytes (default 512kb)
- * @returns {Promise<FileMetaData>} metadata object
+ * @returns {Promise<FileMetaData>} parquet metadata object
  */
 export async function parquetMetadataAsync(asyncBuffer: AsyncBuffer, initialFetchSize: number = 1 << 19 /* 512kb */): Promise<FileMetaData>
 
@@ -46,9 +46,17 @@ export async function parquetMetadataAsync(asyncBuffer: AsyncBuffer, initialFetc
  * Read parquet metadata from a buffer
  *
  * @param {ArrayBuffer} arrayBuffer parquet file contents
- * @returns {FileMetaData} metadata object
+ * @returns {FileMetaData} parquet metadata object
  */
 export function parquetMetadata(arrayBuffer: ArrayBuffer): FileMetaData
+
+/**
+ * Return a tree of schema elements from parquet metadata.
+ *
+ * @param {FileMetaData} metadata parquet metadata object
+ * @returns {SchemaTree} tree of schema elements
+ */
+export function parquetSchema(metadata: SchemaElement[]): SchemaTree
 
 /**
  * Decompress snappy data.

@@ -1,5 +1,5 @@
-import { parquetMetadata, parquetMetadataAsync } from './metadata.js'
-export { parquetMetadata, parquetMetadataAsync }
+import { parquetMetadata, parquetMetadataAsync, parquetSchema } from './metadata.js'
+export { parquetMetadata, parquetMetadataAsync, parquetSchema }
 
 import { parquetRead } from './read.js'
 export { parquetRead }

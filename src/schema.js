@@ -2,31 +2,31 @@ import { FieldRepetitionType } from './constants.js'
 
 /**
  * @typedef {import('./types.js').SchemaElement} SchemaElement
- * @typedef {{ element: SchemaElement, children: SchemaTree[], endIndex: number }} SchemaTree
+ * @typedef {import('./types.js').SchemaTree} SchemaTree
  */
 
 /**
  * Build a tree from the schema elements.
  *
  * @param {SchemaElement[]} schema
- * @param {number} i index of the root element
+ * @param {number} rootIndex index of the root element
  * @returns {SchemaTree} tree of schema elements
  */
-function schemaTree(schema, i) {
-  const root = schema[i]
+export function schemaTree(schema, rootIndex) {
+  const root = schema[rootIndex]
   const children = []
-  i++
+  let count = 1
 
   // Read the specified number of children
   if (root.num_children) {
     while (children.length < root.num_children) {
-      const child = schemaTree(schema, i)
-      i = child.endIndex
+      const child = schemaTree(schema, rootIndex + count)
+      count += child.count
       children.push(child)
     }
   }
 
-  return { endIndex: i, element: root, children }
+  return { count, element: root, children }
 }
 
 /**

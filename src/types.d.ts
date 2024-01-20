@@ -34,6 +34,12 @@ export interface FileMetaData {
   metadata_length: number
 }
 
+export interface SchemaTree {
+  element: SchemaElement
+  children: SchemaTree[]
+  count: number
+}
+
 export interface SchemaElement {
   type?: ParquetType
   type_length?: number

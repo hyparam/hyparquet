@@ -1,3 +1,4 @@
+import { schemaTree } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
 /**
@@ -17,7 +18,7 @@ import { deserializeTCompactProtocol } from './thrift.js'
  * @typedef {import("./types.d.ts").FileMetaData} FileMetaData
  * @param {AsyncBuffer} asyncBuffer parquet file contents
  * @param {number} initialFetchSize initial fetch size in bytes
- * @returns {Promise<FileMetaData>} metadata object
+ * @returns {Promise<FileMetaData>} parquet metadata object
  */
 export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = 1 << 19 /* 512kb */) {
   // fetch last bytes (footer) of the file
@@ -46,7 +47,7 @@ export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = 1 << 
  * Read parquet metadata from a buffer
  *
  * @param {ArrayBuffer} arrayBuffer parquet file contents
- * @returns {FileMetaData} metadata object
+ * @returns {FileMetaData} parquet metadata object
  */
 export function parquetMetadata(arrayBuffer) {
   // DataView for easier manipulation of the buffer
@@ -139,4 +140,15 @@ export function parquetMetadata(arrayBuffer) {
     created_by,
     metadata_length: metadataLength,
   }
+}
+
+/**
+ * Return a tree of schema elements from parquet metadata.
+ *
+ * @typedef {import("./types.d.ts").SchemaTree} SchemaTree
+ * @param {FileMetaData} metadata parquet metadata object
+ * @returns {SchemaTree} tree of schema elements
+ */
+export function parquetSchema(metadata) {
+  return schemaTree(metadata.schema, 0)
 }
