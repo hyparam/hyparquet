@@ -113,11 +113,13 @@ async function readRowGroup(options, rowGroup) {
     const columnStartByte = getColumnOffset(columnMetadata)
     const columnEndByte = columnStartByte + Number(columnMetadata.total_compressed_size)
     const columnBytes = columnEndByte - columnStartByte
+
     // skip columns larger than 1gb
     if (columnBytes > 1 << 30) {
       console.warn(`parquet skipping huge column "${columnMetadata.path_in_schema}" ${columnBytes.toLocaleString()} bytes`)
       continue
     }
+
     // use pre-loaded row group byte data if available, else read column data
     let buffer
     if (!groupBuffer) {
@@ -127,6 +129,7 @@ async function readRowGroup(options, rowGroup) {
     } else {
       buffer = Promise.resolve(groupBuffer)
     }
+
     // read column data async
     promises.push(buffer.then(arrayBuffer => {
       // TODO: extract SchemaElement for this column

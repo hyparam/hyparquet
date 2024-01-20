@@ -27,6 +27,7 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
   // parse column data
   let valuesSeen = 0
   let byteOffset = 0 // byteOffset within the column
+  /** @type {ArrayLike<any> | undefined} */
   let dictionary = undefined
   const rowIndex = [0] // map/list object index
   const rowData = []
@@ -65,18 +66,23 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
       const { definitionLevels, repetitionLevels, value: dataPage } = readDataPage(page, daph, schema, columnMetadata)
       valuesSeen += daph.num_values
 
+      const dictionaryEncoding = daph.encoding === Encoding.PLAIN_DICTIONARY || daph.encoding === Encoding.RLE_DICTIONARY
+
       // construct output values: skip nulls and construct lists
       let values
       if (repetitionLevels.length) {
         // Use repetition levels to construct lists
-        if ([Encoding.PLAIN_DICTIONARY, Encoding.RLE_DICTIONARY].includes(daph.encoding)) {
-          // TODO: dereference dictionary values
+        if (dictionaryEncoding && dictionary !== undefined && Array.isArray(dataPage)) {
+          // dereference dictionary values
+          for (let i = 0; i < dataPage.length; i++) {
+            dataPage[i] = dictionary[dataPage[i]]
+          }
         }
         const isNull = columnMetadata && !isRequired(schema, [columnMetadata.path_in_schema[0]])
         const nullValue = false // TODO: unused?
         const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
         values = assembleObjects(definitionLevels, repetitionLevels, dataPage, isNull, nullValue, maxDefinitionLevel, rowIndex[0])
-      } else if (definitionLevels) {
+      } else if (definitionLevels?.length) {
         const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
         // Use definition levels to skip nulls
         let index = 0
@@ -105,7 +111,12 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
           }
         }
       } else {
-        // TODO: use dictionary
+        if (dictionaryEncoding && dictionary !== undefined && Array.isArray(dataPage)) {
+          // dereference dictionary values
+          for (let i = 0; i < dataPage.length; i++) {
+            dataPage[i] = dictionary[dataPage[i]]
+          }
+        }
         values = dataPage
       }
 

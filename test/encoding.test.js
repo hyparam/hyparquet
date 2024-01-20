@@ -117,7 +117,7 @@ describe('readRleBitPackedHybrid', () => {
     dataView.setUint8(6, 0b00000011) // Bit-packed header for 3 values
     dataView.setUint8(7, 0b00000100) // Bit-packed values (false, false, true)
 
-    const { byteLength, value } = readRleBitPackedHybrid(dataView, 0, 1, undefined, 6)
+    const { byteLength, value } = readRleBitPackedHybrid(dataView, 0, 1, 0, 6)
     expect(byteLength).toBe(8)
     expect(value).toEqual([1, 1, 1, 0, 0, 1])
   })

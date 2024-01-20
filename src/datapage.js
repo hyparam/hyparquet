@@ -23,7 +23,7 @@ const skipNulls = false // TODO
  * @param {DataPageHeader} daph data page header
  * @param {SchemaElement[]} schema schema for the file
  * @param {ColumnMetaData} columnMetadata metadata for the column
- * @returns {DataPage} array of values
+ * @returns {DataPage} definition levels, repetition levels, and array of values
  */
 export function readDataPage(bytes, daph, schema, columnMetadata) {
   const dataView = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
@@ -142,8 +142,16 @@ function readDefinitionLevels(dataView, offset, daph, schema, columnMetadata) {
       const { value: definitionLevels, byteLength } = readData(
         dataView, daph.definition_level_encoding, offset, daph.num_values, bitWidth
       )
-      const numNulls = daph.num_values - definitionLevels
-        .filter((/** @type number */ d) => d === maxDefinitionLevel).length
+
+      // count nulls
+      let numNulls = daph.num_values
+      for (const def of definitionLevels) {
+        if (def === maxDefinitionLevel) numNulls--
+      }
+      if (numNulls === 0) {
+        definitionLevels.length = 0
+      }
+
       return { byteLength, definitionLevels, numNulls }
     }
   }

@@ -206,7 +206,7 @@ export function readData(dataView, encoding, offset, count, bitWidth) {
   if (encoding === ParquetEncoding.RLE) {
     let seen = 0
     while (seen < count) {
-      const { value: rleValues, byteLength: rleByteLength } = readRleBitPackedHybrid(dataView, offset + byteLength, bitWidth, 0, count)
+      const { value: rleValues, byteLength: rleByteLength } = readRleBitPackedHybrid(dataView, offset + byteLength, bitWidth, 0, 1)
       if (!rleValues.length) break // EOF
       value.push(...rleValues)
       seen += rleValues.length
@@ -220,13 +220,13 @@ export function readData(dataView, encoding, offset, count, bitWidth) {
 
 /**
  * Read values from a run-length encoded/bit-packed hybrid encoding.
- * If length is not specified, then a 32-bit int is read first to grab the
- * length of the encoded data.
+ *
+ * If length is zero, then read as int32 at the start of the encoded data.
  *
  * @param {DataView} dataView - buffer to read data from
  * @param {number} offset - offset to start reading from the DataView
  * @param {number} width - width of each bit-packed group
- * @param {number | undefined} length - length of the encoded data
+ * @param {number} length - length of the encoded data
  * @param {number} numValues - number of values to read
  * @returns {Decoded<number[]>} array of rle/bit-packed values
  */
