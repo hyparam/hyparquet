@@ -1,32 +1,7 @@
-import fs from 'fs'
 import { describe, expect, it } from 'vitest'
-import { parquetMetadata, parquetMetadataAsync, parquetSchema } from '../src/hyparquet.js'
+import { parquetMetadata, parquetMetadataAsync } from '../src/hyparquet.js'
 import { toJson } from '../src/toJson.js'
-
-/**
- * Helper function to read .parquet file into ArrayBuffer
- *
- * @param {string} filePath
- * @returns {Promise<ArrayBuffer>}
- */
-async function readFileToArrayBuffer(filePath) {
-  const buffer = await fs.promises.readFile(filePath)
-  return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength)
-}
-
-/**
- * Wrap .parquet file in an AsyncBuffer
- *
- * @typedef {import('../src/types.js').AsyncBuffer} AsyncBuffer
- * @param {string} filePath
- * @returns {AsyncBuffer}
- */
-function fileToAsyncBuffer(filePath) {
-  return {
-    byteLength: fs.statSync(filePath).size,
-    slice: async (start, end) => (await readFileToArrayBuffer(filePath)).slice(start, end),
-  }
-}
+import { fileToAsyncBuffer, readFileToArrayBuffer } from './helpers.js'
 
 describe('parquetMetadata', () => {
   it('should parse metadata from addrtype-missing-value.parquet', async () => {
@@ -74,59 +49,6 @@ describe('parquetMetadataAsync', () => {
     // force two fetches
     const result = await parquetMetadataAsync(asyncBuffer, 1609)
     expect(toJson(result)).containSubset(rowgroupsMetadata)
-  })
-})
-
-describe('parquetSchema', () => {
-  it('should parse schema from addrtype-missing-value.parquet', async () => {
-    const arrayBuffer = await readFileToArrayBuffer('test/files/addrtype-missing-value.parquet')
-    const metadata = parquetMetadata(arrayBuffer)
-    const result = parquetSchema(metadata)
-    expect(toJson(result)).toEqual({
-      children: [
-        {
-          children: [],
-          count: 1,
-          element: {
-            converted_type: 0,
-            name: 'ADDRTYPE',
-            repetition_type: 1,
-            type: 6,
-          },
-        },
-      ],
-      count: 2,
-      element: {
-        name: 'duckdb_schema',
-        num_children: 1,
-        repetition_type: 0,
-      },
-    })
-  })
-
-  it('should parse schema from rowgroups.parquet', async () => {
-    const arrayBuffer = await readFileToArrayBuffer('test/files/rowgroups.parquet')
-    const metadata = parquetMetadata(arrayBuffer)
-    const result = parquetSchema(metadata)
-    expect(toJson(result)).toEqual({
-      children: [
-        {
-          children: [],
-          count: 1,
-          element: {
-            name: 'numbers',
-            repetition_type: 1,
-            type: 2,
-          },
-        },
-      ],
-      count: 2,
-      element: {
-        name: 'schema',
-        num_children: 1,
-        repetition_type: 0,
-      },
-    })
   })
 })
 
