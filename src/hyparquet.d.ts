@@ -56,7 +56,7 @@ export function parquetMetadata(arrayBuffer: ArrayBuffer): FileMetaData
  * @param {FileMetaData} metadata parquet metadata object
  * @returns {SchemaTree} tree of schema elements
  */
-export function parquetSchema(metadata: SchemaElement[]): SchemaTree
+export function parquetSchema(metadata: FileMetaData): SchemaTree
 
 /**
  * Decompress snappy data.
