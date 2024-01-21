@@ -1,7 +1,7 @@
-import { CompressionCodec, Encoding, PageType } from './constants.js'
+import { CompressionCodec, ConvertedType, Encoding, PageType } from './constants.js'
 import { assembleObjects, readDataPage, readDictionaryPage } from './datapage.js'
 import { parquetHeader } from './header.js'
-import { getMaxDefinitionLevel, isRequired } from './schema.js'
+import { getMaxDefinitionLevel, isRequired, schemaElement } from './schema.js'
 import { snappyUncompress } from './snappy.js'
 
 /**
@@ -10,6 +10,8 @@ import { snappyUncompress } from './snappy.js'
  * @typedef {import('./types.js').ColumnMetaData} ColumnMetaData
  * @typedef {import('./types.js').RowGroup} RowGroup
  */
+
+const dayMillis = 86400000000000 // 1 day in milliseconds
 
 /**
  * Read a column from the file.
@@ -113,11 +115,16 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
       } else {
         if (dictionaryEncoding && dictionary !== undefined && Array.isArray(dataPage)) {
           // dereference dictionary values
+          values = []
           for (let i = 0; i < dataPage.length; i++) {
-            dataPage[i] = dictionary[dataPage[i]]
+            values[i] = dictionary[dataPage[i]]
           }
+        } else if (Array.isArray(dataPage)) {
+          // convert primitive types to rich types
+          values = convert(dataPage, schemaElement(schema, columnMetadata.path_in_schema))
+        } else {
+          values = dataPage // TODO: data page shouldn't be a fixed byte array?
         }
-        values = dataPage
       }
 
       // TODO: check that we are at the end of the page
@@ -154,4 +161,45 @@ export function getColumnOffset(columnMetadata) {
     columnOffset = data_page_offset
   }
   return Number(columnOffset)
+}
+
+/**
+ * Convert known types from primitive to rich.
+ *
+ * @param {any[]} data series of primitive types
+ * @param {SchemaElement} schemaElement schema element for the data
+ * @returns {any[]} series of rich types
+ */
+function convert(data, schemaElement) {
+  const ctype = schemaElement.converted_type
+  if (!ctype) return data
+  if (ctype === ConvertedType.UTF8) {
+    const decoder = new TextDecoder()
+    return data.map(v => decoder.decode(v))
+  }
+  if (ctype === ConvertedType.DECIMAL) {
+    const scaleFactor = Math.pow(10, schemaElement.scale || 0)
+    if (typeof data[0] === 'number') {
+      return data.map(v => v * scaleFactor)
+    } else {
+      // TODO: parse byte string
+      throw new Error('parquet decimal byte string not supported')
+    }
+  }
+  if (ctype === ConvertedType.DATE) {
+    return data.map(v => new Date(v * dayMillis))
+  }
+  if (ctype === ConvertedType.TIME_MILLIS) {
+    return data.map(v => new Date(v))
+  }
+  if (ctype === ConvertedType.JSON) {
+    return data.map(v => JSON.parse(v))
+  }
+  if (ctype === ConvertedType.BSON) {
+    throw new Error('parquet bson not supported')
+  }
+  if (ctype === ConvertedType.INTERVAL) {
+    throw new Error('parquet interval not supported')
+  }
+  return data
 }
