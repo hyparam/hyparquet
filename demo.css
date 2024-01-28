@@ -51,7 +51,16 @@ input[type="file"] {
 #layout {
   margin-top: 20px;
 }
-#layout div {
+.layout div {
+  background-color: rgba(0, 0, 0, 0.05);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-top: 4px;
+  padding: 4px;
+  word-break: break-all;
+}
+.layout div {
   background-color: rgba(0, 0, 0, 0.05);
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -71,10 +80,10 @@ input[type="file"] {
 }
 
 nav ul,
-#layout div ul {
+.layout div ul {
   list-style: none;
 }
-#layout div li {
+.layout div li {
   font-size: 10px;
   padding: 2px 4px;
   text-align: right;
@@ -84,17 +93,22 @@ nav ul,
   display: none;
 }
 
-#layout h2 {
+.layout h2 {
   cursor: pointer;
   user-select: none;
 }
-#layout h2::before {
+.layout h2::before {
   content: "▼";
   display: inline-block;
   font-size: 10px;
   margin: 0 4px;
   vertical-align: middle;
 }
-#layout .collapsed h2::before {
+.layout .collapsed h2::before {
   content: "▶";
+}
+
+#metadata pre {
+  white-space: pre-wrap;
+  break-word: break-all;
 }

@@ -2,6 +2,7 @@ import { parquetMetadata, toJson } from './src/hyparquet.js'
 
 const dropzone = document.getElementById('dropzone')
 const layout = document.getElementById('layout')
+const metadata = document.getElementById('metadata')
 const fileInput = document.getElementById('file-input')
 
 dropzone.addEventListener('dragover', e => {
@@ -30,14 +31,13 @@ function processFile(file) {
   reader.onload = e => {
     try {
       const arrayBuffer = e.target.result
-      const metadata = toJson(parquetMetadata(arrayBuffer))
 
+      layout.innerHTML = `<strong>${file.name}</strong>`
       // render file layout
       layout.appendChild(fileLayout(metadata, arrayBuffer))
-
       // display metadata
-      dropzone.innerHTML = `<strong>${file.name}</strong>`
-      dropzone.innerHTML += `<pre>${JSON.stringify(metadata, null, 2)}</pre>`
+      metadata.innerHTML = ''
+      metadata.appendChild(fileMetadata(toJson(parquetMetadata(arrayBuffer))))
     } catch (e) {
       dropzone.innerHTML = `<strong>${file.name}</strong>`
       dropzone.innerHTML += `<div class="error">Error parsing file\n${e}</div>`
@@ -87,7 +87,7 @@ function fileLayout(metadata, arrayBuffer) {
   const div = document.createElement('div')
   div.innerHTML = html
   div.classList.add('collapsed') // start collapsed
-  div.addEventListener('click', () => {
+  div.children[0].addEventListener('click', () => {
     div.classList.toggle('collapsed')
   })
   return div
@@ -105,4 +105,17 @@ function cell(name, start, bytes, end) {
         <li>end ${end}</li>
       </ul>
     </div>`
+}
+
+// Render metadata
+function fileMetadata(metadata) {
+  let html = '<h2>Metadata</h2>'
+  html += `<pre>${JSON.stringify(metadata, null, 2)}</pre>`
+  const div = document.createElement('div')
+  div.innerHTML = html
+  div.classList.add('collapsed') // start collapsed
+  div.children[0].addEventListener('click', () => {
+    div.classList.toggle('collapsed')
+  })
+  return div
 }
