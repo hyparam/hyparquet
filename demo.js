@@ -14,21 +14,6 @@ dropzone.addEventListener('dragleave', () => {
   dropzone.classList.remove('over')
 })
 
-function group(name) {
-  return `<div>${name}`
-}
-function cell(name, start, bytes, end) {
-  return `
-    <div class="cell">
-      <label>${name}</label>
-      <ul>
-        <li>start ${start}</li>
-        <li>bytes ${bytes}</li>
-        <li>end ${end}</li>
-      </ul>
-    </div>`
-}
-
 dropzone.addEventListener('drop', e => {
   e.preventDefault() // prevent dropped file from being "downloaded"
   dropzone.classList.remove('over')
@@ -47,32 +32,8 @@ function processFile(file) {
       const arrayBuffer = e.target.result
       const metadata = toJson(parquetMetadata(arrayBuffer))
 
-      console.log('metadata', metadata)
-
       // render file layout
-      let html = '<h2>File layout</h2>'
-      html += cell('PAR1', 0, 4, 4) // magic number
-      for (const rowGroupIndex in metadata.row_groups) {
-        const rowGroup = metadata.row_groups[rowGroupIndex]
-        html += group(`Row group ${rowGroupIndex} (${rowGroup.total_byte_size} bytes)`)
-        for (const column of rowGroup.columns) {
-          const columnName = column.meta_data.path_in_schema.join('.')
-
-          let columnOffset = column.meta_data.dictionary_page_offset
-          if (!columnOffset || column.meta_data.data_page_offset < columnOffset) {
-            columnOffset = column.meta_data.data_page_offset
-          }
-          columnOffset = Number(columnOffset)
-          const bytes = column.meta_data.total_compressed_size
-          const end = columnOffset + bytes
-          html += cell(`Column ${columnName}`, columnOffset, bytes, end)
-        }
-        html += '</div>'
-      }
-      const metadataStart = arrayBuffer.byteLength - metadata.metadata_length - 4
-      html += cell('Metadata', metadataStart, metadata.metadata_length, arrayBuffer.byteLength - 4)
-      html += cell('PAR1', arrayBuffer.byteLength - 4, 4, arrayBuffer.byteLength) // magic number
-      layout.innerHTML = html
+      layout.appendChild(fileLayout(metadata, arrayBuffer))
 
       // display metadata
       dropzone.innerHTML = `<strong>${file.name}</strong>`
@@ -98,3 +59,50 @@ fileInput.addEventListener('change', () => {
     processFile(fileInput.files[0])
   }
 })
+
+// Render file layout
+function fileLayout(metadata, arrayBuffer) {
+  let html = '<h2>File layout</h2>'
+  html += cell('PAR1', 0, 4, 4) // magic number
+  for (const rowGroupIndex in metadata.row_groups) {
+    const rowGroup = metadata.row_groups[rowGroupIndex]
+    html += group(`Row group ${rowGroupIndex} (${rowGroup.total_byte_size} bytes)`)
+    for (const column of rowGroup.columns) {
+      const columnName = column.meta_data.path_in_schema.join('.')
+
+      let columnOffset = column.meta_data.dictionary_page_offset
+      if (!columnOffset || column.meta_data.data_page_offset < columnOffset) {
+        columnOffset = column.meta_data.data_page_offset
+      }
+      columnOffset = Number(columnOffset)
+      const bytes = column.meta_data.total_compressed_size
+      const end = columnOffset + bytes
+      html += cell(`Column ${columnName}`, columnOffset, bytes, end)
+    }
+    html += '</div>'
+  }
+  const metadataStart = arrayBuffer.byteLength - metadata.metadata_length - 4
+  html += cell('Metadata', metadataStart, metadata.metadata_length, arrayBuffer.byteLength - 4)
+  html += cell('PAR1', arrayBuffer.byteLength - 4, 4, arrayBuffer.byteLength) // magic number
+  const div = document.createElement('div')
+  div.innerHTML = html
+  div.classList.add('collapsed') // start collapsed
+  div.addEventListener('click', () => {
+    div.classList.toggle('collapsed')
+  })
+  return div
+}
+function group(name) {
+  return `<div>${name}`
+}
+function cell(name, start, bytes, end) {
+  return `
+    <div class="cell">
+      <label>${name}</label>
+      <ul>
+        <li>start ${start}</li>
+        <li>bytes ${bytes}</li>
+        <li>end ${end}</li>
+      </ul>
+    </div>`
+}

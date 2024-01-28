@@ -79,3 +79,22 @@ nav ul,
   padding: 2px 4px;
   text-align: right;
 }
+
+.collapsed > :not(:first-child) {
+  display: none;
+}
+
+#layout h2 {
+  cursor: pointer;
+  user-select: none;
+}
+#layout h2::before {
+  content: "▼";
+  display: inline-block;
+  font-size: 10px;
+  margin: 0 4px;
+  vertical-align: middle;
+}
+#layout .collapsed h2::before {
+  content: "▶";
+}
