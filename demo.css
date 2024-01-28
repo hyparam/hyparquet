@@ -10,8 +10,8 @@ body {
 }
 nav {
   width: 300px;
-  padding: 10px;
   overflow-y: auto;
+  padding: 10px;
 }
 h1 {
   font-size: 20pt;
@@ -22,21 +22,25 @@ h2 {
 p {
   margin: 10px 0;
 }
-label {
-  height: 100%;
-  display: flex;
+#welcome {
   align-items: center;
-  justify-content: center;
+  cursor: pointer;
+  display: flex;
   font-size: 20px;
+  height: 100%;
+  justify-content: center;
 }
 #dropzone {
   border: 2px dashed #08e;
   border-radius: 10px;
+  color: #444;
   flex: 1;
   margin: 10px;
-  padding: 10px;
-  color: #444;
   overflow: auto;
+  padding: 10px;
+}
+input[type="file"] {
+  display: none;
 }
 .over {
   background-color: lightblue;
@@ -60,11 +64,13 @@ label {
   display: flex;
 }
 .cell label {
+  flex: 1;
   font-size: 12px;
   font-weight: normal;
-  flex: 1;
   justify-content: flex-start;
 }
+
+nav ul,
 #layout div ul {
   list-style: none;
 }
