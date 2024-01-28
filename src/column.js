@@ -119,6 +119,7 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
           for (let i = 0; i < dataPage.length; i++) {
             values[i] = dictionary[dataPage[i]]
           }
+          values = convert(values, schemaElement(schema, columnMetadata.path_in_schema))
         } else if (Array.isArray(dataPage)) {
           // convert primitive types to rich types
           values = convert(dataPage, schemaElement(schema, columnMetadata.path_in_schema))
@@ -172,7 +173,7 @@ export function getColumnOffset(columnMetadata) {
  */
 function convert(data, schemaElement) {
   const ctype = schemaElement.converted_type
-  if (!ctype) return data
+  if (ctype === undefined) return data
   if (ctype === ConvertedType.UTF8) {
     const decoder = new TextDecoder()
     return data.map(v => decoder.decode(v))
