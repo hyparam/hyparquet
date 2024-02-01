@@ -79,7 +79,9 @@ async function readRowGroup(options, rowGroup) {
   if (!metadata) throw new Error('parquet metadata not found')
 
   // loop through metadata to find min/max bytes to read
-  let [groupStartByte, groupEndByte] = [file.byteLength, 0]
+  /** @type {number | undefined} */
+  let groupStartByte
+  let groupEndByte = 0
   rowGroup.columns.forEach((columnChunk, columnIndex) => {
     // skip columns that are not requested or lack metadata
     if (columns && !columns.includes(columnIndex)) return
@@ -87,10 +89,10 @@ async function readRowGroup(options, rowGroup) {
 
     const startByte = getColumnOffset(columnChunk.meta_data)
     const endByte = startByte + Number(columnChunk.meta_data.total_compressed_size)
-    groupStartByte = Math.min(groupStartByte, startByte)
-    groupEndByte = Math.max(groupEndByte, endByte)
+    groupStartByte = min(startByte, groupStartByte)
+    groupEndByte = Math.max(endByte, groupEndByte)
   })
-  if (groupStartByte >= groupEndByte) {
+  if (groupStartByte === undefined) {
     throw new Error('parquet missing row group metadata')
   }
   // if row group size is less than 128mb, pre-load in one read
@@ -159,4 +161,16 @@ function addColumn(rows, columnIndex, columnData) {
     if (!rows[i]) rows[i] = []
     rows[i][columnIndex] = columnData[i]
   }
+}
+
+/**
+ * Math.min but ignores undefined.
+ *
+ * @param {number} a
+ * @param {number} [b]
+ * @returns {number}
+ */
+function min(a, b) {
+  // @ts-expect-error if b is undefined, condition will be false
+  return a > b ? b : a
 }

@@ -5,14 +5,24 @@ import { deserializeTCompactProtocol } from './thrift.js'
  * Read parquet metadata from an async buffer.
  *
  * An AsyncBuffer is like an ArrayBuffer, but the slices are loaded
- * asynchronously, possibly over the network.
+ * asynchronously, possibly over the network. The byteLength of asyncBuffer can
+ * be undefined, but this may affect cross-origin requests.
+ *
+ * If you are doing same-origin requests, or server-side requests in node,
+ * you can use suffix-range requests to fetch the last bytes of the file,
+ * without knowing the file size.
+ *
+ * If you are doing cross-origin requests, you must provide the byteLength
+ * or else chrome will deem it as a not-safe-listed header, and will require
+ * a pre-flight. In that case, you should probably do a HEAD request to get
+ * the byteLength before fetching the metadata.
  *
  * To make this efficient, we initially request the last 512kb of the file,
  * which is likely to contain the metadata. If the metadata length exceeds the
  * initial fetch, 512kb, we request the rest of the metadata from the AsyncBuffer.
  *
  * This ensures that we either make one 512kb initial request for the metadata,
- * or two requests for exactly the metadata size.
+ * or a second request for up to the metadata size.
  *
  * @typedef {import("./types.d.ts").AsyncBuffer} AsyncBuffer
  * @typedef {import("./types.d.ts").FileMetaData} FileMetaData
@@ -22,21 +32,33 @@ import { deserializeTCompactProtocol } from './thrift.js'
  */
 export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = 1 << 19 /* 512kb */) {
   // fetch last bytes (footer) of the file
-  const footerOffset = asyncBuffer.byteLength - initialFetchSize
-  const footerBuffer = await asyncBuffer.slice(footerOffset)
+  // if we have the byteLength, use that to compute a positive offset,
+  // otherwise use suffix-range request, which is sadly not allowed cross-origin.
+  const footerBuffer = asyncBuffer.byteLength !== undefined
+    ? await asyncBuffer.slice(asyncBuffer.byteLength - initialFetchSize)
+    : await asyncBuffer.slice(-initialFetchSize)
   // check if metadata size fits inside the initial fetch
   const footerView = new DataView(footerBuffer)
   const metadataLength = footerView.getUint32(footerBuffer.byteLength - 8, true)
   if (metadataLength + 8 > initialFetchSize) {
     // fetch the rest of the metadata
-    const metadataOffset = asyncBuffer.byteLength - metadataLength - 8
-    const metadataBuffer = await asyncBuffer.slice(metadataOffset, footerOffset)
-    // combine the buffers
-    const combinedBuffer = new ArrayBuffer(metadataLength + 8)
-    const combinedView = new Uint8Array(combinedBuffer)
-    combinedView.set(new Uint8Array(metadataBuffer), 0)
-    combinedView.set(new Uint8Array(footerBuffer), footerOffset - metadataOffset)
-    return parquetMetadata(combinedBuffer)
+    // if we have the byteLength, we can avoid re-fetching the initial fetch,
+    if (asyncBuffer.byteLength === undefined) {
+      // without byte length, range requests are not possible.
+      // rfc 9110 allows int-range and suffix-range requests, but not both.
+      // so we have to re-fetch the initial fetch at the end of the file.
+      const metadataBuffer = await asyncBuffer.slice(-metadataLength - 8)
+      return parquetMetadata(metadataBuffer)
+    } else {
+      const metadataOffset = asyncBuffer.byteLength - metadataLength - 8
+      const metadataBuffer = await asyncBuffer.slice(metadataOffset, asyncBuffer.byteLength - initialFetchSize)
+      // combine initial fetch with the new slice
+      const combinedBuffer = new ArrayBuffer(metadataLength + 8)
+      const combinedView = new Uint8Array(combinedBuffer)
+      combinedView.set(new Uint8Array(metadataBuffer), 0)
+      combinedView.set(new Uint8Array(footerBuffer), -initialFetchSize + metadataLength + 8)
+      return parquetMetadata(combinedBuffer)
+    }
   } else {
     // parse metadata from the footer
     return parquetMetadata(footerBuffer)

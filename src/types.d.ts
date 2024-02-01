@@ -2,7 +2,7 @@
  * File-like object that can read slices of a file asynchronously.
  */
 export interface AsyncBuffer {
-  byteLength: number
+  byteLength?: number
   slice(start: number, end?: number): Promise<ArrayBuffer>
 }
 
