@@ -49,13 +49,12 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
     let page
     const uncompressed_page_size = Number(header.uncompressed_page_size)
     const { codec } = columnMetadata
-    if (codec === CompressionCodec.GZIP) {
-      throw new Error('parquet gzip compression not supported')
-    } else if (codec === CompressionCodec.SNAPPY) {
+    if (codec === CompressionCodec.SNAPPY) {
       page = new Uint8Array(uncompressed_page_size)
       snappyUncompress(compressedBytes, page)
-    } else if (codec === CompressionCodec.LZO) {
-      throw new Error('parquet lzo compression not supported')
+    } else {
+      const compressor = Object.entries(CompressionCodec).find(([, value]) => value === codec)
+      throw new Error(`parquet unsupported compression codec: ${codec} ${compressor?.[0]}`)
     }
     if (page?.length !== uncompressed_page_size) {
       throw new Error(`parquet decompressed page length ${page?.length} does not match header ${uncompressed_page_size}`)
