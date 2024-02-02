@@ -7,12 +7,19 @@ import { deserializeTCompactProtocol } from './thrift.js'
  * An AsyncBuffer is like an ArrayBuffer, but the slices are loaded
  * asynchronously, possibly over the network.
  *
+ * You must provide the byteLength of the buffer, typically from a HEAD request.
+ *
+ * In theory, you could use suffix-range requests to fetch the end of the file,
+ * and save a round trip. But in practice, this doesn't work because chrome
+ * deems suffix-range requests as a not-safe-listed header, and will require
+ * a pre-flight. So the byteLength is required.
+ *
  * To make this efficient, we initially request the last 512kb of the file,
  * which is likely to contain the metadata. If the metadata length exceeds the
  * initial fetch, 512kb, we request the rest of the metadata from the AsyncBuffer.
  *
  * This ensures that we either make one 512kb initial request for the metadata,
- * or two requests for exactly the metadata size.
+ * or a second request for up to the metadata size.
  *
  * @typedef {import("./types.d.ts").AsyncBuffer} AsyncBuffer
  * @typedef {import("./types.d.ts").FileMetaData} FileMetaData
@@ -22,7 +29,7 @@ import { deserializeTCompactProtocol } from './thrift.js'
  */
 export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = 1 << 19 /* 512kb */) {
   // fetch last bytes (footer) of the file
-  const footerOffset = asyncBuffer.byteLength - initialFetchSize
+  const footerOffset = Math.max(0, asyncBuffer.byteLength - initialFetchSize)
   const footerBuffer = await asyncBuffer.slice(footerOffset)
   // check if metadata size fits inside the initial fetch
   const footerView = new DataView(footerBuffer)
@@ -31,7 +38,7 @@ export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = 1 << 
     // fetch the rest of the metadata
     const metadataOffset = asyncBuffer.byteLength - metadataLength - 8
     const metadataBuffer = await asyncBuffer.slice(metadataOffset, footerOffset)
-    // combine the buffers
+    // combine initial fetch with the new slice
     const combinedBuffer = new ArrayBuffer(metadataLength + 8)
     const combinedView = new Uint8Array(combinedBuffer)
     combinedView.set(new Uint8Array(metadataBuffer), 0)

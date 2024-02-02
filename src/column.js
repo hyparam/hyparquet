@@ -45,6 +45,7 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
       columnOffset + byteOffset + header.compressed_page_size
     ))
     // decompress bytes
+    /** @type {Uint8Array | undefined} */
     let page
     const uncompressed_page_size = Number(header.uncompressed_page_size)
     const { codec } = columnMetadata
@@ -56,8 +57,8 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
     } else if (codec === CompressionCodec.LZO) {
       throw new Error('parquet lzo compression not supported')
     }
-    if (!page || page.length !== uncompressed_page_size) {
-      throw new Error('parquet decompressed page size does not match header')
+    if (page?.length !== uncompressed_page_size) {
+      throw new Error(`parquet decompressed page length ${page?.length} does not match header ${uncompressed_page_size}`)
     }
 
     // parse page data by type
