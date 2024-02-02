@@ -31,9 +31,21 @@ export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = 1 << 
   // fetch last bytes (footer) of the file
   const footerOffset = Math.max(0, asyncBuffer.byteLength - initialFetchSize)
   const footerBuffer = await asyncBuffer.slice(footerOffset)
-  // check if metadata size fits inside the initial fetch
+
+  // Check for parquet magic number "PAR1"
   const footerView = new DataView(footerBuffer)
+  if (footerView.getUint32(footerBuffer.byteLength - 4, true) !== 0x31524150) {
+    throw new Error('parquet file invalid (footer != PAR1)')
+  }
+
+  // Parquet files store metadata at the end of the file
+  // Metadata length is 4 bytes before the last PAR1
   const metadataLength = footerView.getUint32(footerBuffer.byteLength - 8, true)
+  if (metadataLength > asyncBuffer.byteLength - 8) {
+    throw new Error(`parquet metadata length ${metadataLength} exceeds available buffer ${asyncBuffer.byteLength - 8}`)
+  }
+
+  // check if metadata size fits inside the initial fetch
   if (metadataLength + 8 > initialFetchSize) {
     // fetch the rest of the metadata
     const metadataOffset = asyncBuffer.byteLength - metadataLength - 8
@@ -65,7 +77,7 @@ export function parquetMetadata(arrayBuffer) {
     throw new Error('parquet file is too short')
   }
   if (view.getUint32(view.byteLength - 4, true) !== 0x31524150) {
-    throw new Error('parquet file invalid magic number')
+    throw new Error('parquet file invalid (footer != PAR1)')
   }
 
   // Parquet files store metadata at the end of the file

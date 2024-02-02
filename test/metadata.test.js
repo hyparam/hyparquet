@@ -33,7 +33,14 @@ describe('parquetMetadata', () => {
 
   it('should throw an error for invalid magic number', () => {
     const arrayBuffer = new ArrayBuffer(8)
-    expect(() => parquetMetadata(arrayBuffer)).toThrow('parquet file invalid magic number')
+    expect(() => parquetMetadata(arrayBuffer))
+      .toThrow('parquet file invalid (footer != PAR1)')
+  })
+
+  it('should throw an error for invalid metadata length', () => {
+    const { buffer } = new Uint8Array([255, 255, 255, 255, 80, 65, 82, 49])
+    expect(() => parquetMetadata(buffer))
+      .toThrow('parquet metadata length 4294967295 exceeds available buffer 0')
   })
 })
 
@@ -49,6 +56,18 @@ describe('parquetMetadataAsync', () => {
     // force two fetches
     const result = await parquetMetadataAsync(asyncBuffer, 1609)
     expect(toJson(result)).containSubset(rowgroupsMetadata)
+  })
+
+  it('should throw an error for invalid magic number', () => {
+    const { buffer } = new Uint8Array([255, 255, 255, 255, 255, 255, 255, 255])
+    expect(parquetMetadataAsync(buffer)).rejects
+      .toThrow('parquet file invalid (footer != PAR1)')
+  })
+
+  it('should throw an error for invalid metadata length', () => {
+    const { buffer } = new Uint8Array([255, 255, 255, 255, 80, 65, 82, 49])
+    expect(parquetMetadataAsync(buffer)).rejects
+      .toThrow('parquet metadata length 4294967295 exceeds available buffer 0')
   })
 })
 
