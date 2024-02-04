@@ -19,25 +19,39 @@ dropzone.addEventListener('drop', e => {
   e.preventDefault() // prevent dropped file from being "downloaded"
   dropzone.classList.remove('over')
 
-  const { files } = e.dataTransfer
+  const { files, items } = e.dataTransfer
   if (files.length > 0) {
     const file = files[0]
     processFile(file)
   }
+  if (items.length > 0) {
+    const item = items[0]
+    if (item.kind === 'string') {
+      item.getAsString(str => {
+        if (str.startsWith('https')) {
+          processUrl(str)
+        }
+      })
+    }
+  }
 })
+
+function processUrl(url) {
+  fetch(url)
+    .then(response => response.arrayBuffer())
+    .then(arrayBuffer => renderSidebar(arrayBuffer, url))
+    .catch(e => {
+      dropzone.innerHTML = `<strong>${url}</strong>`
+      dropzone.innerHTML += `<div class="error">Error fetching file\n${e}</div>`
+    })
+}
 
 function processFile(file) {
   const reader = new FileReader()
   reader.onload = e => {
     try {
       const arrayBuffer = e.target.result
-
-      layout.innerHTML = `<strong>${file.name}</strong>`
-      // render file layout
-      layout.appendChild(fileLayout(metadata, arrayBuffer))
-      // display metadata
-      metadata.innerHTML = ''
-      metadata.appendChild(fileMetadata(toJson(parquetMetadata(arrayBuffer))))
+      renderSidebar(arrayBuffer, file.name)
     } catch (e) {
       dropzone.innerHTML = `<strong>${file.name}</strong>`
       dropzone.innerHTML += `<div class="error">Error parsing file\n${e}</div>`
@@ -48,6 +62,15 @@ function processFile(file) {
     dropzone.innerText = `Error reading file\n${e.target.error}`
   }
   reader.readAsArrayBuffer(file)
+}
+
+function renderSidebar(asyncBuffer, name) {
+  layout.innerHTML = `<strong>${name}</strong>`
+  // render file layout
+  layout.appendChild(fileLayout(metadata, asyncBuffer))
+  // display metadata
+  metadata.innerHTML = ''
+  metadata.appendChild(fileMetadata(toJson(parquetMetadata(asyncBuffer))))
 }
 
 dropzone.addEventListener('click', () => {
