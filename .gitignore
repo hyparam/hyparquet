@@ -4,3 +4,4 @@ coverage
 dist
 *.tgz
 example.parquet
+benchmark.parquet

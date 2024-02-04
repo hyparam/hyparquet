@@ -1,4 +1,4 @@
-import { parquetMetadata, parquetMetadataAsync, toJson } from './src/hyparquet.js'
+import { parquetMetadata, parquetMetadataAsync, parquetRead, toJson } from './src/hyparquet.js'
 
 const dropzone = document.getElementById('dropzone')
 const layout = document.getElementById('layout')
@@ -79,6 +79,11 @@ function processFile(file) {
       const arrayBuffer = e.target.result
       const metadata = parquetMetadata(arrayBuffer)
       renderSidebar(arrayBuffer, metadata, file.name)
+      const startTime = performance.now()
+      parquetRead({ file: arrayBuffer, onComplete(data) {
+        const ms = performance.now() - startTime
+        console.log(`parsed ${file.name} in ${ms.toFixed(0)} ms`)
+      } }) // TODO
     } catch (e) {
       console.error('Error parsing file', e)
       dropzone.innerHTML = `<strong>${file.name}</strong>`

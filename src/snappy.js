@@ -1,3 +1,9 @@
+/**
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Zhipeng Jia
+ * https://github.com/zhipeng-jia/snappyjs
+ */
+
 const WORD_MASK = [0, 0xff, 0xffff, 0xffffff, 0xffffffff]
 
 /**
