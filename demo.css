@@ -52,6 +52,14 @@ input[type="file"] {
 }
 #layout {
   margin-top: 20px;
+  word-break: break-all;
+}
+.layout a {
+  color: #445;
+  text-decoration: none;
+}
+.layout a:hover {
+  text-decoration: underline;
 }
 .layout div {
   background-color: rgba(0, 0, 0, 0.05);

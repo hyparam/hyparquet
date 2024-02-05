@@ -28,7 +28,7 @@ dropzone.addEventListener('drop', e => {
     const item = items[0]
     if (item.kind === 'string') {
       item.getAsString(str => {
-        if (str.startsWith('https')) {
+        if (str.startsWith('http')) {
           processUrl(str)
         }
       })
@@ -37,30 +37,33 @@ dropzone.addEventListener('drop', e => {
 })
 
 async function processUrl(url) {
-  // Check if file is accessible and get its size
-  const head = await fetch(url, { method: 'HEAD' })
-  if (!head.ok) {
-    dropzone.innerHTML = `<strong>${url}</strong>`
-    dropzone.innerHTML += `<div class="error">Error fetching file\n${head.status} ${head.statusText}</div>`
-    return
-  }
-  const size = head.headers.get('content-length')
-  if (!size) {
-    dropzone.innerHTML = `<strong>${url}</strong>`
-    dropzone.innerHTML += '<div class="error">Error fetching file\nNo content-length header</div>'
-    return
-  }
-  const asyncBuffer = {
-    byteLength: Number(size),
-    slice: async (start, end) => {
-      const res = await fetch(url, {
-        headers: { Range: `bytes=${start}-${end - 1}` },
-      })
-      return res.arrayBuffer()
-    },
-  }
   try {
+    // Check if file is accessible and get its size
+    const head = await fetch(url, { method: 'HEAD' })
+    if (!head.ok) {
+      dropzone.innerHTML = `<strong>${url}</strong>`
+      dropzone.innerHTML += `<div class="error">Error fetching file\n${head.status} ${head.statusText}</div>`
+      return
+    }
+    const size = head.headers.get('content-length')
+    if (!size) {
+      dropzone.innerHTML = `<strong>${url}</strong>`
+      dropzone.innerHTML += '<div class="error">Error fetching file\nNo content-length header</div>'
+      return
+    }
+    // Construct an AsyncBuffer that fetches file chunks
+    const asyncBuffer = {
+      byteLength: Number(size),
+      slice: async (start, end) => {
+        const rangeEnd = end === undefined ? '' : end - 1
+        const res = await fetch(url, {
+          headers: { Range: `bytes=${start}-${rangeEnd}` },
+        })
+        return res.arrayBuffer()
+      },
+    }
     const metadata = await parquetMetadataAsync(asyncBuffer)
+    url = `<a href="${url}">${url}</a>`
     renderSidebar(asyncBuffer, metadata, url)
   } catch (e) {
     console.error('Error fetching file', e)
@@ -114,7 +117,7 @@ function fileLayout(metadata, byteLength) {
   html += cell('PAR1', 0, 4, 4) // magic number
   for (const rowGroupIndex in metadata.row_groups) {
     const rowGroup = metadata.row_groups[rowGroupIndex]
-    html += group(`Row group ${rowGroupIndex} (${rowGroup.total_byte_size} bytes)`)
+    html += group(`Row group ${rowGroupIndex} (${rowGroup.total_byte_size.toLocaleString()} bytes)`)
     for (const column of rowGroup.columns) {
       const columnName = column.meta_data.path_in_schema.join('.')
 
@@ -148,9 +151,9 @@ function cell(name, start, bytes, end) {
     <div class="cell">
       <label>${name}</label>
       <ul>
-        <li>start ${start}</li>
-        <li>bytes ${bytes}</li>
-        <li>end ${end}</li>
+        <li>start ${start.toLocaleString()}</li>
+        <li>bytes ${bytes.toLocaleString()}</li>
+        <li>end ${end.toLocaleString()}</li>
       </ul>
     </div>`
 }
