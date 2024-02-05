@@ -37,7 +37,9 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
     // parse column header
     const { value: header, byteLength: headerLength } = parquetHeader(arrayBuffer, columnOffset + byteOffset)
     byteOffset += headerLength
-    if (!header || header.compressed_page_size === undefined) throw new Error('parquet header is undefined')
+    if (header.compressed_page_size === undefined) {
+      throw new Error(`parquet compressed page size is undefined in column '${columnMetadata.path_in_schema}'`)
+    }
 
     // read compressed_page_size bytes starting at offset
     const compressedBytes = new Uint8Array(arrayBuffer.slice(

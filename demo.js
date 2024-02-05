@@ -1,4 +1,4 @@
-import { parquetMetadata, toJson } from './src/hyparquet.js'
+import { parquetMetadata, parquetMetadataAsync, toJson } from './src/hyparquet.js'
 
 const dropzone = document.getElementById('dropzone')
 const layout = document.getElementById('layout')
@@ -36,14 +36,37 @@ dropzone.addEventListener('drop', e => {
   }
 })
 
-function processUrl(url) {
-  fetch(url)
-    .then(response => response.arrayBuffer())
-    .then(arrayBuffer => renderSidebar(arrayBuffer, url))
-    .catch(e => {
-      dropzone.innerHTML = `<strong>${url}</strong>`
-      dropzone.innerHTML += `<div class="error">Error fetching file\n${e}</div>`
-    })
+async function processUrl(url) {
+  // Check if file is accessible and get its size
+  const head = await fetch(url, { method: 'HEAD' })
+  if (!head.ok) {
+    dropzone.innerHTML = `<strong>${url}</strong>`
+    dropzone.innerHTML += `<div class="error">Error fetching file\n${head.status} ${head.statusText}</div>`
+    return
+  }
+  const size = head.headers.get('content-length')
+  if (!size) {
+    dropzone.innerHTML = `<strong>${url}</strong>`
+    dropzone.innerHTML += '<div class="error">Error fetching file\nNo content-length header</div>'
+    return
+  }
+  const asyncBuffer = {
+    byteLength: Number(size),
+    slice: async (start, end) => {
+      const res = await fetch(url, {
+        headers: { Range: `bytes=${start}-${end - 1}` },
+      })
+      return res.arrayBuffer()
+    },
+  }
+  try {
+    const metadata = await parquetMetadataAsync(asyncBuffer)
+    renderSidebar(asyncBuffer, metadata, url)
+  } catch (e) {
+    console.error('Error fetching file', e)
+    dropzone.innerHTML = `<strong>${url}</strong>`
+    dropzone.innerHTML += `<div class="error">Error fetching file\n${e}</div>`
+  }
 }
 
 function processFile(file) {
@@ -51,7 +74,8 @@ function processFile(file) {
   reader.onload = e => {
     try {
       const arrayBuffer = e.target.result
-      renderSidebar(arrayBuffer, file.name)
+      const metadata = parquetMetadata(arrayBuffer)
+      renderSidebar(arrayBuffer, metadata, file.name)
     } catch (e) {
       console.error('Error parsing file', e)
       dropzone.innerHTML = `<strong>${file.name}</strong>`
@@ -65,11 +89,10 @@ function processFile(file) {
   reader.readAsArrayBuffer(file)
 }
 
-function renderSidebar(asyncBuffer, name) {
-  const metadata = parquetMetadata(asyncBuffer)
+function renderSidebar(asyncBuffer, metadata, name) {
   layout.innerHTML = `<strong>${name}</strong>`
   // render file layout
-  layout.appendChild(fileLayout(metadata, asyncBuffer))
+  layout.appendChild(fileLayout(metadata, asyncBuffer.byteLength))
   // display metadata
   metadataDiv.innerHTML = ''
   metadataDiv.appendChild(fileMetadata(toJson(metadata)))
@@ -86,7 +109,7 @@ fileInput.addEventListener('change', () => {
 })
 
 // Render file layout
-function fileLayout(metadata, arrayBuffer) {
+function fileLayout(metadata, byteLength) {
   let html = '<h2>File layout</h2>'
   html += cell('PAR1', 0, 4, 4) // magic number
   for (const rowGroupIndex in metadata.row_groups) {
@@ -106,9 +129,9 @@ function fileLayout(metadata, arrayBuffer) {
     }
     html += '</div>'
   }
-  const metadataStart = arrayBuffer.byteLength - metadata.metadata_length - 4
-  html += cell('Metadata', metadataStart, metadata.metadata_length, arrayBuffer.byteLength - 4)
-  html += cell('PAR1', arrayBuffer.byteLength - 4, 4, arrayBuffer.byteLength) // magic number
+  const metadataStart = byteLength - metadata.metadata_length - 4
+  html += cell('Metadata', metadataStart, metadata.metadata_length, byteLength - 4)
+  html += cell('PAR1', byteLength - 4, 4, byteLength) // magic number
   const div = document.createElement('div')
   div.innerHTML = html
   div.classList.add('collapsed') // start collapsed
