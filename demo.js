@@ -2,7 +2,7 @@ import { parquetMetadata, toJson } from './src/hyparquet.js'
 
 const dropzone = document.getElementById('dropzone')
 const layout = document.getElementById('layout')
-const metadata = document.getElementById('metadata')
+const metadataDiv = document.getElementById('metadata')
 const fileInput = document.getElementById('file-input')
 
 dropzone.addEventListener('dragover', e => {
@@ -53,6 +53,7 @@ function processFile(file) {
       const arrayBuffer = e.target.result
       renderSidebar(arrayBuffer, file.name)
     } catch (e) {
+      console.error('Error parsing file', e)
       dropzone.innerHTML = `<strong>${file.name}</strong>`
       dropzone.innerHTML += `<div class="error">Error parsing file\n${e}</div>`
     }
@@ -65,12 +66,13 @@ function processFile(file) {
 }
 
 function renderSidebar(asyncBuffer, name) {
+  const metadata = parquetMetadata(asyncBuffer)
   layout.innerHTML = `<strong>${name}</strong>`
   // render file layout
   layout.appendChild(fileLayout(metadata, asyncBuffer))
   // display metadata
-  metadata.innerHTML = ''
-  metadata.appendChild(fileMetadata(toJson(parquetMetadata(asyncBuffer))))
+  metadataDiv.innerHTML = ''
+  metadataDiv.appendChild(fileMetadata(toJson(metadata)))
 }
 
 dropzone.addEventListener('click', () => {
@@ -98,7 +100,7 @@ function fileLayout(metadata, arrayBuffer) {
         columnOffset = column.meta_data.data_page_offset
       }
       columnOffset = Number(columnOffset)
-      const bytes = column.meta_data.total_compressed_size
+      const bytes = Number(column.meta_data.total_compressed_size)
       const end = columnOffset + bytes
       html += cell(`Column ${columnName}`, columnOffset, bytes, end)
     }
