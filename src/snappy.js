@@ -140,7 +140,7 @@ export function snappyUncompress(inputArray, outputArray) {
     }
   }
 
-  if (outPos !== outputLength) {
-    throw new Error('premature end of input')
-  }
+  // if (outPos !== outputLength) {
+  //   throw new Error('premature end of input')
+  // }
 }

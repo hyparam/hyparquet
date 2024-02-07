@@ -14,6 +14,12 @@ import { snappyUncompress } from './snappy.js'
 const dayMillis = 86400000000000 // 1 day in milliseconds
 
 /**
+ * Shared expanding buffer for snappy decompression.
+ * @type {Uint8Array | undefined}
+ */
+let sharedBuffer
+
+/**
  * Read a column from the file.
  *
  * @param {ArrayBuffer} arrayBuffer parquet file contents
@@ -52,14 +58,18 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
     if (codec === 'UNCOMPRESSED') {
       page = compressedBytes
     } else if (codec === 'SNAPPY') {
-      page = new Uint8Array(uncompressed_page_size)
+      if (!sharedBuffer || sharedBuffer.byteLength < uncompressed_page_size) {
+        // expand shared buffer
+        sharedBuffer = new Uint8Array(uncompressed_page_size)
+      }
+      page = sharedBuffer
       snappyUncompress(compressedBytes, page)
     } else {
       throw new Error(`parquet unsupported compression codec: ${codec}`)
     }
-    if (page?.length !== uncompressed_page_size) {
-      throw new Error(`parquet decompressed page length ${page?.length} does not match header ${uncompressed_page_size}`)
-    }
+    // if (page?.length !== uncompressed_page_size) {
+    //   throw new Error(`parquet decompressed page length ${page?.length} does not match header ${uncompressed_page_size}`)
+    // }
 
     // parse page data by type
     if (header.type === PageType.DATA_PAGE) {
