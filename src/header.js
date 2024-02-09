@@ -13,13 +13,12 @@ import { deserializeTCompactProtocol } from './thrift.js'
  *
  * @typedef {import("./types.d.ts").ArrayBufferLike} ArrayBufferLike
  * @typedef {import("./types.d.ts").PageHeader} PageHeader
- * @param {ArrayBufferLike} arrayBuffer parquet file contents
+ * @param {ArrayBuffer} arrayBuffer parquet file contents
  * @param {number} offset offset to start reading from
  * @returns {Decoded<PageHeader>} metadata object and bytes read
  */
 export function parquetHeader(arrayBuffer, offset) {
-  const headerBuffer = arrayBuffer.slice(offset)
-  const { value: header, byteLength } = deserializeTCompactProtocol(headerBuffer)
+  const { value: header, byteLength } = deserializeTCompactProtocol(arrayBuffer, offset)
 
   // Parse parquet header from thrift data
   const type = header.field_1

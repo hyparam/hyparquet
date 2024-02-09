@@ -90,8 +90,7 @@ export function parquetMetadata(arrayBuffer) {
   }
 
   const metadataOffset = metadataLengthOffset - metadataLength
-  const metadataBuffer = view.buffer.slice(metadataOffset, metadataLengthOffset)
-  const { value: metadata } = deserializeTCompactProtocol(metadataBuffer)
+  const { value: metadata } = deserializeTCompactProtocol(view.buffer, view.byteOffset + metadataOffset)
 
   // Parse parquet metadata from thrift data
   const version = metadata.field_1

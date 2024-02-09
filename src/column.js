@@ -16,16 +16,14 @@ const dayMillis = 86400000000000 // 1 day in milliseconds
 /**
  * Read a column from the file.
  *
- * @param {ArrayBufferLike} arrayBuffer parquet file contents
+ * @param {ArrayBuffer} arrayBuffer parquet file contents
+ * @param {number} columnOffset offset to start reading from
  * @param {RowGroup} rowGroup row group metadata
  * @param {ColumnMetaData} columnMetadata column metadata
  * @param {SchemaElement[]} schema schema for the file
  * @returns {ArrayLike<any>} array of values
  */
-export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
-  // find start of column data
-  const columnOffset = getColumnOffset(columnMetadata)
-
+export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, schema) {
   // parse column data
   let valuesSeen = 0
   let byteOffset = 0 // byteOffset within the column
@@ -42,10 +40,10 @@ export function readColumn(arrayBuffer, rowGroup, columnMetadata, schema) {
     }
 
     // read compressed_page_size bytes starting at offset
-    const compressedBytes = new Uint8Array(arrayBuffer.slice(
+    const compressedBytes = new Uint8Array(arrayBuffer).subarray(
       columnOffset + byteOffset,
       columnOffset + byteOffset + header.compressed_page_size
-    ))
+    )
     // decompress bytes
     /** @type {Uint8Array | undefined} */
     let page

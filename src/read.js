@@ -1,5 +1,4 @@
 
-import { offsetArrayBuffer } from './asyncbuffer.js'
 import { getColumnOffset, readColumn } from './column.js'
 import { parquetMetadataAsync } from './metadata.js'
 
@@ -94,11 +93,11 @@ async function readRowGroup(options, rowGroup) {
     throw new Error('parquet missing row group metadata')
   }
   // if row group size is less than 128mb, pre-load in one read
-  let groupBuffer = undefined
+  let groupBuffer
   if (groupEndByte - groupStartByte <= 1 << 27) {
     // pre-load row group byte data in one big read,
     // otherwise read column data individually
-    groupBuffer = offsetArrayBuffer(await file.slice(groupStartByte, groupEndByte), groupStartByte)
+    groupBuffer = await file.slice(groupStartByte, groupEndByte)
   }
 
   /** @type {any[][]} */
@@ -122,18 +121,18 @@ async function readRowGroup(options, rowGroup) {
 
     // use pre-loaded row group byte data if available, else read column data
     let buffer
-    if (!groupBuffer) {
-      buffer = file.slice(columnStartByte, columnEndByte).then(arrayBuffer => {
-        return offsetArrayBuffer(arrayBuffer, columnStartByte)
-      })
-    } else {
+    let bufferOffset = 0
+    if (groupBuffer) {
       buffer = Promise.resolve(groupBuffer)
+      bufferOffset = columnStartByte - groupStartByte
+    } else {
+      buffer = file.slice(columnStartByte, columnEndByte)
     }
 
     // read column data async
     promises.push(buffer.then(arrayBuffer => {
       // TODO: extract SchemaElement for this column
-      const columnData = readColumn(arrayBuffer, rowGroup, columnMetadata, metadata.schema)
+      const columnData = readColumn(arrayBuffer, bufferOffset, rowGroup, columnMetadata, metadata.schema)
       if (columnData.length !== Number(rowGroup.num_rows)) {
         throw new Error('parquet column length does not match row group length')
       }

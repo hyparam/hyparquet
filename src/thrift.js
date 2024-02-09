@@ -22,16 +22,17 @@ const CompactType = {
  * @typedef {import("./types.d.ts").Decoded<T>} Decoded
  * @template T
  * @param {ArrayBuffer} arrayBuffer
+ * @param {number} byteOffset offset into the buffer
  * @returns {Decoded<Record<string, any>>}
  */
-export function deserializeTCompactProtocol(arrayBuffer) {
-  const view = new DataView(arrayBuffer)
+export function deserializeTCompactProtocol(arrayBuffer, byteOffset) {
+  const view = new DataView(arrayBuffer, byteOffset)
   let byteLength = 0
   let lastFid = 0
   /** @type {Record<string, any>} */
   const value = {}
 
-  while (byteLength < arrayBuffer.byteLength) {
+  while (byteLength < arrayBuffer.byteLength - byteOffset) {
     // Parse each field based on its type and add to the result object
     const [type, fid, newIndex, newLastFid] = readFieldBegin(view, byteLength, lastFid)
     byteLength = newIndex
@@ -77,7 +78,7 @@ function readElement(view, type, index) {
   case CompactType.BINARY: {
     // strings are encoded as utf-8, no \0 delimiter
     const [stringLength, stringIndex] = readVarInt(view, index)
-    const strBytes = new Uint8Array(view.buffer, stringIndex, stringLength)
+    const strBytes = new Uint8Array(view.buffer, view.byteOffset + stringIndex, stringLength)
     return [new TextDecoder().decode(strBytes), stringIndex + stringLength]
   }
   case CompactType.LIST: {
