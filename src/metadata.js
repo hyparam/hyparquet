@@ -1,3 +1,4 @@
+import { CompressionCodec, ConvertedType, FieldRepetitionType } from './constants.js'
 import { schemaTree } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
@@ -97,10 +98,10 @@ export function parquetMetadata(arrayBuffer) {
   const schema = metadata.field_2.map((/** @type {any} */ field) => ({
     type: field.field_1,
     type_length: field.field_2,
-    repetition_type: field.field_3,
+    repetition_type: FieldRepetitionType[field.field_3],
     name: field.field_4,
     num_children: field.field_5,
-    converted_type: field.field_6,
+    converted_type: ConvertedType[field.field_6],
     scale: field.field_7,
     precision: field.field_8,
     field_id: field.field_9,
@@ -114,7 +115,7 @@ export function parquetMetadata(arrayBuffer) {
         type: column.field_3.field_1,
         encodings: column.field_3.field_2,
         path_in_schema: column.field_3.field_3,
-        codec: column.field_3.field_4,
+        codec: CompressionCodec[column.field_3.field_4],
         num_values: column.field_3.field_5,
         total_uncompressed_size: column.field_3.field_6,
         total_compressed_size: column.field_3.field_7,

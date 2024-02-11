@@ -1,5 +1,3 @@
-import { FieldRepetitionType } from './constants.js'
-
 /**
  * @typedef {import('./types.js').SchemaElement} SchemaElement
  * @typedef {import('./types.js').SchemaTree} SchemaTree
@@ -57,7 +55,7 @@ export function schemaElement(schema, name) {
  * @returns {boolean} true if the element is required
  */
 export function isRequired(schema, name) {
-  return schemaElement(schema, name).repetition_type === FieldRepetitionType.REQUIRED
+  return schemaElement(schema, name).repetition_type === 'REQUIRED'
 }
 
 /**
@@ -71,7 +69,7 @@ export function getMaxRepetitionLevel(schema, parts) {
   let maxLevel = 0
   parts.forEach((part, i) => {
     const element = schemaElement(schema, parts.slice(0, i + 1))
-    if (element.repetition_type === FieldRepetitionType.REPEATED) {
+    if (element.repetition_type === 'REPEATED') {
       maxLevel += 1
     }
   })
@@ -89,7 +87,7 @@ export function getMaxDefinitionLevel(schema, parts) {
   let maxLevel = 0
   parts.forEach((part, i) => {
     const element = schemaElement(schema, parts.slice(0, i + 1))
-    if (element.repetition_type !== FieldRepetitionType.REQUIRED) {
+    if (element.repetition_type !== 'REQUIRED') {
       maxLevel += 1
     }
   })

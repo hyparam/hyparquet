@@ -1,4 +1,4 @@
-import { CompressionCodec, ConvertedType, Encoding, PageType } from './constants.js'
+import { Encoding, PageType } from './constants.js'
 import { assembleObjects, readDataPage, readDictionaryPage } from './datapage.js'
 import { parquetHeader } from './header.js'
 import { getMaxDefinitionLevel, isRequired, schemaElement } from './schema.js'
@@ -49,14 +49,13 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
     let page
     const uncompressed_page_size = Number(header.uncompressed_page_size)
     const { codec } = columnMetadata
-    if (codec === CompressionCodec.UNCOMPRESSED) {
+    if (codec === 'UNCOMPRESSED') {
       page = compressedBytes
-    } else if (codec === CompressionCodec.SNAPPY) {
+    } else if (codec === 'SNAPPY') {
       page = new Uint8Array(uncompressed_page_size)
       snappyUncompress(compressedBytes, page)
     } else {
-      const compressor = Object.entries(CompressionCodec).find(([, value]) => value === codec)
-      throw new Error(`parquet unsupported compression codec: ${codec} ${compressor?.[0]}`)
+      throw new Error(`parquet unsupported compression codec: ${codec}`)
     }
     if (page?.length !== uncompressed_page_size) {
       throw new Error(`parquet decompressed page length ${page?.length} does not match header ${uncompressed_page_size}`)
@@ -178,11 +177,11 @@ export function getColumnOffset(columnMetadata) {
 function convert(data, schemaElement) {
   const ctype = schemaElement.converted_type
   if (ctype === undefined) return data
-  if (ctype === ConvertedType.UTF8) {
+  if (ctype === 'UTF8') {
     const decoder = new TextDecoder()
     return data.map(v => decoder.decode(v))
   }
-  if (ctype === ConvertedType.DECIMAL) {
+  if (ctype === 'DECIMAL') {
     const scaleFactor = Math.pow(10, schemaElement.scale || 0)
     if (typeof data[0] === 'number') {
       return data.map(v => v * scaleFactor)
@@ -191,19 +190,19 @@ function convert(data, schemaElement) {
       throw new Error('parquet decimal byte string not supported')
     }
   }
-  if (ctype === ConvertedType.DATE) {
+  if (ctype === 'DATE') {
     return data.map(v => new Date(v * dayMillis))
   }
-  if (ctype === ConvertedType.TIME_MILLIS) {
+  if (ctype === 'TIME_MILLIS') {
     return data.map(v => new Date(v))
   }
-  if (ctype === ConvertedType.JSON) {
+  if (ctype === 'JSON') {
     return data.map(v => JSON.parse(v))
   }
-  if (ctype === ConvertedType.BSON) {
+  if (ctype === 'BSON') {
     throw new Error('parquet bson not supported')
   }
-  if (ctype === ConvertedType.INTERVAL) {
+  if (ctype === 'INTERVAL') {
     throw new Error('parquet interval not supported')
   }
   return data

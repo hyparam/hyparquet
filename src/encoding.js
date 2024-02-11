@@ -1,4 +1,4 @@
-import { ParquetEncoding, ParquetType } from './constants.js'
+import { Encoding, ParquetType } from './constants.js'
 import { readVarInt } from './thrift.js'
 
 /**
@@ -203,7 +203,7 @@ export function widthFromMaxInt(value) {
 export function readData(dataView, encoding, offset, count, bitWidth) {
   const value = []
   let byteLength = 0
-  if (encoding === ParquetEncoding.RLE) {
+  if (encoding === Encoding.RLE) {
     let seen = 0
     while (seen < count) {
       const rle = readRleBitPackedHybrid(dataView, offset + byteLength, bitWidth, 0, count)

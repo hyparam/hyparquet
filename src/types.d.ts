@@ -63,36 +63,34 @@ export enum ParquetType {
   FIXED_LEN_BYTE_ARRAY = 7,
 }
 
-export enum FieldRepetitionType {
-  REQUIRED = 0,
-  OPTIONAL = 1,
-  REPEATED = 2,
-}
+export type FieldRepetitionType =
+  'REQUIRED' |
+  'OPTIONAL' |
+  'REPEATED'
 
-export enum ConvertedType {
-  UTF8 = 0,
-  MAP = 1,
-  MAP_KEY_VALUE = 2,
-  LIST = 3,
-  ENUM = 4,
-  DECIMAL = 5,
-  DATE = 6,
-  TIME_MILLIS = 7,
-  TIME_MICROS = 8,
-  TIMESTAMP_MILLIS = 9,
-  TIMESTAMP_MICROS = 10,
-  UINT_8 = 11,
-  UINT_16 = 12,
-  UINT_32 = 13,
-  UINT_64 = 14,
-  INT_8 = 15,
-  INT_16 = 16,
-  INT_32 = 17,
-  INT_64 = 18,
-  JSON = 19,
-  BSON = 20,
-  INTERVAL = 21,
-}
+export type ConvertedType =
+  'UTF8' |
+  'MAP' |
+  'MAP_KEY_VALUE' |
+  'LIST' |
+  'ENUM' |
+  'DECIMAL' |
+  'DATE' |
+  'TIME_MILLIS' |
+  'TIME_MICROS' |
+  'TIMESTAMP_MILLIS' |
+  'TIMESTAMP_MICROS' |
+  'UINT_8' |
+  'UINT_16' |
+  'UINT_32' |
+  'UINT_64' |
+  'INT_8' |
+  'INT_16' |
+  'INT_32' |
+  'INT_64' |
+  'JSON' |
+  'BSON' |
+  'INTERVAL'
 
 export interface RowGroup {
   columns: ColumnChunk[]
@@ -135,16 +133,15 @@ export enum Encoding {
   BYTE_STREAM_SPLIT = 9,
 }
 
-export enum CompressionCodec {
-  UNCOMPRESSED = 0,
-  SNAPPY = 1,
-  GZIP = 2,
-  LZO = 3,
-  BROTLI = 4,
-  LZ4 = 5,
-  ZSTD = 6,
-  LZ4_RAW = 7,
-}
+export type CompressionCodec =
+  'UNCOMPRESSED' |
+  'SNAPPY' |
+  'GZIP' |
+  'LZO' |
+  'BROTLI' |
+  'LZ4' |
+  'ZSTD' |
+  'LZ4_RAW'
 
 interface KeyValue {
   key: string

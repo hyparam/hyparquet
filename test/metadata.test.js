@@ -77,8 +77,17 @@ const addrtypeMetadata = {
   created_by: 'DuckDB',
   metadata_length: 149,
   schema: [
-    { repetition_type: 0, name: 'duckdb_schema', num_children: 1 },
-    { type: 6, repetition_type: 1, name: 'ADDRTYPE', converted_type: 0 },
+    {
+      repetition_type: 'REQUIRED',
+      name: 'duckdb_schema',
+      num_children: 1,
+    },
+    {
+      type: 6,
+      repetition_type: 'OPTIONAL',
+      name: 'ADDRTYPE',
+      converted_type: 'UTF8',
+    },
   ],
   num_rows: 10,
   row_groups: [
@@ -90,7 +99,7 @@ const addrtypeMetadata = {
             type: 6,
             encodings: [0, 8],
             path_in_schema: ['ADDRTYPE'],
-            codec: 1,
+            codec: 'SNAPPY',
             num_values: 10,
             total_uncompressed_size: 78,
             total_compressed_size: 82,
@@ -118,13 +127,13 @@ const rowgroupsMetadata = {
   metadata_length: 1602,
   schema: [
     {
-      repetition_type: 0,
+      repetition_type: 'REQUIRED',
       name: 'schema',
       num_children: 1,
     },
     {
       type: 2,
-      repetition_type: 1,
+      repetition_type: 'OPTIONAL',
       name: 'numbers',
     },
   ],
@@ -136,7 +145,7 @@ const rowgroupsMetadata = {
           file_offset: 150,
           file_path: undefined,
           meta_data: {
-            codec: 1,
+            codec: 'SNAPPY',
             data_page_offset: 71,
             dictionary_page_offset: 4,
             encoding_stats: [
@@ -165,7 +174,7 @@ const rowgroupsMetadata = {
         {
           file_offset: 368,
           meta_data: {
-            codec: 1,
+            codec: 'SNAPPY',
             data_page_offset: 294,
             dictionary_page_offset: 248,
             encoding_stats: [

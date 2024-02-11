@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import { FieldRepetitionType } from '../src/constants.js'
 import {
   getMaxDefinitionLevel,
   getMaxRepetitionLevel,
@@ -9,10 +8,14 @@ import {
 } from '../src/schema.js'
 
 describe('Parquet schema utils', () => {
+  /**
+   * @typedef {import('../src/types.js').SchemaElement} SchemaElement
+   * @type {SchemaElement[]}
+   */
   const schema = [
-    { name: 'root', num_children: 2, repetition_type: FieldRepetitionType.REQUIRED },
-    { name: 'child1', repetition_type: FieldRepetitionType.OPTIONAL },
-    { name: 'child2', repetition_type: FieldRepetitionType.REPEATED },
+    { name: 'root', num_children: 2, repetition_type: 'REQUIRED' },
+    { name: 'child1', repetition_type: 'OPTIONAL' },
+    { name: 'child2', repetition_type: 'REPEATED' },
   ]
 
   describe('schemaElement', () => {

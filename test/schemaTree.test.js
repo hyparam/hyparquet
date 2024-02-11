@@ -25,9 +25,9 @@ const addrtypeSchema = {
       children: [],
       count: 1,
       element: {
-        converted_type: 0,
+        converted_type: 'UTF8',
         name: 'ADDRTYPE',
-        repetition_type: 1,
+        repetition_type: 'OPTIONAL',
         type: 6,
       },
     },
@@ -36,7 +36,7 @@ const addrtypeSchema = {
   element: {
     name: 'duckdb_schema',
     num_children: 1,
-    repetition_type: 0,
+    repetition_type: 'REQUIRED',
   },
 }
 
@@ -48,7 +48,7 @@ const rowgroupsSchema = {
       count: 1,
       element: {
         name: 'numbers',
-        repetition_type: 1,
+        repetition_type: 'OPTIONAL',
         type: 2,
       },
     },
@@ -57,6 +57,6 @@ const rowgroupsSchema = {
   element: {
     name: 'schema',
     num_children: 1,
-    repetition_type: 0,
+    repetition_type: 'REQUIRED',
   },
 }
