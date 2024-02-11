@@ -206,11 +206,11 @@ export function readData(dataView, encoding, offset, count, bitWidth) {
   if (encoding === ParquetEncoding.RLE) {
     let seen = 0
     while (seen < count) {
-      const { value: rleValues, byteLength: rleByteLength } = readRleBitPackedHybrid(dataView, offset + byteLength, bitWidth, 0, 1)
-      if (!rleValues.length) break // EOF
-      value.push(...rleValues)
-      seen += rleValues.length
-      byteLength += rleByteLength
+      const rle = readRleBitPackedHybrid(dataView, offset + byteLength, bitWidth, 0, count)
+      if (!rle.value.length) break // EOF
+      value.push(...rle.value)
+      seen += rle.value.length
+      byteLength += rle.byteLength
     }
   } else {
     throw new Error(`parquet encoding not supported ${encoding}`)
@@ -244,14 +244,16 @@ export function readRleBitPackedHybrid(dataView, offset, width, length, numValue
     byteLength = newOffset - offset
     if ((header & 1) === 0) {
       // rle
-      const { value: rleValues, byteLength: rleByteLength } = readRle(dataView, offset + byteLength, header, width)
-      value.push(...rleValues)
-      byteLength += rleByteLength
+      const rle = readRle(dataView, offset + byteLength, header, width)
+      value.push(...rle.value)
+      byteLength += rle.byteLength
     } else {
       // bit-packed
-      const { value: bitPackedValues, byteLength: bitPackedByteLength } = readBitPacked(dataView, offset + byteLength, header, width, numValues-value.length)
-      value.push(...bitPackedValues)
-      byteLength += bitPackedByteLength
+      const bitPacked = readBitPacked(
+        dataView, offset + byteLength, header, width, numValues - value.length
+      )
+      value.push(...bitPacked.value)
+      byteLength += bitPacked.byteLength
     }
   }
 

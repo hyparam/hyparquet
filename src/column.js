@@ -49,7 +49,9 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
     let page
     const uncompressed_page_size = Number(header.uncompressed_page_size)
     const { codec } = columnMetadata
-    if (codec === CompressionCodec.SNAPPY) {
+    if (codec === CompressionCodec.UNCOMPRESSED) {
+      page = compressedBytes
+    } else if (codec === CompressionCodec.SNAPPY) {
       page = new Uint8Array(uncompressed_page_size)
       snappyUncompress(compressedBytes, page)
     } else {
@@ -138,6 +140,8 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       if (!diph) throw new Error('parquet dictionary page header is undefined')
 
       dictionary = readDictionaryPage(page, diph, schema, columnMetadata)
+    } else if (header.type === PageType.DATA_PAGE_V2) {
+      throw new Error('parquet data page v2 not supported')
     } else {
       throw new Error(`parquet unsupported page type: ${header.type}`)
     }

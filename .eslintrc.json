@@ -47,13 +47,14 @@
     "prefer-const": "error",
     "prefer-destructuring": ["warn", {"object": true, "array": false}],
     "prefer-promise-reject-errors": "error",
-    "require-await": "error",
     "quotes": ["error", "single"],
+    "require-await": "error",
     "semi": ["error", "never"],
     "sort-imports": ["error", {
       "ignoreDeclarationSort": true,
       "ignoreMemberSort": false,
       "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
-    }]
+    }],
+    "space-infix-ops": "error"
   }
 }

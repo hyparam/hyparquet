@@ -32,7 +32,9 @@ export function readDataPage(bytes, daph, schema, columnMetadata) {
   let values = []
 
   // repetition levels
-  const { value: repetitionLevels, byteLength } = readRepetitionLevels(dataView, offset, daph, schema, columnMetadata)
+  const { value: repetitionLevels, byteLength } = readRepetitionLevels(
+    dataView, offset, daph, schema, columnMetadata
+  )
   offset += byteLength
 
   // definition levels
@@ -52,9 +54,14 @@ export function readDataPage(bytes, daph, schema, columnMetadata) {
   // read values based on encoding
   const nval = daph.num_values - numNulls
   if (daph.encoding === Encoding.PLAIN) {
-    const plainObj = readPlain(dataView, columnMetadata.type, daph.num_values - numNulls, offset)
+    const plainObj = readPlain(dataView, columnMetadata.type, nval, offset)
     values = plainObj.value
     offset += plainObj.byteLength
+  } else if (daph.encoding === Encoding.PLAIN_DICTIONARY) {
+    const plainObj = readPlain(dataView, columnMetadata.type, nval, offset)
+    values = plainObj.value
+    offset += plainObj.byteLength
+    // TODO: dictionary decoding
   } else if (daph.encoding === Encoding.RLE_DICTIONARY) {
     // bit width is stored as single byte
     let bitWidth
@@ -66,7 +73,9 @@ export function readDataPage(bytes, daph, schema, columnMetadata) {
       offset += 1
     }
     if (bitWidth) {
-      const { value, byteLength } = readRleBitPackedHybrid(dataView, offset, bitWidth, dataView.byteLength - offset, daph.num_values - numNulls)
+      const { value, byteLength } = readRleBitPackedHybrid(
+        dataView, offset, bitWidth, dataView.byteLength - offset, nval
+      )
       offset += byteLength
       values = value
     } else {
@@ -124,7 +133,6 @@ function readRepetitionLevels(dataView, offset, daph, schema, columnMetadata) {
 
 /**
  * Read the definition levels from this page, if any.
- * Other implementations read the definition levels and num nulls, but we don't need em.
  *
  * @param {DataView} dataView data view for the page
  * @param {number} offset offset to start reading from
