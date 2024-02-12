@@ -57,12 +57,11 @@ export function readDataPage(bytes, daph, schema, columnMetadata) {
     const plainObj = readPlain(dataView, columnMetadata.type, nval, offset)
     values = plainObj.value
     offset += plainObj.byteLength
-  } else if (daph.encoding === Encoding.PLAIN_DICTIONARY) {
-    const plainObj = readPlain(dataView, columnMetadata.type, nval, offset)
-    values = plainObj.value
-    offset += plainObj.byteLength
-    // TODO: dictionary decoding
-  } else if (daph.encoding === Encoding.RLE_DICTIONARY) {
+  } else if (
+    daph.encoding === Encoding.PLAIN_DICTIONARY ||
+    daph.encoding === Encoding.RLE_DICTIONARY ||
+    daph.encoding === Encoding.RLE
+  ) {
     // bit width is stored as single byte
     let bitWidth
     // TODO: RLE encoding uses bitWidth = schemaElement.type_length
@@ -178,7 +177,9 @@ function readDefinitionLevels(dataView, offset, daph, schema, columnMetadata) {
  * @param {number} prevIndex 1 + index where the last row in the previous page was inserted (0 if first page)
  * @returns {any[]} array of values
  */
-export function assembleObjects(definitionLevels, repetitionLevels, value, isNull, nullValue, maxDefinitionLevel, prevIndex) {
+export function assembleObjects(
+  definitionLevels, repetitionLevels, value, isNull, nullValue, maxDefinitionLevel, prevIndex
+) {
   let vali = 0
   let started = false
   let haveNull = false

@@ -132,7 +132,9 @@ async function readRowGroup(options, rowGroup) {
     // read column data async
     promises.push(buffer.then(arrayBuffer => {
       // TODO: extract SchemaElement for this column
-      const columnData = readColumn(arrayBuffer, bufferOffset, rowGroup, columnMetadata, metadata.schema)
+      const columnData = readColumn(
+        arrayBuffer, bufferOffset, rowGroup, columnMetadata, metadata.schema
+      )
       if (columnData.length !== Number(rowGroup.num_rows)) {
         throw new Error('parquet column length does not match row group length')
       }
