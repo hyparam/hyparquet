@@ -186,8 +186,7 @@ function convert(data, schemaElement) {
     if (typeof data[0] === 'number') {
       return data.map(v => v * scaleFactor)
     } else {
-      // TODO: parse byte string
-      throw new Error('parquet decimal byte string not supported')
+      return data.map(v => parseDecimal(v) * scaleFactor)
     }
   }
   if (ctype === 'DATE') {
@@ -206,4 +205,19 @@ function convert(data, schemaElement) {
     throw new Error('parquet interval not supported')
   }
   return data
+}
+
+/**
+ * Parse decimal from byte array.
+ *
+ * @param {Uint8Array} bytes
+ * @returns {number}
+ */
+function parseDecimal(bytes) {
+  // TODO: handle signed
+  let value = 0
+  for (const byte of bytes) {
+    value = value << 8 | byte
+  }
+  return value
 }
