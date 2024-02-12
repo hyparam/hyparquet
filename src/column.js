@@ -184,7 +184,9 @@ function convert(data, schemaElement) {
   if (ctype === 'DECIMAL') {
     const scaleFactor = Math.pow(10, schemaElement.scale || 0)
     if (typeof data[0] === 'number') {
-      return data.map(v => v * scaleFactor)
+      return scaleFactor === 1 ? data : data.map(v => v * scaleFactor)
+    } else if (typeof data[0] === 'bigint') {
+      return scaleFactor === 1 ? data : data.map(v => Number(v) * scaleFactor)
     } else {
       return data.map(v => parseDecimal(v) * scaleFactor)
     }
