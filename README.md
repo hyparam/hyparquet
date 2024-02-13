@@ -69,6 +69,29 @@ const metadata = parquetMetadata(arrayBuffer)
 
 To parse parquet files from a user drag-and-drop action, see example in [index.html](index.html).
 
+## Supported Parquet Files
+
+The parquet format supports a number of different compression and encoding types.
+Hyparquet does not support 100% of all parquet files, and probably never will, since supporting all possible compression types will increase the size of the library, and are rarely used in practice.
+
+Compression:
+ - [X] Uncompressed
+ - [X] Snappy
+ - [ ] GZip
+ - [ ] LZO
+ - [ ] Brotli
+ - [ ] LZ4
+ - [ ] ZSTD
+ - [ ] LZ4_RAW
+
+Page Type:
+ - [X] Data Page
+ - [ ] Index Page
+ - [X] Dictionary Page
+ - [ ] Data Page V2
+
+Contributions are welcome!
+
 ## References
 
  - https://github.com/apache/parquet-format
