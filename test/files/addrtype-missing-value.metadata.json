@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "created_by": "DuckDB",
+  "metadata_length": 149,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "duckdb_schema",
+      "num_children": 1
+    },
+    {
+      "type": 6,
+      "repetition_type": "OPTIONAL",
+      "name": "ADDRTYPE",
+      "converted_type": "UTF8"
+    }
+  ],
+  "num_rows": 10,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": 6,
+            "encodings": [0, 8],
+            "path_in_schema": ["ADDRTYPE"],
+            "codec": "SNAPPY",
+            "num_values": 10,
+            "total_uncompressed_size": 78,
+            "total_compressed_size": 82,
+            "data_page_offset": 31,
+            "dictionary_page_offset": 4,
+            "statistics": {
+              "max": "Intersection",
+              "min": "Block",
+              "null_count": 1,
+              "distinct_count": 2
+            }
+          }
+        }
+      ],
+      "total_byte_size": 33024,
+      "num_rows": 10
+    }
+  ]
+}

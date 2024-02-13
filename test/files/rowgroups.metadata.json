@@ -1,0 +1,86 @@
+{
+  "version": 2,
+  "created_by": "parquet-cpp-arrow version 14.0.2",
+  "metadata_length": 1602,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "schema",
+      "num_children": 1
+    },
+    {
+      "type": 2,
+      "repetition_type": "OPTIONAL",
+      "name": "numbers"
+    }
+  ],
+  "num_rows": 15,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 150,
+          "meta_data": {
+            "codec": "SNAPPY",
+            "data_page_offset": 71,
+            "dictionary_page_offset": 4,
+            "encoding_stats": [
+              { "count": 1, "encoding": 0, "page_type": 2 },
+              { "count": 1, "encoding": 8, "page_type": 0 }
+            ],
+            "encodings": [0, 3, 8],
+            "num_values": 10,
+            "path_in_schema": ["numbers"],
+            "statistics": {
+              "max": "\n\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+              "min": "\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+              "null_count": 0
+            },
+            "total_compressed_size": 146,
+            "total_uncompressed_size": 172,
+            "type": 2
+          }
+        }
+      ],
+      "total_byte_size": 172,
+      "num_rows": 10
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 368,
+          "meta_data": {
+            "codec": "SNAPPY",
+            "data_page_offset": 294,
+            "dictionary_page_offset": 248,
+            "encoding_stats": [
+              { "count": 1, "encoding": 0, "page_type": 2 },
+              { "count": 1, "encoding": 8, "page_type": 0 }
+            ],
+            "encodings": [0, 3, 8],
+            "num_values": 5,
+            "path_in_schema": ["numbers"],
+            "statistics": {
+              "max": "\u000f\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+              "min": "\u000b\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+              "null_count": 0
+            },
+            "total_compressed_size": 120,
+            "total_uncompressed_size": 126,
+            "type": 2
+          }
+        }
+      ],
+      "total_byte_size": 126,
+      "num_rows": 5
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "pandas"
+    },
+    {
+      "key": "ARROW:schema"
+    }
+  ]
+}

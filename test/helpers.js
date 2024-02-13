@@ -24,3 +24,14 @@ export function fileToAsyncBuffer(filePath) {
     slice: async (start, end) => (await readFileToArrayBuffer(filePath)).slice(start, end),
   }
 }
+
+/**
+ * Read .parquet file into JSON
+ *
+ * @param {string} filePath
+ * @returns {any}
+ */
+export function fileToJson(filePath) {
+  const buffer = fs.readFileSync(filePath)
+  return JSON.parse(buffer.toString())
+}
