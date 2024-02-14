@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "created_by": "HVR 5.3.0/9 (linux_glibc2.5-x64-64bit)",
+  "metadata_length": 119,
+  "num_rows": 24,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 4,
+            "encodings": [],
+            "num_values": 24,
+            "path_in_schema": [ "value" ],
+            "total_compressed_size": 168,
+            "total_uncompressed_size": 168,
+            "type": 6
+          }
+        }
+      ],
+      "num_rows": 24,
+      "total_byte_size": 168
+    }
+  ],
+  "schema": [
+    {
+      "name": "schema",
+      "num_children": 1,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "converted_type": "DECIMAL",
+      "field_id": 6,
+      "name": "value",
+      "precision": 4,
+      "repetition_type": "OPTIONAL",
+      "scale": 2,
+      "type": 6
+    }
+  ]
+}

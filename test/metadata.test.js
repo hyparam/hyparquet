@@ -13,7 +13,7 @@ describe('parquetMetadata', () => {
       const result = parquetMetadata(arrayBuffer)
       const base = file.replace('.parquet', '')
       const expected = fileToJson(`test/files/${base}.metadata.json`)
-      expect(toJson(result)).containSubset(expected)
+      expect(toJson(result)).toEqual(expected)
     }
   })
 
@@ -54,7 +54,7 @@ describe('parquetMetadataAsync', () => {
       const result = await parquetMetadataAsync(asyncBuffer)
       const base = file.replace('.parquet', '')
       const expected = fileToJson(`test/files/${base}.metadata.json`)
-      expect(toJson(result)).containSubset(expected)
+      expect(toJson(result)).toEqual(expected)
     }
   })
 

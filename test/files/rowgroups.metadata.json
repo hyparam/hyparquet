@@ -77,10 +77,12 @@
   ],
   "key_value_metadata": [
     {
-      "key": "pandas"
+      "key": "pandas",
+      "value": "{\"index_columns\": [{\"kind\": \"range\", \"name\": null, \"start\": 0, \"stop\": 15, \"step\": 1}], \"column_indexes\": [{\"name\": null, \"field_name\": null, \"pandas_type\": \"unicode\", \"numpy_type\": \"object\", \"metadata\": {\"encoding\": \"UTF-8\"}}], \"columns\": [{\"name\": \"numbers\", \"field_name\": \"numbers\", \"pandas_type\": \"int64\", \"numpy_type\": \"int64\", \"metadata\": null}], \"creator\": {\"library\": \"pyarrow\", \"version\": \"14.0.2\"}, \"pandas_version\": \"2.1.4\"}"
     },
     {
-      "key": "ARROW:schema"
+      "key": "ARROW:schema",
+      "value": "/////2gCAAAQAAAAAAAKAA4ABgAFAAgACgAAAAABBAAQAAAAAAAKAAwAAAAEAAgACgAAAOgBAAAEAAAAAQAAAAwAAAAIAAwABAAIAAgAAAAIAAAAEAAAAAYAAABwYW5kYXMAALMBAAB7ImluZGV4X2NvbHVtbnMiOiBbeyJraW5kIjogInJhbmdlIiwgIm5hbWUiOiBudWxsLCAic3RhcnQiOiAwLCAic3RvcCI6IDE1LCAic3RlcCI6IDF9XSwgImNvbHVtbl9pbmRleGVzIjogW3sibmFtZSI6IG51bGwsICJmaWVsZF9uYW1lIjogbnVsbCwgInBhbmRhc190eXBlIjogInVuaWNvZGUiLCAibnVtcHlfdHlwZSI6ICJvYmplY3QiLCAibWV0YWRhdGEiOiB7ImVuY29kaW5nIjogIlVURi04In19XSwgImNvbHVtbnMiOiBbeyJuYW1lIjogIm51bWJlcnMiLCAiZmllbGRfbmFtZSI6ICJudW1iZXJzIiwgInBhbmRhc190eXBlIjogImludDY0IiwgIm51bXB5X3R5cGUiOiAiaW50NjQiLCAibWV0YWRhdGEiOiBudWxsfV0sICJjcmVhdG9yIjogeyJsaWJyYXJ5IjogInB5YXJyb3ciLCAidmVyc2lvbiI6ICIxNC4wLjIifSwgInBhbmRhc192ZXJzaW9uIjogIjIuMS40In0AAQAAABQAAAAQABQACAAGAAcADAAAABAAEAAAAAAAAQIQAAAAIAAAAAQAAAAAAAAABwAAAG51bWJlcnMACAAMAAgABwAIAAAAAAAAAUAAAAAAAAAA"
     }
   ]
 }

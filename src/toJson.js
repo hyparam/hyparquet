@@ -14,6 +14,7 @@ export function toJson(obj) {
     /** @type {Record<string, unknown>} */
     const newObj = {}
     for (const key of Object.keys(obj)) {
+      if (obj[key] === undefined) continue
       newObj[key] = toJson(obj[key])
     }
     return newObj

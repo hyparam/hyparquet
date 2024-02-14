@@ -95,7 +95,8 @@ Contributions are welcome!
 ## References
 
  - https://github.com/apache/parquet-format
- - https://github.com/dask/fastparquet
+ - https://github.com/apache/parquet-testing
  - https://github.com/apache/thrift
+ - https://github.com/dask/fastparquet
  - https://github.com/google/snappy
  - https://github.com/zhipeng-jia/snappyjs
