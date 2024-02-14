@@ -7,18 +7,16 @@
  * @returns {unknown} converted object
  */
 export function toJson(obj) {
-  if (typeof obj === 'bigint') {
-    return Number(obj)
-  } else if (Array.isArray(obj)) {
-    return obj.map(toJson)
-  } else if (obj instanceof Object) {
+  if (obj === undefined) return null
+  if (typeof obj === 'bigint') return Number(obj)
+  if (Array.isArray(obj)) return obj.map(toJson)
+  if (obj instanceof Object) {
     /** @type {Record<string, unknown>} */
     const newObj = {}
     for (const key of Object.keys(obj)) {
       newObj[key] = toJson(obj[key])
     }
     return newObj
-  } else {
-    return obj
   }
+  return obj
 }
