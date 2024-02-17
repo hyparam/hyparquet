@@ -153,9 +153,10 @@ function readPlainByteArrayFixed(dataView, offset, fixedLength) {
  * @param {number} type - parquet type of the data
  * @param {number} count - number of values to read
  * @param {number} offset - offset to start reading from the DataView
+ * @param {boolean} utf8 - whether to decode byte arrays as UTF-8
  * @returns {Decoded<ArrayLike<any>>} array of values
  */
-export function readPlain(dataView, type, count, offset = 0) {
+export function readPlain(dataView, type, count, offset, utf8) {
   if (count === 0) return { value: [], byteLength: 0 }
   if (type === ParquetType.BOOLEAN) {
     return readPlainBoolean(dataView, offset, count)
@@ -170,7 +171,15 @@ export function readPlain(dataView, type, count, offset = 0) {
   } else if (type === ParquetType.DOUBLE) {
     return readPlainDouble(dataView, offset, count)
   } else if (type === ParquetType.BYTE_ARRAY) {
-    return readPlainByteArray(dataView, offset, count)
+    const byteArray = readPlainByteArray(dataView, offset, count)
+    if (utf8) {
+      const decoder = new TextDecoder()
+      return {
+        value: byteArray.value.map(bytes => decoder.decode(bytes)),
+        byteLength: byteArray.byteLength,
+      }
+    }
+    return byteArray
   } else if (type === ParquetType.FIXED_LEN_BYTE_ARRAY) {
     return readPlainByteArrayFixed(dataView, offset, count)
   } else {

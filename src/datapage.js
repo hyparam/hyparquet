@@ -1,6 +1,12 @@
 import { Encoding, ParquetType } from './constants.js'
 import { readData, readPlain, readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
-import { getMaxDefinitionLevel, getMaxRepetitionLevel, isRequired, skipDefinitionBytes } from './schema.js'
+import {
+  getMaxDefinitionLevel,
+  getMaxRepetitionLevel,
+  isRequired,
+  schemaElement,
+  skipDefinitionBytes,
+} from './schema.js'
 
 const skipNulls = false // TODO
 
@@ -54,7 +60,9 @@ export function readDataPage(bytes, daph, schema, columnMetadata) {
   // read values based on encoding
   const nval = daph.num_values - numNulls
   if (daph.encoding === Encoding.PLAIN) {
-    const plainObj = readPlain(dataView, columnMetadata.type, nval, offset)
+    const se = schemaElement(schema, columnMetadata.path_in_schema)
+    const utf8 = se.converted_type === 'UTF8'
+    const plainObj = readPlain(dataView, columnMetadata.type, nval, offset, utf8)
     values = plainObj.value
     offset += plainObj.byteLength
   } else if (
@@ -100,7 +108,7 @@ export function readDataPage(bytes, daph, schema, columnMetadata) {
 export function readDictionaryPage(bytes, diph, schema, columnMetadata) {
   const dataView = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
   // read values based on encoding
-  const { value } = readPlain(dataView, columnMetadata.type, diph.num_values)
+  const { value } = readPlain(dataView, columnMetadata.type, diph.num_values, 0, false)
   return value
 }
 
