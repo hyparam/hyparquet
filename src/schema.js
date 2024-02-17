@@ -39,9 +39,7 @@ export function schemaElement(schema, name) {
   // traverse the tree to find the element
   for (const part of name) {
     const child = tree.children.find(child => child.element.name === part)
-    if (!child) {
-      throw new Error(`parquet schema element not found: ${name}`)
-    }
+    if (!child) throw new Error(`parquet schema element not found: ${name}`)
     tree = child
   }
   return tree.element
@@ -49,13 +47,24 @@ export function schemaElement(schema, name) {
 
 /**
  * Check if the schema element with the given name is required.
+ * An element is required if all of its ancestors are required.
  *
  * @param {SchemaElement[]} schema
  * @param {string[]} name path to the element
  * @returns {boolean} true if the element is required
  */
 export function isRequired(schema, name) {
-  return schemaElement(schema, name).repetition_type === 'REQUIRED'
+  /** @type {SchemaTree | undefined} */
+  let tree = schemaTree(schema, 0)
+  for (let i = 0; i < name.length; i++) {
+    // Find schema child with the given name
+    tree = tree.children.find(child => child.element.name === name[i])
+    if (!tree) throw new Error(`parquet schema element not found: ${name}`)
+    if (tree.element.repetition_type !== 'REQUIRED') {
+      return false
+    }
+  }
+  return true
 }
 
 /**

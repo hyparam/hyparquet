@@ -10,10 +10,10 @@ describe('parquetMetadata', () => {
     for (const file of files) {
       if (!file.endsWith('.parquet')) continue
       const arrayBuffer = await readFileToArrayBuffer(`test/files/${file}`)
-      const result = parquetMetadata(arrayBuffer)
+      const result = toJson(parquetMetadata(arrayBuffer))
       const base = file.replace('.parquet', '')
       const expected = fileToJson(`test/files/${base}.metadata.json`)
-      expect(toJson(result)).toEqual(expected)
+      expect(result, JSON.stringify(result, null, 2)).toEqual(expected)
     }
   })
 

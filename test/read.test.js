@@ -4,8 +4,8 @@ import { parquetRead } from '../src/hyparquet.js'
 import { toJson } from '../src/toJson.js'
 import { fileToAsyncBuffer, fileToJson } from './helpers.js'
 
-describe('parquetMetadataAsync', () => {
-  it('should parse metadata from all test files', async () => {
+describe('parquetRead', () => {
+  it('should parse data from all test files', async () => {
     const files = fs.readdirSync('test/files')
     for (const file of files) {
       if (!file.endsWith('.parquet')) continue

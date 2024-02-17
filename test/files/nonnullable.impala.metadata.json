@@ -1,0 +1,519 @@
+{
+  "version": 1,
+  "created_by": "parquet-mr version 1.8.0 (build 0fda28af84b9746396014ad6a415b90592a98b3b)",
+  "key_value_metadata": [
+    {
+      "key": "parquet.avro.schema",
+      "value": "{\"type\":\"record\",\"name\":\"ComplexTypesTbl\",\"namespace\":\"org.apache.impala\",\"fields\":[{\"name\":\"ID\",\"type\":\"long\"},{\"name\":\"Int_Array\",\"type\":{\"type\":\"array\",\"items\":\"int\"}},{\"name\":\"int_array_array\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"array\",\"items\":\"int\"}}},{\"name\":\"Int_Map\",\"type\":{\"type\":\"map\",\"values\":\"int\"}},{\"name\":\"int_map_array\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"map\",\"values\":\"int\"}}},{\"name\":\"nested_Struct\",\"type\":{\"type\":\"record\",\"name\":\"r1\",\"fields\":[{\"name\":\"a\",\"type\":\"int\"},{\"name\":\"B\",\"type\":{\"type\":\"array\",\"items\":\"int\"}},{\"name\":\"c\",\"type\":{\"type\":\"record\",\"name\":\"r2\",\"fields\":[{\"name\":\"D\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"r3\",\"fields\":[{\"name\":\"e\",\"type\":\"int\"},{\"name\":\"f\",\"type\":\"string\"}]}}}}]}},{\"name\":\"G\",\"type\":{\"type\":\"map\",\"values\":{\"type\":\"record\",\"name\":\"r4\",\"fields\":[{\"name\":\"h\",\"type\":{\"type\":\"record\",\"name\":\"r5\",\"fields\":[{\"name\":\"i\",\"type\":{\"type\":\"array\",\"items\":\"double\"}}]}}]}}}]}}]}"
+    }
+  ],
+  "metadata_length": 2544,
+  "num_rows": 1,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 4,
+            "encodings": [ 0, 4 ],
+            "num_values": 1,
+            "path_in_schema": [ "ID" ],
+            "statistics": {
+              "max": "\b\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+              "min": "\b\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+              "null_count": 0
+            },
+            "total_compressed_size": 49,
+            "total_uncompressed_size": 49,
+            "type": 2
+          }
+        },
+        {
+          "file_offset": 53,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 53,
+            "encodings": [ 0, 3 ],
+            "num_values": 1,
+            "path_in_schema": [ "Int_Array", "list", "element" ],
+            "statistics": {
+              "max": "����",
+              "min": "����",
+              "null_count": 0
+            },
+            "total_compressed_size": 49,
+            "total_uncompressed_size": 49,
+            "type": 1
+          }
+        },
+        {
+          "file_offset": 102,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 102,
+            "encodings": [ 0, 3 ],
+            "num_values": 3,
+            "path_in_schema": [
+              "int_array_array",
+              "list",
+              "element",
+              "list",
+              "element"
+            ],
+            "statistics": {
+              "max": "����",
+              "min": "����",
+              "null_count": 1
+            },
+            "total_compressed_size": 55,
+            "total_uncompressed_size": 55,
+            "type": 1
+          }
+        },
+        {
+          "file_offset": 157,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 157,
+            "encodings": [ 0, 3 ],
+            "num_values": 1,
+            "path_in_schema": [ "Int_Map", "map", "key" ],
+            "statistics": {
+              "max": "k1",
+              "min": "k1",
+              "null_count": 0
+            },
+            "total_compressed_size": 47,
+            "total_uncompressed_size": 47,
+            "type": 6
+          }
+        },
+        {
+          "file_offset": 204,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 204,
+            "encodings": [ 0, 3 ],
+            "num_values": 1,
+            "path_in_schema": [ "Int_Map", "map", "value" ],
+            "statistics": {
+              "max": "����",
+              "min": "����",
+              "null_count": 0
+            },
+            "total_compressed_size": 49,
+            "total_uncompressed_size": 49,
+            "type": 1
+          }
+        },
+        {
+          "file_offset": 253,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 253,
+            "encodings": [ 0, 3 ],
+            "num_values": 4,
+            "path_in_schema": [
+              "int_map_array",
+              "list",
+              "element",
+              "map",
+              "key"
+            ],
+            "statistics": {
+              "max": "k1",
+              "min": "k1",
+              "null_count": 3
+            },
+            "total_compressed_size": 49,
+            "total_uncompressed_size": 49,
+            "type": 6
+          }
+        },
+        {
+          "file_offset": 302,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 302,
+            "encodings": [ 0, 3 ],
+            "num_values": 4,
+            "path_in_schema": [
+              "int_map_array",
+              "list",
+              "element",
+              "map",
+              "value"
+            ],
+            "statistics": {
+              "max": "\u0001\u0000\u0000\u0000",
+              "min": "\u0001\u0000\u0000\u0000",
+              "null_count": 3
+            },
+            "total_compressed_size": 51,
+            "total_uncompressed_size": 51,
+            "type": 1
+          }
+        },
+        {
+          "file_offset": 353,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 353,
+            "encodings": [ 0, 4 ],
+            "num_values": 1,
+            "path_in_schema": [ "nested_Struct", "a" ],
+            "statistics": {
+              "max": "����",
+              "min": "����",
+              "null_count": 0
+            },
+            "total_compressed_size": 37,
+            "total_uncompressed_size": 37,
+            "type": 1
+          }
+        },
+        {
+          "file_offset": 390,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 390,
+            "encodings": [ 0, 3 ],
+            "num_values": 1,
+            "path_in_schema": [ "nested_Struct", "B", "list", "element" ],
+            "statistics": {
+              "max": "����",
+              "min": "����",
+              "null_count": 0
+            },
+            "total_compressed_size": 49,
+            "total_uncompressed_size": 49,
+            "type": 1
+          }
+        },
+        {
+          "file_offset": 439,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 439,
+            "encodings": [ 0, 3 ],
+            "num_values": 1,
+            "path_in_schema": [
+              "nested_Struct",
+              "c",
+              "D",
+              "list",
+              "element",
+              "list",
+              "element",
+              "e"
+            ],
+            "statistics": {
+              "max": "����",
+              "min": "����",
+              "null_count": 0
+            },
+            "total_compressed_size": 51,
+            "total_uncompressed_size": 51,
+            "type": 1
+          }
+        },
+        {
+          "file_offset": 490,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 490,
+            "encodings": [ 0, 3 ],
+            "num_values": 1,
+            "path_in_schema": [
+              "nested_Struct",
+              "c",
+              "D",
+              "list",
+              "element",
+              "list",
+              "element",
+              "f"
+            ],
+            "statistics": {
+              "max": "nonnullable",
+              "min": "nonnullable",
+              "null_count": 0
+            },
+            "total_compressed_size": 76,
+            "total_uncompressed_size": 76,
+            "type": 6
+          }
+        },
+        {
+          "file_offset": 566,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 566,
+            "encodings": [ 0, 3 ],
+            "num_values": 1,
+            "path_in_schema": [ "nested_Struct", "G", "map", "key" ],
+            "statistics": {
+              "null_count": 1
+            },
+            "total_compressed_size": 33,
+            "total_uncompressed_size": 33,
+            "type": 6
+          }
+        },
+        {
+          "file_offset": 599,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 599,
+            "encodings": [ 0, 3 ],
+            "num_values": 1,
+            "path_in_schema": [
+              "nested_Struct",
+              "G",
+              "map",
+              "value",
+              "h",
+              "i",
+              "list",
+              "element"
+            ],
+            "statistics": {
+              "null_count": 1
+            },
+            "total_compressed_size": 35,
+            "total_uncompressed_size": 35,
+            "type": 5
+          }
+        }
+      ],
+      "num_rows": 1,
+      "total_byte_size": 630
+    }
+  ],
+  "schema": [
+    {
+      "name": "org.apache.impala.ComplexTypesTbl",
+      "num_children": 6
+    },
+    {
+      "name": "ID",
+      "repetition_type": "REQUIRED",
+      "type": 2
+    },
+    {
+      "converted_type": "LIST",
+      "name": "Int_Array",
+      "num_children": 1,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "name": "list",
+      "num_children": 1,
+      "repetition_type": "REPEATED"
+    },
+    {
+      "name": "element",
+      "repetition_type": "REQUIRED",
+      "type": 1
+    },
+    {
+      "converted_type": "LIST",
+      "name": "int_array_array",
+      "num_children": 1,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "name": "list",
+      "num_children": 1,
+      "repetition_type": "REPEATED"
+    },
+    {
+      "converted_type": "LIST",
+      "name": "element",
+      "num_children": 1,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "name": "list",
+      "num_children": 1,
+      "repetition_type": "REPEATED"
+    },
+    {
+      "name": "element",
+      "repetition_type": "REQUIRED",
+      "type": 1
+    },
+    {
+      "converted_type": "MAP",
+      "name": "Int_Map",
+      "num_children": 1,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "converted_type": "MAP_KEY_VALUE",
+      "name": "map",
+      "num_children": 2,
+      "repetition_type": "REPEATED"
+    },
+    {
+      "converted_type": "UTF8",
+      "name": "key",
+      "repetition_type": "REQUIRED",
+      "type": 6
+    },
+    {
+      "name": "value",
+      "repetition_type": "REQUIRED",
+      "type": 1
+    },
+    {
+      "converted_type": "LIST",
+      "name": "int_map_array",
+      "num_children": 1,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "name": "list",
+      "num_children": 1,
+      "repetition_type": "REPEATED"
+    },
+    {
+      "converted_type": "MAP",
+      "name": "element",
+      "num_children": 1,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "converted_type": "MAP_KEY_VALUE",
+      "name": "map",
+      "num_children": 2,
+      "repetition_type": "REPEATED"
+    },
+    {
+      "converted_type": "UTF8",
+      "name": "key",
+      "repetition_type": "REQUIRED",
+      "type": 6
+    },
+    {
+      "name": "value",
+      "repetition_type": "REQUIRED",
+      "type": 1
+    },
+    {
+      "name": "nested_Struct",
+      "num_children": 4,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "name": "a",
+      "repetition_type": "REQUIRED",
+      "type": 1
+    },
+    {
+      "converted_type": "LIST",
+      "name": "B",
+      "num_children": 1,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "name": "list",
+      "num_children": 1,
+      "repetition_type": "REPEATED"
+    },
+    {
+      "name": "element",
+      "repetition_type": "REQUIRED",
+      "type": 1
+    },
+    {
+      "name": "c",
+      "num_children": 1,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "converted_type": "LIST",
+      "name": "D",
+      "num_children": 1,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "name": "list",
+      "num_children": 1,
+      "repetition_type": "REPEATED"
+    },
+    {
+      "converted_type": "LIST",
+      "name": "element",
+      "num_children": 1,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "name": "list",
+      "num_children": 1,
+      "repetition_type": "REPEATED"
+    },
+    {
+      "name": "element",
+      "num_children": 2,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "name": "e",
+      "repetition_type": "REQUIRED",
+      "type": 1
+    },
+    {
+      "converted_type": "UTF8",
+      "name": "f",
+      "repetition_type": "REQUIRED",
+      "type": 6
+    },
+    {
+      "converted_type": "MAP",
+      "name": "G",
+      "num_children": 1,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "converted_type": "MAP_KEY_VALUE",
+      "name": "map",
+      "num_children": 2,
+      "repetition_type": "REPEATED"
+    },
+    {
+      "converted_type": "UTF8",
+      "name": "key",
+      "repetition_type": "REQUIRED",
+      "type": 6
+    },
+    {
+      "name": "value",
+      "num_children": 1,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "name": "h",
+      "num_children": 1,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "converted_type": "LIST",
+      "name": "i",
+      "num_children": 1,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "name": "list",
+      "num_children": 1,
+      "repetition_type": "REPEATED"
+    },
+    {
+      "name": "element",
+      "repetition_type": "REQUIRED",
+      "type": 5
+    }
+  ]
+}
