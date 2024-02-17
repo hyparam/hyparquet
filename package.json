@@ -1,6 +1,6 @@
 {
   "name": "hyparquet",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "parquet file parser for javascript",
   "keywords": [
     "parquet",
@@ -27,14 +27,14 @@
     "typecheck": "tsc"
   },
   "devDependencies": {
-    "@types/node": "20.11.17",
+    "@types/node": "20.11.19",
     "@typescript-eslint/eslint-plugin": "7.0.1",
-    "@vitest/coverage-v8": "1.2.2",
+    "@vitest/coverage-v8": "1.3.0",
     "eslint": "8.56.0",
     "eslint-plugin-import": "2.29.1",
-    "eslint-plugin-jsdoc": "48.0.6",
+    "eslint-plugin-jsdoc": "48.1.0",
     "http-server": "14.1.1",
     "typescript": "5.3.3",
-    "vitest": "1.2.2"
+    "vitest": "1.3.0"
   }
 }
