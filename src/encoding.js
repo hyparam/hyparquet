@@ -132,7 +132,7 @@ function readPlainByteArray(dataView, offset, count) {
 }
 
 /**
- * Read `count` fixed length byte array values.
+ * Read a fixed length byte array.
  *
  * @param {DataView} dataView - buffer to read data from
  * @param {number} offset - offset to start reading from the DataView

@@ -1,6 +1,6 @@
 # hyparquet
 
-![hyparquet](hyparquet.jpg)
+![hyparquet parakeet](hyparquet.jpg)
 
 [![npm](https://img.shields.io/npm/v/hyparquet)](https://www.npmjs.com/package/hyparquet)
 [![workflow status](https://github.com/hyparam/hyparquet/actions/workflows/ci.yml/badge.svg)](https://github.com/hyparam/hyparquet/actions)

@@ -8,7 +8,6 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended"
   ],
-  "ignorePatterns": ["dist/"],
   "plugins": ["import", "jsdoc"],
   "rules": {
     "@typescript-eslint/no-explicit-any": "warn",
@@ -48,7 +47,7 @@
     "prefer-destructuring": ["warn", {"object": true, "array": false}],
     "prefer-promise-reject-errors": "error",
     "quotes": ["error", "single"],
-    "require-await": "error",
+    "require-await": "warn",
     "semi": ["error", "never"],
     "sort-imports": ["error", {
       "ignoreDeclarationSort": true,

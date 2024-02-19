@@ -4,25 +4,26 @@ import { parquetRead } from './src/hyparquet.js'
 const url = 'https://huggingface.co/datasets/wikimedia/wikipedia/resolve/main/20231101.en/train-00000-of-00041.parquet'
 
 // download test parquet file if needed
-const stat = await fs.stat('benchmark.parquet').catch(() => undefined)
+let stat = await fs.stat('example.parquet').catch(() => undefined)
 if (!stat) {
   console.log('downloading ' + url)
   const res = await fetch(url)
   if (!res.ok) throw new Error(res.statusText)
   // write to file async
-  const writeStream = createWriteStream('benchmark.parquet')
+  const writeStream = createWriteStream('example.parquet')
   for await (const chunk of res.body) {
     writeStream.write(chunk)
   }
-  // await res.body.pipeTo(writeStream)
-  console.log('download benchmark.parquet')
+  writeStream.end()
+  console.log('downloaded example.parquet')
+  stat = await fs.stat('example.parquet').catch(() => undefined)
 }
 // asyncBuffer
 const file = {
   byteLength: stat.size,
   async slice(start, end) {
     // read file slice
-    const readStream = createReadStream('benchmark.parquet', { start, end })
+    const readStream = createReadStream('example.parquet', { start, end })
     const buffer = await readStreamToArrayBuffer(readStream)
     return new Uint8Array(buffer).buffer
   },

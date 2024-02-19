@@ -43,31 +43,34 @@ function selfCopyBytes(array, pos, offset, length) {
  *
  * @param {Uint8Array} inputArray compressed data
  * @param {Uint8Array} outputArray output buffer
- * @returns {boolean} true if successful
+ * @returns {void}
  */
 export function snappyUncompress(inputArray, outputArray) {
   const inputLength = inputArray.byteLength
-
+  const outputLength = outputArray.byteLength
   let pos = 0
   let outPos = 0
 
   // skip preamble (contains uncompressed length as varint)
-  let uncompressedLength = 0
-  let shift = 0
   while (pos < inputLength) {
     const c = inputArray[pos]
     pos += 1
-    uncompressedLength |= (c & 0x7f) << shift
     if (c < 128) {
       break
     }
-    shift += 7
+  }
+  if (outputLength && pos >= inputLength) {
+    throw new Error('invalid snappy length header')
   }
 
   while (pos < inputLength) {
     const c = inputArray[pos]
     let len = 0
     pos += 1
+
+    if (pos >= inputLength) {
+      throw new Error('missing eof marker')
+    }
 
     // There are two types of elements, literals and copies (back references)
     if ((c & 0x3) === 0) {
@@ -76,8 +79,7 @@ export function snappyUncompress(inputArray, outputArray) {
       // Longer literal length is encoded in multiple bytes
       if (len > 60) {
         if (pos + 3 >= inputLength) {
-          console.warn('snappy error literal pos + 3 >= inputLength')
-          return false
+          throw new Error('snappy error literal pos + 3 >= inputLength')
         }
         const lengthSize = len - 60 // length bytes - 1
         len = inputArray[pos]
@@ -88,7 +90,7 @@ export function snappyUncompress(inputArray, outputArray) {
         pos += lengthSize
       }
       if (pos + len > inputLength) {
-        return false // literal exceeds input length
+        throw new Error('snappy error literal exceeds input length')
       }
       copyBytes(inputArray, pos, outputArray, outPos, len)
       pos += len
@@ -106,7 +108,7 @@ export function snappyUncompress(inputArray, outputArray) {
       case 2:
         // Copy with 2-byte offset
         if (inputLength <= pos + 1) {
-          return false // end of input
+          throw new Error('snappy error end of input')
         }
         len = (c >>> 2) + 1
         offset = inputArray[pos] + (inputArray[pos + 1] << 8)
@@ -115,7 +117,7 @@ export function snappyUncompress(inputArray, outputArray) {
       case 3:
         // Copy with 4-byte offset
         if (inputLength <= pos + 3) {
-          return false // end of input
+          throw new Error('snappy error end of input')
         }
         len = (c >>> 2) + 1
         offset = inputArray[pos]
@@ -128,14 +130,17 @@ export function snappyUncompress(inputArray, outputArray) {
         break
       }
       if (offset === 0 || isNaN(offset)) {
-        return false // invalid offset
+        throw new Error(`invalid offset ${offset} pos ${pos} inputLength ${inputLength}`)
       }
       if (offset > outPos) {
-        return false // cannot copy from before start of buffer
+        throw new Error('cannot copy from before start of buffer')
       }
       selfCopyBytes(outputArray, outPos, offset, len)
       outPos += len
     }
   }
-  return true
+
+  if (outPos !== outputLength) {
+    throw new Error('premature end of input')
+  }
 }
