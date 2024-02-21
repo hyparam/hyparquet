@@ -1,4 +1,3 @@
-import { ParquetType } from './constants.js'
 import { readData, readPlain, readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
 import {
   getMaxDefinitionLevel,
