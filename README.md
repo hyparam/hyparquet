@@ -77,7 +77,19 @@ You can provide an `AsyncBuffer` which is like a js `ArrayBuffer` but the `slice
 ## Supported Parquet Files
 
 The parquet format supports a number of different compression and encoding types.
-Hyparquet does not support 100% of all parquet files, and probably never will, since supporting all possible compression types will increase the size of the library, and are rarely used in practice.
+Hyparquet does not support 100% of all parquet files.
+Supporting every possible compression codec available in parquet would blow up the size of the hyparquet library.
+In practice, most parquet files use snappy compression.
+
+You can extend support for parquet files with other compression codec using the `compressors` option.
+
+```js
+import { gunzipSync } from 'zlib'
+parquetRead({ file, compressors: {
+  // add gzip support:
+  GZIP: (input, output) => output.set(gunzipSync(input)),
+}})
+```
 
 Compression:
  - [X] Uncompressed

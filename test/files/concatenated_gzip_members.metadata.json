@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "metadata_length": 115,
+  "num_rows": 513,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 1471,
+          "meta_data": {
+            "codec": "GZIP",
+            "data_page_offset": 4,
+            "encodings": [
+              0,
+              3
+            ],
+            "num_values": 513,
+            "path_in_schema": [
+              "long_col"
+            ],
+            "statistics": {},
+            "total_compressed_size": 1467,
+            "total_uncompressed_size": 4155,
+            "type": 2
+          }
+        }
+      ],
+      "num_rows": 513,
+      "total_byte_size": 4155
+    }
+  ],
+  "schema": [
+    {
+      "name": "root",
+      "num_children": 1
+    },
+    {
+      "converted_type": "UINT_64",
+      "name": "long_col",
+      "repetition_type": "OPTIONAL",
+      "type": 2
+    }
+  ]
+}

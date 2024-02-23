@@ -14,6 +14,7 @@ import { readVarInt, readZigZag } from './thrift.js'
  *
  * @typedef {import("./types.d.ts").DataPage} DataPage
  * @typedef {import("./types.d.ts").ColumnMetaData} ColumnMetaData
+ * @typedef {import("./types.d.ts").Compressors} Compressors
  * @typedef {import("./types.d.ts").DataPageHeaderV2} DataPageHeaderV2
  * @typedef {import("./types.d.ts").PageHeader} PageHeader
  * @typedef {import("./types.d.ts").SchemaElement} SchemaElement
@@ -21,9 +22,10 @@ import { readVarInt, readZigZag } from './thrift.js'
  * @param {PageHeader} ph page header
  * @param {SchemaElement[]} schema schema for the file
  * @param {ColumnMetaData} columnMetadata metadata for the column
+ * @param {Compressors | undefined} compressors
  * @returns {DataPage} definition levels, repetition levels, and array of values
  */
-export function readDataPageV2(compressedBytes, ph, schema, columnMetadata) {
+export function readDataPageV2(compressedBytes, ph, schema, columnMetadata, compressors) {
   const dataView = new DataView(compressedBytes.buffer, compressedBytes.byteOffset, compressedBytes.byteLength)
   let offset = 0
   /** @type {any} */
@@ -48,10 +50,15 @@ export function readDataPageV2(compressedBytes, ph, schema, columnMetadata) {
   if (daph2.encoding === Encoding.PLAIN) {
     const se = schemaElement(schema, columnMetadata.path_in_schema)
     const utf8 = se.converted_type === 'UTF8'
-    const plainObj = readPlain(dataView, columnMetadata.type, nValues, offset, utf8)
+    let page = compressedBytes.slice(offset)
+    if (daph2.is_compressed && columnMetadata.codec !== 'UNCOMPRESSED') {
+      page = decompressPage(page, uncompressedPageSize, columnMetadata.codec, compressors)
+    }
+    const pageView = new DataView(page.buffer, page.byteOffset, page.byteLength)
+    const plainObj = readPlain(pageView, columnMetadata.type, nValues, 0, utf8)
     values = plainObj.value
   } else if (daph2.encoding === Encoding.RLE) {
-    const page = decompressPage(compressedBytes, uncompressedPageSize, columnMetadata.codec)
+    const page = decompressPage(compressedBytes, uncompressedPageSize, columnMetadata.codec, compressors)
     const pageView = new DataView(page.buffer, page.byteOffset, page.byteLength)
     const bitWidth = 1
     if (daph2.num_nulls) {
@@ -66,7 +73,7 @@ export function readDataPageV2(compressedBytes, ph, schema, columnMetadata) {
     daph2.encoding === Encoding.RLE_DICTIONARY
   ) {
     compressedBytes = compressedBytes.subarray(offset)
-    const page = decompressPage(compressedBytes, uncompressedPageSize, columnMetadata.codec)
+    const page = decompressPage(compressedBytes, uncompressedPageSize, columnMetadata.codec, compressors)
     const pageView = new DataView(page.buffer, page.byteOffset, page.byteLength)
 
     const bitWidth = pageView.getUint8(0)
@@ -77,7 +84,7 @@ export function readDataPageV2(compressedBytes, ph, schema, columnMetadata) {
   } else if (daph2.encoding === Encoding.DELTA_BINARY_PACKED) {
     if (daph2.num_nulls) throw new Error('parquet delta-int not supported')
     const codec = daph2.is_compressed ? columnMetadata.codec : 'UNCOMPRESSED'
-    const page = decompressPage(compressedBytes, uncompressedPageSize, codec)
+    const page = decompressPage(compressedBytes, uncompressedPageSize, codec, compressors)
     deltaBinaryUnpack(page, nValues, values)
   } else {
     throw new Error(`parquet unsupported encoding: ${daph2.encoding}`)

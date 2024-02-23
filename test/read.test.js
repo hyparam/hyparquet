@@ -1,8 +1,20 @@
 import fs from 'fs'
 import { describe, expect, it } from 'vitest'
+import { gunzipSync } from 'zlib'
 import { parquetRead } from '../src/hyparquet.js'
 import { toJson } from '../src/toJson.js'
 import { fileToAsyncBuffer, fileToJson } from './helpers.js'
+
+/**
+ * @typedef {import('../src/types.js').Compressors} Compressors
+ * @type {Compressors}
+ */
+const compressors = {
+  GZIP: (/** @type {Uint8Array} */ input, /** @type {Uint8Array} */ output) => {
+    const result = gunzipSync(input)
+    output.set(result)
+  },
+}
 
 describe('parquetRead', () => {
   const files = fs.readdirSync('test/files').filter(f => f.endsWith('.parquet'))
@@ -12,6 +24,7 @@ describe('parquetRead', () => {
       const asyncBuffer = fileToAsyncBuffer(`test/files/${file}`)
       await parquetRead({
         file: asyncBuffer,
+        compressors,
         onComplete: (rows) => {
           const base = file.replace('.parquet', '')
           const expected = fileToJson(`test/files/${base}.json`)

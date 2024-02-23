@@ -14,6 +14,7 @@ import { parquetMetadataAsync } from './metadata.js'
  * the chunks.
  *
  * @typedef {import('./hyparquet.js').ColumnData} ColumnData
+ * @typedef {import('./types.js').Compressors} Compressors
  * @typedef {import('./types.js').AsyncBuffer} AsyncBuffer
  * @typedef {import('./types.js').FileMetaData} FileMetaData
  * @param {object} options read options
@@ -24,6 +25,7 @@ import { parquetMetadataAsync } from './metadata.js'
  * @param {number} [options.rowEnd] last requested row index (exclusive)
  * @param {(chunk: ColumnData) => void} [options.onChunk] called when a column chunk is parsed. chunks may include row data outside the requested range.
  * @param {(rows: any[][]) => void} [options.onComplete] called when all requested rows and columns are parsed
+ * @param {Compressors} [options.compressors] custom decompressors
  * @returns {Promise<void>} resolves when all requested rows and columns are parsed
  */
 export async function parquetRead(options) {
@@ -70,11 +72,12 @@ export async function parquetRead(options) {
  * @param {number[]} [options.columns] columns to read, all columns if undefined
  * @param {(chunk: ColumnData) => void} [options.onChunk] called when a column chunk is parsed. chunks may include row data outside the requested range.
  * @param {(rows: any[][]) => void} [options.onComplete] called when all requested rows and columns are parsed
+ * @param {Compressors} [options.compressors] custom decompressors
  * @param {RowGroup} rowGroup row group to read
  * @returns {Promise<any[][]>} resolves to row data
  */
 async function readRowGroup(options, rowGroup) {
-  const { file, metadata, columns } = options
+  const { file, metadata, columns, compressors } = options
   if (!metadata) throw new Error('parquet metadata not found')
 
   // loop through metadata to find min/max bytes to read
@@ -107,6 +110,7 @@ async function readRowGroup(options, rowGroup) {
   for (let columnIndex = 0; columnIndex < rowGroup.columns.length; columnIndex++) {
     // skip columns that are not requested
     if (columns && !columns.includes(columnIndex)) continue
+
     const columnMetadata = rowGroup.columns[columnIndex].meta_data
     if (!columnMetadata) throw new Error('parquet column metadata is undefined')
 
@@ -135,7 +139,7 @@ async function readRowGroup(options, rowGroup) {
     promises.push(buffer.then(arrayBuffer => {
       // TODO: extract SchemaElement for this column
       const columnData = readColumn(
-        arrayBuffer, bufferOffset, rowGroup, columnMetadata, metadata.schema
+        arrayBuffer, bufferOffset, rowGroup, columnMetadata, metadata.schema, compressors
       )
       if (columnData.length !== Number(rowGroup.num_rows)) {
         throw new Error(`parquet column length ${columnData.length} does not match row group length ${rowGroup.num_rows}`)

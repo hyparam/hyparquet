@@ -19,6 +19,7 @@ export { AsyncBuffer, FileMetaData, SchemaTree } from './types'
  * @param {number} [options.rowEnd] last requested row index (exclusive)
  * @param {Function} [options.onChunk] called when a column chunk is parsed. chunks may include row data outside the requested range.
  * @param {Function} [options.onComplete] called when all requested rows and columns are parsed
+ * @param {Compressors} [options.compressor] custom decompressors
  * @returns {Promise<void>} resolves when all requested rows and columns are parsed
  */
 export async function parquetRead(options: ParquetReadOptions): Promise<void>
@@ -96,6 +97,7 @@ export interface ParquetReadOptions {
   rowEnd?: number // exclusive
   onChunk?: (chunk: ColumnData) => void // called when a column chunk is parsed. chunks may be outside the requested range.
   onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
+  compressors?: Compressors // custom decompressors
 }
 
 /**

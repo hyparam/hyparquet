@@ -9,6 +9,7 @@ import { snappyUncompress } from './snappy.js'
 /**
  * @typedef {import('./types.js').SchemaElement} SchemaElement
  * @typedef {import('./types.js').ColumnMetaData} ColumnMetaData
+ * @typedef {import('./types.js').Compressors} Compressors
  * @typedef {import('./types.js').RowGroup} RowGroup
  */
 
@@ -20,9 +21,10 @@ import { snappyUncompress } from './snappy.js'
  * @param {RowGroup} rowGroup row group metadata
  * @param {ColumnMetaData} columnMetadata column metadata
  * @param {SchemaElement[]} schema schema for the file
+ * @param {Compressors} [compressors] custom decompressors
  * @returns {ArrayLike<any>} array of values
  */
-export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, schema) {
+export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, schema, compressors) {
   /** @type {ArrayLike<any> | undefined} */
   let dictionary = undefined
   let valuesSeen = 0
@@ -50,7 +52,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       if (!daph) throw new Error('parquet data page header is undefined')
 
       const page = decompressPage(
-        compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec
+        compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec, compressors
       )
       const { definitionLevels, repetitionLevels, value: dataPage } = readDataPage(page, daph, schema, columnMetadata)
       valuesSeen += daph.num_values
@@ -96,7 +98,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       if (!diph) throw new Error('parquet dictionary page header is undefined')
 
       const page = decompressPage(
-        compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec
+        compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec, compressors
       )
       dictionary = readDictionaryPage(page, diph, schema, columnMetadata)
     } else if (header.type === PageType.DATA_PAGE_V2) {
@@ -104,7 +106,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       if (!daph2) throw new Error('parquet data page header v2 is undefined')
 
       const { definitionLevels, repetitionLevels, value: dataPage } = readDataPageV2(
-        compressedBytes, header, schema, columnMetadata
+        compressedBytes, header, schema, columnMetadata, compressors
       )
       valuesSeen += daph2.num_values
 
@@ -170,13 +172,18 @@ export function getColumnOffset(columnMetadata) {
  * @param {Uint8Array} compressedBytes
  * @param {number} uncompressed_page_size
  * @param {CompressionCodec} codec
+ * @param {Compressors | undefined} compressors
  * @returns {Uint8Array}
  */
-export function decompressPage(compressedBytes, uncompressed_page_size, codec) {
+export function decompressPage(compressedBytes, uncompressed_page_size, codec, compressors) {
   /** @type {Uint8Array | undefined} */
   let page
+  const customDecompressor = compressors?.[codec]
   if (codec === 'UNCOMPRESSED') {
     page = compressedBytes
+  } else if (customDecompressor) {
+    page = new Uint8Array(uncompressed_page_size)
+    customDecompressor(compressedBytes, page)
   } else if (codec === 'SNAPPY') {
     page = new Uint8Array(uncompressed_page_size)
     snappyUncompress(compressedBytes, page)
