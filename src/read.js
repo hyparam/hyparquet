@@ -109,11 +109,13 @@ async function readRowGroup(options, rowGroup) {
     if (columns && !columns.includes(columnIndex)) continue
     const columnMetadata = rowGroup.columns[columnIndex].meta_data
     if (!columnMetadata) throw new Error('parquet column metadata is undefined')
+
     const columnStartByte = getColumnOffset(columnMetadata)
     const columnEndByte = columnStartByte + Number(columnMetadata.total_compressed_size)
     const columnBytes = columnEndByte - columnStartByte
 
     // skip columns larger than 1gb
+    // TODO: stream process the data, returning only the requested rows
     if (columnBytes > 1 << 30) {
       console.warn(`parquet skipping huge column "${columnMetadata.path_in_schema}" ${columnBytes.toLocaleString()} bytes`)
       continue

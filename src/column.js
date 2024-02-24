@@ -14,7 +14,7 @@ import { snappyUncompress } from './snappy.js'
 const dayMillis = 86400000000000 // 1 day in milliseconds
 
 /**
- * Read a column from the file.
+ * Parse column data from a buffer.
  *
  * @param {ArrayBuffer} arrayBuffer parquet file contents
  * @param {number} columnOffset offset to start reading from
@@ -24,13 +24,13 @@ const dayMillis = 86400000000000 // 1 day in milliseconds
  * @returns {ArrayLike<any>} array of values
  */
 export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, schema) {
-  // parse column data
-  let valuesSeen = 0
-  let byteOffset = 0 // byteOffset within the column
   /** @type {ArrayLike<any> | undefined} */
   let dictionary = undefined
+  let valuesSeen = 0
+  let byteOffset = 0 // byteOffset within the column
   const rowIndex = [0] // map/list object index
   const rowData = []
+
   while (valuesSeen < rowGroup.num_rows) {
     // parse column header
     const { value: header, byteLength: headerLength } = parquetHeader(arrayBuffer, columnOffset + byteOffset)
@@ -44,28 +44,13 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       columnOffset + byteOffset,
       columnOffset + byteOffset + header.compressed_page_size
     )
-    // decompress bytes
-    /** @type {Uint8Array | undefined} */
-    let page
-    const uncompressed_page_size = Number(header.uncompressed_page_size)
-    const { codec } = columnMetadata
-    if (codec === 'UNCOMPRESSED') {
-      page = compressedBytes
-    } else if (codec === 'SNAPPY') {
-      page = new Uint8Array(uncompressed_page_size)
-      snappyUncompress(compressedBytes, page)
-    } else {
-      throw new Error(`parquet unsupported compression codec: ${codec}`)
-    }
-    if (page?.length !== uncompressed_page_size) {
-      throw new Error(`parquet decompressed page length ${page?.length} does not match header ${uncompressed_page_size}`)
-    }
 
     // parse page data by type
     if (header.type === PageType.DATA_PAGE) {
       const daph = header.data_page_header
       if (!daph) throw new Error('parquet data page header is undefined')
 
+      const page = decompressPage(compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec)
       const { definitionLevels, repetitionLevels, value: dataPage } = readDataPage(page, daph, schema, columnMetadata)
       valuesSeen += daph.num_values
 
@@ -97,6 +82,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
               throw new Error(`parquet index ${index} exceeds data page length ${dataPage.length}`)
             }
             let v = dataPage[index++]
+
             // map to dictionary value
             if (dictionary) {
               v = dictionary[v]
@@ -138,6 +124,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       const diph = header.dictionary_page_header
       if (!diph) throw new Error('parquet dictionary page header is undefined')
 
+      const page = decompressPage(compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec)
       dictionary = readDictionaryPage(page, diph, schema, columnMetadata)
     } else if (header.type === PageType.DATA_PAGE_V2) {
       throw new Error('parquet data page v2 not supported')
@@ -222,4 +209,29 @@ function parseDecimal(bytes) {
     value = value << 8 | byte
   }
   return value
+}
+
+/**
+ * @typedef {import('./types.js').PageHeader} PageHeader
+ * @typedef {import('./types.js').CompressionCodec} CompressionCodec
+ * @param {Uint8Array} compressedBytes
+ * @param {number} uncompressed_page_size
+ * @param {CompressionCodec} codec
+ * @returns {Uint8Array}
+ */
+function decompressPage(compressedBytes, uncompressed_page_size, codec) {
+  /** @type {Uint8Array | undefined} */
+  let page
+  if (codec === 'UNCOMPRESSED') {
+    page = compressedBytes
+  } else if (codec === 'SNAPPY') {
+    page = new Uint8Array(uncompressed_page_size)
+    snappyUncompress(compressedBytes, page)
+  } else {
+    throw new Error(`parquet unsupported compression codec: ${codec}`)
+  }
+  if (page?.length !== uncompressed_page_size) {
+    throw new Error(`parquet decompressed page length ${page?.length} does not match header ${uncompressed_page_size}`)
+  }
+  return page
 }

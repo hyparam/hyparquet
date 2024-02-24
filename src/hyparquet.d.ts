@@ -17,8 +17,8 @@ export { AsyncBuffer, FileMetaData, SchemaTree } from './types'
  * @param {number[]} [options.columns] columns to read, all columns if undefined
  * @param {number} [options.rowStart] first requested row index (inclusive)
  * @param {number} [options.rowEnd] last requested row index (exclusive)
- * @param {(chunk: ColumnData) => void} [options.onChunk] called when a column chunk is parsed. chunks may include row data outside the requested range.
- * @param {(rows: any[][]) => void} [options.onComplete] called when all requested rows and columns are parsed
+ * @param {Function} [options.onChunk] called when a column chunk is parsed. chunks may include row data outside the requested range.
+ * @param {Function} [options.onComplete] called when all requested rows and columns are parsed
  * @returns {Promise<void>} resolves when all requested rows and columns are parsed
  */
 export async function parquetRead(options: ParquetReadOptions): Promise<void>
@@ -69,11 +69,11 @@ export function parquetSchema(metadata: FileMetaData): SchemaTree
  * Decompress snappy data.
  * Accepts an output buffer to avoid allocating a new buffer for each call.
  *
- * @param {Uint8Array} inputArray compressed data
- * @param {Uint8Array} outputArray output buffer
+ * @param {Uint8Array} input compressed data
+ * @param {Uint8Array} output output buffer
  * @returns {boolean} true if successful
  */
-export function snappyUncompress(inputArray: Uint8Array, outputArray: Uint8Array): boolean
+export function snappyUncompress(input: Uint8Array, output: Uint8Array): boolean
 
 /**
  * Replace bigints with numbers.
