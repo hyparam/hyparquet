@@ -5,10 +5,10 @@ import { toJson } from '../src/toJson.js'
 import { fileToAsyncBuffer, fileToJson } from './helpers.js'
 
 describe('parquetRead', () => {
-  it('should parse data from all test files', async () => {
-    const files = fs.readdirSync('test/files')
-    for (const file of files) {
-      if (!file.endsWith('.parquet')) continue
+  const files = fs.readdirSync('test/files').filter(f => f.endsWith('.parquet'))
+
+  files.forEach(file => {
+    it(`should parse data from ${file}`, async () => {
       const asyncBuffer = fileToAsyncBuffer(`test/files/${file}`)
       await parquetRead({
         file: asyncBuffer,
@@ -18,6 +18,6 @@ describe('parquetRead', () => {
           expect(toJson(rows)).toEqual(expected)
         },
       })
-    }
+    })
   })
 })

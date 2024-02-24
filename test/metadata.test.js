@@ -4,17 +4,17 @@ import { parquetMetadata, parquetMetadataAsync } from '../src/hyparquet.js'
 import { toJson } from '../src/toJson.js'
 import { fileToAsyncBuffer, fileToJson, readFileToArrayBuffer } from './helpers.js'
 
+const files = fs.readdirSync('test/files').filter(f => f.endsWith('.parquet'))
+
 describe('parquetMetadata', () => {
-  it('should parse metadata from all test files', async () => {
-    const files = fs.readdirSync('test/files')
-    for (const file of files) {
-      if (!file.endsWith('.parquet')) continue
+  files.forEach(file => {
+    it(`should parse metadata from ${file}`, async () => {
       const arrayBuffer = await readFileToArrayBuffer(`test/files/${file}`)
       const result = toJson(parquetMetadata(arrayBuffer))
       const base = file.replace('.parquet', '')
       const expected = fileToJson(`test/files/${base}.metadata.json`)
       expect(result, JSON.stringify(result, null, 2)).toEqual(expected)
-    }
+    })
   })
 
   it('should throw an error for a too short file', () => {
@@ -46,16 +46,14 @@ describe('parquetMetadata', () => {
 })
 
 describe('parquetMetadataAsync', () => {
-  it('should parse metadata asynchronously from all test files', async () => {
-    const files = fs.readdirSync('test/files')
-    for (const file of files) {
-      if (!file.endsWith('.parquet')) continue
+  files.forEach(file => {
+    it(`should parse metadata async from ${file}`, async () => {
       const asyncBuffer = fileToAsyncBuffer(`test/files/${file}`)
       const result = await parquetMetadataAsync(asyncBuffer)
       const base = file.replace('.parquet', '')
       const expected = fileToJson(`test/files/${base}.metadata.json`)
       expect(toJson(result)).toEqual(expected)
-    }
+    })
   })
 
   it('should throw an error for invalid magic number', () => {
