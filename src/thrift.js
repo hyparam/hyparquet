@@ -176,7 +176,7 @@ function readVarBigInt(view, index) {
  * @param {number} index
  * @returns {[number, number]} [value, newIndex]
  */
-function readZigZag(view, index) {
+export function readZigZag(view, index) {
   const [zigzag, newIndex] = readVarInt(view, index)
   // convert zigzag to int
   const value = (zigzag >>> 1) ^ -(zigzag & 1)

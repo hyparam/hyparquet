@@ -127,9 +127,8 @@ export function readDictionaryPage(bytes, diph, schema, columnMetadata) {
 function readRepetitionLevels(dataView, offset, daph, schema, columnMetadata) {
   if (columnMetadata.path_in_schema.length > 1) {
     const maxRepetitionLevel = getMaxRepetitionLevel(schema, columnMetadata.path_in_schema)
-    if (maxRepetitionLevel !== 0) {
+    if (maxRepetitionLevel) {
       const bitWidth = widthFromMaxInt(maxRepetitionLevel)
-      // num_values is index 1 for either type of page header
       return readData(
         dataView, daph.repetition_level_encoding, offset, daph.num_values, bitWidth
       )

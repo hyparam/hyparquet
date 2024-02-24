@@ -1,0 +1,166 @@
+{
+  "version": 1,
+  "created_by": "parquet-mr version 1.8.1 (build 4aba4dae7bb0d4edbcf7923ae1339f28fd3f7fcf)",
+  "key_value_metadata": [
+    {
+      "key": "org.apache.spark.sql.parquet.row.metadata",
+      "value": "{\"type\":\"struct\",\"fields\":[{\"name\":\"a\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"b\",\"type\":\"integer\",\"nullable\":false,\"metadata\":{}},{\"name\":\"c\",\"type\":\"double\",\"nullable\":false,\"metadata\":{}},{\"name\":\"d\",\"type\":\"boolean\",\"nullable\":false,\"metadata\":{}},{\"name\":\"e\",\"type\":{\"type\":\"array\",\"elementType\":\"integer\",\"containsNull\":false},\"nullable\":true,\"metadata\":{}}]}"
+    }
+  ],
+  "metadata_length": 836,
+  "num_rows": 5,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "codec": "SNAPPY",
+            "data_page_offset": 4,
+            "encodings": [
+              0,
+              8
+            ],
+            "num_values": 5,
+            "path_in_schema": ["a"],
+            "statistics": {
+              "max": "abc",
+              "min": "abc",
+              "null_count": 1
+            },
+            "total_compressed_size": 63,
+            "total_uncompressed_size": 59,
+            "type": 6
+          }
+        },
+        {
+          "file_offset": 67,
+          "meta_data": {
+            "codec": "SNAPPY",
+            "data_page_offset": 67,
+            "encodings": [5],
+            "num_values": 5,
+            "path_in_schema": ["b"],
+            "statistics": {
+              "max": "\u0005\u0000\u0000\u0000",
+              "min": "\u0001\u0000\u0000\u0000",
+              "null_count": 0
+            },
+            "total_compressed_size": 49,
+            "total_uncompressed_size": 47,
+            "type": 1
+          }
+        },
+        {
+          "file_offset": 116,
+          "meta_data": {
+            "codec": "SNAPPY",
+            "data_page_offset": 116,
+            "encodings": [
+              0,
+              8
+            ],
+            "num_values": 5,
+            "path_in_schema": ["c"],
+            "statistics": {
+              "max": "\u0000\u0000\u0000\u0000\u0000\u0000\u0014@",
+              "min": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000@",
+              "null_count": 0
+            },
+            "total_compressed_size": 88,
+            "total_uncompressed_size": 94,
+            "type": 5
+          }
+        },
+        {
+          "file_offset": 204,
+          "meta_data": {
+            "codec": "SNAPPY",
+            "data_page_offset": 204,
+            "encodings": [3],
+            "num_values": 5,
+            "path_in_schema": ["d"],
+            "statistics": {
+              "max": "\u0001",
+              "min": "\u0000",
+              "null_count": 0
+            },
+            "total_compressed_size": 39,
+            "total_uncompressed_size": 37,
+            "type": 0
+          }
+        },
+        {
+          "file_offset": 243,
+          "meta_data": {
+            "codec": "SNAPPY",
+            "data_page_offset": 243,
+            "encodings": [
+              0,
+              8
+            ],
+            "num_values": 10,
+            "path_in_schema": [
+              "e",
+              "list",
+              "element"
+            ],
+            "statistics": {
+              "max": "\u0003\u0000\u0000\u0000",
+              "min": "\u0001\u0000\u0000\u0000",
+              "null_count": 2
+            },
+            "total_compressed_size": 78,
+            "total_uncompressed_size": 74,
+            "type": 1
+          }
+        }
+      ],
+      "num_rows": 5,
+      "total_byte_size": 311
+    }
+  ],
+  "schema": [
+    {
+      "name": "spark_schema",
+      "num_children": 5
+    },
+    {
+      "converted_type": "UTF8",
+      "name": "a",
+      "repetition_type": "OPTIONAL",
+      "type": 6
+    },
+    {
+      "name": "b",
+      "repetition_type": "REQUIRED",
+      "type": 1
+    },
+    {
+      "name": "c",
+      "repetition_type": "REQUIRED",
+      "type": 5
+    },
+    {
+      "name": "d",
+      "repetition_type": "REQUIRED",
+      "type": 0
+    },
+    {
+      "converted_type": "LIST",
+      "name": "e",
+      "num_children": 1,
+      "repetition_type": "OPTIONAL"
+    },
+    {
+      "name": "list",
+      "num_children": 1,
+      "repetition_type": "REPEATED"
+    },
+    {
+      "name": "element",
+      "repetition_type": "REQUIRED",
+      "type": 1
+    }
+  ]
+}

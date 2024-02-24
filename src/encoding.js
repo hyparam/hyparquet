@@ -249,7 +249,7 @@ export function readRleBitPackedHybrid(dataView, offset, width, length, numValue
   }
   const value = []
   const startByteLength = byteLength
-  while (byteLength - startByteLength < length) {
+  while (offset + byteLength - startByteLength < length) {
     const [header, newOffset] = readVarInt(dataView, offset + byteLength)
     byteLength = newOffset - offset
     if ((header & 1) === 0) {

@@ -93,7 +93,7 @@ Page Type:
  - [X] Data Page
  - [ ] Index Page
  - [X] Dictionary Page
- - [ ] Data Page V2
+ - [X] Data Page V2
 
 Contributions are welcome!
 

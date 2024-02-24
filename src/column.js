@@ -1,6 +1,7 @@
 import { Encoding, PageType } from './constants.js'
 import { convert } from './convert.js'
 import { assembleObjects, readDataPage, readDictionaryPage } from './datapage.js'
+import { readDataPageV2 } from './datapageV2.js'
 import { parquetHeader } from './header.js'
 import { getMaxDefinitionLevel, isRequired, schemaElement } from './schema.js'
 import { snappyUncompress } from './snappy.js'
@@ -58,13 +59,8 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       /** @type {any[]} */
       let values
       if (repetitionLevels.length) {
+        dereferenceDictionary(dictionary, dataPage)
         // Use repetition levels to construct lists
-        if (dictionaryEncoding && dictionary !== undefined && Array.isArray(dataPage)) {
-          // dereference dictionary values
-          for (let i = 0; i < dataPage.length; i++) {
-            dataPage[i] = dictionary[dataPage[i]]
-          }
-        }
         const isNull = columnMetadata && !isRequired(schema, [columnMetadata.path_in_schema[0]])
         const nullValue = false // TODO: unused?
         const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
@@ -75,13 +71,9 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
         values = []
         skipNulls(definitionLevels, maxDefinitionLevel, dataPage, dictionary, values)
       } else {
-        if (dictionaryEncoding && dictionary !== undefined && Array.isArray(dataPage)) {
-          // dereference dictionary values
-          values = []
-          for (let i = 0; i < dataPage.length; i++) {
-            values[i] = dictionary[dataPage[i]]
-          }
-          values = convert(values, schemaElement(schema, columnMetadata.path_in_schema))
+        if (dictionaryEncoding && dictionary) {
+          dereferenceDictionary(dictionary, dataPage)
+          values = convert(dataPage, schemaElement(schema, columnMetadata.path_in_schema))
         } else if (Array.isArray(dataPage)) {
           // convert primitive types to rich types
           values = convert(dataPage, schemaElement(schema, columnMetadata.path_in_schema))
@@ -104,16 +96,53 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       )
       dictionary = readDictionaryPage(page, diph, schema, columnMetadata)
     } else if (header.type === PageType.DATA_PAGE_V2) {
-      throw new Error('parquet data page v2 not supported')
+      const daph2 = header.data_page_header_v2
+      if (!daph2) throw new Error('parquet data page header v2 is undefined')
+
+      const { definitionLevels, repetitionLevels, value: dataPage } = readDataPageV2(
+        compressedBytes, header, schema, columnMetadata
+      )
+      valuesSeen += daph2.num_values
+
+      const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
+      if (repetitionLevels.length) {
+        dereferenceDictionary(dictionary, dataPage)
+        // Use repetition levels to construct lists
+        rowData.push(...assembleObjects(
+          definitionLevels, repetitionLevels, dataPage, true, false, maxDefinitionLevel, rowIndex[0]
+        ))
+      } else if (daph2.num_nulls) {
+        // skip nulls
+        if (!definitionLevels) throw new Error('parquet data page v2 nulls missing definition levels')
+        skipNulls(definitionLevels, maxDefinitionLevel, dataPage, dictionary, rowData)
+      } else {
+        dereferenceDictionary(dictionary, dataPage)
+        rowData.push(...dataPage)
+      }
+      // TODO: convert?
     } else {
       throw new Error(`parquet unsupported page type: ${header.type}`)
     }
     byteOffset += header.compressed_page_size
   }
   if (rowData.length !== Number(rowGroup.num_rows)) {
-    throw new Error(`parquet column length ${rowData.length} does not match row group length ${rowGroup.num_rows}}`)
+    throw new Error(`parquet row data length ${rowData.length} does not match row group length ${rowGroup.num_rows}}`)
   }
   return rowData
+}
+
+/**
+ * Map data to dictionary values in place.
+ *
+ * @param {ArrayLike<any> | undefined} dictionary
+ * @param {number[]} dataPage
+ */
+function dereferenceDictionary(dictionary, dataPage) {
+  if (dictionary) {
+    for (let i = 0; i < dataPage.length; i++) {
+      dataPage[i] = dictionary[dataPage[i]]
+    }
+  }
 }
 
 /**
@@ -139,7 +168,7 @@ export function getColumnOffset(columnMetadata) {
  * @param {CompressionCodec} codec
  * @returns {Uint8Array}
  */
-function decompressPage(compressedBytes, uncompressed_page_size, codec) {
+export function decompressPage(compressedBytes, uncompressed_page_size, codec) {
   /** @type {Uint8Array | undefined} */
   let page
   if (codec === 'UNCOMPRESSED') {

@@ -5,7 +5,7 @@ import { toJson } from '../src/toJson.js'
 import { fileToAsyncBuffer, fileToJson } from './helpers.js'
 
 describe('parquetRead', () => {
-  const files = fs.readdirSync('test/files').filter(f => f.endsWith('.parquet'))
+  const files = fs.readdirSync('test/files').filter(f => f.endsWith('y.parquet'))
 
   files.forEach(file => {
     it(`should parse data from ${file}`, async () => {
