@@ -7,14 +7,6 @@ export interface AsyncBuffer {
 }
 
 /**
- * Just like an ArrayBuffer, but an interface
- */
-export interface ArrayBufferLike {
-  byteLength: number
-  slice(start: number, end?: number): ArrayBuffer
-}
-
-/**
  * Represents a decoded value, and includes the number of bytes read.
  * This is used to read data from the file and advance a virtual file pointer.
  */
