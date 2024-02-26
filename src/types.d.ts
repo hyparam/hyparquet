@@ -212,3 +212,11 @@ interface DataPageHeaderV2 {
   is_compressed?: boolean
   statistics?: Statistics
 }
+
+type DecodedArray = any[] | Uint8Array
+
+interface DataPage {
+  definitionLevels: number[] | undefined
+  repetitionLevels: number[]
+  value: any[]
+}

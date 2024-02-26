@@ -138,7 +138,7 @@ async function readRowGroup(options, rowGroup) {
         arrayBuffer, bufferOffset, rowGroup, columnMetadata, metadata.schema
       )
       if (columnData.length !== Number(rowGroup.num_rows)) {
-        throw new Error('parquet column length does not match row group length')
+        throw new Error(`parquet column length ${columnData.length} does not match row group length ${rowGroup.num_rows}`)
       }
       // notify caller of column data
       if (options.onChunk) options.onChunk({ column: columnIndex, data: columnData, rowStart: 0, rowEnd: columnData.length })

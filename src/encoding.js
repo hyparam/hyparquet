@@ -149,12 +149,13 @@ function readPlainByteArrayFixed(dataView, offset, fixedLength) {
 /**
  * Read `count` values of the given type from the dataView.
  *
+ * @typedef {import("./types.d.ts").DecodedArray} DecodedArray
  * @param {DataView} dataView - buffer to read data from
  * @param {number} type - parquet type of the data
  * @param {number} count - number of values to read
  * @param {number} offset - offset to start reading from the DataView
  * @param {boolean} utf8 - whether to decode byte arrays as UTF-8
- * @returns {Decoded<ArrayLike<any>>} array of values
+ * @returns {Decoded<DecodedArray>} array of values
  */
 export function readPlain(dataView, type, count, offset, utf8) {
   if (count === 0) return { value: [], byteLength: 0 }
@@ -323,7 +324,13 @@ function readBitPacked(dataView, offset, header, bitWidth, remaining) {
   let count = (header >> 1) << 3
   const mask = maskForBits(bitWidth)
 
-  let data = dataView.getUint8(offset)
+  // Sometimes it tries to read outside of available memory, but it will be masked out anyway
+  let data = 0
+  if (offset < dataView.byteLength) {
+    data = dataView.getUint8(offset)
+  } else if (mask) {
+    throw new Error(`parquet bitpack offset ${offset} out of range`)
+  }
   let byteLength = 1
   let left = 8
   let right = 0

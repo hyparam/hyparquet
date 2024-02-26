@@ -57,6 +57,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       const dictionaryEncoding = daph.encoding === Encoding.PLAIN_DICTIONARY || daph.encoding === Encoding.RLE_DICTIONARY
 
       // construct output values: skip nulls and construct lists
+      /** @type {any[]} */
       let values
       if (repetitionLevels.length) {
         // Use repetition levels to construct lists
@@ -73,32 +74,8 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       } else if (definitionLevels?.length) {
         const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
         // Use definition levels to skip nulls
-        let index = 0
         values = []
-        const decoder = new TextDecoder()
-        for (let i = 0; i < definitionLevels.length; i++) {
-          if (definitionLevels[i] === maxDefinitionLevel) {
-            if (index > dataPage.length) {
-              throw new Error(`parquet index ${index} exceeds data page length ${dataPage.length}`)
-            }
-            let v = dataPage[index++]
-
-            // map to dictionary value
-            if (dictionary) {
-              v = dictionary[v]
-              if (v instanceof Uint8Array) {
-                try {
-                  v = decoder.decode(v)
-                } catch (e) {
-                  console.warn('parquet failed to decode byte array as string', e)
-                }
-              }
-            }
-            values[i] = v
-          } else {
-            values[i] = undefined
-          }
-        }
+        skipNulls(definitionLevels, maxDefinitionLevel, dataPage, dictionary, values)
       } else {
         if (dictionaryEncoding && dictionary !== undefined && Array.isArray(dataPage)) {
           // dereference dictionary values
@@ -124,7 +101,9 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       const diph = header.dictionary_page_header
       if (!diph) throw new Error('parquet dictionary page header is undefined')
 
-      const page = decompressPage(compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec)
+      const page = decompressPage(
+        compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec
+      )
       dictionary = readDictionaryPage(page, diph, schema, columnMetadata)
     } else if (header.type === PageType.DATA_PAGE_V2) {
       throw new Error('parquet data page v2 not supported')
@@ -234,4 +213,42 @@ function decompressPage(compressedBytes, uncompressed_page_size, codec) {
     throw new Error(`parquet decompressed page length ${page?.length} does not match header ${uncompressed_page_size}`)
   }
   return page
+}
+
+/**
+ * Expand data page list with nulls and convert to utf8.
+ * @param {number[]} definitionLevels
+ * @param {number} maxDefinitionLevel
+ * @param {ArrayLike<any>} dataPage
+ * @param {any} dictionary
+ * @param {any[]} output
+ */
+function skipNulls(definitionLevels, maxDefinitionLevel, dataPage, dictionary, output) {
+  if (output.length) throw new Error('parquet output array is not empty')
+  // Use definition levels to skip nulls
+  let index = 0
+  const decoder = new TextDecoder()
+  for (let i = 0; i < definitionLevels.length; i++) {
+    if (definitionLevels[i] === maxDefinitionLevel) {
+      if (index > dataPage.length) {
+        throw new Error(`parquet index ${index} exceeds data page length ${dataPage.length}`)
+      }
+      let v = dataPage[index++]
+
+      // map to dictionary value
+      if (dictionary) {
+        v = dictionary[v]
+        if (v instanceof Uint8Array) {
+          try {
+            v = decoder.decode(v)
+          } catch (e) {
+            console.warn('parquet failed to decode byte array as string', e)
+          }
+        }
+      }
+      output[i] = v
+    } else {
+      output[i] = undefined
+    }
+  }
 }

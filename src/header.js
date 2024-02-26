@@ -52,7 +52,7 @@ export function parquetHeader(arrayBuffer, offset) {
     encoding: header.field_8.field_4,
     definition_levels_byte_length: header.field_8.field_5,
     repetition_levels_byte_length: header.field_8.field_6,
-    is_compressed: header.field_8.field_7,
+    is_compressed: header.field_8.field_7 === undefined ? true : header.field_8.field_7, // default to true
     statistics: header.field_8.field_8,
   }
 

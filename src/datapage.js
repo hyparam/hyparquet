@@ -11,7 +11,8 @@ import {
 const skipNulls = false // TODO
 
 /**
- * @typedef {{ definitionLevels: number[] | undefined, repetitionLevels: number[], value: ArrayLike<any> }} DataPage
+ * @typedef {{ byteLength: number, definitionLevels: number[], numNulls: number }} DefinitionLevels
+ * @typedef {import("./types.d.ts").DataPage} DataPage
  * @typedef {import("./types.d.ts").ColumnMetaData} ColumnMetaData
  * @typedef {import("./types.d.ts").DataPageHeader} DataPageHeader
  * @typedef {import("./types.d.ts").DictionaryPageHeader} DictionaryPageHeader
@@ -34,7 +35,7 @@ const skipNulls = false // TODO
 export function readDataPage(bytes, daph, schema, columnMetadata) {
   const dataView = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
   let offset = 0
-  /** @type {ArrayLike<any>} */
+  /** @type {any[]} */
   let values = []
 
   // repetition levels
@@ -47,23 +48,24 @@ export function readDataPage(bytes, daph, schema, columnMetadata) {
   let definitionLevels = undefined
   let numNulls = 0
   // let maxDefinitionLevel = -1
+  // TODO: move into readDefinitionLevels
   if (skipNulls && !isRequired(schema, columnMetadata.path_in_schema)) {
     // skip_definition_bytes
     offset += skipDefinitionBytes(daph.num_values)
   } else {
-    const dl = readDefinitionLevels(dataView, offset, daph, schema, columnMetadata)
+    const dl = readDefinitionLevels(dataView, offset, daph, schema, columnMetadata.path_in_schema)
     definitionLevels = dl.definitionLevels
     numNulls = dl.numNulls
     offset += dl.byteLength
   }
 
   // read values based on encoding
-  const nval = daph.num_values - numNulls
+  const nValues = daph.num_values - numNulls
   if (daph.encoding === Encoding.PLAIN) {
     const se = schemaElement(schema, columnMetadata.path_in_schema)
     const utf8 = se.converted_type === 'UTF8'
-    const plainObj = readPlain(dataView, columnMetadata.type, nval, offset, utf8)
-    values = plainObj.value
+    const plainObj = readPlain(dataView, columnMetadata.type, nValues, offset, utf8)
+    values = Array.isArray(plainObj.value) ? plainObj.value : Array.from(plainObj.value)
     offset += plainObj.byteLength
   } else if (
     daph.encoding === Encoding.PLAIN_DICTIONARY ||
@@ -81,13 +83,13 @@ export function readDataPage(bytes, daph, schema, columnMetadata) {
     }
     if (bitWidth) {
       const { value, byteLength } = readRleBitPackedHybrid(
-        dataView, offset, bitWidth, dataView.byteLength - offset, nval
+        dataView, offset, bitWidth, dataView.byteLength - offset, nValues
       )
       offset += byteLength
-      values = value
+      values = Array.isArray(value) ? value : Array.from(value)
     } else {
       // nval zeros
-      values = new Array(nval).fill(0)
+      values = new Array(nValues).fill(0)
     }
   } else {
     throw new Error(`parquet unsupported encoding: ${daph.encoding}`)
@@ -136,8 +138,6 @@ function readRepetitionLevels(dataView, offset, daph, schema, columnMetadata) {
   return { value: [], byteLength: 0 }
 }
 
-/** @typedef {{ byteLength: number, definitionLevels: number[], numNulls: number }} DefinitionLevels */
-
 /**
  * Read the definition levels from this page, if any.
  *
@@ -145,12 +145,12 @@ function readRepetitionLevels(dataView, offset, daph, schema, columnMetadata) {
  * @param {number} offset offset to start reading from
  * @param {DataPageHeader} daph data page header
  * @param {SchemaElement[]} schema schema for the file
- * @param {ColumnMetaData} columnMetadata metadata for the column
+ * @param {string[]} path_in_schema path in the schema
  * @returns {DefinitionLevels} definition levels and number of bytes read
  */
-function readDefinitionLevels(dataView, offset, daph, schema, columnMetadata) {
-  if (!isRequired(schema, columnMetadata.path_in_schema)) {
-    const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
+function readDefinitionLevels(dataView, offset, daph, schema, path_in_schema) {
+  if (!isRequired(schema, path_in_schema)) {
+    const maxDefinitionLevel = getMaxDefinitionLevel(schema, path_in_schema)
     const bitWidth = widthFromMaxInt(maxDefinitionLevel)
     if (bitWidth) {
       // num_values is index 1 for either type of page header

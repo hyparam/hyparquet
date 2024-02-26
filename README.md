@@ -69,6 +69,11 @@ const metadata = parquetMetadata(arrayBuffer)
 
 To parse parquet files from a user drag-and-drop action, see example in [index.html](index.html).
 
+## Async
+
+Hyparquet supports asynchronous fetching of parquet files, over a network.
+You can provide an `AsyncBuffer` which is like a js `ArrayBuffer` but the `slice` method returns `Promise<ArrayBuffer>`.
+
 ## Supported Parquet Files
 
 The parquet format supports a number of different compression and encoding types.
