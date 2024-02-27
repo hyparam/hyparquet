@@ -1,4 +1,3 @@
-import { ParquetType } from './constants.js'
 import { readVarInt } from './thrift.js'
 
 /**
@@ -150,8 +149,9 @@ function readPlainByteArrayFixed(dataView, offset, fixedLength) {
  * Read `count` values of the given type from the dataView.
  *
  * @typedef {import("./types.d.ts").DecodedArray} DecodedArray
+ * @typedef {import("./types.d.ts").ParquetType} ParquetType
  * @param {DataView} dataView - buffer to read data from
- * @param {number} type - parquet type of the data
+ * @param {ParquetType} type - parquet type of the data
  * @param {number} count - number of values to read
  * @param {number} offset - offset to start reading from the DataView
  * @param {boolean} utf8 - whether to decode byte arrays as UTF-8
@@ -159,19 +159,19 @@ function readPlainByteArrayFixed(dataView, offset, fixedLength) {
  */
 export function readPlain(dataView, type, count, offset, utf8) {
   if (count === 0) return { value: [], byteLength: 0 }
-  if (type === ParquetType.BOOLEAN) {
+  if (type === 'BOOLEAN') {
     return readPlainBoolean(dataView, offset, count)
-  } else if (type === ParquetType.INT32) {
+  } else if (type === 'INT32') {
     return readPlainInt32(dataView, offset, count)
-  } else if (type === ParquetType.INT64) {
+  } else if (type === 'INT64') {
     return readPlainInt64(dataView, offset, count)
-  } else if (type === ParquetType.INT96) {
+  } else if (type === 'INT96') {
     return readPlainInt96(dataView, offset, count)
-  } else if (type === ParquetType.FLOAT) {
+  } else if (type === 'FLOAT') {
     return readPlainFloat(dataView, offset, count)
-  } else if (type === ParquetType.DOUBLE) {
+  } else if (type === 'DOUBLE') {
     return readPlainDouble(dataView, offset, count)
-  } else if (type === ParquetType.BYTE_ARRAY) {
+  } else if (type === 'BYTE_ARRAY') {
     const byteArray = readPlainByteArray(dataView, offset, count)
     if (utf8) {
       const decoder = new TextDecoder()
@@ -181,7 +181,7 @@ export function readPlain(dataView, type, count, offset, utf8) {
       }
     }
     return byteArray
-  } else if (type === ParquetType.FIXED_LEN_BYTE_ARRAY) {
+  } else if (type === 'FIXED_LEN_BYTE_ARRAY') {
     return readPlainByteArrayFixed(dataView, offset, count)
   } else {
     throw new Error(`parquet unhandled type: ${type}`)

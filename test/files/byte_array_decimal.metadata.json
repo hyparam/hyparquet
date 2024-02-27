@@ -16,7 +16,7 @@
             "path_in_schema": [ "value" ],
             "total_compressed_size": 168,
             "total_uncompressed_size": 168,
-            "type": 6
+            "type": "BYTE_ARRAY"
           }
         }
       ],
@@ -37,7 +37,7 @@
       "precision": 4,
       "repetition_type": "OPTIONAL",
       "scale": 2,
-      "type": 6
+      "type": "BYTE_ARRAY"
     }
   ]
 }

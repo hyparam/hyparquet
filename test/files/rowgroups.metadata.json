@@ -9,7 +9,7 @@
       "num_children": 1
     },
     {
-      "type": 2,
+      "type": "INT64",
       "repetition_type": "OPTIONAL",
       "name": "numbers"
     }
@@ -38,7 +38,7 @@
             },
             "total_compressed_size": 146,
             "total_uncompressed_size": 172,
-            "type": 2
+            "type": "INT64"
           }
         }
       ],
@@ -67,7 +67,7 @@
             },
             "total_compressed_size": 120,
             "total_uncompressed_size": 126,
-            "type": 2
+            "type": "INT64"
           }
         }
       ],

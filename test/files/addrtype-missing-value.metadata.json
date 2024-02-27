@@ -9,7 +9,7 @@
       "num_children": 1
     },
     {
-      "type": 6,
+      "type": "BYTE_ARRAY",
       "repetition_type": "OPTIONAL",
       "name": "ADDRTYPE",
       "converted_type": "UTF8"
@@ -22,7 +22,7 @@
         {
           "file_offset": 0,
           "meta_data": {
-            "type": 6,
+            "type": "BYTE_ARRAY",
             "encodings": ["PLAIN", "RLE_DICTIONARY"],
             "path_in_schema": ["ADDRTYPE"],
             "codec": "SNAPPY",

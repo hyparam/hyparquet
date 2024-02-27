@@ -21,7 +21,7 @@
             "statistics": {},
             "total_compressed_size": 1467,
             "total_uncompressed_size": 4155,
-            "type": 2
+            "type": "INT64"
           }
         }
       ],
@@ -38,7 +38,7 @@
       "converted_type": "UINT_64",
       "name": "long_col",
       "repetition_type": "OPTIONAL",
-      "type": 2
+      "type": "INT64"
     }
   ]
 }

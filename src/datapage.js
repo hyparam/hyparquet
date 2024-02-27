@@ -75,7 +75,7 @@ export function readDataPage(bytes, daph, schema, columnMetadata) {
     // bit width is stored as single byte
     let bitWidth
     // TODO: RLE encoding uses bitWidth = schemaElement.type_length
-    if (columnMetadata.type === ParquetType.BOOLEAN) {
+    if (columnMetadata.type === 'BOOLEAN') {
       bitWidth = 1
     } else {
       bitWidth = dataView.getUint8(offset)

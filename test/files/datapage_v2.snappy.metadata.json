@@ -27,7 +27,7 @@
             },
             "total_compressed_size": 63,
             "total_uncompressed_size": 59,
-            "type": 6
+            "type": "BYTE_ARRAY"
           }
         },
         {
@@ -45,7 +45,7 @@
             },
             "total_compressed_size": 49,
             "total_uncompressed_size": 47,
-            "type": 1
+            "type": "INT32"
           }
         },
         {
@@ -63,7 +63,7 @@
             },
             "total_compressed_size": 88,
             "total_uncompressed_size": 94,
-            "type": 5
+            "type": "DOUBLE"
           }
         },
         {
@@ -81,7 +81,7 @@
             },
             "total_compressed_size": 39,
             "total_uncompressed_size": 37,
-            "type": 0
+            "type": "BOOLEAN"
           }
         },
         {
@@ -103,7 +103,7 @@
             },
             "total_compressed_size": 78,
             "total_uncompressed_size": 74,
-            "type": 1
+            "type": "INT32"
           }
         }
       ],
@@ -120,22 +120,22 @@
       "converted_type": "UTF8",
       "name": "a",
       "repetition_type": "OPTIONAL",
-      "type": 6
+      "type": "BYTE_ARRAY"
     },
     {
       "name": "b",
       "repetition_type": "REQUIRED",
-      "type": 1
+      "type": "INT32"
     },
     {
       "name": "c",
       "repetition_type": "REQUIRED",
-      "type": 5
+      "type": "DOUBLE"
     },
     {
       "name": "d",
       "repetition_type": "REQUIRED",
-      "type": 0
+      "type": "BOOLEAN"
     },
     {
       "converted_type": "LIST",
@@ -151,7 +151,7 @@
     {
       "name": "element",
       "repetition_type": "REQUIRED",
-      "type": 1
+      "type": "INT32"
     }
   ]
 }

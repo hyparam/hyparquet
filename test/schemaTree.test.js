@@ -28,7 +28,7 @@ const addrtypeSchema = {
         converted_type: 'UTF8',
         name: 'ADDRTYPE',
         repetition_type: 'OPTIONAL',
-        type: 6,
+        type: 'BYTE_ARRAY',
       },
     },
   ],
@@ -49,7 +49,7 @@ const rowgroupsSchema = {
       element: {
         name: 'numbers',
         repetition_type: 'OPTIONAL',
-        type: 2,
+        type: 'INT64',
       },
     },
   ],

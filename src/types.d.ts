@@ -44,16 +44,15 @@ export interface SchemaElement {
   field_id?: number
 }
 
-export enum ParquetType {
-  BOOLEAN = 0,
-  INT32 = 1,
-  INT64 = 2,
-  INT96 = 3, // deprecated
-  FLOAT = 4,
-  DOUBLE = 5,
-  BYTE_ARRAY = 6,
-  FIXED_LEN_BYTE_ARRAY = 7,
-}
+export type ParquetType =
+  'BOOLEAN' |
+  'INT32' |
+  'INT64' |
+  'INT96' | // deprecated
+  'FLOAT' |
+  'DOUBLE' |
+  'BYTE_ARRAY' |
+  'FIXED_LEN_BYTE_ARRAY'
 
 export type FieldRepetitionType =
   'REQUIRED' |
