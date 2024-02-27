@@ -1,4 +1,3 @@
-import { off } from 'process'
 import { decompressPage } from './column.js'
 import { Encoding } from './constants.js'
 import { readPlain, readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
