@@ -15,7 +15,7 @@ export function convert(data, schemaElement) {
   const ctype = schemaElement.converted_type
   if (ctype === 'UTF8') {
     const decoder = new TextDecoder()
-    return data.map(v => decoder.decode(v))
+    return data.map(v => typeof v === 'string' ? v : decoder.decode(v))
   }
   if (ctype === 'DECIMAL') {
     const scaleFactor = schemaElement.scale ? Math.pow(10, schemaElement.scale) : 1
