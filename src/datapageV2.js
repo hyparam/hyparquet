@@ -98,14 +98,13 @@ export function readDataPageV2(compressedBytes, ph, schema, columnMetadata) {
  */
 export function readRepetitionLevelsV2(dataView, offset, daph2, schema, columnMetadata) {
   const maxRepetitionLevel = getMaxRepetitionLevel(schema, columnMetadata.path_in_schema)
-  if (maxRepetitionLevel) {
-    const bitWidth = widthFromMaxInt(maxRepetitionLevel)
-    // num_values is index 1 for either type of page header
-    return readRleBitPackedHybrid(
-      dataView, offset, bitWidth, daph2.repetition_levels_byte_length, daph2.num_values
-    ).value
-  }
-  return []
+  if (!maxRepetitionLevel) return []
+
+  const bitWidth = widthFromMaxInt(maxRepetitionLevel)
+  // num_values is index 1 for either type of page header
+  return readRleBitPackedHybrid(
+    dataView, offset, bitWidth, daph2.repetition_levels_byte_length, daph2.num_values
+  ).value
 }
 
 /**
@@ -158,11 +157,12 @@ function deltaBinaryUnpack(page, nValues, values) {
           // no more diffs if on last value, delta read bitpacked
           let data = 0
           let stop = -bitWidth
-          // TODO: possible loss of precision
-          const mask = 0xffffffffffffffff >> (64 - bitWidth)
+          // only works for bitWidth < 31
+          const mask = (1 << bitWidth) - 1
           while (count) {
             if (stop < 0) {
-              data = ((data & 0x00ffffffffffffff) << 8) | dataView.getUint8(offset++)
+              // fails when data gets too large
+              data = (data << 8) | dataView.getUint8(offset++)
               stop += 8
             } else {
               values.push((data >> stop) & mask)

@@ -49,7 +49,9 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       const daph = header.data_page_header
       if (!daph) throw new Error('parquet data page header is undefined')
 
-      const page = decompressPage(compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec)
+      const page = decompressPage(
+        compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec
+      )
       const { definitionLevels, repetitionLevels, value: dataPage } = readDataPage(page, daph, schema, columnMetadata)
       valuesSeen += daph.num_values
 
@@ -64,7 +66,9 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
         const isNull = columnMetadata && !isRequired(schema, [columnMetadata.path_in_schema[0]])
         const nullValue = false // TODO: unused?
         const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
-        values = assembleObjects(definitionLevels, repetitionLevels, dataPage, isNull, nullValue, maxDefinitionLevel, rowIndex[0])
+        values = assembleObjects(
+          definitionLevels, repetitionLevels, dataPage, isNull, nullValue, maxDefinitionLevel, rowIndex[0]
+        )
       } else if (definitionLevels?.length) {
         const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
         // Use definition levels to skip nulls
@@ -86,7 +90,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       // values.length !== daph.num_values isn't right. In cases like arrays,
       // you need the total number of children, not the number of top-level values.
 
-      rowData.push(...Array.from(values))
+      rowData.push(...values)
     } else if (header.type === PageType.DICTIONARY_PAGE) {
       const diph = header.dictionary_page_header
       if (!diph) throw new Error('parquet dictionary page header is undefined')

@@ -109,9 +109,7 @@ export function readDataPage(bytes, daph, schema, columnMetadata) {
  */
 export function readDictionaryPage(bytes, diph, schema, columnMetadata) {
   const dataView = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
-  // read values based on encoding
-  const { value } = readPlain(dataView, columnMetadata.type, diph.num_values, 0, false)
-  return value
+  return readPlain(dataView, columnMetadata.type, diph.num_values, 0, false).value
 }
 
 /**
