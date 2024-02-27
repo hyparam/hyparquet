@@ -1,4 +1,4 @@
-import { Encoding, ParquetType } from './constants.js'
+import { ParquetType } from './constants.js'
 import { readData, readPlain, readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
 import {
   getMaxDefinitionLevel,
@@ -61,16 +61,16 @@ export function readDataPage(bytes, daph, schema, columnMetadata) {
 
   // read values based on encoding
   const nValues = daph.num_values - numNulls
-  if (daph.encoding === Encoding.PLAIN) {
+  if (daph.encoding === 'PLAIN') {
     const se = schemaElement(schema, columnMetadata.path_in_schema)
     const utf8 = se.converted_type === 'UTF8'
     const plainObj = readPlain(dataView, columnMetadata.type, nValues, offset, utf8)
     values = Array.isArray(plainObj.value) ? plainObj.value : Array.from(plainObj.value)
     offset += plainObj.byteLength
   } else if (
-    daph.encoding === Encoding.PLAIN_DICTIONARY ||
-    daph.encoding === Encoding.RLE_DICTIONARY ||
-    daph.encoding === Encoding.RLE
+    daph.encoding === 'PLAIN_DICTIONARY' ||
+    daph.encoding === 'RLE_DICTIONARY' ||
+    daph.encoding === 'RLE'
   ) {
     // bit width is stored as single byte
     let bitWidth

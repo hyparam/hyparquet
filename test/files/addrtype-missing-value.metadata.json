@@ -23,7 +23,7 @@
           "file_offset": 0,
           "meta_data": {
             "type": 6,
-            "encodings": [0, 8],
+            "encodings": ["PLAIN", "RLE_DICTIONARY"],
             "path_in_schema": ["ADDRTYPE"],
             "codec": "SNAPPY",
             "num_values": 10,

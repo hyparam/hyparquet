@@ -17,10 +17,7 @@
           "meta_data": {
             "codec": "SNAPPY",
             "data_page_offset": 4,
-            "encodings": [
-              0,
-              8
-            ],
+            "encodings": ["PLAIN", "RLE_DICTIONARY"],
             "num_values": 5,
             "path_in_schema": ["a"],
             "statistics": {
@@ -38,7 +35,7 @@
           "meta_data": {
             "codec": "SNAPPY",
             "data_page_offset": 67,
-            "encodings": [5],
+            "encodings": ["DELTA_BINARY_PACKED"],
             "num_values": 5,
             "path_in_schema": ["b"],
             "statistics": {
@@ -56,10 +53,7 @@
           "meta_data": {
             "codec": "SNAPPY",
             "data_page_offset": 116,
-            "encodings": [
-              0,
-              8
-            ],
+            "encodings": ["PLAIN", "RLE_DICTIONARY"],
             "num_values": 5,
             "path_in_schema": ["c"],
             "statistics": {
@@ -77,7 +71,7 @@
           "meta_data": {
             "codec": "SNAPPY",
             "data_page_offset": 204,
-            "encodings": [3],
+            "encodings": ["RLE"],
             "num_values": 5,
             "path_in_schema": ["d"],
             "statistics": {
@@ -95,10 +89,7 @@
           "meta_data": {
             "codec": "SNAPPY",
             "data_page_offset": 243,
-            "encodings": [
-              0,
-              8
-            ],
+            "encodings": ["PLAIN", "RLE_DICTIONARY"],
             "num_values": 10,
             "path_in_schema": [
               "e",

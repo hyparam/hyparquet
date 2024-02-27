@@ -11,8 +11,8 @@
             "codec": "GZIP",
             "data_page_offset": 4,
             "encodings": [
-              0,
-              3
+              "PLAIN",
+              "RLE"
             ],
             "num_values": 513,
             "path_in_schema": [

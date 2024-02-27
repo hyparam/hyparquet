@@ -1,4 +1,4 @@
-import { CompressionCodec, ConvertedType, FieldRepetitionType } from './constants.js'
+import { CompressionCodec, ConvertedType, Encoding, FieldRepetitionType } from './constants.js'
 import { schemaTree } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
@@ -113,7 +113,7 @@ export function parquetMetadata(arrayBuffer) {
       file_offset: column.field_2,
       meta_data: column.field_3 && {
         type: column.field_3.field_1,
-        encodings: column.field_3.field_2,
+        encodings: column.field_3.field_2?.map((/** @type {number} */ e) => Encoding[e]),
         path_in_schema: column.field_3.field_3,
         codec: CompressionCodec[column.field_3.field_4],
         num_values: column.field_3.field_5,
@@ -131,7 +131,7 @@ export function parquetMetadata(arrayBuffer) {
         },
         encoding_stats: column.field_3.field_13?.map((/** @type {any} */ encodingStat) => ({
           page_type: encodingStat.field_1,
-          encoding: encodingStat.field_2,
+          encoding: Encoding[encodingStat.field_2],
           count: encodingStat.field_3,
         })),
       },

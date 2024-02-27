@@ -1,4 +1,4 @@
-import { Encoding, PageType } from './constants.js'
+import { PageType } from './constants.js'
 import { convert } from './convert.js'
 import { assembleObjects, readDataPage, readDictionaryPage } from './datapage.js'
 import { readDataPageV2 } from './datapageV2.js'
@@ -57,7 +57,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       const { definitionLevels, repetitionLevels, value: dataPage } = readDataPage(page, daph, schema, columnMetadata)
       valuesSeen += daph.num_values
 
-      const dictionaryEncoding = daph.encoding === Encoding.PLAIN_DICTIONARY || daph.encoding === Encoding.RLE_DICTIONARY
+      const dictionaryEncoding = daph.encoding === 'PLAIN_DICTIONARY' || daph.encoding === 'RLE_DICTIONARY'
 
       // construct output values: skip nulls and construct lists
       /** @type {any[]} */

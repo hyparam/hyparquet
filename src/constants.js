@@ -9,17 +9,18 @@ export const ParquetType = {
   FIXED_LEN_BYTE_ARRAY: 7,
 }
 
-export const Encoding = {
-  PLAIN: 0,
-  PLAIN_DICTIONARY: 2,
-  RLE: 3,
-  BIT_PACKED: 4, // deprecated
-  DELTA_BINARY_PACKED: 5,
-  DELTA_LENGTH_BYTE_ARRAY: 6,
-  DELTA_BYTE_ARRAY: 7,
-  RLE_DICTIONARY: 8,
-  BYTE_STREAM_SPLIT: 9,
-}
+export const Encoding = [
+  'PLAIN',
+  undefined,
+  'PLAIN_DICTIONARY',
+  'RLE',
+  'BIT_PACKED', // deprecated
+  'DELTA_BINARY_PACKED',
+  'DELTA_LENGTH_BYTE_ARRAY',
+  'DELTA_BYTE_ARRAY',
+  'RLE_DICTIONARY',
+  'BYTE_STREAM_SPLIT',
+]
 
 export const FieldRepetitionType = [
   'REQUIRED',
