@@ -10,9 +10,9 @@ import { fileToAsyncBuffer, fileToJson } from './helpers.js'
  * @type {Compressors}
  */
 const compressors = {
-  GZIP: (/** @type {Uint8Array} */ input, /** @type {Uint8Array} */ output) => {
+  GZIP: (/** @type {Uint8Array} */ input, /** @type {number} */ outputLength) => {
     const result = gunzipSync(input)
-    output.set(result)
+    return new Uint8Array(result.buffer, result.byteOffset, outputLength)
   },
 }
 

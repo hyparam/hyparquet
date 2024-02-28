@@ -182,8 +182,7 @@ export function decompressPage(compressedBytes, uncompressed_page_size, codec, c
   if (codec === 'UNCOMPRESSED') {
     page = compressedBytes
   } else if (customDecompressor) {
-    page = new Uint8Array(uncompressed_page_size)
-    customDecompressor(compressedBytes, page)
+    page = customDecompressor(compressedBytes, uncompressed_page_size)
   } else if (codec === 'SNAPPY') {
     page = new Uint8Array(uncompressed_page_size)
     snappyUncompress(compressedBytes, page)

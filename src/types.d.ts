@@ -134,7 +134,7 @@ export type CompressionCodec =
   'LZ4_RAW'
 
 export type Compressors = {
-  [K in CompressionCodec]?: (input: Uint8Array, output: Uint8Array) => void
+  [K in CompressionCodec]?: (input: Uint8Array, outputLength: number) => Uint8Array
 }
 
 interface KeyValue {
