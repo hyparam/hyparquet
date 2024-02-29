@@ -1,5 +1,5 @@
 import { decompressPage } from './column.js'
-import { deltaBinaryUnpack } from './delta.js'
+import { deltaBinaryUnpack, deltaByteArray } from './delta.js'
 import { readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
 import { readPlain } from './plain.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel } from './schema.js'
@@ -12,7 +12,7 @@ import { getMaxDefinitionLevel, getMaxRepetitionLevel } from './schema.js'
  * @typedef {import("./types.d.ts").Compressors} Compressors
  * @typedef {import("./types.d.ts").DataPageHeaderV2} DataPageHeaderV2
  * @typedef {import("./types.d.ts").SchemaTree} SchemaTree
- * @param {Uint8Array} compressedBytes raw page data (should already be decompressed)
+ * @param {Uint8Array} compressedBytes raw page data
  * @param {import("./types.d.ts").PageHeader} ph page header
  * @param {SchemaTree[]} schemaPath
  * @param {ColumnMetaData} columnMetadata
@@ -46,7 +46,7 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
 
   // read values based on encoding
   /** @type {import('./types.d.ts').DecodedArray} */
-  let dataPage = []
+  let dataPage
   const nValues = daph2.num_values - daph2.num_nulls
   if (daph2.encoding === 'PLAIN') {
     const { type_length } = schemaPath[schemaPath.length - 1].element
@@ -67,6 +67,9 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
     const int32 = columnMetadata.type === 'INT32'
     dataPage = int32 ? new Int32Array(nValues) : new BigInt64Array(nValues)
     deltaBinaryUnpack(pageReader, nValues, dataPage)
+  } else if (daph2.encoding === 'DELTA_BYTE_ARRAY') {
+    dataPage = new Array(nValues)
+    deltaByteArray(pageReader, nValues, dataPage)
   } else {
     throw new Error(`parquet unsupported encoding: ${daph2.encoding}`)
   }

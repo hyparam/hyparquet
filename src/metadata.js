@@ -59,7 +59,7 @@ export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = 1 << 
     // combine initial fetch with the new slice
     const combinedBuffer = new ArrayBuffer(metadataLength + 8)
     const combinedView = new Uint8Array(combinedBuffer)
-    combinedView.set(new Uint8Array(metadataBuffer), 0)
+    combinedView.set(new Uint8Array(metadataBuffer))
     combinedView.set(new Uint8Array(footerBuffer), footerOffset - metadataOffset)
     return parquetMetadata(combinedBuffer)
   } else {

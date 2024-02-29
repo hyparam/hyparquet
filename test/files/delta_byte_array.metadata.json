@@ -1,0 +1,333 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "name": "hive_schema",
+      "num_children": 9
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "c_customer_id",
+      "converted_type": "UTF8"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "c_salutation",
+      "converted_type": "UTF8"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "c_first_name",
+      "converted_type": "UTF8"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "c_last_name",
+      "converted_type": "UTF8"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "c_preferred_cust_flag",
+      "converted_type": "UTF8"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "c_birth_country",
+      "converted_type": "UTF8"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "c_login",
+      "converted_type": "UTF8"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "c_email_address",
+      "converted_type": "UTF8"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "c_last_review_date",
+      "converted_type": "UTF8"
+    }
+  ],
+  "num_rows": 1000,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "c_customer_id"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1000,
+            "total_uncompressed_size": 8248,
+            "total_compressed_size": 8248,
+            "data_page_offset": 4,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "AAAAAAAAPPCAAAAA",
+              "min_value": "AAAAAAAAAABAAAAA"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 8252,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "c_salutation"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1000,
+            "total_uncompressed_size": 3362,
+            "total_compressed_size": 3362,
+            "data_page_offset": 8252,
+            "statistics": {
+              "null_count": 30,
+              "max_value": "Sir",
+              "min_value": "Dr."
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 11614,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "c_first_name"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1000,
+            "total_uncompressed_size": 6595,
+            "total_compressed_size": 6595,
+            "data_page_offset": 11614,
+            "statistics": {
+              "null_count": 32,
+              "max_value": "Zachary",
+              "min_value": "Aaron"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 18209,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "c_last_name"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1000,
+            "total_uncompressed_size": 6955,
+            "total_compressed_size": 6955,
+            "data_page_offset": 18209,
+            "statistics": {
+              "null_count": 24,
+              "max_value": "Zamora",
+              "min_value": "Adams"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 25164,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "c_preferred_cust_flag"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1000,
+            "total_uncompressed_size": 1220,
+            "total_compressed_size": 1220,
+            "data_page_offset": 25164,
+            "statistics": {
+              "null_count": 29,
+              "max_value": "Y",
+              "min_value": "N"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 26384,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "c_birth_country"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1000,
+            "total_uncompressed_size": 9599,
+            "total_compressed_size": 9599,
+            "data_page_offset": 26384,
+            "statistics": {
+              "null_count": 31,
+              "max_value": "ZIMBABWE",
+              "min_value": "AFGHANISTAN"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 35983,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "c_login"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1000,
+            "total_uncompressed_size": 42,
+            "total_compressed_size": 42,
+            "data_page_offset": 35983,
+            "statistics": {
+              "null_count": 1000
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 36025,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "c_email_address"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1000,
+            "total_uncompressed_size": 27763,
+            "total_compressed_size": 27763,
+            "data_page_offset": 36025,
+            "statistics": {
+              "null_count": 31,
+              "max_value": "Zachary.Parsons@hHmnLrbKsfY.com",
+              "min_value": "Aaron.Browder@iUpddkHI9z8.org"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 63788,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "c_last_review_date"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1000,
+            "total_uncompressed_size": 3511,
+            "total_compressed_size": 3511,
+            "data_page_offset": 63788,
+            "statistics": {
+              "null_count": 25,
+              "max_value": "2452648",
+              "min_value": "2452283"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          }
+        }
+      ],
+      "total_byte_size": 67295,
+      "num_rows": 1000
+    }
+  ],
+  "created_by": "parquet-mr version 1.10.0 (build 031a6654009e3b82020012a18434c582bd74c73a)",
+  "metadata_length": 1046
+}

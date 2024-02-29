@@ -1,0 +1,746 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "name": "spark_schema",
+      "num_children": 17
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "REQUIRED",
+      "name": "c_customer_sk:"
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "REQUIRED",
+      "name": "c_current_cdemo_sk:"
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "REQUIRED",
+      "name": "c_current_hdemo_sk:"
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "REQUIRED",
+      "name": "c_current_addr_sk:"
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "REQUIRED",
+      "name": "c_first_shipto_date_sk:"
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "REQUIRED",
+      "name": "c_first_sales_date_sk:"
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "REQUIRED",
+      "name": "c_birth_day:"
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "REQUIRED",
+      "name": "c_birth_month:"
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "REQUIRED",
+      "name": "c_birth_year:"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "c_customer_id:",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "c_salutation:",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "c_first_name:",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "c_last_name:",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "c_preferred_cust_flag:",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "c_birth_country:",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "c_email_address:",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "c_last_review_date:",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    }
+  ],
+  "num_rows": 100,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "path_in_schema": [
+              "c_customer_sk:"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 100,
+            "total_uncompressed_size": 50,
+            "total_compressed_size": 50,
+            "data_page_offset": 4,
+            "statistics": {
+              "max": 105,
+              "min": 1,
+              "null_count": 0,
+              "max_value": 105,
+              "min_value": 1
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BINARY_PACKED",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 9714,
+          "offset_index_length": 10,
+          "column_index_offset": 9233,
+          "column_index_length": 23,
+          "crypto_metadata": 23
+        },
+        {
+          "file_offset": 54,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "path_in_schema": [
+              "c_current_cdemo_sk:"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 100,
+            "total_uncompressed_size": 388,
+            "total_compressed_size": 388,
+            "data_page_offset": 54,
+            "statistics": {
+              "max": 1895444,
+              "min": 8817,
+              "null_count": 0,
+              "max_value": 1895444,
+              "min_value": 8817
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BINARY_PACKED",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 9724,
+          "offset_index_length": 11,
+          "column_index_offset": 9256,
+          "column_index_length": 23,
+          "crypto_metadata": 23
+        },
+        {
+          "file_offset": 442,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "path_in_schema": [
+              "c_current_hdemo_sk:"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 100,
+            "total_uncompressed_size": 261,
+            "total_compressed_size": 261,
+            "data_page_offset": 442,
+            "statistics": {
+              "max": 7135,
+              "min": 37,
+              "null_count": 0,
+              "max_value": 7135,
+              "min_value": 37
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BINARY_PACKED",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 9735,
+          "offset_index_length": 12,
+          "column_index_offset": 9279,
+          "column_index_length": 23,
+          "crypto_metadata": 23
+        },
+        {
+          "file_offset": 703,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "path_in_schema": [
+              "c_current_addr_sk:"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 100,
+            "total_uncompressed_size": 307,
+            "total_compressed_size": 307,
+            "data_page_offset": 703,
+            "statistics": {
+              "max": 49388,
+              "min": 464,
+              "null_count": 0,
+              "max_value": 49388,
+              "min_value": 464
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BINARY_PACKED",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 9747,
+          "offset_index_length": 12,
+          "column_index_offset": 9302,
+          "column_index_length": 23,
+          "crypto_metadata": 23
+        },
+        {
+          "file_offset": 1010,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "path_in_schema": [
+              "c_first_shipto_date_sk:"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 100,
+            "total_uncompressed_size": 247,
+            "total_compressed_size": 247,
+            "data_page_offset": 1010,
+            "statistics": {
+              "max": 2452641,
+              "min": 2449130,
+              "null_count": 0,
+              "max_value": 2452641,
+              "min_value": 2449130
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BINARY_PACKED",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 9759,
+          "offset_index_length": 12,
+          "column_index_offset": 9325,
+          "column_index_length": 23,
+          "crypto_metadata": 23
+        },
+        {
+          "file_offset": 1257,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "path_in_schema": [
+              "c_first_sales_date_sk:"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 100,
+            "total_uncompressed_size": 247,
+            "total_compressed_size": 247,
+            "data_page_offset": 1257,
+            "statistics": {
+              "max": 2452611,
+              "min": 2449100,
+              "null_count": 0,
+              "max_value": 2452611,
+              "min_value": 2449100
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BINARY_PACKED",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 9771,
+          "offset_index_length": 12,
+          "column_index_offset": 9348,
+          "column_index_length": 23,
+          "crypto_metadata": 23
+        },
+        {
+          "file_offset": 1504,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "path_in_schema": [
+              "c_birth_day:"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 100,
+            "total_uncompressed_size": 131,
+            "total_compressed_size": 131,
+            "data_page_offset": 1504,
+            "statistics": {
+              "max": 30,
+              "min": 1,
+              "null_count": 0,
+              "max_value": 30,
+              "min_value": 1
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BINARY_PACKED",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 9783,
+          "offset_index_length": 12,
+          "column_index_offset": 9371,
+          "column_index_length": 23,
+          "crypto_metadata": 23
+        },
+        {
+          "file_offset": 1635,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "path_in_schema": [
+              "c_birth_month:"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 100,
+            "total_uncompressed_size": 115,
+            "total_compressed_size": 115,
+            "data_page_offset": 1635,
+            "statistics": {
+              "max": 12,
+              "min": 1,
+              "null_count": 0,
+              "max_value": 12,
+              "min_value": 1
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BINARY_PACKED",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 9795,
+          "offset_index_length": 12,
+          "column_index_offset": 9394,
+          "column_index_length": 23,
+          "crypto_metadata": 23
+        },
+        {
+          "file_offset": 1750,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "path_in_schema": [
+              "c_birth_year:"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 100,
+            "total_uncompressed_size": 144,
+            "total_compressed_size": 144,
+            "data_page_offset": 1750,
+            "statistics": {
+              "max": 1991,
+              "min": 1925,
+              "null_count": 0,
+              "max_value": 1991,
+              "min_value": 1925
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BINARY_PACKED",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 9807,
+          "offset_index_length": 12,
+          "column_index_offset": 9417,
+          "column_index_length": 23,
+          "crypto_metadata": 23
+        },
+        {
+          "file_offset": 1894,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "c_customer_id:"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 100,
+            "total_uncompressed_size": 933,
+            "total_compressed_size": 933,
+            "data_page_offset": 1894,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "AAAAAAAAPFAAAAAA",
+              "min_value": "AAAAAAAAABAAAAAA"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 9819,
+          "offset_index_length": 12,
+          "column_index_offset": 9440,
+          "column_index_length": 47,
+          "crypto_metadata": 47
+        },
+        {
+          "file_offset": 2827,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "c_salutation:"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 100,
+            "total_uncompressed_size": 378,
+            "total_compressed_size": 378,
+            "data_page_offset": 2827,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "Sir",
+              "min_value": "Dr."
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 9831,
+          "offset_index_length": 12,
+          "column_index_offset": 9487,
+          "column_index_length": 21,
+          "crypto_metadata": 21
+        },
+        {
+          "file_offset": 3205,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "c_first_name:"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 100,
+            "total_uncompressed_size": 707,
+            "total_compressed_size": 707,
+            "data_page_offset": 3205,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "William",
+              "min_value": "Albert"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 9843,
+          "offset_index_length": 12,
+          "column_index_offset": 9508,
+          "column_index_length": 28,
+          "crypto_metadata": 28
+        },
+        {
+          "file_offset": 3912,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "c_last_name:"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 100,
+            "total_uncompressed_size": 751,
+            "total_compressed_size": 751,
+            "data_page_offset": 3912,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "Young",
+              "min_value": "Baker"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 9855,
+          "offset_index_length": 12,
+          "column_index_offset": 9536,
+          "column_index_length": 25,
+          "crypto_metadata": 25
+        },
+        {
+          "file_offset": 4663,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "c_preferred_cust_flag:"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 100,
+            "total_uncompressed_size": 154,
+            "total_compressed_size": 154,
+            "data_page_offset": 4663,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "Y",
+              "min_value": "N"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 9867,
+          "offset_index_length": 12,
+          "column_index_offset": 9561,
+          "column_index_length": 17,
+          "crypto_metadata": 17
+        },
+        {
+          "file_offset": 4817,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "c_birth_country:"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 100,
+            "total_uncompressed_size": 1154,
+            "total_compressed_size": 1154,
+            "data_page_offset": 4817,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "WALLIS AND FUTUNA",
+              "min_value": "AFGHANISTAN"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 9879,
+          "offset_index_length": 12,
+          "column_index_offset": 9578,
+          "column_index_length": 43,
+          "crypto_metadata": 43
+        },
+        {
+          "file_offset": 5971,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "c_email_address:"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 100,
+            "total_uncompressed_size": 2857,
+            "total_compressed_size": 2857,
+            "data_page_offset": 5971,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "William.Warner@zegnrzurU.org",
+              "min_value": "Albert.Brunson@62.com"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 9891,
+          "offset_index_length": 12,
+          "column_index_offset": 9621,
+          "column_index_length": 64,
+          "crypto_metadata": 64
+        },
+        {
+          "file_offset": 8828,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "c_last_review_date:"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 100,
+            "total_uncompressed_size": 405,
+            "total_compressed_size": 405,
+            "data_page_offset": 8828,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "2452644",
+              "min_value": "2452293"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 9903,
+          "offset_index_length": 13,
+          "column_index_offset": 9685,
+          "column_index_length": 29,
+          "crypto_metadata": 29
+        }
+      ],
+      "total_byte_size": 9229,
+      "num_rows": 100,
+      "file_offset": 4,
+      "total_compressed_size": 9229,
+      "ordinal": 0
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "org.apache.spark.version",
+      "value": "3.2.0"
+    },
+    {
+      "key": "org.apache.spark.sql.parquet.row.metadata",
+      "value": "{\"type\":\"struct\",\"fields\":[{\"name\":\"c_customer_sk:\",\"type\":\"integer\",\"nullable\":false,\"metadata\":{}},{\"name\":\"c_current_cdemo_sk:\",\"type\":\"integer\",\"nullable\":false,\"metadata\":{}},{\"name\":\"c_current_hdemo_sk:\",\"type\":\"integer\",\"nullable\":false,\"metadata\":{}},{\"name\":\"c_current_addr_sk:\",\"type\":\"integer\",\"nullable\":false,\"metadata\":{}},{\"name\":\"c_first_shipto_date_sk:\",\"type\":\"integer\",\"nullable\":false,\"metadata\":{}},{\"name\":\"c_first_sales_date_sk:\",\"type\":\"integer\",\"nullable\":false,\"metadata\":{}},{\"name\":\"c_birth_day:\",\"type\":\"integer\",\"nullable\":false,\"metadata\":{}},{\"name\":\"c_birth_month:\",\"type\":\"integer\",\"nullable\":false,\"metadata\":{}},{\"name\":\"c_birth_year:\",\"type\":\"integer\",\"nullable\":false,\"metadata\":{}},{\"name\":\"c_customer_id:\",\"type\":\"string\",\"nullable\":false,\"metadata\":{}},{\"name\":\"c_salutation:\",\"type\":\"string\",\"nullable\":false,\"metadata\":{}},{\"name\":\"c_first_name:\",\"type\":\"string\",\"nullable\":false,\"metadata\":{}},{\"name\":\"c_last_name:\",\"type\":\"string\",\"nullable\":false,\"metadata\":{}},{\"name\":\"c_preferred_cust_flag:\",\"type\":\"string\",\"nullable\":false,\"metadata\":{}},{\"name\":\"c_birth_country:\",\"type\":\"string\",\"nullable\":false,\"metadata\":{}},{\"name\":\"c_email_address:\",\"type\":\"string\",\"nullable\":false,\"metadata\":{}},{\"name\":\"c_last_review_date:\",\"type\":\"string\",\"nullable\":false,\"metadata\":{}}]}"
+    }
+  ],
+  "created_by": "parquet-mr version 1.12.1 (build 2a5c06c58fa987f85aa22170be14d927d5ff6e7d)",
+  "metadata_length": 3604
+}

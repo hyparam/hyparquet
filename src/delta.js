@@ -60,3 +60,28 @@ export function deltaBinaryUnpack(reader, nValues, output) {
     }
   }
 }
+
+/**
+ * @param {DataReader} reader
+ * @param {number} nValues
+ * @param {Uint8Array[]} output
+ */
+export function deltaByteArray(reader, nValues, output) {
+  const prefixData = new Int32Array(nValues)
+  deltaBinaryUnpack(reader, nValues, prefixData)
+  const suffixData = new Int32Array(nValues)
+  deltaBinaryUnpack(reader, nValues, suffixData)
+
+  for (let i = 0; i < nValues; i++) {
+    const suffix = new Uint8Array(reader.view.buffer, reader.view.byteOffset + reader.offset, suffixData[i])
+    if (prefixData[i]) {
+      // copy from previous value
+      output[i] = new Uint8Array(prefixData[i] + suffixData[i])
+      output[i].set(output[i - 1].subarray(0, prefixData[i]))
+      output[i].set(suffix, prefixData[i])
+    } else {
+      output[i] = suffix
+    }
+    reader.offset += suffixData[i]
+  }
+}

@@ -19,6 +19,7 @@ const CompactType = {
 /**
  * Parse TCompactProtocol
  *
+ * @typedef {import("./types.d.ts").DataReader} DataReader
  * @param {DataReader} reader
  * @returns {Record<string, any>}
  */
@@ -119,7 +120,6 @@ function readElement(reader, type) {
  * 7-bit group with the 0 bit, prefixing the remaining 7-bit groups with the
  * 1 bit and encode the resulting bit-string as Little Endian.
  *
- * @typedef {import("./types.d.ts").DataReader} DataReader
  * @param {DataReader} reader
  * @returns {number} value
  */
