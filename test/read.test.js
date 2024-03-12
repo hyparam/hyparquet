@@ -17,7 +17,7 @@ const compressors = {
 }
 
 describe('parquetRead', () => {
-  const files = fs.readdirSync('test/files').filter(f => f.endsWith('.parquet'))
+  const files = fs.readdirSync('test/files').filter(f => f.endsWith('Int_Map.parquet'))
 
   files.forEach(file => {
     it(`should parse data from ${file}`, async () => {
@@ -50,11 +50,11 @@ describe('parquetRead', () => {
       onComplete: (rows) => {
         /* eslint-disable no-sparse-arrays */
         expect(toJson(rows)).toEqual([
-          [,, 2],
-          [,, 3],
-          [,, 4],
-          [,, 5],
-          [,, 2],
+          [2],
+          [3],
+          [4],
+          [5],
+          [2],
         ])
       },
     })
@@ -76,11 +76,39 @@ describe('parquetRead', () => {
       onComplete: (rows) => {
         /* eslint-disable no-sparse-arrays */
         expect(toJson(rows)).toEqual([
-          [,,,, [1, 2, 3]],
-          [,,,, null],
-          [,,,, null],
-          [,,,, [1, 2, 3]],
-          [,,,, [1, 2]],
+          [[1, 2, 3]],
+          [null],
+          [null],
+          [[1, 2, 3]],
+          [[1, 2]],
+        ])
+      },
+    })
+  })
+
+  it('should read a map-like column from a file', async () => {
+    const asyncBuffer = fileToAsyncBuffer('test/files/Int_Map.parquet')
+    await parquetRead({
+      file: asyncBuffer,
+      columns: ['int_map'],
+      onChunk: (rows) => {
+        expect(toJson(rows)).toEqual({
+          columnName: 'int_map',
+          columnData: [
+            { k1: 1, k2: 100 },
+            { k1: 2 },
+            { },
+          ],
+          rowStart: 0,
+          rowEnd: 3,
+        })
+      },
+      onComplete: (rows) => {
+        /* eslint-disable no-sparse-arrays */
+        expect(toJson(rows)).toEqual([
+          [{ k1: 1, k2: 100 }],
+          [{ k1: 2 }],
+          [{}],
         ])
       },
     })

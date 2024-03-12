@@ -1,7 +1,7 @@
 
 import { getColumnOffset, readColumn } from './column.js'
 import { parquetMetadataAsync } from './metadata.js'
-import { getColumnName } from './schema.js'
+import { getColumnName, isMapLike } from './schema.js'
 
 /**
  * Read parquet data rows from a file-like object.
@@ -109,6 +109,8 @@ async function readRowGroup(options, rowGroup) {
   /** @type {any[][]} */
   const groupData = []
   const promises = []
+  const maps = new Map()
+  let outputColumnIndex = 0
   // read column data
   for (let columnIndex = 0; columnIndex < rowGroup.columns.length; columnIndex++) {
     const columnMetadata = rowGroup.columns[columnIndex].meta_data
@@ -127,6 +129,7 @@ async function readRowGroup(options, rowGroup) {
     // TODO: stream process the data, returning only the requested rows
     if (columnBytes > 1 << 30) {
       console.warn(`parquet skipping huge column "${columnMetadata.path_in_schema}" ${columnBytes.toLocaleString()} bytes`)
+      // TODO: set column to new Error('parquet column too large')
       continue
     }
 
@@ -143,16 +146,51 @@ async function readRowGroup(options, rowGroup) {
     // read column data async
     promises.push(buffer.then(arrayBuffer => {
       // TODO: extract SchemaElement for this column
-      const columnData = readColumn(
+      /** @type {ArrayLike<any> | undefined} */
+      let columnData = readColumn(
         arrayBuffer, bufferOffset, rowGroup, columnMetadata, metadata.schema, compressors
       )
       if (columnData.length !== Number(rowGroup.num_rows)) {
         throw new Error(`parquet column length ${columnData.length} does not match row group length ${rowGroup.num_rows}`)
       }
+
+      if (isMapLike(metadata.schema, columnMetadata.path_in_schema)) {
+        const name = columnMetadata.path_in_schema.slice(0, -2).join('.')
+        if (!maps.has(name)) {
+          maps.set(name, columnData)
+          columnData = undefined // do not emit column data until both key and value are read
+        } else {
+          if (columnMetadata.path_in_schema[0] === 'key') {
+            throw new Error('parquet map-like column key is not first') // TODO: support value-first
+          } else {
+            const values = columnData
+            const keys = maps.get(name)
+            const out = []
+            if (keys.length !== values.length) {
+              throw new Error('parquet map-like column key/value length mismatch')
+            }
+            // assemble map-like column data
+            for (let i = 0; i < keys.length; i++) {
+              /** @type {Record<string, any>} */
+              const obj = {}
+              for (let j = 0; j < keys[i].length; j++) {
+                obj[keys[i][j]] = values[i][j]
+              }
+              out.push(obj)
+            }
+            columnData = out
+          }
+          maps.delete(name)
+        }
+      }
+
+      // do not emit column data until structs are fully parsed
+      if (!columnData) return
       // notify caller of column data
       if (options.onChunk) options.onChunk({ columnName, columnData, rowStart: 0, rowEnd: columnData.length })
       // add column data to group data only if onComplete is defined
-      if (options.onComplete) addColumn(groupData, columnIndex, columnData)
+      if (options.onComplete) addColumn(groupData, outputColumnIndex, columnData)
+      outputColumnIndex++
     }))
   }
   await Promise.all(promises)

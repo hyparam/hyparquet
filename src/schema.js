@@ -126,7 +126,7 @@ export function skipDefinitionBytes(num) {
  * @returns {string} column name
  */
 export function getColumnName(schema, path) {
-  if (isListLike(schema, path)) {
+  if (isListLike(schema, path) || isMapLike(schema, path)) {
     return path.slice(0, -2).join('.')
   } else {
     return path.join('.')
@@ -152,6 +152,32 @@ function isListLike(schemaElements, path) {
 
   const secondChild = firstChild.children[0]
   if (secondChild.element.repetition_type !== 'REQUIRED') return false
+
+  return true
+}
+
+/**
+ * Check if a column is map-like.
+ *
+ * @param {SchemaElement[]} schemaElements parquet schema elements
+ * @param {string[]} path column path
+ * @returns {boolean} true if map-like
+ */
+export function isMapLike(schemaElements, path) {
+  const schema = schemaElement(schemaElements, path.slice(0, -2))
+  if (path.length < 3) return false
+  if (schema.element.converted_type !== 'MAP') return false
+  if (schema.children.length > 1) return false
+
+  const firstChild = schema.children[0]
+  if (firstChild.children.length !== 2) return false
+  if (firstChild.element.repetition_type !== 'REPEATED') return false
+
+  const keyChild = firstChild.children.find(child => child.element.name === 'key')
+  if (keyChild?.element.repetition_type !== 'REQUIRED') return false
+
+  const valueChild = firstChild.children.find(child => child.element.name === 'value')
+  if (valueChild?.element.repetition_type === 'REPEATED') return false
 
   return true
 }

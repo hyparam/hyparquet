@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "created_by": "DuckDB",
+  "metadata_length": 241,
+  "num_rows": 3,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "codec": "SNAPPY",
+            "data_page_offset": 4,
+            "encodings": ["PLAIN"],
+            "num_values": 5,
+            "path_in_schema": ["int_map", "key_value", "key"],
+            "statistics": {
+              "max": "k2",
+              "min": "k1"
+            },
+            "total_compressed_size": 60,
+            "total_uncompressed_size": 63,
+            "type": "BYTE_ARRAY"
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "codec": "SNAPPY",
+            "data_page_offset": 64,
+            "encodings": ["PLAIN"],
+            "num_values": 5,
+            "path_in_schema": ["int_map", "key_value", "value"],
+            "statistics": {
+              "max": "d\u0000\u0000\u0000",
+              "min": "\u0001\u0000\u0000\u0000"
+            },
+            "total_compressed_size": 52,
+            "total_uncompressed_size": 53,
+            "type": "INT32"
+          }
+        }
+      ],
+      "num_rows": 3,
+      "total_byte_size": 74752
+    }
+  ],
+  "schema": [
+    {
+      "name": "duckdb_schema",
+      "num_children": 1,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "converted_type": "MAP",
+      "name": "int_map",
+      "num_children": 1,
+      "repetition_type": "OPTIONAL"
+    },
+    {
+      "name": "key_value",
+      "num_children": 2,
+      "repetition_type": "REPEATED"
+    },
+    {
+      "converted_type": "UTF8",
+      "name": "key",
+      "repetition_type": "REQUIRED",
+      "type": "BYTE_ARRAY"
+    },
+    {
+      "converted_type": "INT_32",
+      "name": "value",
+      "repetition_type": "OPTIONAL",
+      "type": "INT32"
+    }
+  ]
+}
