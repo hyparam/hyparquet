@@ -105,6 +105,7 @@ export function parquetMetadata(arrayBuffer) {
     scale: field.field_7,
     precision: field.field_8,
     field_id: field.field_9,
+    logical_type: logicalType(field.field_10),
   }))
   const num_rows = metadata.field_3
   const row_groups = metadata.field_4.map((/** @type {any} */ rowGroup) => ({
@@ -170,4 +171,33 @@ export function parquetMetadata(arrayBuffer) {
  */
 export function parquetSchema(metadata) {
   return schemaTree(metadata.schema, 0)
+}
+
+/**
+ * Parse logical type by type.
+ *
+ * @typedef {import("./types.d.ts").LogicalType} LogicalType
+ * @param {any} logicalType
+ * @returns {LogicalType | undefined}
+ */
+function logicalType(logicalType) {
+  if (logicalType?.field_5) {
+    return {
+      logicalType: 'DECIMAL',
+      scale: logicalType.field_5.field_1,
+      precision: logicalType.field_5.field_2,
+    }
+  }
+  // TODO: TimestampType
+  // TOFO: TimeType
+  if (logicalType?.field_10) {
+    return {
+      logicalType: 'INTEGER',
+      bitWidth: logicalType.field_10.field_1,
+      isSigned: logicalType.field_10.field_2,
+    }
+  }
+  if (logicalType) {
+    return logicalType
+  }
 }

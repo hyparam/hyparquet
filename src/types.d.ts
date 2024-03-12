@@ -42,6 +42,7 @@ export interface SchemaElement {
   scale?: number
   precision?: number
   field_id?: number
+  logicalType?: LogicalType
 }
 
 export type ParquetType =
@@ -82,6 +83,40 @@ export type ConvertedType =
   'JSON' |
   'BSON' |
   'INTERVAL'
+
+type LogicalDecimalType = {
+  logicalType: 'DECIMAL'
+  precision: number
+  scale: number
+}
+
+type LogicalIntType = {
+  logicalType: 'INTEGER'
+  bitWidth: number
+  isSigned: boolean
+}
+
+export type LogicalType =
+  { logicalType: LogicalTypeType } |
+  LogicalDecimalType |
+  LogicalIntType
+
+export type LogicalTypeType =
+  'STRING' | // convertedType UTF8
+  'MAP' | // convertedType MAP
+  'LIST' | // convertedType LIST
+  'ENUM' | // convertedType ENUM
+  'DECIMAL' | // convertedType DECIMAL + precision/scale
+  'DATE' | // convertedType DATE
+  'TIME' | // convertedType TIME_MILLIS or TIME_MICROS
+  'TIMESTAMP' | // convertedType TIMESTAMP_MILLIS or TIMESTAMP_MICROS
+  'INTEGER' | // convertedType INT or UINT
+  'INTERVAL' | // convertedType INT or UINT
+  'NULL' | // no convertedType
+  'JSON' | // convertedType JSON
+  'BSON' | // convertedType BSON
+  'UUID' | // no convertedType
+  'FLOAT16' // no convertedType
 
 export interface RowGroup {
   columns: ColumnChunk[]

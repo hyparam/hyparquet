@@ -36,6 +36,11 @@
     },
     {
       "converted_type": "UINT_64",
+      "logical_type": {
+        "logicalType": "INTEGER",
+        "bitWidth": 64,
+        "isSigned": false
+      },
       "name": "long_col",
       "repetition_type": "OPTIONAL",
       "type": "INT64"

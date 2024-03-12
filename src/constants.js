@@ -1,3 +1,7 @@
+/**
+ * @typedef {import('./types.js').ParquetType} ParquetTypeType
+ * @type {ParquetTypeType[]}
+ */
 export const ParquetType = [
   'BOOLEAN',
   'INT32',
@@ -28,6 +32,10 @@ export const FieldRepetitionType = [
   'REPEATED',
 ]
 
+/**
+ * @typedef {import('./types.js').ConvertedType} ConvertedTypeType
+ * @type {ConvertedTypeType[]}
+ */
 export const ConvertedType = [
   'UTF8',
   'MAP',
@@ -51,6 +59,28 @@ export const ConvertedType = [
   'JSON',
   'BSON',
   'INTERVAL',
+]
+
+/**
+ * @typedef {import('./types.js').LogicalTypeType} LogicalTypeType
+ * @type {LogicalTypeType[]}
+ */
+export const logicalTypeType = [
+  'NULL',
+  'STRING',
+  'MAP',
+  'LIST',
+  'ENUM',
+  'DECIMAL',
+  'DATE',
+  'TIME',
+  'TIMESTAMP',
+  'INTERVAL',
+  'INTEGER',
+  'NULL',
+  'JSON',
+  'BSON',
+  'UUID',
 ]
 
 export const CompressionCodec = [
