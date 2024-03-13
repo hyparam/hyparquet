@@ -10,7 +10,7 @@
  * @param {number} rootIndex index of the root element
  * @returns {SchemaTree} tree of schema elements
  */
-export function schemaTree(schema, rootIndex) {
+function schemaTree(schema, rootIndex) {
   const root = schema[rootIndex]
   const children = []
   let count = 1
@@ -32,7 +32,7 @@ export function schemaTree(schema, rootIndex) {
  *
  * @param {SchemaElement[]} schema
  * @param {string[]} name path to the element
- * @returns {SchemaElement} schema element
+ * @returns {SchemaTree} schema element
  */
 export function schemaElement(schema, name) {
   let tree = schemaTree(schema, 0)
@@ -42,7 +42,7 @@ export function schemaElement(schema, name) {
     if (!child) throw new Error(`parquet schema element not found: ${name}`)
     tree = child
   }
-  return tree.element
+  return tree
 }
 
 /**
@@ -77,7 +77,7 @@ export function isRequired(schema, name) {
 export function getMaxRepetitionLevel(schema, parts) {
   let maxLevel = 0
   parts.forEach((part, i) => {
-    const element = schemaElement(schema, parts.slice(0, i + 1))
+    const { element } = schemaElement(schema, parts.slice(0, i + 1))
     if (element.repetition_type === 'REPEATED') {
       maxLevel += 1
     }
@@ -95,7 +95,7 @@ export function getMaxRepetitionLevel(schema, parts) {
 export function getMaxDefinitionLevel(schema, parts) {
   let maxLevel = 0
   parts.forEach((part, i) => {
-    const element = schemaElement(schema, parts.slice(0, i + 1))
+    const { element } = schemaElement(schema, parts.slice(0, i + 1))
     if (element.repetition_type !== 'REQUIRED') {
       maxLevel += 1
     }

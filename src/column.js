@@ -79,10 +79,10 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       } else {
         if (dictionaryEncoding && dictionary) {
           dereferenceDictionary(dictionary, dataPage)
-          values = convert(dataPage, schemaElement(schema, columnMetadata.path_in_schema))
+          values = convert(dataPage, schemaElement(schema, columnMetadata.path_in_schema).element)
         } else if (Array.isArray(dataPage)) {
           // convert primitive types to rich types
-          values = convert(dataPage, schemaElement(schema, columnMetadata.path_in_schema))
+          values = convert(dataPage, schemaElement(schema, columnMetadata.path_in_schema).element)
         } else {
           values = dataPage // TODO: data page shouldn't be a fixed byte array?
         }

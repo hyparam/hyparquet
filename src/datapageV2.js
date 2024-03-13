@@ -47,8 +47,8 @@ export function readDataPageV2(compressedBytes, ph, schema, columnMetadata, comp
   // read values based on encoding
   const nValues = daph2.num_values - daph2.num_nulls
   if (daph2.encoding === 'PLAIN') {
-    const se = schemaElement(schema, columnMetadata.path_in_schema)
-    const utf8 = se.converted_type === 'UTF8'
+    const { element } = schemaElement(schema, columnMetadata.path_in_schema)
+    const utf8 = element.converted_type === 'UTF8'
     let page = compressedBytes.slice(offset)
     if (daph2.is_compressed && columnMetadata.codec !== 'UNCOMPRESSED') {
       page = decompressPage(page, uncompressedPageSize, columnMetadata.codec, compressors)

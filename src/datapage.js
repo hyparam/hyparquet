@@ -61,8 +61,8 @@ export function readDataPage(bytes, daph, schema, columnMetadata) {
   // read values based on encoding
   const nValues = daph.num_values - numNulls
   if (daph.encoding === 'PLAIN') {
-    const se = schemaElement(schema, columnMetadata.path_in_schema)
-    const utf8 = se.converted_type === 'UTF8'
+    const { element } = schemaElement(schema, columnMetadata.path_in_schema)
+    const utf8 = element.converted_type === 'UTF8'
     const plainObj = readPlain(dataView, columnMetadata.type, nValues, offset, utf8)
     values = Array.isArray(plainObj.value) ? plainObj.value : Array.from(plainObj.value)
     offset += plainObj.byteLength

@@ -20,7 +20,11 @@ describe('Parquet schema utils', () => {
 
   describe('schemaElement', () => {
     it('should return the correct schema element', () => {
-      expect(schemaElement(schema, ['child1'])).toEqual(schema[1])
+      expect(schemaElement(schema, ['child1'])).toEqual({
+        children: [],
+        count: 1,
+        element: { name: 'child1', repetition_type: 'OPTIONAL' },
+      })
     })
 
     it('should throw an error if element not found', () => {
