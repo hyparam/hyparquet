@@ -20,7 +20,7 @@ import { parquetMetadataAsync } from './metadata.js'
  * @param {object} options read options
  * @param {AsyncBuffer} options.file file-like object containing parquet data
  * @param {FileMetaData} [options.metadata] parquet file metadata
- * @param {number[]} [options.columns] columns to read, all columns if undefined
+ * @param {string[]} [options.columns] columns to read, all columns if undefined
  * @param {number} [options.rowStart] first requested row index (inclusive)
  * @param {number} [options.rowEnd] last requested row index (exclusive)
  * @param {(chunk: ColumnData) => void} [options.onChunk] called when a column chunk is parsed. chunks may include row data outside the requested range.
@@ -69,7 +69,7 @@ export async function parquetRead(options) {
  * @param {object} options read options
  * @param {AsyncBuffer} options.file file-like object containing parquet data
  * @param {FileMetaData} [options.metadata] parquet file metadata
- * @param {number[]} [options.columns] columns to read, all columns if undefined
+ * @param {string[]} [options.columns] columns to read, all columns if undefined
  * @param {(chunk: ColumnData) => void} [options.onChunk] called when a column chunk is parsed. chunks may include row data outside the requested range.
  * @param {(rows: any[][]) => void} [options.onComplete] called when all requested rows and columns are parsed
  * @param {Compressors} [options.compressors] custom decompressors
@@ -82,18 +82,20 @@ async function readRowGroup(options, rowGroup) {
 
   // loop through metadata to find min/max bytes to read
   let [groupStartByte, groupEndByte] = [file.byteLength, 0]
-  rowGroup.columns.forEach((columnChunk, columnIndex) => {
-    // skip columns that are not requested or lack metadata
-    if (columns && !columns.includes(columnIndex)) return
-    if (!columnChunk.meta_data) return
+  rowGroup.columns.forEach(({ meta_data: columnMetadata }) => {
+    if (!columnMetadata) throw new Error('parquet column metadata is undefined')
+    const columnName = columnMetadata.path_in_schema.join('.')
+    // skip columns that are not requested
+    if (columns && !columns.includes(columnName)) return
 
-    const startByte = getColumnOffset(columnChunk.meta_data)
-    const endByte = startByte + Number(columnChunk.meta_data.total_compressed_size)
+    const startByte = getColumnOffset(columnMetadata)
+    const endByte = startByte + Number(columnMetadata.total_compressed_size)
     groupStartByte = Math.min(groupStartByte, startByte)
     groupEndByte = Math.max(groupEndByte, endByte)
   })
-  if (groupStartByte >= groupEndByte) {
-    throw new Error('parquet missing row group metadata')
+  if (groupStartByte >= groupEndByte && columns?.length) {
+    // TODO: should throw if any column is missing
+    throw new Error(`parquet columns not found: ${columns.join(', ')}`)
   }
   // if row group size is less than 128mb, pre-load in one read
   let groupBuffer
@@ -108,11 +110,13 @@ async function readRowGroup(options, rowGroup) {
   const promises = []
   // read column data
   for (let columnIndex = 0; columnIndex < rowGroup.columns.length; columnIndex++) {
-    // skip columns that are not requested
-    if (columns && !columns.includes(columnIndex)) continue
-
     const columnMetadata = rowGroup.columns[columnIndex].meta_data
     if (!columnMetadata) throw new Error('parquet column metadata is undefined')
+
+    // skip columns that are not requested
+    const columnName = columnMetadata.path_in_schema.join('.')
+    // skip columns that are not requested
+    if (columns && !columns.includes(columnName)) continue
 
     const columnStartByte = getColumnOffset(columnMetadata)
     const columnEndByte = columnStartByte + Number(columnMetadata.total_compressed_size)
@@ -145,7 +149,7 @@ async function readRowGroup(options, rowGroup) {
         throw new Error(`parquet column length ${columnData.length} does not match row group length ${rowGroup.num_rows}`)
       }
       // notify caller of column data
-      if (options.onChunk) options.onChunk({ column: columnIndex, data: columnData, rowStart: 0, rowEnd: columnData.length })
+      if (options.onChunk) options.onChunk({ columnName, columnData, rowStart: 0, rowEnd: columnData.length })
       // add column data to group data only if onComplete is defined
       if (options.onComplete) addColumn(groupData, columnIndex, columnData)
     }))

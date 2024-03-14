@@ -14,7 +14,7 @@ export { AsyncBuffer, FileMetaData, SchemaTree } from './types'
  * @param {object} options read options
  * @param {AsyncBuffer} options.file file-like object containing parquet data
  * @param {FileMetaData} [options.metadata] parquet file metadata
- * @param {number[]} [options.columns] columns to read, all columns if undefined
+ * @param {string[]} [options.columns] columns to read, all columns if undefined
  * @param {number} [options.rowStart] first requested row index (inclusive)
  * @param {number} [options.rowEnd] last requested row index (exclusive)
  * @param {Function} [options.onChunk] called when a column chunk is parsed. chunks may include row data outside the requested range.
@@ -92,7 +92,7 @@ export function toJson(obj: any): unknown
 export interface ParquetReadOptions {
   file: AsyncBuffer // file-like object containing parquet data
   metadata?: FileMetaData // parquet metadata, will be parsed if not provided
-  columns?: number[] // columns to read, all columns if undefined
+  columns?: string[] // columns to read, all columns if undefined
   rowStart?: number // inclusive
   rowEnd?: number // exclusive
   onChunk?: (chunk: ColumnData) => void // called when a column chunk is parsed. chunks may be outside the requested range.
@@ -104,8 +104,8 @@ export interface ParquetReadOptions {
  * A run of column data
  */
 export interface ColumnData {
-  column: number
-  data: ArrayLike<any>
+  columnName: string
+  columnData: ArrayLike<any>
   rowStart: number
   rowEnd: number
 }

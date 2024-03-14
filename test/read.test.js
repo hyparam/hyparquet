@@ -38,11 +38,11 @@ describe('parquetRead', () => {
     const asyncBuffer = fileToAsyncBuffer('test/files/datapage_v2.snappy.parquet')
     await parquetRead({
       file: asyncBuffer,
-      columns: [2],
+      columns: ['c'],
       onChunk: (rows) => {
         expect(toJson(rows)).toEqual({
-          column: 2,
-          data: [2, 3, 4, 5, 2],
+          columnName: 'c',
+          columnData: [2, 3, 4, 5, 2],
           rowStart: 0,
           rowEnd: 5,
         })
