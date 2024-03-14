@@ -118,3 +118,40 @@ export function skipDefinitionBytes(num) {
   }
   return byteLength
 }
+
+/**
+ * Get the column name as foo.bar and handle list-like columns.
+ * @param {SchemaElement[]} schema
+ * @param {string[]} path
+ * @returns {string} column name
+ */
+export function getColumnName(schema, path) {
+  if (isListLike(schema, path)) {
+    return path.slice(0, -2).join('.')
+  } else {
+    return path.join('.')
+  }
+}
+
+/**
+ * Check if a column is list-like.
+ *
+ * @param {SchemaElement[]} schemaElements parquet schema elements
+ * @param {string[]} path column path
+ * @returns {boolean} true if map-like
+ */
+function isListLike(schemaElements, path) {
+  const schema = schemaElement(schemaElements, path.slice(0, -2))
+  if (path.length < 3) return false
+  if (schema.element.converted_type !== 'LIST') return false
+  if (schema.children.length > 1) return false
+
+  const firstChild = schema.children[0]
+  if (firstChild.children.length > 1) return false
+  if (firstChild.element.repetition_type !== 'REPEATED') return false
+
+  const secondChild = firstChild.children[0]
+  if (secondChild.element.repetition_type !== 'REQUIRED') return false
+
+  return true
+}

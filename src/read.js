@@ -1,6 +1,7 @@
 
 import { getColumnOffset, readColumn } from './column.js'
 import { parquetMetadataAsync } from './metadata.js'
+import { getColumnName } from './schema.js'
 
 /**
  * Read parquet data rows from a file-like object.
@@ -84,7 +85,7 @@ async function readRowGroup(options, rowGroup) {
   let [groupStartByte, groupEndByte] = [file.byteLength, 0]
   rowGroup.columns.forEach(({ meta_data: columnMetadata }) => {
     if (!columnMetadata) throw new Error('parquet column metadata is undefined')
-    const columnName = columnMetadata.path_in_schema.join('.')
+    const columnName = getColumnName(metadata.schema, columnMetadata.path_in_schema)
     // skip columns that are not requested
     if (columns && !columns.includes(columnName)) return
 
@@ -114,7 +115,7 @@ async function readRowGroup(options, rowGroup) {
     if (!columnMetadata) throw new Error('parquet column metadata is undefined')
 
     // skip columns that are not requested
-    const columnName = columnMetadata.path_in_schema.join('.')
+    const columnName = getColumnName(metadata.schema, columnMetadata.path_in_schema)
     // skip columns that are not requested
     if (columns && !columns.includes(columnName)) continue
 

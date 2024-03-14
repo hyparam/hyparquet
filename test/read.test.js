@@ -59,4 +59,30 @@ describe('parquetRead', () => {
       },
     })
   })
+
+  it('should read a list-like column from a file', async () => {
+    const asyncBuffer = fileToAsyncBuffer('test/files/datapage_v2.snappy.parquet')
+    await parquetRead({
+      file: asyncBuffer,
+      columns: ['e'],
+      onChunk: (rows) => {
+        expect(toJson(rows)).toEqual({
+          columnName: 'e',
+          columnData: [[1, 2, 3], null, null, [1, 2, 3], [1, 2]],
+          rowStart: 0,
+          rowEnd: 5,
+        })
+      },
+      onComplete: (rows) => {
+        /* eslint-disable no-sparse-arrays */
+        expect(toJson(rows)).toEqual([
+          [,,,, [1, 2, 3]],
+          [,,,, null],
+          [,,,, null],
+          [,,,, [1, 2, 3]],
+          [,,,, [1, 2]],
+        ])
+      },
+    })
+  })
 })
