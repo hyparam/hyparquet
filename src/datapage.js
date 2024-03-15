@@ -193,7 +193,7 @@ export function assembleObjects(
   const assign = []
 
   for (let counter = 0; counter < repetitionLevels.length; counter++) {
-    const def = definitionLevels ? definitionLevels[counter] : maxDefinitionLevel
+    const def = definitionLevels?.length ? definitionLevels[counter] : maxDefinitionLevel
     const rep = repetitionLevels[counter]
 
     if (!rep) {

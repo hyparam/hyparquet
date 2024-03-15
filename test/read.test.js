@@ -17,7 +17,7 @@ const compressors = {
 }
 
 describe('parquetRead', () => {
-  const files = fs.readdirSync('test/files').filter(f => f.endsWith('Int_Map.parquet'))
+  const files = fs.readdirSync('test/files').filter(f => f.endsWith('.parquet'))
 
   files.forEach(file => {
     it(`should parse data from ${file}`, async () => {
