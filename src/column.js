@@ -1,6 +1,7 @@
+import { assembleObjects } from './assemble.js'
 import { PageType } from './constants.js'
 import { convert } from './convert.js'
-import { assembleObjects, readDataPage, readDictionaryPage } from './datapage.js'
+import { readDataPage, readDictionaryPage } from './datapage.js'
 import { readDataPageV2 } from './datapageV2.js'
 import { parquetHeader } from './header.js'
 import { getMaxDefinitionLevel, isRequired, schemaElement } from './schema.js'
@@ -29,7 +30,6 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
   let dictionary = undefined
   let valuesSeen = 0
   let byteOffset = 0 // byteOffset within the column
-  const rowIndex = [0] // map/list object index
   const rowData = []
 
   while (valuesSeen < rowGroup.num_rows) {
@@ -66,10 +66,9 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
         dereferenceDictionary(dictionary, dataPage)
         // Use repetition levels to construct lists
         const isNull = columnMetadata && !isRequired(schema, [columnMetadata.path_in_schema[0]])
-        const nullValue = false // TODO: unused?
         const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
         values = assembleObjects(
-          definitionLevels, repetitionLevels, dataPage, isNull, nullValue, maxDefinitionLevel, rowIndex[0]
+          definitionLevels, repetitionLevels, dataPage, isNull, maxDefinitionLevel
         )
       } else if (definitionLevels?.length) {
         const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
@@ -115,7 +114,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
         dereferenceDictionary(dictionary, dataPage)
         // Use repetition levels to construct lists
         rowData.push(...assembleObjects(
-          definitionLevels, repetitionLevels, dataPage, true, false, maxDefinitionLevel, rowIndex[0]
+          definitionLevels, repetitionLevels, dataPage, true, maxDefinitionLevel
         ))
       } else if (daph2.num_nulls) {
         // skip nulls
