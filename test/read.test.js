@@ -96,19 +96,27 @@ describe('parquetRead', () => {
           columnName: 'int_map',
           columnData: [
             { k1: 1, k2: 100 },
-            { k1: 2 },
+            { k1: 2, k2: null },
             { },
+            { },
+            { },
+            null,
+            { k1: null, k3: null },
           ],
           rowStart: 0,
-          rowEnd: 3,
+          rowEnd: 7,
         })
       },
       onComplete: (rows) => {
         /* eslint-disable no-sparse-arrays */
         expect(toJson(rows)).toEqual([
           [{ k1: 1, k2: 100 }],
-          [{ k1: 2 }],
-          [{}],
+          [{ k1: 2, k2: null }],
+          [{ }],
+          [{ }],
+          [{ }],
+          [null],
+          [{ k1: null, k3: null }],
         ])
       },
     })

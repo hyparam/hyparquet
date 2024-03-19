@@ -171,12 +171,18 @@ async function readRowGroup(options, rowGroup) {
             }
             // assemble map-like column data
             for (let i = 0; i < keys.length; i++) {
-              /** @type {Record<string, any>} */
-              const obj = {}
-              for (let j = 0; j < keys[i].length; j++) {
-                obj[keys[i][j]] = values[i][j]
+              // keys will be empty for {} and undefined for null
+              if (keys[i] !== undefined) {
+                /** @type {Record<string, any>} */
+                const obj = {}
+                for (let j = 0; j < keys[i].length; j++) {
+                  if (keys[i][j] === undefined) continue
+                  obj[keys[i][j]] = values[i][j] === undefined ? null : values[i][j]
+                }
+                out.push(obj)
+              } else {
+                out.push(undefined)
               }
-              out.push(obj)
             }
             columnData = out
           }

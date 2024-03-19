@@ -3,21 +3,21 @@
  *
  * @param {number[] | undefined} definitionLevels definition levels, max 3
  * @param {number[]} repetitionLevels repetition levels, max 1
- * @param {ArrayLike<any>} value values to process
+ * @param {ArrayLike<any>} values values to process
  * @param {boolean} isNull can an entry be null?
  * @param {number} maxDefinitionLevel definition level that corresponds to non-null
  * @returns {any[]} array of values
  */
 export function assembleObjects(
-  definitionLevels, repetitionLevels, value, isNull, maxDefinitionLevel
+  definitionLevels, repetitionLevels, values, isNull, maxDefinitionLevel
 ) {
-  let vali = 0
+  let valueIndex = 0
   let started = false
   let haveNull = false
-  let i = 0
+  let outputIndex = 0
   let part = []
   /** @type {any[]} */
-  const assign = []
+  const output = []
 
   for (let counter = 0; counter < repetitionLevels.length; counter++) {
     const def = definitionLevels?.length ? definitionLevels[counter] : maxDefinitionLevel
@@ -26,13 +26,13 @@ export function assembleObjects(
     if (!rep) {
       // new row - save what we have
       if (started) {
-        assign[i] = haveNull ? undefined : part
+        output[outputIndex] = haveNull ? undefined : part
         part = []
-        i++
+        outputIndex++
       } else {
         // first time: no row to save yet, unless it's a row continued from previous page
-        if (vali > 0) {
-          assign[i - 1] = assign[i - 1]?.concat(part) // add items to previous row
+        if (valueIndex > 0) {
+          output[outputIndex - 1] = output[outputIndex - 1]?.concat(part) // add items to previous row
           part = []
           // don't increment i since we only filled i-1
         }
@@ -42,8 +42,8 @@ export function assembleObjects(
 
     if (def === maxDefinitionLevel) {
       // append real value to current item
-      part.push(value[vali])
-      vali++
+      part.push(values[valueIndex])
+      valueIndex++
     } else if (def > 0) {
       // append null to current item
       part.push(undefined)
@@ -53,8 +53,8 @@ export function assembleObjects(
   }
 
   if (started) {
-    assign[i] = haveNull ? undefined : part
+    output[outputIndex] = haveNull ? undefined : part
   }
 
-  return assign
+  return output
 }

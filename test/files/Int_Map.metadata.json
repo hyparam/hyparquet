@@ -1,8 +1,8 @@
 {
   "version": 1,
   "created_by": "DuckDB",
-  "metadata_length": 241,
-  "num_rows": 3,
+  "metadata_length": 243,
+  "num_rows": 7,
   "row_groups": [
     {
       "columns": [
@@ -12,14 +12,14 @@
             "codec": "SNAPPY",
             "data_page_offset": 4,
             "encodings": ["PLAIN"],
-            "num_values": 5,
+            "num_values": 10,
             "path_in_schema": ["int_map", "key_value", "key"],
             "statistics": {
-              "max": "k2",
+              "max": "k3",
               "min": "k1"
             },
-            "total_compressed_size": 60,
-            "total_uncompressed_size": 63,
+            "total_compressed_size": 64,
+            "total_uncompressed_size": 82,
             "type": "BYTE_ARRAY"
           }
         },
@@ -27,21 +27,21 @@
           "file_offset": 0,
           "meta_data": {
             "codec": "SNAPPY",
-            "data_page_offset": 64,
+            "data_page_offset": 68,
             "encodings": ["PLAIN"],
-            "num_values": 5,
+            "num_values": 10,
             "path_in_schema": ["int_map", "key_value", "value"],
             "statistics": {
               "max": "d\u0000\u0000\u0000",
               "min": "\u0001\u0000\u0000\u0000"
             },
-            "total_compressed_size": 52,
-            "total_uncompressed_size": 53,
+            "total_compressed_size": 60,
+            "total_uncompressed_size": 59,
             "type": "INT32"
           }
         }
       ],
-      "num_rows": 3,
+      "num_rows": 7,
       "total_byte_size": 74752
     }
   ],
