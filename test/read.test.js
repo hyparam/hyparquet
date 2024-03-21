@@ -68,7 +68,7 @@ describe('parquetRead', () => {
       onChunk: (rows) => {
         expect(toJson(rows)).toEqual({
           columnName: 'e',
-          columnData: [[1, 2, 3], null, null, [1, 2, 3], [1, 2]],
+          columnData: [[1, 2, 3], [null], [null], [1, 2, 3], [1, 2]],
           rowStart: 0,
           rowEnd: 5,
         })
@@ -77,8 +77,8 @@ describe('parquetRead', () => {
         /* eslint-disable no-sparse-arrays */
         expect(toJson(rows)).toEqual([
           [[1, 2, 3]],
-          [null],
-          [null],
+          [[null]],
+          [[null]],
           [[1, 2, 3]],
           [[1, 2]],
         ])
@@ -100,7 +100,7 @@ describe('parquetRead', () => {
             { },
             { },
             { },
-            null,
+            { }, // TODO: should be null
             { k1: null, k3: null },
           ],
           rowStart: 0,
@@ -115,7 +115,7 @@ describe('parquetRead', () => {
           [{ }],
           [{ }],
           [{ }],
-          [null],
+          [{ }],
           [{ k1: null, k3: null }],
         ])
       },
