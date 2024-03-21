@@ -172,11 +172,16 @@ async function readRowGroup(options, rowGroup) {
             // assemble map-like column data
             for (let i = 0; i < keys.length; i++) {
               // keys will be empty for {} and undefined for null
-              if (keys[i] !== undefined) {
+              if (keys[i]) {
                 /** @type {Record<string, any>} */
                 const obj = {}
                 for (let j = 0; j < keys[i].length; j++) {
-                  if (keys[i][j] === undefined) continue
+                  if (Array.isArray(keys[i][j])) {
+                    // TODO: key should not be an array, this is an assemble bug
+                    keys[i][j] = keys[i][j][0]
+                    values[i][j] = values[i][j][0]
+                  }
+                  if (!keys[i][j]) continue
                   obj[keys[i][j]] = values[i][j] === undefined ? null : values[i][j]
                 }
                 out.push(obj)

@@ -4,7 +4,7 @@ import { convert } from './convert.js'
 import { readDataPage, readDictionaryPage } from './datapage.js'
 import { readDataPageV2 } from './datapageV2.js'
 import { parquetHeader } from './header.js'
-import { getMaxDefinitionLevel, isRequired, schemaElement } from './schema.js'
+import { getMaxDefinitionLevel, getMaxRepetitionLevel, isRequired, schemaElement } from './schema.js'
 import { snappyUncompress } from './snappy.js'
 
 /**
@@ -67,8 +67,9 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
         // Use repetition levels to construct lists
         const isNull = columnMetadata && !isRequired(schema, [columnMetadata.path_in_schema[0]])
         const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
+        const maxRepetitionLevel = getMaxRepetitionLevel(schema, columnMetadata.path_in_schema)
         values = assembleObjects(
-          definitionLevels, repetitionLevels, dataPage, isNull, maxDefinitionLevel
+          definitionLevels, repetitionLevels, dataPage, isNull, maxDefinitionLevel, maxRepetitionLevel
         )
       } else if (definitionLevels?.length) {
         const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
@@ -110,11 +111,12 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       valuesSeen += daph2.num_values
 
       const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
+      const maxRepetitionLevel = getMaxRepetitionLevel(schema, columnMetadata.path_in_schema)
       if (repetitionLevels.length) {
         dereferenceDictionary(dictionary, dataPage)
         // Use repetition levels to construct lists
         rowData.push(...assembleObjects(
-          definitionLevels, repetitionLevels, dataPage, true, maxDefinitionLevel
+          definitionLevels, repetitionLevels, dataPage, true, maxDefinitionLevel, maxRepetitionLevel
         ))
       } else if (daph2.num_nulls) {
         // skip nulls
