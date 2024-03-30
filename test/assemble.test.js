@@ -83,9 +83,25 @@ describe('assembleObjects', () => {
     expect(result).toEqual([[[]]])
   })
 
-  it('should handle isNull correctly', () => {
+  it('should handle isNull', () => {
     // from nonnullable.impala.parquet
     const result = assembleObjects([2], [0], [-1], false, 2, 2)
     expect(result).toEqual([[[-1]]])
+  })
+
+  it('should handle nullable int_array', () => {
+    // from nullable.impala.parquet
+    //                       [1  2  3][N  1  2  N  3  N][ ] N  N
+    const definitionLevels = [3, 3, 3, 2, 3, 3, 2, 3, 2, 1, 0, 0]
+    const repetitionLevels = [0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0]
+    const values = [1, 2, 3, 1, 2, 3]
+    const result = assembleObjects(definitionLevels, repetitionLevels, values, true, 3, 1)
+    expect(result).toEqual([
+      [1, 2, 3],
+      [undefined, 1, 2, undefined, 3, undefined],
+      [],
+      undefined,
+      undefined,
+    ])
   })
 })

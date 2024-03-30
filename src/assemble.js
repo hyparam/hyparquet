@@ -49,13 +49,21 @@ export function assembleObjects(
 
     // Add value or null based on definition level
     if (def === maxDefinitionLevel) {
+      if (!currentContainer) {
+        throw new Error('parquet assembleObjects: currentContainer is undefined')
+      }
       currentContainer.push(values[valueIndex++])
-    } else if (isNull && def < maxDefinitionLevel) {
-      // Go up one level to add null
+    } else if (isNull) {
       if (def) {
-        containerStack.pop()
-        // @ts-expect-error won't be empty
-        currentContainer = containerStack.at(-1)
+        // TODO: Go up maxDefinitionLevel - def - 1 levels to add null
+        for (let j = def; j < maxDefinitionLevel - 1; j++) {
+          containerStack.pop()
+          // @ts-expect-error won't be empty
+          currentContainer = containerStack.at(-1)
+        }
+        if (def > 1) {
+          currentContainer.push(undefined)
+        }
       } else {
         currentContainer.push(undefined)
       }
