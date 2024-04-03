@@ -69,6 +69,20 @@ const metadata = parquetMetadata(arrayBuffer)
 
 To parse parquet files from a user drag-and-drop action, see example in [index.html](index.html).
 
+## Reading Data
+
+To read the entire contents of a parquet file in a browser environment:
+
+```js
+const { parquetRead } = await import("https://cdn.jsdelivr.net/npm/hyparquet/src/hyparquet.min.js")
+const res = await fetch(url)
+const arrayBuffer = await res.arrayBuffer()
+await parquetRead({
+  file: arrayBuffer,
+  onComplete: data => console.log(data)
+})
+```
+
 ## Async
 
 Hyparquet supports asynchronous fetching of parquet files, over a network.
@@ -76,7 +90,8 @@ You can provide an `AsyncBuffer` which is like a js `ArrayBuffer` but the `slice
 
 ## Supported Parquet Files
 
-The parquet format supports a number of different compression and encoding types.
+The parquet format is known to be a sprawling format which includes options for a wide array of compression schemes, encoding types, and data structures.
+
 Hyparquet does not support 100% of all parquet files.
 Supporting every possible compression codec available in parquet would blow up the size of the hyparquet library.
 In practice, most parquet files use snappy compression.
