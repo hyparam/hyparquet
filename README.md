@@ -7,11 +7,21 @@
 [![mit license](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![dependencies](https://img.shields.io/badge/Dependencies-0-blueviolet)](https://www.npmjs.com/package/hyparquet?activeTab=dependencies)
 
-JavaScript parser for [Apache Parquet](https://parquet.apache.org) files.
-
-Apache Parquet is an open source, column-oriented data file format designed for efficient data storage and retrieval.
-
 Dependency free since 2023!
+
+## What is hyparquet?
+
+Hyparquet is a lightweight, pure JavaScript library for parsing [Apache Parquet](https://parquet.apache.org) files. Apache Parquet is a popular columnar storage format that is widely used in data engineering, data science, and machine learning applications for efficiently storing and processing large datasets.
+
+Hyparquet allows you to read and extract data from Parquet files directly in JavaScript environments, both in Node.js and in the browser. It is designed to be fast, memory-efficient, and easy to use.
+
+## Why hyparquet?
+
+1. **Performant**: Designed to efficiently process large datasets by only loading the required data, making it suitable for big data and machine learning applications.
+2. **Browser-native**: Built to work seamlessly in the browser, opening up new possibilities for web-based data applications and visualizations.
+3. **Dependency-free**: Hyparquet has zero dependencies, making it lightweight and easy to install and use in any JavaScript project.
+4. **TypeScript support**: The library is written in typed js code and provides TypeScript type definitions out of the box.
+5. **Flexible data access**: Hyparquet allows you to read specific subsets of data by specifying row and column ranges, giving fine-grained control over what data is fetched and loaded.
 
 ## Features
 
@@ -43,6 +53,12 @@ npm install hyparquet
 ```
 
 ## Usage
+
+Install the hyparquet package from npm:
+
+```bash
+npm install hyparquet
+```
 
 If you're in a node.js environment, you can load a parquet file with the following example:
 
