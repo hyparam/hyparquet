@@ -29,6 +29,8 @@ import { deserializeTCompactProtocol } from './thrift.js'
  * @returns {Promise<FileMetaData>} parquet metadata object
  */
 export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = 1 << 19 /* 512kb */) {
+  if (!asyncBuffer) throw new Error('parquet asyncBuffer is required')
+
   // fetch last bytes (footer) of the file
   const footerOffset = Math.max(0, asyncBuffer.byteLength - initialFetchSize)
   const footerBuffer = await asyncBuffer.slice(footerOffset)
@@ -64,12 +66,14 @@ export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = 1 << 
 }
 
 /**
- * Read parquet metadata from a buffer
+ * Read parquet metadata from a buffer synchronously.
  *
  * @param {ArrayBuffer} arrayBuffer parquet file contents
  * @returns {FileMetaData} parquet metadata object
  */
 export function parquetMetadata(arrayBuffer) {
+  if (!arrayBuffer) throw new Error('parquet arrayBuffer is required')
+
   // DataView for easier manipulation of the buffer
   const view = new DataView(arrayBuffer)
 

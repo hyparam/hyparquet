@@ -34,6 +34,12 @@ describe('parquetRead', () => {
     })
   })
 
+  it('throws reasonable error messages', async () => {
+    const file = undefined
+    await expect(parquetRead({ file }))
+      .rejects.toThrow('parquet file is required')
+  })
+
   it('should read a single column from a file', async () => {
     const asyncBuffer = fileToAsyncBuffer('test/files/datapage_v2.snappy.parquet')
     await parquetRead({

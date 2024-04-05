@@ -30,6 +30,8 @@ import { getColumnName, isMapLike } from './schema.js'
  * @returns {Promise<void>} resolves when all requested rows and columns are parsed
  */
 export async function parquetRead(options) {
+  if (!options.file) throw new Error('parquet file is required')
+
   // load metadata if not provided
   options.metadata ||= await parquetMetadataAsync(options.file)
   if (!options.metadata) throw new Error('parquet metadata not found')
