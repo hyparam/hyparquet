@@ -211,14 +211,15 @@ export function widthFromMaxInt(value) {
  * @returns {Decoded<any>} array of values
  */
 export function readData(dataView, encoding, offset, count, bitWidth) {
-  const value = []
+  /** @type {any[]} */
+  let value = []
   let byteLength = 0
   if (encoding === 'RLE') {
     let seen = 0
     while (seen < count) {
       const rle = readRleBitPackedHybrid(dataView, offset + byteLength, bitWidth, 0, count)
       if (!rle.value.length) break // EOF
-      value.push(...rle.value)
+      value = value.concat(rle.value)
       seen += rle.value.length
       byteLength += rle.byteLength
     }
@@ -247,7 +248,8 @@ export function readRleBitPackedHybrid(dataView, offset, width, length, numValue
     if (length < 0) throw new Error(`parquet invalid rle/bitpack length ${length}`)
     byteLength += 4
   }
-  const value = []
+  /** @type {number[]} */
+  let value = []
   const startByteLength = byteLength
   while (byteLength - startByteLength < length && value.length < numValues) {
     const [header, newOffset] = readVarInt(dataView, offset + byteLength)
@@ -255,14 +257,14 @@ export function readRleBitPackedHybrid(dataView, offset, width, length, numValue
     if ((header & 1) === 0) {
       // rle
       const rle = readRle(dataView, offset + byteLength, header, width)
-      value.push(...rle.value)
+      value = value.concat(rle.value)
       byteLength += rle.byteLength
     } else {
       // bit-packed
       const bitPacked = readBitPacked(
         dataView, offset + byteLength, header, width, numValues - value.length
       )
-      value.push(...bitPacked.value)
+      value = value.concat(bitPacked.value)
       byteLength += bitPacked.byteLength
     }
   }

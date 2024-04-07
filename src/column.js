@@ -30,7 +30,8 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
   let dictionary = undefined
   let valuesSeen = 0
   let byteOffset = 0 // byteOffset within the column
-  const rowData = []
+  /** @type {any[]} */
+  let rowData = []
 
   while (valuesSeen < rowGroup.num_rows) {
     // parse column header
@@ -92,7 +93,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       // values.length !== daph.num_values isn't right. In cases like arrays,
       // you need the total number of children, not the number of top-level values.
 
-      rowData.push(...values)
+      rowData = rowData.concat(values)
     } else if (header.type === PageType.DICTIONARY_PAGE) {
       const diph = header.dictionary_page_header
       if (!diph) throw new Error('parquet dictionary page header is undefined')
@@ -115,7 +116,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       if (repetitionLevels.length) {
         dereferenceDictionary(dictionary, dataPage)
         // Use repetition levels to construct lists
-        rowData.push(...assembleObjects(
+        rowData = rowData.concat(assembleObjects(
           definitionLevels, repetitionLevels, dataPage, true, maxDefinitionLevel, maxRepetitionLevel
         ))
       } else if (daph2.num_nulls) {
@@ -124,7 +125,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
         skipNulls(definitionLevels, maxDefinitionLevel, dataPage, dictionary, rowData)
       } else {
         dereferenceDictionary(dictionary, dataPage)
-        rowData.push(...dataPage)
+        rowData = rowData.concat(dataPage)
       }
       // TODO: convert?
     } else {

@@ -37,10 +37,10 @@ export async function parquetRead(options) {
   if (!options.metadata) throw new Error('parquet metadata not found')
 
   const { metadata, onComplete } = options
-  /** @type {any[][]} */
-  const rowData = []
   const rowStart = options.rowStart || 0
   const rowEnd = options.rowEnd || Number(metadata.num_rows)
+  /** @type {any[][]} */
+  let rowData = []
 
   // find which row groups to read
   let groupStart = 0 // first row index of the current group
@@ -55,7 +55,7 @@ export async function parquetRead(options) {
         // filter to rows in range
         const start = Math.max(rowStart - groupStart, 0)
         const end = Math.min(rowEnd - groupStart, groupRows)
-        rowData.push(...groupData.slice(start, end))
+        rowData = rowData.concat(groupData.slice(start, end))
       }
     }
     groupStart += groupRows
