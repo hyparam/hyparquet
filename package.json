@@ -1,6 +1,6 @@
 {
   "name": "hyparquet",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "description": "parquet file parser for javascript",
   "keywords": [
     "parquet",
