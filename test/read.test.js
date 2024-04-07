@@ -2,7 +2,7 @@ import fs from 'fs'
 import { describe, expect, it } from 'vitest'
 import { gunzipSync } from 'zlib'
 import { parquetRead } from '../src/hyparquet.js'
-import { toJson } from '../src/toJson.js'
+import { toJson } from '../src/utils.js'
 import { fileToAsyncBuffer, fileToJson } from './helpers.js'
 
 /**

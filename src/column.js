@@ -6,6 +6,7 @@ import { readDataPageV2 } from './datapageV2.js'
 import { parquetHeader } from './header.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel, isRequired, schemaElement } from './schema.js'
 import { snappyUncompress } from './snappy.js'
+import { concat } from './utils.js'
 
 /**
  * @typedef {import('./types.js').SchemaElement} SchemaElement
@@ -31,7 +32,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
   let valuesSeen = 0
   let byteOffset = 0 // byteOffset within the column
   /** @type {any[]} */
-  let rowData = []
+  const rowData = []
 
   while (valuesSeen < rowGroup.num_rows) {
     // parse column header
@@ -93,7 +94,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       // values.length !== daph.num_values isn't right. In cases like arrays,
       // you need the total number of children, not the number of top-level values.
 
-      rowData = rowData.concat(values)
+      concat(rowData, values)
     } else if (header.type === PageType.DICTIONARY_PAGE) {
       const diph = header.dictionary_page_header
       if (!diph) throw new Error('parquet dictionary page header is undefined')
@@ -116,7 +117,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       if (repetitionLevels.length) {
         dereferenceDictionary(dictionary, dataPage)
         // Use repetition levels to construct lists
-        rowData = rowData.concat(assembleObjects(
+        concat(rowData, assembleObjects(
           definitionLevels, repetitionLevels, dataPage, true, maxDefinitionLevel, maxRepetitionLevel
         ))
       } else if (daph2.num_nulls) {
@@ -125,7 +126,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
         skipNulls(definitionLevels, maxDefinitionLevel, dataPage, dictionary, rowData)
       } else {
         dereferenceDictionary(dictionary, dataPage)
-        rowData = rowData.concat(dataPage)
+        concat(rowData, dataPage)
       }
       // TODO: convert?
     } else {

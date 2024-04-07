@@ -2,6 +2,7 @@
 import { getColumnOffset, readColumn } from './column.js'
 import { parquetMetadataAsync } from './metadata.js'
 import { getColumnName, isMapLike } from './schema.js'
+import { concat } from './utils.js'
 
 /**
  * Read parquet data rows from a file-like object.
@@ -40,7 +41,7 @@ export async function parquetRead(options) {
   const rowStart = options.rowStart || 0
   const rowEnd = options.rowEnd || Number(metadata.num_rows)
   /** @type {any[][]} */
-  let rowData = []
+  const rowData = []
 
   // find which row groups to read
   let groupStart = 0 // first row index of the current group
@@ -55,7 +56,7 @@ export async function parquetRead(options) {
         // filter to rows in range
         const start = Math.max(rowStart - groupStart, 0)
         const end = Math.min(rowEnd - groupStart, groupRows)
-        rowData = rowData.concat(groupData.slice(start, end))
+        concat(rowData, groupData.slice(start, end))
       }
     }
     groupStart += groupRows

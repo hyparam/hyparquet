@@ -21,3 +21,15 @@ export function toJson(obj) {
   }
   return obj
 }
+
+/**
+ * Concatenate two arrays fast.
+ * @param {any[]} aaa first array
+ * @param {any[]} bbb second array
+ */
+export function concat(aaa, bbb) {
+  const chunk = 10000
+  for (let i = 0; i < bbb.length; i += chunk) {
+    aaa.push(...bbb.slice(i, i + chunk))
+  }
+}

@@ -1,4 +1,5 @@
 import { readVarInt } from './thrift.js'
+import { concat } from './utils.js'
 
 /**
  * Return type with bytes read.
@@ -212,14 +213,14 @@ export function widthFromMaxInt(value) {
  */
 export function readData(dataView, encoding, offset, count, bitWidth) {
   /** @type {any[]} */
-  let value = []
+  const value = []
   let byteLength = 0
   if (encoding === 'RLE') {
     let seen = 0
     while (seen < count) {
       const rle = readRleBitPackedHybrid(dataView, offset + byteLength, bitWidth, 0, count)
       if (!rle.value.length) break // EOF
-      value = value.concat(rle.value)
+      concat(value, rle.value)
       seen += rle.value.length
       byteLength += rle.byteLength
     }
@@ -249,7 +250,7 @@ export function readRleBitPackedHybrid(dataView, offset, width, length, numValue
     byteLength += 4
   }
   /** @type {number[]} */
-  let value = []
+  const value = []
   const startByteLength = byteLength
   while (byteLength - startByteLength < length && value.length < numValues) {
     const [header, newOffset] = readVarInt(dataView, offset + byteLength)
@@ -257,14 +258,14 @@ export function readRleBitPackedHybrid(dataView, offset, width, length, numValue
     if ((header & 1) === 0) {
       // rle
       const rle = readRle(dataView, offset + byteLength, header, width)
-      value = value.concat(rle.value)
+      concat(value, rle.value)
       byteLength += rle.byteLength
     } else {
       // bit-packed
       const bitPacked = readBitPacked(
         dataView, offset + byteLength, header, width, numValues - value.length
       )
-      value = value.concat(bitPacked.value)
+      concat(value, bitPacked.value)
       byteLength += bitPacked.byteLength
     }
   }
