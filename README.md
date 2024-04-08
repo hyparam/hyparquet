@@ -115,7 +115,9 @@ In practice, most parquet files use snappy compression.
 You can extend support for parquet files with other compression codec using the `compressors` option.
 
 ```js
+import { parquetRead } from 'hyparquet'
 import { gunzipSync } from 'zlib'
+
 parquetRead({ file, compressors: {
   // add gzip support:
   GZIP: (input, output) => output.set(gunzipSync(input)),
@@ -132,13 +134,26 @@ Compression:
  - [ ] ZSTD
  - [ ] LZ4_RAW
 
-Page Type:
- - [X] Data Page
- - [ ] Index Page
- - [X] Dictionary Page
- - [X] Data Page V2
+## Hysnappy
 
-Contributions are welcome!
+The most common compression codec used in parquet is snappy compression.
+Hyparquet includes a built-in snappy decompressor written in javascript.
+
+We developed [hysnappy](https://github.com/hyparam/hysnappy) to make parquet parsing even faster.
+Hysnappy is a snappy decompression codec written in C, compiled to WASM.
+
+To use hysnappy for faster parsing of large parquet files, override the `SNAPPY` compressor for hyparquet:
+
+```js
+import { parquetRead } from 'hyparquet'
+import { snappyUncompressor } from 'hysnappy'
+
+parquetRead({ file, compressors: {
+  SNAPPY: snappyUncompressor(),
+}})
+```
+
+Parsing a [420mb wikipedia parquet file](https://huggingface.co/datasets/wikimedia/wikipedia/resolve/main/20231101.en/train-00000-of-00041.parquet) using hysnappy reduces parsing time by 40% (4.1s to 2.3s).
 
 ## References
 
