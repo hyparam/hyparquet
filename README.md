@@ -20,12 +20,12 @@ Hyparquet allows you to read and extract data from Parquet files directly in Jav
 1. **Performant**: Designed to efficiently process large datasets by only loading the required data, making it suitable for big data and machine learning applications.
 2. **Browser-native**: Built to work seamlessly in the browser, opening up new possibilities for web-based data applications and visualizations.
 3. **Dependency-free**: Hyparquet has zero dependencies, making it lightweight and easy to install and use in any JavaScript project.
-4. **TypeScript support**: The library is written in typed js code and provides TypeScript type definitions out of the box.
+4. **TypeScript support**: The library is written in jsdoc-typed JavaScript and provides TypeScript definitions out of the box.
 5. **Flexible data access**: Hyparquet allows you to read specific subsets of data by specifying row and column ranges, giving fine-grained control over what data is fetched and loaded.
 
 ## Features
 
-- Designed to work with huge ML datasets (things like [starcoder](https://huggingface.co/datasets/bigcode/starcoderdata))
+- Designed to work with huge ML datasets (like [starcoder](https://huggingface.co/datasets/bigcode/starcoderdata))
 - Can load metadata separately from data
 - Data can be filtered by row and column ranges
 - Only fetches the data needed
@@ -33,7 +33,7 @@ Hyparquet allows you to read and extract data from Parquet files directly in Jav
 - Fast data loading for large scale ML applications
 - Bring data visualization closer to the user, in the browser
 
-Why make a new parquet parser in javascript?
+Why make a new parquet parser?
 First, existing libraries like [parquetjs](https://github.com/ironSource/parquetjs) are officially "inactive".
 Importantly, they do not support the kind of stream processing needed to make a really performant parser in the browser.
 And finally, no dependencies means that hyparquet is lean, and easy to package and deploy.
@@ -45,12 +45,6 @@ Online parquet file reader demo available at:
 https://hyparam.github.io/hyparquet/
 
 Demo source: [index.html](index.html)
-
-## Installation
-
-```bash
-npm install hyparquet
-```
 
 ## Usage
 
@@ -99,10 +93,56 @@ await parquetRead({
 })
 ```
 
+## Filtering
+
+To read large parquet files, it is recommended that you filter by row and column.
+Hyparquet is designed to load only the minimal amount of data needed to fulfill a query.
+You can filter rows by number, or columns by name:
+
+```js
+import { parquetRead } from 'hyparquet'
+
+await parquetRead({
+  file,
+  columns: ['colA', 'colB'], // include columns colA and colB
+  rowStart: 100,
+  rowEnd: 200,
+  onComplete: data => console.log(data),
+})
+```
+
 ## Async
 
-Hyparquet supports asynchronous fetching of parquet files, over a network.
+Hyparquet supports asynchronous fetching of parquet files over a network.
 You can provide an `AsyncBuffer` which is like a js `ArrayBuffer` but the `slice` method returns `Promise<ArrayBuffer>`.
+
+```typescript
+interface AsyncBuffer {
+  byteLength: number
+  slice(start: number, end?: number): Promise<ArrayBuffer>
+}
+```
+
+You can read parquet files asynchronously using HTTP Range requests so that only the necessary byte ranges from a `url` will be fetched:
+
+```js
+import { parquetRead } from 'hyparquet'
+
+const url = 'https://...'
+await parquetRead({
+  file: { // AsyncBuffer
+    byteLength,
+    async slice(start, end) {
+      const headers = new Headers()
+      headers.set('Range', `bytes=${start}-${end - 1}`)
+      const res = await fetch(url, { headers })
+      if (!res.ok || !res.body) throw new Error('fetch failed')
+      return readableStreamToArrayBuffer(res.body)
+    },
+  }
+  onComplete: data => console.log(data),
+})
+```
 
 ## Supported Parquet Files
 
@@ -112,19 +152,7 @@ Hyparquet does not support 100% of all parquet files.
 Supporting every possible compression codec available in parquet would blow up the size of the hyparquet library.
 In practice, most parquet files use snappy compression.
 
-You can extend support for parquet files with other compression codec using the `compressors` option.
-
-```js
-import { parquetRead } from 'hyparquet'
-import { gunzipSync } from 'zlib'
-
-parquetRead({ file, compressors: {
-  // add gzip support:
-  GZIP: (input, output) => output.set(gunzipSync(input)),
-}})
-```
-
-Compression:
+Parquet compression types supported by default:
  - [X] Uncompressed
  - [X] Snappy
  - [ ] GZip
@@ -133,6 +161,17 @@ Compression:
  - [ ] LZ4
  - [ ] ZSTD
  - [ ] LZ4_RAW
+
+You can extend support for other compression codecs using the `compressors` option.
+
+```js
+import { parquetRead } from 'hyparquet'
+import { gunzipSync } from 'zlib'
+
+parquetRead({ file, compressors: {
+  GZIP: (input, output) => output.set(gunzipSync(input)), // add gzip support
+}})
+```
 
 ## Hysnappy
 
@@ -160,6 +199,8 @@ Parsing a [420mb wikipedia parquet file](https://huggingface.co/datasets/wikimed
  - https://github.com/apache/parquet-format
  - https://github.com/apache/parquet-testing
  - https://github.com/apache/thrift
+ - https://github.com/apache/arrow
  - https://github.com/dask/fastparquet
  - https://github.com/google/snappy
+ - https://github.com/ironSource/parquetjs
  - https://github.com/zhipeng-jia/snappyjs

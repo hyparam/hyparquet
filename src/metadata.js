@@ -73,8 +73,6 @@ export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = 1 << 
  */
 export function parquetMetadata(arrayBuffer) {
   if (!arrayBuffer) throw new Error('parquet arrayBuffer is required')
-
-  // DataView for easier manipulation of the buffer
   const view = new DataView(arrayBuffer)
 
   // Validate footer magic number "PAR1"
@@ -97,7 +95,7 @@ export function parquetMetadata(arrayBuffer) {
   const metadataOffset = metadataLengthOffset - metadataLength
   const { value: metadata } = deserializeTCompactProtocol(view.buffer, view.byteOffset + metadataOffset)
 
-  // Parse parquet metadata from thrift data
+  // Parse metadata from thrift data
   const version = metadata.field_1
   const schema = metadata.field_2.map((/** @type {any} */ field) => ({
     type: ParquetType[field.field_1],
