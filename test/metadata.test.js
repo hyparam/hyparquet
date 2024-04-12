@@ -8,7 +8,7 @@ const files = fs.readdirSync('test/files').filter(f => f.endsWith('.parquet'))
 
 describe('parquetMetadata', () => {
   files.forEach(file => {
-    it(`should parse metadata from ${file}`, async () => {
+    it(`parse metadata from ${file}`, async () => {
       const arrayBuffer = await readFileToArrayBuffer(`test/files/${file}`)
       const result = toJson(parquetMetadata(arrayBuffer))
       const base = file.replace('.parquet', '')
@@ -52,7 +52,7 @@ describe('parquetMetadata', () => {
 
 describe('parquetMetadataAsync', () => {
   files.forEach(file => {
-    it(`should parse metadata async from ${file}`, async () => {
+    it(`parse metadata async from ${file}`, async () => {
       const asyncBuffer = fileToAsyncBuffer(`test/files/${file}`)
       const result = await parquetMetadataAsync(asyncBuffer)
       const base = file.replace('.parquet', '')

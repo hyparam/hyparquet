@@ -51,7 +51,7 @@ export async function parquetRead(options) {
     // if row group overlaps with row range, read it
     if (groupStart + groupRows >= rowStart && groupStart < rowEnd) {
       // read row group
-      const groupData = await readRowGroup(options, rowGroup)
+      const groupData = await readRowGroup(options, rowGroup, groupStart)
       if (onComplete) {
         // filter to rows in range
         const start = Math.max(rowStart - groupStart, 0)
@@ -78,9 +78,10 @@ export async function parquetRead(options) {
  * @param {(rows: any[][]) => void} [options.onComplete] called when all requested rows and columns are parsed
  * @param {Compressors} [options.compressors] custom decompressors
  * @param {RowGroup} rowGroup row group to read
+ * @param {number} groupStart row index of the first row in the group
  * @returns {Promise<any[][]>} resolves to row data
  */
-async function readRowGroup(options, rowGroup) {
+async function readRowGroup(options, rowGroup, groupStart) {
   const { file, metadata, columns, compressors } = options
   if (!metadata) throw new Error('parquet metadata not found')
 
@@ -201,8 +202,13 @@ async function readRowGroup(options, rowGroup) {
       // do not emit column data until structs are fully parsed
       if (!columnData) return
       // notify caller of column data
-      if (options.onChunk) options.onChunk({ columnName, columnData, rowStart: 0, rowEnd: columnData.length })
-      // add column data to group data only if onComplete is defined
+      options.onChunk?.({
+        columnName,
+        columnData,
+        rowStart: groupStart,
+        rowEnd: groupStart + columnData.length,
+      })
+      // add colum data to group data only if onComplete is defined
       if (options.onComplete) addColumn(groupData, outputColumnIndex, columnData)
       outputColumnIndex++
     }))

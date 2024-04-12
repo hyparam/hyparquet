@@ -27,15 +27,15 @@
     "typecheck": "tsc"
   },
   "devDependencies": {
-    "@types/node": "20.12.5",
-    "@typescript-eslint/eslint-plugin": "7.5.0",
+    "@types/node": "20.12.7",
+    "@typescript-eslint/eslint-plugin": "7.6.0",
     "@vitest/coverage-v8": "1.4.0",
     "eslint": "8.57.0",
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-jsdoc": "48.2.3",
     "http-server": "14.1.1",
     "hysnappy": "0.3.0",
-    "typescript": "5.4.4",
+    "typescript": "5.4.5",
     "vitest": "1.4.0"
   }
 }

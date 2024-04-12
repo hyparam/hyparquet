@@ -3,14 +3,14 @@ import { parquetMetadata, parquetSchema } from '../src/hyparquet.js'
 import { readFileToArrayBuffer } from './helpers.js'
 
 describe('schemaTree', () => {
-  it('should parse schema tree from addrtype-missing-value.parquet', async () => {
+  it('parse schema tree from addrtype-missing-value.parquet', async () => {
     const arrayBuffer = await readFileToArrayBuffer('test/files/addrtype-missing-value.parquet')
     const metadata = parquetMetadata(arrayBuffer)
     const result = parquetSchema(metadata)
     expect(result).toEqual(addrtypeSchema)
   })
 
-  it('should parse schema tree from rowgroups.parquet', async () => {
+  it('parse schema tree from rowgroups.parquet', async () => {
     const arrayBuffer = await readFileToArrayBuffer('test/files/rowgroups.parquet')
     const metadata = parquetMetadata(arrayBuffer)
     const result = parquetSchema(metadata)
