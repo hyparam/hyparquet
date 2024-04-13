@@ -1,3 +1,4 @@
+import fs from 'fs'
 import { describe, expect, it } from 'vitest'
 import { snappyUncompress } from '../src/snappy.js'
 
@@ -48,6 +49,14 @@ describe('snappy uncompress', () => {
     })
 
     await Promise.all(futures)
+  })
+
+  it('decompress hyparquet.jpg.snappy', async () => {
+    const compressed = fs.readFileSync('test/files/hyparquet.jpg.snappy')
+    const expected = fs.readFileSync('hyparquet.jpg')
+    const output = new Uint8Array(expected.length)
+    await snappyUncompress(compressed, output)
+    expect(Array.from(output)).toEqual(Array.from(expected))
   })
 
   it('throws for invalid input', () => {
