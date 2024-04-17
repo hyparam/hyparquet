@@ -54,7 +54,7 @@ export function snappyUncompress(input, output) {
   // skip preamble (contains uncompressed length as varint)
   while (pos < inputLength) {
     const c = input[pos]
-    pos += 1
+    pos++
     if (c < 128) {
       break
     }
@@ -66,7 +66,7 @@ export function snappyUncompress(input, output) {
   while (pos < inputLength) {
     const c = input[pos]
     let len = 0
-    pos += 1
+    pos++
 
     if (pos >= inputLength) {
       throw new Error('missing eof marker')
@@ -103,7 +103,7 @@ export function snappyUncompress(input, output) {
         // Copy with 1-byte offset
         len = ((c >>> 2) & 0x7) + 4
         offset = input[pos] + ((c >>> 5) << 8)
-        pos += 1
+        pos++
         break
       case 2:
         // Copy with 2-byte offset

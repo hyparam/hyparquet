@@ -4,89 +4,96 @@ import { readPlain, readRleBitPackedHybrid } from '../src/encoding.js'
 describe('readPlain', () => {
 
   it('reads BOOLEAN values correctly', () => {
-    const dataView = new DataView(new ArrayBuffer(1))
-    dataView.setUint8(0, 0b00000001) // Set the first bit to 1
-    const result = readPlain(dataView, 'BOOLEAN', 1, 0, false)
-    expect(result).toEqual({ value: [true], byteLength: 1 })
+    const view = new DataView(new ArrayBuffer(1))
+    view.setUint8(0, 0b00000001) // Set the first bit to 1
+    const reader = { view, offset: 0 }
+    const result = readPlain(reader, 'BOOLEAN', 1, false)
+    expect(result).toEqual([true])
+    expect(reader.offset).toBe(1)
   })
 
   it('reads INT32 values correctly', () => {
-    const dataView = new DataView(new ArrayBuffer(4))
-    dataView.setInt32(0, 123456789, true) // little-endian
-    const result = readPlain(dataView, 'INT32', 1, 0, false)
-    expect(result).toEqual({ value: [123456789], byteLength: 4 })
+    const view = new DataView(new ArrayBuffer(4))
+    view.setInt32(0, 123456789, true) // little-endian
+    const reader = { view, offset: 0 }
+    const result = readPlain(reader, 'INT32', 1, false)
+    expect(result).toEqual([123456789])
+    expect(reader.offset).toBe(4)
   })
 
   it('reads INT64 values correctly', () => {
-    const dataView = new DataView(new ArrayBuffer(8))
-    dataView.setBigInt64(0, BigInt('1234567890123456789'), true)
-    const result = readPlain(dataView, 'INT64', 1, 0, false)
-    expect(result).toEqual({ value: [1234567890123456789n], byteLength: 8 })
+    const view = new DataView(new ArrayBuffer(8))
+    view.setBigInt64(0, BigInt('1234567890123456789'), true)
+    const reader = { view, offset: 0 }
+    const result = readPlain(reader, 'INT64', 1, false)
+    expect(result).toEqual([1234567890123456789n])
+    expect(reader.offset).toBe(8)
   })
 
   it('reads INT96 values correctly', () => {
     const buffer = new ArrayBuffer(12)
-    const dataView = new DataView(buffer)
+    const view = new DataView(buffer)
 
     // Example INT96 value split into 64-bit low part and 32-bit high part
     const low = BigInt('0x0123456789ABCDEF')
     const high = 0x02345678
-    dataView.setBigInt64(0, low, true)
-    dataView.setInt32(8, high, true)
+    view.setBigInt64(0, low, true)
+    view.setInt32(8, high, true)
+    const reader = { view, offset: 0 }
+    const result = readPlain(reader, 'INT96', 1, false)
     const expectedValue = (BigInt(high) << BigInt(32)) | low
-
-    const result = readPlain(dataView, 'INT96', 1, 0, false)
-    expect(result).toEqual({
-      value: [expectedValue],
-      byteLength: 12,
-    })
+    expect(result).toEqual([expectedValue])
+    expect(reader.offset).toBe(12)
   })
 
   it('reads FLOAT values correctly', () => {
-    const dataView = new DataView(new ArrayBuffer(4))
-    dataView.setFloat32(0, 1234.5, true) // little-endian
-    const result = readPlain(dataView, 'FLOAT', 1, 0, false)
-    expect(result).toEqual({ value: [1234.5], byteLength: 4 })
+    const view = new DataView(new ArrayBuffer(4))
+    view.setFloat32(0, 1234.5, true) // little-endian
+    const reader = { view, offset: 0 }
+    const result = readPlain(reader, 'FLOAT', 1, false)
+    expect(result).toEqual([1234.5])
+    expect(reader.offset).toBe(4)
   })
 
   it('reads DOUBLE values correctly', () => {
-    const dataView = new DataView(new ArrayBuffer(8))
-    dataView.setFloat64(0, 12345.6789, true) // little-endian
-    const result = readPlain(dataView, 'DOUBLE', 1, 0, false)
-    expect(result).toEqual({ value: [12345.6789], byteLength: 8 })
+    const view = new DataView(new ArrayBuffer(8))
+    view.setFloat64(0, 12345.6789, true) // little-endian
+    const reader = { view, offset: 0 }
+    const result = readPlain(reader, 'DOUBLE', 1, false)
+    expect(result).toEqual([12345.6789])
+    expect(reader.offset).toBe(8)
   })
 
   it('reads BYTE_ARRAY values correctly', () => {
-    const dataView = new DataView(new ArrayBuffer(10))
-    dataView.setInt32(0, 3, true) // length of the first byte array
-    dataView.setUint8(4, 1) // first byte array data
-    dataView.setUint8(5, 2)
-    dataView.setUint8(6, 3)
-    const result = readPlain(dataView, 'BYTE_ARRAY', 1, 0, false)
-    expect(result).toEqual({
-      value: [new Uint8Array([1, 2, 3])],
-      byteLength: 7,
-    })
+    const view = new DataView(new ArrayBuffer(10))
+    view.setInt32(0, 3, true) // length of the first byte array
+    view.setUint8(4, 1) // first byte array data
+    view.setUint8(5, 2)
+    view.setUint8(6, 3)
+    const reader = { view, offset: 0 }
+    const result = readPlain(reader, 'BYTE_ARRAY', 1, false)
+    expect(result).toEqual([new Uint8Array([1, 2, 3])])
+    expect(reader.offset).toBe(7)
   })
 
   it('reads FIXED_LEN_BYTE_ARRAY values correctly', () => {
     const fixedLength = 3
-    const dataView = new DataView(new ArrayBuffer(fixedLength))
-    dataView.setUint8(0, 4)
-    dataView.setUint8(1, 5)
-    dataView.setUint8(2, 6)
-    const result = readPlain(dataView, 'FIXED_LEN_BYTE_ARRAY', fixedLength, 0, false)
-    expect(result).toEqual({
-      value: new Uint8Array([4, 5, 6]),
-      byteLength: fixedLength,
-    })
+    const view = new DataView(new ArrayBuffer(fixedLength))
+    view.setUint8(0, 4)
+    view.setUint8(1, 5)
+    view.setUint8(2, 6)
+    const reader = { view, offset: 0 }
+    const result = readPlain(reader, 'FIXED_LEN_BYTE_ARRAY', fixedLength, false)
+    expect(result).toEqual(new Uint8Array([4, 5, 6]))
+    expect(reader.offset).toBe(fixedLength)
   })
 
   it('throws an error for unhandled types', () => {
-    const dataView = new DataView(new ArrayBuffer(0))
+    const view = new DataView(new ArrayBuffer(0))
+    const reader = { view, offset: 0 }
     /** @type any */
     const invalidType = 'invalidType'
-    expect(() => readPlain(dataView, invalidType, 1, 0, false))
+    expect(() => readPlain(reader, invalidType, 1, false))
       .toThrow(`parquet unhandled type: ${invalidType}`)
   })
 })
@@ -97,29 +104,31 @@ describe('readRleBitPackedHybrid', () => {
     // RLE values: true x3
     // Bit-packed values: false, false, true
     const buffer = new ArrayBuffer(4)
-    const dataView = new DataView(buffer)
-    dataView.setUint8(0, 0b00000110) // RLE header for 3 true values
-    dataView.setUint8(1, 0b00000001) // RLE value (true)
-    dataView.setUint8(2, 0b00000011) // Bit-packed header for 3 values
-    dataView.setUint8(3, 0b00000100) // Bit-packed values (false, false, true)
+    const view = new DataView(buffer)
+    view.setUint8(0, 0b00000110) // RLE header for 3 true values
+    view.setUint8(1, 0b00000001) // RLE value (true)
+    view.setUint8(2, 0b00000011) // Bit-packed header for 3 values
+    view.setUint8(3, 0b00000100) // Bit-packed values (false, false, true)
+    const reader = { view, offset: 0 }
 
-    const { byteLength, value } = readRleBitPackedHybrid(dataView, 0, 1, 3, 6)
-    expect(byteLength).toBe(4)
+    const value = readRleBitPackedHybrid(reader, 1, 3, 6)
+    expect(reader.offset).toBe(4)
     expect(value).toEqual([1, 1, 1, 0, 0, 1])
   })
 
   it('reads RLE bit-packed hybrid values with implicit length', () => {
     // Example buffer: same as previous test, but with implicit length
     const buffer = new ArrayBuffer(8)
-    const dataView = new DataView(buffer)
-    dataView.setInt32(0, 3, true) // length 3 little-endian
-    dataView.setUint8(4, 0b00000110) // RLE header for 3 true values
-    dataView.setUint8(5, 0b00000001) // RLE value (true)
-    dataView.setUint8(6, 0b00000011) // Bit-packed header for 3 values
-    dataView.setUint8(7, 0b00000100) // Bit-packed values (false, false, true)
+    const view = new DataView(buffer)
+    view.setInt32(0, 3, true) // length 3 little-endian
+    view.setUint8(4, 0b00000110) // RLE header for 3 true values
+    view.setUint8(5, 0b00000001) // RLE value (true)
+    view.setUint8(6, 0b00000011) // Bit-packed header for 3 values
+    view.setUint8(7, 0b00000100) // Bit-packed values (false, false, true)
+    const reader = { view, offset: 0 }
 
-    const { byteLength, value } = readRleBitPackedHybrid(dataView, 0, 1, 0, 6)
-    expect(byteLength).toBe(8)
+    const value = readRleBitPackedHybrid(reader, 1, 0, 6)
+    expect(reader.offset).toBe(8)
     expect(value).toEqual([1, 1, 1, 0, 0, 1])
   })
 })

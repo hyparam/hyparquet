@@ -15,6 +15,11 @@ export interface Decoded<T> {
   byteLength: number
 }
 
+export interface DataReader {
+  view: DataView
+  offset: number
+}
+
 // Parquet file metadata types
 export interface FileMetaData {
   version: number

@@ -79,7 +79,7 @@ export function getMaxRepetitionLevel(schema, parts) {
   parts.forEach((part, i) => {
     const { element } = schemaElement(schema, parts.slice(0, i + 1))
     if (element.repetition_type === 'REPEATED') {
-      maxLevel += 1
+      maxLevel++
     }
   })
   return maxLevel
@@ -97,7 +97,7 @@ export function getMaxDefinitionLevel(schema, parts) {
   parts.forEach((part, i) => {
     const { element } = schemaElement(schema, parts.slice(0, i + 1))
     if (element.repetition_type !== 'REQUIRED') {
-      maxLevel += 1
+      maxLevel++
     }
   })
   return maxLevel
@@ -113,7 +113,7 @@ export function skipDefinitionBytes(num) {
   let byteLength = 6
   let n = num >>> 8
   while (n !== 0) {
-    byteLength += 1
+    byteLength++
     n >>>= 7
   }
   return byteLength
