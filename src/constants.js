@@ -94,9 +94,13 @@ export const CompressionCodec = [
   'LZ4_RAW',
 ]
 
-export const PageType = {
-  DATA_PAGE: 0,
-  INDEX_PAGE: 1,
-  DICTIONARY_PAGE: 2,
-  DATA_PAGE_V2: 3,
-}
+/**
+ * @typedef {import('./types.js').PageType} PageType
+ * @type {PageType[]}
+ */
+export const PageType = [
+  'DATA_PAGE',
+  'INDEX_PAGE',
+  'DICTIONARY_PAGE',
+  'DATA_PAGE_V2',
+]

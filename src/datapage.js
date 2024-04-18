@@ -1,26 +1,16 @@
 import { readData, readPlain, readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
-import {
-  getMaxDefinitionLevel,
-  getMaxRepetitionLevel,
-  isRequired,
-  schemaElement,
-  skipDefinitionBytes,
-} from './schema.js'
+import { getMaxDefinitionLevel, getMaxRepetitionLevel, isRequired, schemaElement, skipDefinitionBytes } from './schema.js'
 
 const skipNulls = false // TODO
 
 /**
+ * Read a data page from the given Uint8Array.
+ *
  * @typedef {{ definitionLevels: number[], numNulls: number }} DefinitionLevels
  * @typedef {import("./types.d.ts").DataPage} DataPage
  * @typedef {import("./types.d.ts").ColumnMetaData} ColumnMetaData
  * @typedef {import("./types.d.ts").DataPageHeader} DataPageHeader
- * @typedef {import("./types.d.ts").DictionaryPageHeader} DictionaryPageHeader
  * @typedef {import("./types.d.ts").SchemaElement} SchemaElement
- */
-
-/**
- * Read a data page from the given Uint8Array.
- *
  * @param {Uint8Array} bytes raw page data (should already be decompressed)
  * @param {DataPageHeader} daph data page header
  * @param {SchemaElement[]} schema schema for the file
@@ -92,6 +82,7 @@ export function readDataPage(bytes, daph, schema, columnMetadata) {
 /**
  * Read a page containing dictionary data.
  *
+ * @typedef {import("./types.d.ts").DictionaryPageHeader} DictionaryPageHeader
  * @param {Uint8Array} bytes raw page data
  * @param {DictionaryPageHeader} diph dictionary page header
  * @param {SchemaElement[]} schema schema for the file

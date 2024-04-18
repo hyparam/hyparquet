@@ -67,7 +67,6 @@ export async function parquetRead(options) {
 
 /**
  * Read a row group from a file-like object.
- * Reads the minimal number of columns to satisfy the request.
  *
  * @typedef {import('./types.js').RowGroup} RowGroup
  * @param {object} options read options

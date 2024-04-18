@@ -1,5 +1,4 @@
 import { assembleObjects } from './assemble.js'
-import { PageType } from './constants.js'
 import { convert } from './convert.js'
 import { readDataPage, readDictionaryPage } from './datapage.js'
 import { readDataPageV2 } from './datapageV2.js'
@@ -49,7 +48,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
     )
 
     // parse page data by type
-    if (header.type === PageType.DATA_PAGE) {
+    if (header.type === 'DATA_PAGE') {
       const daph = header.data_page_header
       if (!daph) throw new Error('parquet data page header is undefined')
 
@@ -95,7 +94,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       // you need the total number of children, not the number of top-level values.
 
       concat(rowData, values)
-    } else if (header.type === PageType.DICTIONARY_PAGE) {
+    } else if (header.type === 'DICTIONARY_PAGE') {
       const diph = header.dictionary_page_header
       if (!diph) throw new Error('parquet dictionary page header is undefined')
 
@@ -103,7 +102,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
         compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec, compressors
       )
       dictionary = readDictionaryPage(page, diph, schema, columnMetadata)
-    } else if (header.type === PageType.DATA_PAGE_V2) {
+    } else if (header.type === 'DATA_PAGE_V2') {
       const daph2 = header.data_page_header_v2
       if (!daph2) throw new Error('parquet data page header v2 is undefined')
 
@@ -200,6 +199,7 @@ export function decompressPage(compressedBytes, uncompressed_page_size, codec, c
 
 /**
  * Expand data page list with nulls and convert to utf8.
+ *
  * @param {number[]} definitionLevels
  * @param {number} maxDefinitionLevel
  * @param {ArrayLike<any>} dataPage

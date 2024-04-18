@@ -331,9 +331,6 @@ function readBitPacked(reader, header, bitWidth, remaining) {
       reader.offset++
       left += 8
     } else {
-      // otherwise, read bitWidth number of bits
-      // don't write more than remaining number of rows
-      // even if there are still bits to read
       if (remaining > 0) {
         // emit value by shifting off to the right and masking
         value.push((data >> right) & mask)
@@ -344,7 +341,6 @@ function readBitPacked(reader, header, bitWidth, remaining) {
     }
   }
 
-  // return values and number of bytes read
   return value
 }
 

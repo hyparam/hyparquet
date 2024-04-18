@@ -1,10 +1,7 @@
-import { Encoding } from './constants.js'
+import { Encoding, PageType } from './constants.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
 /**
- * Return type with bytes read.
- * This is useful to advance an offset through a buffer.
- *
  * @typedef {import("./types.d.ts").Decoded<T>} Decoded
  * @template T
  */
@@ -21,7 +18,7 @@ export function parquetHeader(arrayBuffer, offset) {
   const { value: header, byteLength } = deserializeTCompactProtocol(arrayBuffer, offset)
 
   // Parse parquet header from thrift data
-  const type = header.field_1
+  const type = PageType[header.field_1]
   const uncompressed_page_size = header.field_2
   const compressed_page_size = header.field_3
   const crc = header.field_4
@@ -52,7 +49,7 @@ export function parquetHeader(arrayBuffer, offset) {
     encoding: Encoding[header.field_8.field_4],
     definition_levels_byte_length: header.field_8.field_5,
     repetition_levels_byte_length: header.field_8.field_6,
-    is_compressed: header.field_8.field_7 === undefined ? true : header.field_8.field_7, // default to true
+    is_compressed: header.field_8.field_7 === undefined ? true : header.field_8.field_7, // default true
     statistics: header.field_8.field_8,
   }
 
