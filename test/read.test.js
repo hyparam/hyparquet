@@ -10,6 +10,12 @@ describe('parquetRead', () => {
       .rejects.toThrow('parquet file is required')
   })
 
+  it('throws error for undefined byteLength', async () => {
+    const file = { byteLength: undefined, slice: () => new ArrayBuffer(0) }
+    await expect(parquetRead({ file }))
+      .rejects.toThrow('parquet file byteLength is required')
+  })
+
   it('filter by row', async () => {
     const file = fileToAsyncBuffer('test/files/rowgroups.parquet')
     await parquetRead({

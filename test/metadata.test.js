@@ -19,7 +19,7 @@ describe('parquetMetadata', () => {
 
   it('throws for arrayBuffer undefined', () => {
     // @ts-expect-error testing invalid input
-    expect(() => parquetMetadata(undefined)).toThrow('parquet arrayBuffer is required')
+    expect(() => parquetMetadata(undefined)).toThrow('parquet file is required')
   })
 
   it('throws for a too short file', () => {
@@ -64,7 +64,7 @@ describe('parquetMetadataAsync', () => {
   it('throws for asyncBuffer undefined', async () => {
     const arrayBuffer = undefined
     await expect(parquetMetadataAsync(arrayBuffer)).rejects
-      .toThrow('parquet asyncBuffer is required')
+      .toThrow('parquet file is required')
   })
 
   it('throws for invalid magic number', async () => {
