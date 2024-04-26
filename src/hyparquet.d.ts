@@ -1,4 +1,6 @@
-export { AsyncBuffer, FileMetaData, SchemaTree } from './types'
+import type { AsyncBuffer, Compressors, FileMetaData, SchemaTree } from './types.d.ts'
+
+export type { AsyncBuffer, FileMetaData, SchemaTree }
 
 /**
  * Read parquet data rows from a file-like object.
@@ -22,7 +24,7 @@ export { AsyncBuffer, FileMetaData, SchemaTree } from './types'
  * @param {Compressors} [options.compressor] custom decompressors
  * @returns {Promise<void>} resolves when all requested rows and columns are parsed
  */
-export async function parquetRead(options: ParquetReadOptions): Promise<void>
+export function parquetRead(options: ParquetReadOptions): Promise<void>
 
 /**
  * Read parquet metadata from an async buffer.
@@ -48,7 +50,7 @@ export async function parquetRead(options: ParquetReadOptions): Promise<void>
  * @param {number} initialFetchSize initial fetch size in bytes (default 512kb)
  * @returns {Promise<FileMetaData>} parquet metadata object
  */
-export async function parquetMetadataAsync(asyncBuffer: AsyncBuffer, initialFetchSize: number = 1 << 19 /* 512kb */): Promise<FileMetaData>
+export function parquetMetadataAsync(asyncBuffer: AsyncBuffer, initialFetchSize?: number): Promise<FileMetaData>
 
 /**
  * Read parquet metadata from a buffer

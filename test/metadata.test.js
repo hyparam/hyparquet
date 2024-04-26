@@ -63,6 +63,7 @@ describe('parquetMetadataAsync', () => {
 
   it('throws for asyncBuffer undefined', async () => {
     const arrayBuffer = undefined
+    // @ts-expect-error testing invalid input
     await expect(parquetMetadataAsync(arrayBuffer)).rejects
       .toThrow('parquet file is required')
   })

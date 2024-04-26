@@ -5,13 +5,14 @@ import { fileToAsyncBuffer } from './helpers.js'
 
 describe('parquetRead', () => {
   it('throws error for undefined file', async () => {
-    const file = undefined
-    await expect(parquetRead({ file }))
+    // @ts-expect-error testing invalid input
+    await expect(parquetRead({ file: undefined }))
       .rejects.toThrow('parquet file is required')
   })
 
   it('throws error for undefined byteLength', async () => {
     const file = { byteLength: undefined, slice: () => new ArrayBuffer(0) }
+    // @ts-expect-error testing invalid input
     await expect(parquetRead({ file }))
       .rejects.toThrow('parquet file byteLength is required')
   })

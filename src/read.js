@@ -137,13 +137,15 @@ async function readRowGroup(options, rowGroup, groupStart) {
     }
 
     // use pre-loaded row group byte data if available, else read column data
+    /** @type {Promise<ArrayBuffer>} */
     let buffer
     let bufferOffset = 0
     if (groupBuffer) {
       buffer = Promise.resolve(groupBuffer)
       bufferOffset = columnStartByte - groupStartByte
     } else {
-      buffer = file.slice(columnStartByte, columnEndByte)
+      // wrap awaitable to ensure it's a promise
+      buffer = Promise.resolve(file.slice(columnStartByte, columnEndByte))
     }
 
     // read column data async

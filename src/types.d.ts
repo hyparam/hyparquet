@@ -1,9 +1,11 @@
+type Awaitable<T> = T | Promise<T>
+
 /**
  * File-like object that can read slices of a file asynchronously.
  */
 export interface AsyncBuffer {
   byteLength: number
-  slice(start: number, end?: number): Promise<ArrayBuffer>
+  slice(start: number, end?: number): Awaitable<ArrayBuffer>
 }
 
 /**
