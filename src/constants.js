@@ -1,6 +1,5 @@
 /**
- * @typedef {import('./types.js').ParquetType} ParquetTypeType
- * @type {ParquetTypeType[]}
+ * @type {import('./types.js').ParquetType[]}
  */
 export const ParquetType = [
   'BOOLEAN',
@@ -33,8 +32,7 @@ export const FieldRepetitionType = [
 ]
 
 /**
- * @typedef {import('./types.js').ConvertedType} ConvertedTypeType
- * @type {ConvertedTypeType[]}
+ * @type {import('./types.js').ConvertedType[]}
  */
 export const ConvertedType = [
   'UTF8',
@@ -62,8 +60,7 @@ export const ConvertedType = [
 ]
 
 /**
- * @typedef {import('./types.js').LogicalTypeType} LogicalTypeType
- * @type {LogicalTypeType[]}
+ * @type {import('./types.js').LogicalTypeType[]}
  */
 export const logicalTypeType = [
   'NULL',
@@ -95,8 +92,7 @@ export const CompressionCodec = [
 ]
 
 /**
- * @typedef {import('./types.js').PageType} PageType
- * @type {PageType[]}
+ * @type {import('./types.js').PageType[]}
  */
 export const PageType = [
   'DATA_PAGE',

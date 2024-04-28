@@ -6,8 +6,7 @@ import { toJson } from '../src/utils.js'
 import { fileToAsyncBuffer, fileToJson } from './helpers.js'
 
 /**
- * @typedef {import('../src/types.js').Compressors} Compressors
- * @type {Compressors}
+ * @type {import('../src/types.js').Compressors}
  */
 const compressors = {
   GZIP: (/** @type {Uint8Array} */ input, /** @type {number} */ outputLength) => {

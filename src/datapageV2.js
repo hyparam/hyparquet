@@ -10,10 +10,9 @@ import { readVarInt, readZigZag } from './thrift.js'
  * @typedef {import("./types.d.ts").ColumnMetaData} ColumnMetaData
  * @typedef {import("./types.d.ts").Compressors} Compressors
  * @typedef {import("./types.d.ts").DataPageHeaderV2} DataPageHeaderV2
- * @typedef {import("./types.d.ts").PageHeader} PageHeader
  * @typedef {import("./types.d.ts").SchemaElement} SchemaElement
  * @param {Uint8Array} compressedBytes raw page data (should already be decompressed)
- * @param {PageHeader} ph page header
+ * @param {import("./types.d.ts").PageHeader} ph page header
  * @param {SchemaElement[]} schema schema for the file
  * @param {ColumnMetaData} columnMetadata metadata for the column
  * @param {Compressors | undefined} compressors

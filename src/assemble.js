@@ -8,13 +8,13 @@
  * @param {number[] | undefined} definitionLevels definition levels, max 3
  * @param {number[]} repetitionLevels repetition levels, max 1
  * @param {ArrayLike<any>} values values to process
- * @param {boolean} isNull can an entry be null?
+ * @param {boolean} isNullable can entries be null?
  * @param {number} maxDefinitionLevel definition level that corresponds to non-null
  * @param {number} maxRepetitionLevel repetition level that corresponds to a new row
  * @returns {any[]} array of values
  */
 export function assembleObjects(
-  definitionLevels, repetitionLevels, values, isNull, maxDefinitionLevel, maxRepetitionLevel
+  definitionLevels, repetitionLevels, values, isNullable, maxDefinitionLevel, maxRepetitionLevel
 ) {
   let valueIndex = 0
   /** @type {any[]} */
@@ -53,7 +53,7 @@ export function assembleObjects(
         throw new Error('parquet assembleObjects: currentContainer is undefined')
       }
       currentContainer.push(values[valueIndex++])
-    } else if (isNull) {
+    } else if (isNullable) {
       if (def) {
         // TODO: Go up maxDefinitionLevel - def - 1 levels to add null
         for (let j = def; j < maxDefinitionLevel - 1; j++) {

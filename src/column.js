@@ -169,11 +169,9 @@ export function getColumnOffset(columnMetadata) {
 }
 
 /**
- * @typedef {import('./types.js').PageHeader} PageHeader
- * @typedef {import('./types.js').CompressionCodec} CompressionCodec
  * @param {Uint8Array} compressedBytes
  * @param {number} uncompressed_page_size
- * @param {CompressionCodec} codec
+ * @param {import('./types.js').CompressionCodec} codec
  * @param {Compressors | undefined} compressors
  * @returns {Uint8Array}
  */

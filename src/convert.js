@@ -1,14 +1,10 @@
-/**
- * @typedef {import('./types.js').SchemaElement} SchemaElement
- */
-
-const dayMillis = 86400000000000 // 1 day in milliseconds
+const dayMillis = 86400000000000 // 1 day in ms
 
 /**
  * Convert known types from primitive to rich.
  *
  * @param {any[]} data series of primitive types
- * @param {SchemaElement} schemaElement schema element for the data
+ * @param {import('./types.js').SchemaElement} schemaElement schema element for the data
  * @returns {any[]} series of rich types
  */
 export function convert(data, schemaElement) {

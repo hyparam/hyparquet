@@ -14,9 +14,8 @@ export async function readFileToArrayBuffer(filePath) {
 /**
  * Wrap .parquet file in an AsyncBuffer
  *
- * @typedef {import('../src/types.js').AsyncBuffer} AsyncBuffer
  * @param {string} filePath
- * @returns {AsyncBuffer}
+ * @returns {import('../src/types.js').AsyncBuffer}
  */
 export function fileToAsyncBuffer(filePath) {
   return {

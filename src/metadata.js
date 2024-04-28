@@ -168,9 +168,8 @@ export function parquetMetadata(arrayBuffer) {
 /**
  * Return a tree of schema elements from parquet metadata.
  *
- * @typedef {import("./types.d.ts").SchemaTree} SchemaTree
  * @param {FileMetaData} metadata parquet metadata object
- * @returns {SchemaTree} tree of schema elements
+ * @returns {import("./types.d.ts").SchemaTree} tree of schema elements
  */
 export function parquetSchema(metadata) {
   return schemaElement(metadata.schema, [])
