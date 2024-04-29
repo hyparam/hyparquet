@@ -2,11 +2,10 @@
  * Dremel-assembly of arrays of values into lists
  *
  * Reconstructs a complex nested structure from flat arrays of definition and repetition levels,
- * according to Dremel encoding. This simplified version focuses on arrays and scalar values,
- * with optional support for null values.
+ * according to Dremel encoding.
  *
- * @param {number[] | undefined} definitionLevels definition levels, max 3
- * @param {number[]} repetitionLevels repetition levels, max 1
+ * @param {number[] | undefined} definitionLevels definition levels
+ * @param {number[]} repetitionLevels repetition levels
  * @param {ArrayLike<any>} values values to process
  * @param {boolean} isNullable can entries be null?
  * @param {number} maxDefinitionLevel definition level that corresponds to non-null
@@ -36,36 +35,27 @@ export function assembleObjects(
       // Construct new lists up to max repetition level
       // @ts-expect-error won't be empty
       currentContainer = containerStack.at(-1)
-      if (def) {
-        for (let j = rep; j < maxRepetitionLevel; j++) {
-          /** @type {any[]} */
-          const newList = []
-          currentContainer.push(newList)
-          currentContainer = newList
-          containerStack.push(newList)
-        }
-      }
+    }
+
+    // Add lists up to definition level
+    const targetDepth = isNullable ? (def + 1) / 2 : maxRepetitionLevel + 1
+    for (let j = containerStack.length; j < targetDepth; j++) {
+      /** @type {any[]} */
+      const newList = []
+      currentContainer.push(newList)
+      currentContainer = newList
+      containerStack.push(newList)
     }
 
     // Add value or null based on definition level
     if (def === maxDefinitionLevel) {
-      if (!currentContainer) {
-        throw new Error('parquet assembleObjects: currentContainer is undefined')
-      }
       currentContainer.push(values[valueIndex++])
     } else if (isNullable) {
-      if (def) {
-        // TODO: Go up maxDefinitionLevel - def - 1 levels to add null
-        for (let j = def; j < maxDefinitionLevel - 1; j++) {
-          containerStack.pop()
-          // @ts-expect-error won't be empty
-          currentContainer = containerStack.at(-1)
-        }
-        if (def > 1) {
-          currentContainer.push(undefined)
-        }
-      } else {
+      // TODO: actually depends on level required or not
+      if (def % 2 === 0) {
         currentContainer.push(undefined)
+      } else {
+        currentContainer.push([])
       }
     }
   }

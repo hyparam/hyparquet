@@ -182,9 +182,13 @@ async function readRowGroup(options, rowGroup, groupStart) {
                 const obj = {}
                 for (let j = 0; j < keys[i].length; j++) {
                   if (Array.isArray(keys[i][j])) {
-                    // TODO: key should not be an array, this is an assemble bug
+                    // TODO: key should not be an array, this is an assemble bug?
                     keys[i][j] = keys[i][j][0]
                     values[i][j] = values[i][j][0]
+                  }
+                  if (keys[i][j] instanceof Uint8Array) {
+                    // decode utf-8 keys
+                    keys[i][j] = new TextDecoder().decode(keys[i][j])
                   }
                   if (!keys[i][j]) continue
                   obj[keys[i][j]] = values[i][j] === undefined ? null : values[i][j]

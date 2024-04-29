@@ -83,14 +83,14 @@ describe('assembleObjects', () => {
     expect(result).toEqual([[[]]])
   })
 
-  it('should handle isNull', () => {
+  it('should handle nonnullable lists', () => {
     // from nonnullable.impala.parquet
     const result = assembleObjects([2], [0], [-1], false, 2, 2)
     expect(result).toEqual([[[-1]]])
   })
 
   it('should handle nullable int_array', () => {
-    // from nullable.impala.parquet
+    // from nullable.impala.parquet int_array
     //                       [1  2  3][N  1  2  N  3  N][ ] N  N
     const definitionLevels = [3, 3, 3, 2, 3, 3, 2, 3, 2, 1, 0, 0]
     const repetitionLevels = [0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0]
@@ -102,6 +102,24 @@ describe('assembleObjects', () => {
       [],
       undefined,
       undefined,
+    ])
+  })
+
+  it('should handle nullable int_array_Array', () => {
+    // from nullable.impala.parquet int_array_Array
+    //                       [1  2][3  4][[N 1  2  N][3  N  4] [] N][N] [] N  N [N  5  6]
+    const definitionLevels = [5, 5, 5, 5, 4, 5, 5, 4, 5, 4, 5, 3, 2, 2, 1, 0, 0, 2, 5, 5]
+    const repetitionLevels = [0, 2, 1, 2, 0, 2, 2, 2, 1, 2, 2, 1, 1, 0, 0, 0, 0, 0, 1, 2]
+    const values = [1, 2, 3, 4, 1, 2, 3, 4, 5, 6]
+    const result = assembleObjects(definitionLevels, repetitionLevels, values, true, 5, 2)
+    expect(result).toEqual([
+      [[1, 2], [3, 4]],
+      [[undefined, 1, 2, undefined], [3, undefined, 4], [], undefined],
+      [undefined],
+      [],
+      undefined,
+      undefined,
+      [undefined, [5, 6]],
     ])
   })
 })

@@ -202,6 +202,7 @@ Parsing a [420mb wikipedia parquet file](https://huggingface.co/datasets/wikimed
  - https://github.com/apache/thrift
  - https://github.com/apache/arrow
  - https://github.com/dask/fastparquet
+ - https://github.com/duckdb/duckdb
  - https://github.com/google/snappy
  - https://github.com/ironSource/parquetjs
  - https://github.com/zhipeng-jia/snappyjs
