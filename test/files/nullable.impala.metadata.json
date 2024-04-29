@@ -1,0 +1,591 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "name": "org.apache.impala.ComplexTypesTbl",
+      "num_children": 6
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "id"
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "int_array",
+      "num_children": 1,
+      "converted_type": "LIST"
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "list",
+      "num_children": 1
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "element"
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "int_array_Array",
+      "num_children": 1,
+      "converted_type": "LIST"
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "list",
+      "num_children": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "element",
+      "num_children": 1,
+      "converted_type": "LIST"
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "list",
+      "num_children": 1
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "element"
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "int_map",
+      "num_children": 1,
+      "converted_type": "MAP"
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "map",
+      "num_children": 2,
+      "converted_type": "MAP_KEY_VALUE"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "key",
+      "converted_type": "UTF8"
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "value"
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "int_Map_Array",
+      "num_children": 1,
+      "converted_type": "LIST"
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "list",
+      "num_children": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "element",
+      "num_children": 1,
+      "converted_type": "MAP"
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "map",
+      "num_children": 2,
+      "converted_type": "MAP_KEY_VALUE"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "key",
+      "converted_type": "UTF8"
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "value"
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "nested_struct",
+      "num_children": 4
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "A"
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "b",
+      "num_children": 1,
+      "converted_type": "LIST"
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "list",
+      "num_children": 1
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "element"
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "C",
+      "num_children": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "d",
+      "num_children": 1,
+      "converted_type": "LIST"
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "list",
+      "num_children": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "element",
+      "num_children": 1,
+      "converted_type": "LIST"
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "list",
+      "num_children": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "element",
+      "num_children": 2
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "E"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "F",
+      "converted_type": "UTF8"
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "g",
+      "num_children": 1,
+      "converted_type": "MAP"
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "map",
+      "num_children": 2,
+      "converted_type": "MAP_KEY_VALUE"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "key",
+      "converted_type": "UTF8"
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "value",
+      "num_children": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "H",
+      "num_children": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "i",
+      "num_children": 1,
+      "converted_type": "LIST"
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "list",
+      "num_children": 1
+    },
+    {
+      "type": "DOUBLE",
+      "repetition_type": "OPTIONAL",
+      "name": "element"
+    }
+  ],
+  "num_rows": 7,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "BIT_PACKED",
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "id"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 7,
+            "total_uncompressed_size": 103,
+            "total_compressed_size": 103,
+            "data_page_offset": 4,
+            "statistics": {
+              "max": 7,
+              "min": 1,
+              "null_count": 0
+            }
+          }
+        },
+        {
+          "file_offset": 107,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "int_array",
+              "list",
+              "element"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 14,
+            "total_uncompressed_size": 78,
+            "total_compressed_size": 78,
+            "data_page_offset": 107,
+            "statistics": {
+              "max": 3,
+              "min": 1,
+              "null_count": 8
+            }
+          }
+        },
+        {
+          "file_offset": 185,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "int_array_Array",
+              "list",
+              "element",
+              "list",
+              "element"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 20,
+            "total_uncompressed_size": 103,
+            "total_compressed_size": 103,
+            "data_page_offset": 185,
+            "statistics": {
+              "max": 6,
+              "min": 1,
+              "null_count": 10
+            }
+          }
+        },
+        {
+          "file_offset": 288,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "int_map",
+              "map",
+              "key"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 10,
+            "total_uncompressed_size": 80,
+            "total_compressed_size": 80,
+            "data_page_offset": 288,
+            "statistics": {
+              "max": "k3",
+              "min": "k1",
+              "null_count": 4
+            }
+          }
+        },
+        {
+          "file_offset": 368,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "int_map",
+              "map",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 10,
+            "total_uncompressed_size": 61,
+            "total_compressed_size": 61,
+            "data_page_offset": 368,
+            "statistics": {
+              "max": 100,
+              "min": 1,
+              "null_count": 7
+            }
+          }
+        },
+        {
+          "file_offset": 429,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "int_Map_Array",
+              "list",
+              "element",
+              "map",
+              "key"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 11,
+            "total_uncompressed_size": 77,
+            "total_compressed_size": 77,
+            "data_page_offset": 429,
+            "statistics": {
+              "max": "k3",
+              "min": "k1",
+              "null_count": 8
+            }
+          }
+        },
+        {
+          "file_offset": 506,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "int_Map_Array",
+              "list",
+              "element",
+              "map",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 11,
+            "total_uncompressed_size": 72,
+            "total_compressed_size": 72,
+            "data_page_offset": 506,
+            "statistics": {
+              "max": 1,
+              "min": 1,
+              "null_count": 9
+            }
+          }
+        },
+        {
+          "file_offset": 578,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "BIT_PACKED",
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "nested_struct",
+              "A"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 7,
+            "total_uncompressed_size": 48,
+            "total_compressed_size": 48,
+            "data_page_offset": 578,
+            "statistics": {
+              "max": 7,
+              "min": 1,
+              "null_count": 5
+            }
+          }
+        },
+        {
+          "file_offset": 626,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "nested_struct",
+              "b",
+              "list",
+              "element"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 9,
+            "total_uncompressed_size": 63,
+            "total_compressed_size": 63,
+            "data_page_offset": 626,
+            "statistics": {
+              "max": 3,
+              "min": 1,
+              "null_count": 6
+            }
+          }
+        },
+        {
+          "file_offset": 689,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "nested_struct",
+              "C",
+              "d",
+              "list",
+              "element",
+              "list",
+              "element",
+              "E"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 19,
+            "total_uncompressed_size": 90,
+            "total_compressed_size": 90,
+            "data_page_offset": 689,
+            "statistics": {
+              "max": 11,
+              "min": -10,
+              "null_count": 13
+            }
+          }
+        },
+        {
+          "file_offset": 779,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "nested_struct",
+              "C",
+              "d",
+              "list",
+              "element",
+              "list",
+              "element",
+              "F"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 19,
+            "total_uncompressed_size": 93,
+            "total_compressed_size": 93,
+            "data_page_offset": 779,
+            "statistics": {
+              "max": "c",
+              "min": "aaa",
+              "null_count": 13
+            }
+          }
+        },
+        {
+          "file_offset": 872,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "nested_struct",
+              "g",
+              "map",
+              "key"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 11,
+            "total_uncompressed_size": 101,
+            "total_compressed_size": 101,
+            "data_page_offset": 872,
+            "statistics": {
+              "max": "g5",
+              "min": "foo",
+              "null_count": 4
+            }
+          }
+        },
+        {
+          "file_offset": 973,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "nested_struct",
+              "g",
+              "map",
+              "value",
+              "H",
+              "i",
+              "list",
+              "element"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 13,
+            "total_uncompressed_size": 104,
+            "total_compressed_size": 104,
+            "data_page_offset": 973,
+            "statistics": {
+              "max": 3.3,
+              "min": 1.1,
+              "null_count": 9
+            }
+          }
+        }
+      ],
+      "total_byte_size": 1073,
+      "num_rows": 7
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "parquet.avro.schema",
+      "value": "{\"type\":\"record\",\"name\":\"ComplexTypesTbl\",\"namespace\":\"org.apache.impala\",\"fields\":[{\"name\":\"id\",\"type\":[\"null\",\"long\"]},{\"name\":\"int_array\",\"type\":[\"null\",{\"type\":\"array\",\"items\":[\"null\",\"int\"]}]},{\"name\":\"int_array_Array\",\"type\":[\"null\",{\"type\":\"array\",\"items\":[\"null\",{\"type\":\"array\",\"items\":[\"null\",\"int\"]}]}]},{\"name\":\"int_map\",\"type\":[\"null\",{\"type\":\"map\",\"values\":[\"null\",\"int\"]}]},{\"name\":\"int_Map_Array\",\"type\":[\"null\",{\"type\":\"array\",\"items\":[\"null\",{\"type\":\"map\",\"values\":[\"null\",\"int\"]}]}]},{\"name\":\"nested_struct\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"r1\",\"fields\":[{\"name\":\"A\",\"type\":[\"null\",\"int\"]},{\"name\":\"b\",\"type\":[\"null\",{\"type\":\"array\",\"items\":[\"null\",\"int\"]}]},{\"name\":\"C\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"r2\",\"fields\":[{\"name\":\"d\",\"type\":[\"null\",{\"type\":\"array\",\"items\":[\"null\",{\"type\":\"array\",\"items\":[\"null\",{\"type\":\"record\",\"name\":\"r3\",\"fields\":[{\"name\":\"E\",\"type\":[\"null\",\"int\"]},{\"name\":\"F\",\"type\":[\"null\",\"string\"]}]}]}]}]}]}]},{\"name\":\"g\",\"type\":[\"null\",{\"type\":\"map\",\"values\":[\"null\",{\"type\":\"record\",\"name\":\"r4\",\"fields\":[{\"name\":\"H\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"r5\",\"fields\":[{\"name\":\"i\",\"type\":[\"null\",{\"type\":\"array\",\"items\":[\"null\",\"double\"]}]}]}]}]}]}]}]}]}]}"
+    }
+  ],
+  "created_by": "parquet-mr version 1.8.0 (build 0fda28af84b9746396014ad6a415b90592a98b3b)",
+  "metadata_length": 2811
+}
