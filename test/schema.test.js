@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import {
   getMaxDefinitionLevel,
   getMaxRepetitionLevel,
+  isListLike,
+  isMapLike,
   isRequired,
   schemaElement,
   skipDefinitionBytes,
@@ -13,13 +15,19 @@ describe('Parquet schema utils', () => {
    * @type {SchemaElement[]}
    */
   const schema = [
-    { name: 'root', num_children: 2, repetition_type: 'REQUIRED' },
+    { name: 'root', num_children: 3 },
     { name: 'child1', repetition_type: 'OPTIONAL' },
-    { name: 'child2', repetition_type: 'REPEATED' },
+    { name: 'child2', repetition_type: 'OPTIONAL', num_children: 1, converted_type: 'LIST' },
+    { name: 'list', repetition_type: 'REPEATED', num_children: 1 },
+    { name: 'element', repetition_type: 'REQUIRED' },
+    { name: 'child3', repetition_type: 'OPTIONAL', num_children: 1, converted_type: 'MAP' },
+    { name: 'map', repetition_type: 'REPEATED', num_children: 2 },
+    { name: 'key', repetition_type: 'REQUIRED' },
+    { name: 'value', repetition_type: 'OPTIONAL' },
   ]
 
   describe('schemaElement', () => {
-    it('should return the correct schema element', () => {
+    it('should return the schema element', () => {
       expect(schemaElement(schema, ['child1'])).toEqual({
         children: [],
         count: 1,
@@ -33,26 +41,48 @@ describe('Parquet schema utils', () => {
     })
   })
 
-  describe('isRequired', () => {
-    it('should return true for required elements', () => {
-      expect(isRequired(schema, [])).toBe(true)
-    })
-
-    it('should return false for optional or repeated elements', () => {
-      expect(isRequired(schema, ['child1'])).toBe(false)
-    })
+  it('isRequired', () => {
+    expect(isRequired(schema, [])).toBe(true)
+    expect(isRequired(schema, ['child1'])).toBe(false)
+    expect(isRequired(schema, ['child2'])).toBe(false)
+    expect(isRequired(schema, ['child3'])).toBe(false)
   })
 
-  it('getMaxRepetitionLevel should return the correct max repetition level', () => {
-    expect(getMaxRepetitionLevel(schema, ['child2'])).toBe(1)
+  it('getMaxRepetitionLevel', () => {
+    expect(getMaxRepetitionLevel(schema, ['child1'])).toBe(0)
+    expect(getMaxRepetitionLevel(schema, ['child2'])).toBe(0)
+    expect(getMaxRepetitionLevel(schema, ['child2', 'list', 'element'])).toBe(1)
+    expect(getMaxRepetitionLevel(schema, ['child3'])).toBe(0)
+    expect(getMaxRepetitionLevel(schema, ['child3', 'map', 'key'])).toBe(1)
   })
 
-  it('getMaxDefinitionLevel should return the correct max definition level', () => {
+  it('getMaxDefinitionLevel', () => {
     expect(getMaxDefinitionLevel(schema, ['child1'])).toBe(1)
+    expect(getMaxDefinitionLevel(schema, ['child2'])).toBe(1)
+    expect(getMaxDefinitionLevel(schema, ['child3'])).toBe(1)
   })
 
-  it('skipDefinitionBytes should return the correct number of bytes to skip', () => {
+  it('skipDefinitionBytes', () => {
     expect(skipDefinitionBytes(100)).toBe(6)
     expect(skipDefinitionBytes(1000)).toBe(7)
+  })
+
+  it('isListLike', () => {
+    expect(isListLike(schema, [])).toBe(false)
+    expect(isListLike(schema, ['child1'])).toBe(false)
+    expect(isListLike(schema, ['child2'])).toBe(false)
+    expect(isListLike(schema, ['child2', 'list', 'element'])).toBe(true)
+    expect(isListLike(schema, ['child3'])).toBe(false)
+    expect(isListLike(schema, ['child3', 'map', 'key'])).toBe(false)
+  })
+
+  it('isMapLike', () => {
+    expect(isMapLike(schema, [])).toBe(false)
+    expect(isMapLike(schema, ['child1'])).toBe(false)
+    expect(isMapLike(schema, ['child2'])).toBe(false)
+    expect(isMapLike(schema, ['child2', 'list', 'element'])).toBe(false)
+    expect(isMapLike(schema, ['child3'])).toBe(false)
+    expect(isMapLike(schema, ['child3', 'map', 'key'])).toBe(true)
+    expect(isMapLike(schema, ['child3', 'map', 'value'])).toBe(true)
   })
 })

@@ -140,7 +140,7 @@ export function getColumnName(schema, path) {
  * @param {string[]} path column path
  * @returns {boolean} true if map-like
  */
-function isListLike(schemaElements, path) {
+export function isListLike(schemaElements, path) {
   const schema = schemaElement(schemaElements, path.slice(0, -2))
   if (path.length < 3) return false
   if (schema.element.converted_type !== 'LIST') return false
