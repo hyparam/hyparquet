@@ -66,11 +66,13 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       if (repetitionLevels.length) {
         dereferenceDictionary(dictionary, dataPage)
         // Use repetition levels to construct lists
-        const isNull = columnMetadata && !isRequired(schema, [columnMetadata.path_in_schema[0]])
+        const isNullable = columnMetadata && !isRequired(schema, [columnMetadata.path_in_schema[0]])
         const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
         const maxRepetitionLevel = getMaxRepetitionLevel(schema, columnMetadata.path_in_schema)
+        // convert primitive types to rich types
+        values = convert(dataPage, schemaElement)
         values = assembleObjects(
-          definitionLevels, repetitionLevels, dataPage, isNull, maxDefinitionLevel, maxRepetitionLevel
+          definitionLevels, repetitionLevels, values, isNullable, maxDefinitionLevel, maxRepetitionLevel
         )
       } else if (definitionLevels?.length) {
         const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)

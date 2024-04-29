@@ -101,9 +101,9 @@ async function readRowGroup(options, rowGroup, groupStart) {
     // TODO: should throw if any column is missing
     throw new Error(`parquet columns not found: ${columns.join(', ')}`)
   }
-  // if row group size is less than 128mb, pre-load in one read
+  // if row group size is less than 32mb, pre-load in one read
   let groupBuffer
-  if (groupEndByte - groupStartByte <= 1 << 27) {
+  if (groupEndByte - groupStartByte <= 1 << 25) {
     // pre-load row group byte data in one big read,
     // otherwise read column data individually
     groupBuffer = await file.slice(groupStartByte, groupEndByte)
@@ -185,10 +185,6 @@ async function readRowGroup(options, rowGroup, groupStart) {
                     // TODO: key should not be an array, this is an assemble bug?
                     keys[i][j] = keys[i][j][0]
                     values[i][j] = values[i][j][0]
-                  }
-                  if (keys[i][j] instanceof Uint8Array) {
-                    // decode utf-8 keys
-                    keys[i][j] = new TextDecoder().decode(keys[i][j])
                   }
                   if (!keys[i][j]) continue
                   obj[keys[i][j]] = values[i][j] === undefined ? null : values[i][j]
