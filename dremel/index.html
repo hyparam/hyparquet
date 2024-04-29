@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Dremel assembly - hyparquet</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600&display=swap"/>
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: 'Mulish', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        padding: 20px;
+      }
+      p {
+        margin-bottom: 20px;
+      }
+      hr {
+        margin: 20px 0;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        margin: 10px 0 4px;
+      }
+      input {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        display: block;
+        font-family: monospace;
+        font-size: 14px;
+        padding: 8px;
+        width: 100%;
+      }
+      pre {
+        font-family: monospace;
+        font-size: 16px;
+        line-height: 1.4;
+      }
+      .error {
+        color: #c11;
+      }
+      #values-with-nulls {
+        font-size: 14px;
+        padding: 0 8px;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Dremel Assembly</h1>
+    <p>
+      Online demo of dremel assembly of lists from definition and repetition levels.
+    </p>
+    <p>
+      Google introduced <a href="https://research.google/pubs/dremel-interactive-analysis-of-web-scale-datasets-2/">dremel</a> in 2010 as a columnar storage format for nested data.
+      The format uses <em>repetition levels</em> and <em>definition levels</em> to encode nested data efficiently.
+      This demo maps definition and repetition levels to assembled lists.
+    </p>
+    <p>
+      This demo is developed as a learning and debugging tool as part of <a href="https://github.com/hyparam/hyparquet">hyparquet</a>: a parser for apache parquet files.
+    </p>
+
+    <div>
+      <label>Definition levels</label>
+      <input id="defs" value="5, 5, 5, 5, 4, 5, 5, 4, 5, 4, 5, 3, 2, 2, 1, 0, 0, 2, 5, 5">
+    </div>
+    <div>
+      <label>Repetition levels</label>
+      <input id="reps" value="0, 2, 1, 2, 0, 2, 2, 2, 1, 2, 2, 1, 1, 0, 0, 0, 0, 0, 1, 2">
+    </div>
+    <div>
+      <label>Values</label>
+      <input id="values" value="1, 2, 3, 4, 1, 2, 3, 4, 5, 6">
+      <pre id="values-with-nulls" title="values with nulls inserted based on definition levels"></pre>
+    </div>
+
+    <hr>
+
+    <div>
+      <label>Output</label>
+      <pre id="output"></pre>
+    </div>
+
+    <script type="module" src="dremel.js"></script>
+  </body>
+</html>
