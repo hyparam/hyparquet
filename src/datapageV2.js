@@ -13,8 +13,8 @@ import { readVarInt, readZigZag } from './thrift.js'
  * @typedef {import("./types.d.ts").SchemaTree} SchemaTree
  * @param {Uint8Array} compressedBytes raw page data (should already be decompressed)
  * @param {import("./types.d.ts").PageHeader} ph page header
- * @param {SchemaTree[]} schemaPath schema path for the column
- * @param {ColumnMetaData} columnMetadata metadata for the column
+ * @param {SchemaTree[]} schemaPath
+ * @param {ColumnMetaData} columnMetadata
  * @param {Compressors | undefined} compressors
  * @returns {DataPage} definition levels, repetition levels, and array of values
  */
@@ -99,7 +99,7 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
  * @typedef {import("./types.d.ts").DataReader} DataReader
  * @param {DataReader} reader data view for the page
  * @param {DataPageHeaderV2} daph2 data page header
- * @param {SchemaTree[]} schemaPath schema path for the column
+ * @param {SchemaTree[]} schemaPath
  * @returns {any[]} repetition levels and number of bytes read
  */
 export function readRepetitionLevelsV2(reader, daph2, schemaPath) {
@@ -118,7 +118,7 @@ export function readRepetitionLevelsV2(reader, daph2, schemaPath) {
  *
  * @param {DataReader} reader data view for the page
  * @param {DataPageHeaderV2} daph2 data page header v2
- * @param {number} maxDefinitionLevel maximum definition level for this column
+ * @param {number} maxDefinitionLevel
  * @returns {number[] | undefined} definition levels and number of bytes read
  */
 function readDefinitionLevelsV2(reader, daph2, maxDefinitionLevel) {

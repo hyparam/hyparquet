@@ -28,29 +28,11 @@ function schemaTree(schema, rootIndex) {
 }
 
 /**
- * Get the schema element with the given name.
+ * Get schema elements from the root to the given element name.
  *
  * @param {SchemaElement[]} schema
  * @param {string[]} name path to the element
- * @returns {SchemaTree} schema element
- */
-function schemaElement(schema, name) {
-  let tree = schemaTree(schema, 0)
-  // traverse the tree to find the element
-  for (const part of name) {
-    const child = tree.children.find(child => child.element.name === part)
-    if (!child) throw new Error(`parquet schema element not found: ${name}`)
-    tree = child
-  }
-  return tree
-}
-
-/**
- * Get each schema element from the root to the given element name.
- *
- * @param {SchemaElement[]} schema
- * @param {string[]} name path to the element
- * @returns {SchemaTree[]} schema element
+ * @returns {SchemaTree[]} list of schema elements
  */
 export function getSchemaPath(schema, name) {
   let tree = schemaTree(schema, 0)
@@ -65,8 +47,7 @@ export function getSchemaPath(schema, name) {
 }
 
 /**
- * Check if the schema element with the given name is required.
- * An element is required if all of its ancestors are required.
+ * Check if the schema path and all its ancestors are required.
  *
  * @param {SchemaTree[]} schemaPath
  * @returns {boolean} true if the element is required
@@ -88,7 +69,7 @@ export function isRequired(schemaPath) {
  */
 export function getMaxRepetitionLevel(schemaPath) {
   let maxLevel = 0
-  for (const { element } of schemaPath.slice(1)) {
+  for (const { element } of schemaPath) {
     if (element.repetition_type === 'REPEATED') {
       maxLevel++
     }
@@ -129,29 +110,27 @@ export function skipDefinitionBytes(num) {
 }
 
 /**
- * Get the column name as foo.bar and handle list-like columns.
- * @param {SchemaElement[]} schema
+ * Get the column name as foo.bar and handle list and map like columns.
+ *
  * @param {string[]} path
  * @returns {string} column name
  */
-export function getColumnName(schema, path) {
-  if (isListLike(schema, path) || isMapLike(schema, path)) {
-    return path.slice(0, -2).join('.')
-  } else {
-    return path.join('.')
-  }
+export function getColumnName(path) {
+  return path.join('.')
+    .replace(/(\.list\.element)+/g, '')
+    .replace(/\.key_value\.key/g, '')
+    .replace(/\.key_value\.value/g, '')
 }
 
 /**
  * Check if a column is list-like.
  *
- * @param {SchemaElement[]} schemaElements parquet schema elements
- * @param {string[]} path column path
+ * @param {SchemaTree[]} schemaPath
  * @returns {boolean} true if map-like
  */
-export function isListLike(schemaElements, path) {
-  const schema = schemaElement(schemaElements, path.slice(0, -2))
-  if (path.length < 3) return false
+export function isListLike(schemaPath) {
+  const schema = schemaPath.at(-3)
+  if (!schema) return false
   if (schema.element.converted_type !== 'LIST') return false
   if (schema.children.length > 1) return false
 
@@ -168,13 +147,12 @@ export function isListLike(schemaElements, path) {
 /**
  * Check if a column is map-like.
  *
- * @param {SchemaElement[]} schemaElements parquet schema elements
- * @param {string[]} path column path
+ * @param {SchemaTree[]} schemaPath
  * @returns {boolean} true if map-like
  */
-export function isMapLike(schemaElements, path) {
-  const schema = schemaElement(schemaElements, path.slice(0, -2))
-  if (path.length < 3) return false
+export function isMapLike(schemaPath) {
+  const schema = schemaPath.at(-3)
+  if (!schema) return false
   if (schema.element.converted_type !== 'MAP') return false
   if (schema.children.length > 1) return false
 

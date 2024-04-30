@@ -1,7 +1,7 @@
 
 import { getColumnOffset, readColumn } from './column.js'
 import { parquetMetadataAsync } from './metadata.js'
-import { getColumnName, isMapLike } from './schema.js'
+import { getColumnName, getSchemaPath, isMapLike } from './schema.js'
 import { concat } from './utils.js'
 
 /**
@@ -75,7 +75,7 @@ export async function parquetRead(options) {
  * @param {string[]} [options.columns] columns to read, all columns if undefined
  * @param {(chunk: ColumnData) => void} [options.onChunk] called when a column chunk is parsed. chunks may include row data outside the requested range.
  * @param {(rows: any[][]) => void} [options.onComplete] called when all requested rows and columns are parsed
- * @param {Compressors} [options.compressors] custom decompressors
+ * @param {Compressors} [options.compressors]
  * @param {RowGroup} rowGroup row group to read
  * @param {number} groupStart row index of the first row in the group
  * @returns {Promise<any[][]>} resolves to row data
@@ -88,9 +88,8 @@ async function readRowGroup(options, rowGroup, groupStart) {
   let [groupStartByte, groupEndByte] = [file.byteLength, 0]
   rowGroup.columns.forEach(({ meta_data: columnMetadata }) => {
     if (!columnMetadata) throw new Error('parquet column metadata is undefined')
-    const columnName = getColumnName(metadata.schema, columnMetadata.path_in_schema)
     // skip columns that are not requested
-    if (columns && !columns.includes(columnName)) return
+    if (columns && !columns.includes(getColumnName(columnMetadata.path_in_schema))) return
 
     const startByte = getColumnOffset(columnMetadata)
     const endByte = startByte + Number(columnMetadata.total_compressed_size)
@@ -120,8 +119,7 @@ async function readRowGroup(options, rowGroup, groupStart) {
     if (!columnMetadata) throw new Error('parquet column metadata is undefined')
 
     // skip columns that are not requested
-    const columnName = getColumnName(metadata.schema, columnMetadata.path_in_schema)
-    // skip columns that are not requested
+    const columnName = getColumnName(columnMetadata.path_in_schema)
     if (columns && !columns.includes(columnName)) continue
 
     const columnStartByte = getColumnOffset(columnMetadata)
@@ -150,15 +148,16 @@ async function readRowGroup(options, rowGroup, groupStart) {
 
     // read column data async
     promises.push(buffer.then(arrayBuffer => {
+      const schemaPath = getSchemaPath(metadata.schema, columnMetadata.path_in_schema)
       /** @type {ArrayLike<any> | undefined} */
       let columnData = readColumn(
-        arrayBuffer, bufferOffset, rowGroup, columnMetadata, metadata.schema, compressors
+        arrayBuffer, bufferOffset, rowGroup, columnMetadata, schemaPath, compressors
       )
       if (columnData.length !== Number(rowGroup.num_rows)) {
         throw new Error(`parquet column length ${columnData.length} does not match row group length ${rowGroup.num_rows}`)
       }
 
-      if (isMapLike(metadata.schema, columnMetadata.path_in_schema)) {
+      if (isMapLike(schemaPath)) {
         const name = columnMetadata.path_in_schema.slice(0, -2).join('.')
         if (!maps.has(name)) {
           maps.set(name, columnData)

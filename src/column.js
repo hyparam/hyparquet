@@ -3,12 +3,12 @@ import { convert } from './convert.js'
 import { readDataPage, readDictionaryPage } from './datapage.js'
 import { readDataPageV2 } from './datapageV2.js'
 import { parquetHeader } from './header.js'
-import { getMaxDefinitionLevel, getMaxRepetitionLevel, getSchemaPath, isRequired } from './schema.js'
+import { getMaxDefinitionLevel, getMaxRepetitionLevel, isRequired } from './schema.js'
 import { snappyUncompress } from './snappy.js'
 import { concat } from './utils.js'
 
 /**
- * @typedef {import('./types.js').SchemaElement} SchemaElement
+ * @typedef {import('./types.js').SchemaTree} SchemaTree
  * @typedef {import('./types.js').ColumnMetaData} ColumnMetaData
  * @typedef {import('./types.js').Compressors} Compressors
  * @typedef {import('./types.js').RowGroup} RowGroup
@@ -21,20 +21,18 @@ import { concat } from './utils.js'
  * @param {number} columnOffset offset to start reading from
  * @param {RowGroup} rowGroup row group metadata
  * @param {ColumnMetaData} columnMetadata column metadata
- * @param {SchemaElement[]} schema schema for the file
+ * @param {SchemaTree[]} schemaPath schema path for the column
  * @param {Compressors} [compressors] custom decompressors
  * @returns {ArrayLike<any>} array of values
  */
-export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, schema, compressors) {
+export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, schemaPath, compressors) {
   /** @type {ArrayLike<any> | undefined} */
   let dictionary = undefined
   let valuesSeen = 0
   let byteOffset = 0 // byteOffset within the column
   /** @type {any[]} */
   const rowData = []
-
-  const schemaPath = getSchemaPath(schema, columnMetadata.path_in_schema)
-  const schemaElement = schemaPath[schemaPath.length - 1].element
+  const { element } = schemaPath[schemaPath.length - 1]
 
   while (valuesSeen < rowGroup.num_rows) {
     // parse column header
@@ -73,7 +71,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
         const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
         const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
         // convert primitive types to rich types
-        values = convert(dataPage, schemaElement)
+        values = convert(dataPage, element)
         values = assembleObjects(
           definitionLevels, repetitionLevels, values, isNullable, maxDefinitionLevel, maxRepetitionLevel
         )
@@ -85,10 +83,10 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       } else {
         if (dictionaryEncoding && dictionary) {
           dereferenceDictionary(dictionary, dataPage)
-          values = convert(dataPage, schemaElement)
+          values = convert(dataPage, element)
         } else if (Array.isArray(dataPage)) {
           // convert primitive types to rich types
-          values = convert(dataPage, schemaElement)
+          values = convert(dataPage, element)
         } else {
           values = dataPage // TODO: data page shouldn't be a fixed byte array?
         }
@@ -161,7 +159,7 @@ function dereferenceDictionary(dictionary, dataPage) {
 /**
  * Find the start byte offset for a column chunk.
  *
- * @param {ColumnMetaData} columnMetadata column metadata
+ * @param {ColumnMetaData} columnMetadata
  * @returns {number} byte offset
  */
 export function getColumnOffset(columnMetadata) {

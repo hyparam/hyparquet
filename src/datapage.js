@@ -13,8 +13,8 @@ const skipNulls = false // TODO
  * @typedef {import("./types.d.ts").SchemaTree} SchemaTree
  * @param {Uint8Array} bytes raw page data (should already be decompressed)
  * @param {DataPageHeader} daph data page header
- * @param {SchemaTree[]} schemaPath schema for the file
- * @param {ColumnMetaData} columnMetadata metadata for the column
+ * @param {SchemaTree[]} schemaPath
+ * @param {ColumnMetaData} columnMetadata
  * @returns {DataPage} definition levels, repetition levels, and array of values
  */
 export function readDataPage(bytes, daph, schemaPath, columnMetadata) {
@@ -83,7 +83,7 @@ export function readDataPage(bytes, daph, schemaPath, columnMetadata) {
  * @typedef {import("./types.d.ts").DictionaryPageHeader} DictionaryPageHeader
  * @param {Uint8Array} bytes raw page data
  * @param {DictionaryPageHeader} diph dictionary page header
- * @param {ColumnMetaData} columnMetadata metadata for the column
+ * @param {ColumnMetaData} columnMetadata
  * @returns {ArrayLike<any>} array of values
  */
 export function readDictionaryPage(bytes, diph, columnMetadata) {
@@ -98,7 +98,7 @@ export function readDictionaryPage(bytes, diph, columnMetadata) {
  * @typedef {import("./types.d.ts").DataReader} DataReader
  * @param {DataReader} reader data view for the page
  * @param {DataPageHeader} daph data page header
- * @param {SchemaTree[]} schemaPath schema path for the column
+ * @param {SchemaTree[]} schemaPath
  * @returns {any[]} repetition levels and number of bytes read
  */
 function readRepetitionLevels(reader, daph, schemaPath) {
@@ -119,7 +119,7 @@ function readRepetitionLevels(reader, daph, schemaPath) {
  *
  * @param {DataReader} reader data view for the page
  * @param {DataPageHeader} daph data page header
- * @param {SchemaTree[]} schemaPath schema path for the column
+ * @param {SchemaTree[]} schemaPath
  * @returns {DefinitionLevels} definition levels and number of bytes read
  */
 function readDefinitionLevels(reader, daph, schemaPath) {
