@@ -1,5 +1,5 @@
 import { readVarInt } from './thrift.js'
-import { concat } from './utils.js'
+import { splice } from './utils.js'
 
 /**
  * Read `count` boolean values.
@@ -197,14 +197,13 @@ export function widthFromMaxInt(value) {
  * @returns {any[]} array of values
  */
 export function readData(reader, encoding, count, bitWidth) {
-  /** @type {any[]} */
-  const values = []
+  const values = new Array(count)
   if (encoding === 'RLE') {
     let seen = 0
     while (seen < count) {
       const rle = readRleBitPackedHybrid(reader, bitWidth, 0, count)
       if (!rle.length) break // EOF
-      concat(values, rle)
+      splice(values, rle, seen)
       seen += rle.length
     }
   } else {
@@ -232,21 +231,24 @@ export function readRleBitPackedHybrid(reader, width, length, numValues) {
     if (length < 0) throw new Error(`parquet invalid rle/bitpack length ${length}`)
   }
   /** @type {number[]} */
-  const values = []
+  const values = new Array(numValues)
+  let seen = 0
   const startOffset = reader.offset
-  while (reader.offset - startOffset < length && values.length < numValues) {
+  while (reader.offset - startOffset < length && seen < numValues) {
     const [header, newOffset] = readVarInt(reader.view, reader.offset)
     reader.offset = newOffset
     if ((header & 1) === 0) {
       // rle
       const rle = readRle(reader, header, width)
-      concat(values, rle)
+      splice(values, rle, seen)
+      seen += rle.length
     } else {
       // bit-packed
       const bitPacked = readBitPacked(
-        reader, header, width, numValues - values.length
+        reader, header, width, numValues - seen
       )
-      concat(values, bitPacked)
+      splice(values, bitPacked, seen)
+      seen += bitPacked.length
     }
   }
 

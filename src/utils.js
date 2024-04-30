@@ -33,3 +33,15 @@ export function concat(aaa, bbb) {
     aaa.push(...bbb.slice(i, i + chunk))
   }
 }
+
+/**
+ * Splice one array into another fast.
+ * @param {any[]} aaa first array
+ * @param {any[]} bbb second array
+ * @param {number} index where to insert in aaa
+ */
+export function splice(aaa, bbb, index) {
+  for (let i = 0; i < bbb.length; i++) {
+    aaa[index + i] = bbb[i]
+  }
+}
