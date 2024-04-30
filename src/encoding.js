@@ -9,15 +9,15 @@ import { concat } from './utils.js'
  * @returns {boolean[]} array of boolean values
  */
 function readPlainBoolean(reader, count) {
-  const value = []
+  const values = new Array(count)
   for (let i = 0; i < count; i++) {
     const byteOffset = reader.offset + Math.floor(i / 8)
     const bitOffset = i % 8
     const byte = reader.view.getUint8(byteOffset)
-    value.push((byte & (1 << bitOffset)) !== 0)
+    values[i] = (byte & (1 << bitOffset)) !== 0
   }
   reader.offset += Math.ceil(count / 8)
-  return value
+  return values
 }
 
 /**
@@ -28,12 +28,12 @@ function readPlainBoolean(reader, count) {
  * @returns {number[]} array of int32 values
  */
 function readPlainInt32(reader, count) {
-  const value = []
+  const values = new Array(count)
   for (let i = 0; i < count; i++) {
-    value.push(reader.view.getInt32(reader.offset + i * 4, true))
+    values[i] = reader.view.getInt32(reader.offset + i * 4, true)
   }
   reader.offset += count * 4
-  return value
+  return values
 }
 
 /**
@@ -44,12 +44,12 @@ function readPlainInt32(reader, count) {
  * @returns {bigint[]} array of int64 values
  */
 function readPlainInt64(reader, count) {
-  const value = []
+  const values = new Array(count)
   for (let i = 0; i < count; i++) {
-    value.push(reader.view.getBigInt64(reader.offset + i * 8, true))
+    values[i] = reader.view.getBigInt64(reader.offset + i * 8, true)
   }
   reader.offset += count * 8
-  return value
+  return values
 }
 
 /**
@@ -60,14 +60,14 @@ function readPlainInt64(reader, count) {
  * @returns {bigint[]} array of int96 values
  */
 function readPlainInt96(reader, count) {
-  const value = []
+  const values = new Array(count)
   for (let i = 0; i < count; i++) {
     const low = reader.view.getBigInt64(reader.offset + i * 12, true)
     const high = reader.view.getInt32(reader.offset + i * 12 + 8, true)
-    value.push((BigInt(high) << BigInt(32)) | low)
+    values[i] = (BigInt(high) << BigInt(32)) | low
   }
   reader.offset += count * 12
-  return value
+  return values
 }
 
 /**
@@ -78,12 +78,12 @@ function readPlainInt96(reader, count) {
  * @returns {number[]} array of float values
  */
 function readPlainFloat(reader, count) {
-  const value = []
+  const values = new Array(count)
   for (let i = 0; i < count; i++) {
-    value.push(reader.view.getFloat32(reader.offset + i * 4, true))
+    values[i] = reader.view.getFloat32(reader.offset + i * 4, true)
   }
   reader.offset += count * 4
-  return value
+  return values
 }
 
 /**
@@ -94,12 +94,12 @@ function readPlainFloat(reader, count) {
  * @returns {number[]} array of double values
  */
 function readPlainDouble(reader, count) {
-  const value = []
+  const values = new Array(count)
   for (let i = 0; i < count; i++) {
-    value.push(reader.view.getFloat64(reader.offset + i * 8, true))
+    values[i] = reader.view.getFloat64(reader.offset + i * 8, true)
   }
   reader.offset += count * 8
-  return value
+  return values
 }
 
 /**
@@ -110,15 +110,14 @@ function readPlainDouble(reader, count) {
  * @returns {Uint8Array[]} array of byte arrays
  */
 function readPlainByteArray(reader, count) {
-  const value = []
+  const values = new Array(count)
   for (let i = 0; i < count; i++) {
     const length = reader.view.getInt32(reader.offset, true)
     reader.offset += 4
-    const bytes = new Uint8Array(reader.view.buffer, reader.view.byteOffset + reader.offset, length)
-    value.push(bytes)
+    values[i] = new Uint8Array(reader.view.buffer, reader.view.byteOffset + reader.offset, length)
     reader.offset += length
   }
-  return value
+  return values
 }
 
 /**
@@ -199,19 +198,19 @@ export function widthFromMaxInt(value) {
  */
 export function readData(reader, encoding, count, bitWidth) {
   /** @type {any[]} */
-  const value = []
+  const values = []
   if (encoding === 'RLE') {
     let seen = 0
     while (seen < count) {
       const rle = readRleBitPackedHybrid(reader, bitWidth, 0, count)
       if (!rle.length) break // EOF
-      concat(value, rle)
+      concat(values, rle)
       seen += rle.length
     }
   } else {
     throw new Error(`parquet encoding not supported ${encoding}`)
   }
-  return value
+  return values
 }
 
 /**
@@ -233,25 +232,25 @@ export function readRleBitPackedHybrid(reader, width, length, numValues) {
     if (length < 0) throw new Error(`parquet invalid rle/bitpack length ${length}`)
   }
   /** @type {number[]} */
-  const value = []
+  const values = []
   const startOffset = reader.offset
-  while (reader.offset - startOffset < length && value.length < numValues) {
+  while (reader.offset - startOffset < length && values.length < numValues) {
     const [header, newOffset] = readVarInt(reader.view, reader.offset)
     reader.offset = newOffset
     if ((header & 1) === 0) {
       // rle
       const rle = readRle(reader, header, width)
-      concat(value, rle)
+      concat(values, rle)
     } else {
       // bit-packed
       const bitPacked = readBitPacked(
-        reader, header, width, numValues - value.length
+        reader, header, width, numValues - values.length
       )
-      concat(value, bitPacked)
+      concat(values, bitPacked)
     }
   }
 
-  return value
+  return values
 }
 
 /**
@@ -268,26 +267,26 @@ export function readRleBitPackedHybrid(reader, width, length, numValues) {
 function readRle(reader, header, bitWidth) {
   const count = header >>> 1
   const width = (bitWidth + 7) >> 3
-  let readValue
+  let value
   if (width === 1) {
-    readValue = reader.view.getUint8(reader.offset)
+    value = reader.view.getUint8(reader.offset)
     reader.offset++
   } else if (width === 2) {
-    readValue = reader.view.getUint16(reader.offset, true)
+    value = reader.view.getUint16(reader.offset, true)
     reader.offset += 2
   } else if (width === 4) {
-    readValue = reader.view.getUint32(reader.offset, true)
+    value = reader.view.getUint32(reader.offset, true)
     reader.offset += 4
   } else {
     throw new Error(`parquet invalid rle width ${width}`)
   }
 
   // repeat value count times
-  const value = []
+  const values = new Array(count)
   for (let i = 0; i < count; i++) {
-    value.push(readValue)
+    values[i] = value
   }
-  return value
+  return values
 }
 
 /**
@@ -303,7 +302,8 @@ function readRle(reader, header, bitWidth) {
 function readBitPacked(reader, header, bitWidth, remaining) {
   // extract number of values to read from header
   let count = (header >> 1) << 3
-  const mask = maskForBits(bitWidth)
+  // mask for bitWidth number of bits
+  const mask = (1 << bitWidth) - 1
 
   // Sometimes it tries to read outside of available memory, but it will be masked out anyway
   let data = 0
@@ -316,7 +316,7 @@ function readBitPacked(reader, header, bitWidth, remaining) {
   let left = 8
   let right = 0
   /** @type {number[]} */
-  const value = []
+  const values = []
 
   // read values
   while (count) {
@@ -333,7 +333,7 @@ function readBitPacked(reader, header, bitWidth, remaining) {
     } else {
       if (remaining > 0) {
         // emit value by shifting off to the right and masking
-        value.push((data >> right) & mask)
+        values.push((data >> right) & mask)
         remaining--
       }
       count--
@@ -341,15 +341,5 @@ function readBitPacked(reader, header, bitWidth, remaining) {
     }
   }
 
-  return value
-}
-
-/**
-* Generate a mask for the given number of bits.
-*
-* @param {number} bits - number of bits for the mask
-* @returns {number} a mask for the given number of bits
-*/
-function maskForBits(bits) {
-  return (1 << bits) - 1
+  return values
 }

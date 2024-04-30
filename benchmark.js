@@ -32,7 +32,7 @@ const file = {
   },
 }
 const startTime = performance.now()
-console.log('parsing wikipedia data...')
+console.log('parsing example.parquet data...')
 
 // read parquet file
 await parquetRead({

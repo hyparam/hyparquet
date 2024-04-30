@@ -84,13 +84,13 @@ function readElement(view, type, index) {
   case CompactType.LIST: {
     const [elemType, listSize, listIndex] = readCollectionBegin(view, index)
     index = listIndex
-    const listValues = []
+    const values = new Array(listSize)
     for (let i = 0; i < listSize; i++) {
       let listElem
       [listElem, index] = readElement(view, elemType, index)
-      listValues.push(listElem)
+      values[i] = listElem
     }
-    return [listValues, index]
+    return [values, index]
   }
   case CompactType.STRUCT: {
     /** @type {Record<string, any>} */
