@@ -34,7 +34,7 @@ function schemaTree(schema, rootIndex) {
  * @param {string[]} name path to the element
  * @returns {SchemaTree} schema element
  */
-export function schemaElement(schema, name) {
+function schemaElement(schema, name) {
   let tree = schemaTree(schema, 0)
   // traverse the tree to find the element
   for (const part of name) {
@@ -46,21 +46,34 @@ export function schemaElement(schema, name) {
 }
 
 /**
- * Check if the schema element with the given name is required.
- * An element is required if all of its ancestors are required.
+ * Get each schema element from the root to the given element name.
  *
  * @param {SchemaElement[]} schema
  * @param {string[]} name path to the element
+ * @returns {SchemaTree[]} schema element
+ */
+export function getSchemaPath(schema, name) {
+  let tree = schemaTree(schema, 0)
+  const path = [tree]
+  for (const part of name) {
+    const child = tree.children.find(child => child.element.name === part)
+    if (!child) throw new Error(`parquet schema element not found: ${name}`)
+    path.push(child)
+    tree = child
+  }
+  return path
+}
+
+/**
+ * Check if the schema element with the given name is required.
+ * An element is required if all of its ancestors are required.
+ *
+ * @param {SchemaTree[]} schemaPath
  * @returns {boolean} true if the element is required
  */
-export function isRequired(schema, name) {
-  /** @type {SchemaTree | undefined} */
-  let tree = schemaTree(schema, 0)
-  for (let i = 0; i < name.length; i++) {
-    // Find schema child with the given name
-    tree = tree.children.find(child => child.element.name === name[i])
-    if (!tree) throw new Error(`parquet schema element not found: ${name}`)
-    if (tree.element.repetition_type !== 'REQUIRED') {
+export function isRequired(schemaPath) {
+  for (const { element } of schemaPath.slice(1)) {
+    if (element.repetition_type !== 'REQUIRED') {
       return false
     }
   }
@@ -70,36 +83,32 @@ export function isRequired(schema, name) {
 /**
  * Get the max repetition level for a given schema path.
  *
- * @param {SchemaElement[]} schema
- * @param {string[]} parts path to the element
+ * @param {SchemaTree[]} schemaPath
  * @returns {number} max repetition level
  */
-export function getMaxRepetitionLevel(schema, parts) {
+export function getMaxRepetitionLevel(schemaPath) {
   let maxLevel = 0
-  parts.forEach((part, i) => {
-    const { element } = schemaElement(schema, parts.slice(0, i + 1))
+  for (const { element } of schemaPath.slice(1)) {
     if (element.repetition_type === 'REPEATED') {
       maxLevel++
     }
-  })
+  }
   return maxLevel
 }
 
 /**
  * Get the max definition level for a given schema path.
  *
- * @param {SchemaElement[]} schema
- * @param {string[]} parts path to the element
+ * @param {SchemaTree[]} schemaPath
  * @returns {number} max definition level
  */
-export function getMaxDefinitionLevel(schema, parts) {
+export function getMaxDefinitionLevel(schemaPath) {
   let maxLevel = 0
-  parts.forEach((part, i) => {
-    const { element } = schemaElement(schema, parts.slice(0, i + 1))
+  for (const { element } of schemaPath.slice(1)) {
     if (element.repetition_type !== 'REQUIRED') {
       maxLevel++
     }
-  })
+  }
   return maxLevel
 }
 

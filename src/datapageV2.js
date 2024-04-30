@@ -1,6 +1,6 @@
 import { decompressPage } from './column.js'
 import { readPlain, readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
-import { getMaxDefinitionLevel, getMaxRepetitionLevel, schemaElement } from './schema.js'
+import { getMaxDefinitionLevel, getMaxRepetitionLevel } from './schema.js'
 import { readVarInt, readZigZag } from './thrift.js'
 
 /**
@@ -10,15 +10,15 @@ import { readVarInt, readZigZag } from './thrift.js'
  * @typedef {import("./types.d.ts").ColumnMetaData} ColumnMetaData
  * @typedef {import("./types.d.ts").Compressors} Compressors
  * @typedef {import("./types.d.ts").DataPageHeaderV2} DataPageHeaderV2
- * @typedef {import("./types.d.ts").SchemaElement} SchemaElement
+ * @typedef {import("./types.d.ts").SchemaTree} SchemaTree
  * @param {Uint8Array} compressedBytes raw page data (should already be decompressed)
  * @param {import("./types.d.ts").PageHeader} ph page header
- * @param {SchemaElement[]} schema schema for the file
+ * @param {SchemaTree[]} schemaPath schema path for the column
  * @param {ColumnMetaData} columnMetadata metadata for the column
  * @param {Compressors | undefined} compressors
  * @returns {DataPage} definition levels, repetition levels, and array of values
  */
-export function readDataPageV2(compressedBytes, ph, schema, columnMetadata, compressors) {
+export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, compressors) {
   const view = new DataView(compressedBytes.buffer, compressedBytes.byteOffset, compressedBytes.byteLength)
   const reader = { view, offset: 0 }
   /** @type {any} */
@@ -28,14 +28,14 @@ export function readDataPageV2(compressedBytes, ph, schema, columnMetadata, comp
   if (!daph2) throw new Error('parquet data page header v2 is undefined')
 
   // repetition levels
-  const repetitionLevels = readRepetitionLevelsV2(reader, daph2, schema, columnMetadata)
+  const repetitionLevels = readRepetitionLevelsV2(reader, daph2, schemaPath)
 
   if (reader.offset !== daph2.repetition_levels_byte_length) {
     throw new Error(`parquet repetition levels byte length ${reader.offset} does not match expected ${daph2.repetition_levels_byte_length}`)
   }
 
   // definition levels
-  const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
+  const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
   const definitionLevels = readDefinitionLevelsV2(reader, daph2, maxDefinitionLevel)
 
   if (reader.offset !== daph2.repetition_levels_byte_length + daph2.definition_levels_byte_length) {
@@ -47,7 +47,7 @@ export function readDataPageV2(compressedBytes, ph, schema, columnMetadata, comp
   // read values based on encoding
   const nValues = daph2.num_values - daph2.num_nulls
   if (daph2.encoding === 'PLAIN') {
-    const { element } = schemaElement(schema, columnMetadata.path_in_schema)
+    const { element } = schemaPath[schemaPath.length - 1]
     const utf8 = element.converted_type === 'UTF8'
     let page = compressedBytes.slice(reader.offset)
     if (daph2.is_compressed && columnMetadata.codec !== 'UNCOMPRESSED') {
@@ -99,12 +99,11 @@ export function readDataPageV2(compressedBytes, ph, schema, columnMetadata, comp
  * @typedef {import("./types.d.ts").DataReader} DataReader
  * @param {DataReader} reader data view for the page
  * @param {DataPageHeaderV2} daph2 data page header
- * @param {SchemaElement[]} schema schema for the file
- * @param {ColumnMetaData} columnMetadata metadata for the column
+ * @param {SchemaTree[]} schemaPath schema path for the column
  * @returns {any[]} repetition levels and number of bytes read
  */
-export function readRepetitionLevelsV2(reader, daph2, schema, columnMetadata) {
-  const maxRepetitionLevel = getMaxRepetitionLevel(schema, columnMetadata.path_in_schema)
+export function readRepetitionLevelsV2(reader, daph2, schemaPath) {
+  const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
   if (!maxRepetitionLevel) return []
 
   const bitWidth = widthFromMaxInt(maxRepetitionLevel)

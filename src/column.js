@@ -3,7 +3,7 @@ import { convert } from './convert.js'
 import { readDataPage, readDictionaryPage } from './datapage.js'
 import { readDataPageV2 } from './datapageV2.js'
 import { parquetHeader } from './header.js'
-import { getMaxDefinitionLevel, getMaxRepetitionLevel, isRequired, schemaElement } from './schema.js'
+import { getMaxDefinitionLevel, getMaxRepetitionLevel, getSchemaPath, isRequired } from './schema.js'
 import { snappyUncompress } from './snappy.js'
 import { concat } from './utils.js'
 
@@ -33,6 +33,9 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
   /** @type {any[]} */
   const rowData = []
 
+  const schemaPath = getSchemaPath(schema, columnMetadata.path_in_schema)
+  const schemaElement = schemaPath[schemaPath.length - 1].element
+
   while (valuesSeen < rowGroup.num_rows) {
     // parse column header
     const { value: header, byteLength: headerLength } = parquetHeader(arrayBuffer, columnOffset + byteOffset)
@@ -55,7 +58,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       const page = decompressPage(
         compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec, compressors
       )
-      const { definitionLevels, repetitionLevels, value: dataPage } = readDataPage(page, daph, schema, columnMetadata)
+      const { definitionLevels, repetitionLevels, value: dataPage } = readDataPage(page, daph, schemaPath, columnMetadata)
       valuesSeen += daph.num_values
 
       const dictionaryEncoding = daph.encoding === 'PLAIN_DICTIONARY' || daph.encoding === 'RLE_DICTIONARY'
@@ -66,26 +69,26 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       if (repetitionLevels.length) {
         dereferenceDictionary(dictionary, dataPage)
         // Use repetition levels to construct lists
-        const isNullable = columnMetadata && !isRequired(schema, [columnMetadata.path_in_schema[0]])
-        const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
-        const maxRepetitionLevel = getMaxRepetitionLevel(schema, columnMetadata.path_in_schema)
+        const isNullable = columnMetadata && !isRequired(schemaPath.slice(0, 2))
+        const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
+        const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
         // convert primitive types to rich types
         values = convert(dataPage, schemaElement)
         values = assembleObjects(
           definitionLevels, repetitionLevels, values, isNullable, maxDefinitionLevel, maxRepetitionLevel
         )
       } else if (definitionLevels?.length) {
-        const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
+        const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
         // Use definition levels to skip nulls
         values = []
         skipNulls(definitionLevels, maxDefinitionLevel, dataPage, dictionary, values)
       } else {
         if (dictionaryEncoding && dictionary) {
           dereferenceDictionary(dictionary, dataPage)
-          values = convert(dataPage, schemaElement(schema, columnMetadata.path_in_schema).element)
+          values = convert(dataPage, schemaElement)
         } else if (Array.isArray(dataPage)) {
           // convert primitive types to rich types
-          values = convert(dataPage, schemaElement(schema, columnMetadata.path_in_schema).element)
+          values = convert(dataPage, schemaElement)
         } else {
           values = dataPage // TODO: data page shouldn't be a fixed byte array?
         }
@@ -103,18 +106,18 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       const page = decompressPage(
         compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec, compressors
       )
-      dictionary = readDictionaryPage(page, diph, schema, columnMetadata)
+      dictionary = readDictionaryPage(page, diph, columnMetadata)
     } else if (header.type === 'DATA_PAGE_V2') {
       const daph2 = header.data_page_header_v2
       if (!daph2) throw new Error('parquet data page header v2 is undefined')
 
       const { definitionLevels, repetitionLevels, value: dataPage } = readDataPageV2(
-        compressedBytes, header, schema, columnMetadata, compressors
+        compressedBytes, header, schemaPath, columnMetadata, compressors
       )
       valuesSeen += daph2.num_values
 
-      const maxDefinitionLevel = getMaxDefinitionLevel(schema, columnMetadata.path_in_schema)
-      const maxRepetitionLevel = getMaxRepetitionLevel(schema, columnMetadata.path_in_schema)
+      const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
+      const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
       if (repetitionLevels.length) {
         dereferenceDictionary(dictionary, dataPage)
         // Use repetition levels to construct lists

@@ -1,5 +1,5 @@
 import { CompressionCodec, ConvertedType, Encoding, FieldRepetitionType, ParquetType } from './constants.js'
-import { schemaElement } from './schema.js'
+import { getSchemaPath } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
 /**
@@ -172,7 +172,7 @@ export function parquetMetadata(arrayBuffer) {
  * @returns {import("./types.d.ts").SchemaTree} tree of schema elements
  */
 export function parquetSchema(metadata) {
-  return schemaElement(metadata.schema, [])
+  return getSchemaPath(metadata.schema, [])[0]
 }
 
 /**

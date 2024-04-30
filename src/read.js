@@ -150,7 +150,6 @@ async function readRowGroup(options, rowGroup, groupStart) {
 
     // read column data async
     promises.push(buffer.then(arrayBuffer => {
-      // TODO: extract SchemaElement for this column
       /** @type {ArrayLike<any> | undefined} */
       let columnData = readColumn(
         arrayBuffer, bufferOffset, rowGroup, columnMetadata, metadata.schema, compressors
