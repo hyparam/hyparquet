@@ -186,33 +186,6 @@ export function widthFromMaxInt(value) {
 }
 
 /**
- * Read data from the file-object using the given encoding.
- * The data could be definition levels, repetition levels, or actual values.
- *
- * @typedef {import("./types.d.ts").Encoding} Encoding
- * @param {DataReader} reader - buffer to read data from
- * @param {Encoding} encoding - encoding type
- * @param {number} count - number of values to read
- * @param {number} bitWidth - width of each bit-packed group
- * @returns {any[]} array of values
- */
-export function readData(reader, encoding, count, bitWidth) {
-  const values = new Array(count)
-  if (encoding === 'RLE') {
-    let seen = 0
-    while (seen < count) {
-      const rle = readRleBitPackedHybrid(reader, bitWidth, 0, count)
-      if (!rle.length) break // EOF
-      splice(values, rle, seen)
-      seen += rle.length
-    }
-  } else {
-    throw new Error(`parquet encoding not supported ${encoding}`)
-  }
-  return values
-}
-
-/**
  * Read values from a run-length encoded/bit-packed hybrid encoding.
  *
  * If length is zero, then read as int32 at the start of the encoded data.
@@ -221,20 +194,17 @@ export function readData(reader, encoding, count, bitWidth) {
  * @param {DataReader} reader - buffer to read data from
  * @param {number} width - width of each bit-packed group
  * @param {number} length - length of the encoded data
- * @param {number} numValues - number of values to read
- * @returns {number[]} array of rle/bit-packed values
+ * @param {number[]} values - output array
  */
-export function readRleBitPackedHybrid(reader, width, length, numValues) {
+export function readRleBitPackedHybrid(reader, width, length, values) {
   if (!length) {
     length = reader.view.getInt32(reader.offset, true)
     reader.offset += 4
     if (length < 0) throw new Error(`parquet invalid rle/bitpack length ${length}`)
   }
-  /** @type {number[]} */
-  const values = new Array(numValues)
   let seen = 0
   const startOffset = reader.offset
-  while (reader.offset - startOffset < length && seen < numValues) {
+  while (reader.offset - startOffset < length && seen < values.length) {
     const [header, newOffset] = readVarInt(reader.view, reader.offset)
     reader.offset = newOffset
     if ((header & 1) === 0) {
@@ -244,15 +214,11 @@ export function readRleBitPackedHybrid(reader, width, length, numValues) {
       seen += rle.length
     } else {
       // bit-packed
-      const bitPacked = readBitPacked(
-        reader, header, width, numValues - seen
-      )
+      const bitPacked = readBitPacked(reader, header, width, values.length - seen)
       splice(values, bitPacked, seen)
       seen += bitPacked.length
     }
   }
-
-  return values
 }
 
 /**

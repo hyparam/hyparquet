@@ -64,9 +64,8 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
       throw new Error('parquet RLE encoding with nulls not supported')
     } else {
       const pageReader = { view: pageView, offset: 4 }
-      values = readRleBitPackedHybrid(
-        pageReader, bitWidth, uncompressedPageSize, nValues
-      )
+      values = new Array(nValues)
+      readRleBitPackedHybrid(pageReader, bitWidth, uncompressedPageSize, values)
     }
   } else if (
     daph2.encoding === 'PLAIN_DICTIONARY' ||
@@ -77,10 +76,8 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
     const pageView = new DataView(page.buffer, page.byteOffset, page.byteLength)
     const bitWidth = pageView.getUint8(0)
     const pageReader = { view: pageView, offset: 1 }
-    const value = readRleBitPackedHybrid(
-      pageReader, bitWidth, uncompressedPageSize, nValues
-    )
-    values = value
+    values = new Array(nValues)
+    readRleBitPackedHybrid(pageReader, bitWidth, uncompressedPageSize, values)
   } else if (daph2.encoding === 'DELTA_BINARY_PACKED') {
     if (daph2.num_nulls) throw new Error('parquet delta-int not supported')
     const codec = daph2.is_compressed ? columnMetadata.codec : 'UNCOMPRESSED'
@@ -108,9 +105,11 @@ export function readRepetitionLevelsV2(reader, daph2, schemaPath) {
 
   const bitWidth = widthFromMaxInt(maxRepetitionLevel)
   // num_values is index 1 for either type of page header
-  return readRleBitPackedHybrid(
-    reader, bitWidth, daph2.repetition_levels_byte_length, daph2.num_values
+  const values = new Array(daph2.num_values)
+  readRleBitPackedHybrid(
+    reader, bitWidth, daph2.repetition_levels_byte_length, values
   )
+  return values
 }
 
 /**
@@ -125,9 +124,9 @@ function readDefinitionLevelsV2(reader, daph2, maxDefinitionLevel) {
   if (maxDefinitionLevel) {
     // not the same as V1, because we know the length
     const bitWidth = widthFromMaxInt(maxDefinitionLevel)
-    return readRleBitPackedHybrid(
-      reader, bitWidth, daph2.definition_levels_byte_length, daph2.num_values
-    )
+    const values = new Array(daph2.num_values)
+    readRleBitPackedHybrid(reader, bitWidth, daph2.definition_levels_byte_length, values)
+    return values
   }
 }
 

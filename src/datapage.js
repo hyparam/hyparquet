@@ -1,4 +1,4 @@
-import { readData, readPlain, readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
+import { readPlain, readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel, isRequired, skipDefinitionBytes } from './schema.js'
 
 const skipNulls = false // TODO
@@ -62,10 +62,8 @@ export function readDataPage(bytes, daph, schemaPath, columnMetadata) {
       reader.offset++
     }
     if (bitWidth) {
-      const value = readRleBitPackedHybrid(
-        reader, bitWidth, view.byteLength - reader.offset, nValues
-      )
-      values = Array.isArray(value) ? value : Array.from(value)
+      values = new Array(nValues)
+      readRleBitPackedHybrid(reader, bitWidth, view.byteLength - reader.offset, values)
     } else {
       // nval zeros
       values = new Array(nValues).fill(0)
@@ -106,9 +104,9 @@ function readRepetitionLevels(reader, daph, schemaPath) {
     const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
     if (maxRepetitionLevel) {
       const bitWidth = widthFromMaxInt(maxRepetitionLevel)
-      return readData(
-        reader, daph.repetition_level_encoding, daph.num_values, bitWidth
-      )
+      const values = new Array(daph.num_values)
+      readRleBitPackedHybrid(reader, bitWidth, 0, values)
+      return values
     }
   }
   return []
@@ -128,9 +126,8 @@ function readDefinitionLevels(reader, daph, schemaPath) {
     const bitWidth = widthFromMaxInt(maxDefinitionLevel)
     if (bitWidth) {
       // num_values is index 1 for either type of page header
-      const definitionLevels = readData(
-        reader, daph.definition_level_encoding, daph.num_values, bitWidth
-      )
+      const definitionLevels = new Array(daph.num_values)
+      readRleBitPackedHybrid(reader, bitWidth, 0, definitionLevels)
 
       // count nulls
       let numNulls = daph.num_values

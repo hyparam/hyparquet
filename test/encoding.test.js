@@ -111,9 +111,10 @@ describe('readRleBitPackedHybrid', () => {
     view.setUint8(3, 0b00000100) // Bit-packed values (false, false, true)
     const reader = { view, offset: 0 }
 
-    const value = readRleBitPackedHybrid(reader, 1, 3, 6)
+    const values = new Array(6)
+    readRleBitPackedHybrid(reader, 1, 3, values)
     expect(reader.offset).toBe(4)
-    expect(value).toEqual([1, 1, 1, 0, 0, 1])
+    expect(values).toEqual([1, 1, 1, 0, 0, 1])
   })
 
   it('reads RLE bit-packed hybrid values with implicit length', () => {
@@ -127,8 +128,9 @@ describe('readRleBitPackedHybrid', () => {
     view.setUint8(7, 0b00000100) // Bit-packed values (false, false, true)
     const reader = { view, offset: 0 }
 
-    const value = readRleBitPackedHybrid(reader, 1, 0, 6)
+    const values = new Array(6)
+    readRleBitPackedHybrid(reader, 1, 0, values)
     expect(reader.offset).toBe(8)
-    expect(value).toEqual([1, 1, 1, 0, 0, 1])
+    expect(values).toEqual([1, 1, 1, 0, 0, 1])
   })
 })
