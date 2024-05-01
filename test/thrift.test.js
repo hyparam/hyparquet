@@ -63,8 +63,9 @@ describe('deserializeTCompactProtocol function', () => {
     // Mark the end of the structure
     view.setUint8(index, 0x00) // STOP field
 
-    const { byteLength, value } = deserializeTCompactProtocol(buffer, 0)
-    expect(byteLength).toBe(index + 1)
+    const reader = { view, offset: 0 }
+    const value = deserializeTCompactProtocol(reader)
+    expect(reader.offset).toBe(index + 1)
 
     // Assertions for each basic type
     expect(value.field_1).toBe(true) // TRUE

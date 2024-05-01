@@ -2,20 +2,15 @@ import { Encoding, PageType } from './constants.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
 /**
- * @typedef {import("./types.d.ts").Decoded<T>} Decoded
- * @template T
- */
-
-/**
  * Read parquet header from a buffer.
  *
+ * @typedef {import("./types.d.ts").DataReader} DataReader
  * @typedef {import("./types.d.ts").PageHeader} PageHeader
- * @param {ArrayBuffer} arrayBuffer parquet file contents
- * @param {number} offset offset to start reading from
- * @returns {Decoded<PageHeader>} metadata object and bytes read
+ * @param {DataReader} reader - parquet file reader
+ * @returns {PageHeader} metadata object and bytes read
  */
-export function parquetHeader(arrayBuffer, offset) {
-  const { value: header, byteLength } = deserializeTCompactProtocol(arrayBuffer, offset)
+export function parquetHeader(reader) {
+  const header = deserializeTCompactProtocol(reader)
 
   // Parse parquet header from thrift data
   const type = PageType[header.field_1]
@@ -54,16 +49,13 @@ export function parquetHeader(arrayBuffer, offset) {
   }
 
   return {
-    byteLength,
-    value: {
-      type,
-      uncompressed_page_size,
-      compressed_page_size,
-      crc,
-      data_page_header,
-      index_page_header,
-      dictionary_page_header,
-      data_page_header_v2,
-    },
+    type,
+    uncompressed_page_size,
+    compressed_page_size,
+    crc,
+    data_page_header,
+    index_page_header,
+    dictionary_page_header,
+    data_page_header_v2,
   }
 }

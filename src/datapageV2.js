@@ -139,20 +139,20 @@ function readDefinitionLevelsV2(reader, daph2, maxDefinitionLevel) {
  * @param {any[]} values array to write to
  */
 function deltaBinaryUnpack(page, nValues, values) {
-  const dataView = new DataView(page.buffer, page.byteOffset, page.byteLength)
-  const [blockSize, index1] = readVarInt(dataView, 0)
-  const [miniblockPerBlock, index2] = readVarInt(dataView, index1)
-  const [count, index3] = readVarInt(dataView, index2)
-  let [value, offset] = readZigZag(dataView, index3)
+  const view = new DataView(page.buffer, page.byteOffset, page.byteLength)
+  const reader = { view, offset: 0 }
+  const blockSize = readVarInt(reader)
+  const miniblockPerBlock = readVarInt(reader)
+  const count = readVarInt(reader)
+  let value = readZigZag(reader)
 
   const valuesPerMiniblock = blockSize / miniblockPerBlock
 
   for (let valueIndex = 0; valueIndex < nValues;) {
-    const [minDelta, index4] = readZigZag(dataView, offset)
-    offset = index4
+    const minDelta = readZigZag(reader)
     const bitWidths = new Uint8Array(miniblockPerBlock)
-    for (let i = 0; i < miniblockPerBlock; i++, offset++) {
-      bitWidths[i] = page[offset]
+    for (let i = 0; i < miniblockPerBlock; i++, reader.offset++) {
+      bitWidths[i] = page[reader.offset]
     }
 
     for (let i = 0; i < miniblockPerBlock; i++) {
@@ -167,7 +167,7 @@ function deltaBinaryUnpack(page, nValues, values) {
           while (count) {
             if (stop < 0) {
               // fails when data gets too large
-              data = (data << 8) | dataView.getUint8(offset++)
+              data = (data << 8) | view.getUint8(reader.offset++)
               stop += 8
             } else {
               values.push((data >> stop) & mask)

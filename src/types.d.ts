@@ -8,15 +8,6 @@ export interface AsyncBuffer {
   slice(start: number, end?: number): Awaitable<ArrayBuffer>
 }
 
-/**
- * Represents a decoded value, and includes the number of bytes read.
- * This is used to read data from the file and advance a virtual file pointer.
- */
-export interface Decoded<T> {
-  value: T
-  byteLength: number
-}
-
 export interface DataReader {
   view: DataView
   offset: number
@@ -247,8 +238,6 @@ interface DataPageHeaderV2 {
   is_compressed?: boolean
   statistics?: Statistics
 }
-
-type DecodedArray = any[] | Uint8Array
 
 interface DataPage {
   definitionLevels: number[] | undefined

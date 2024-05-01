@@ -30,8 +30,7 @@ export function readRleBitPackedHybrid(reader, width, length, values) {
   let seen = 0
   const startOffset = reader.offset
   while (reader.offset - startOffset < length && seen < values.length) {
-    const [header, newOffset] = readVarInt(reader.view, reader.offset)
-    reader.offset = newOffset
+    const header = readVarInt(reader)
     if ((header & 1) === 0) {
       // rle
       const count = header >>> 1

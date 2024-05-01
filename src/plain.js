@@ -137,13 +137,12 @@ function readPlainByteArrayFixed(reader, fixedLength) {
 /**
  * Read `count` values of the given type from the reader.view.
  *
- * @typedef {import("./types.d.ts").DecodedArray} DecodedArray
  * @typedef {import("./types.d.ts").ParquetType} ParquetType
  * @param {DataReader} reader - buffer to read data from
  * @param {ParquetType} type - parquet type of the data
  * @param {number} count - number of values to read
  * @param {boolean} utf8 - whether to decode byte arrays as UTF-8
- * @returns {DecodedArray} array of values
+ * @returns {ArrayLike<any>} array of values
  */
 export function readPlain(reader, type, count, utf8) {
   if (count === 0) return []

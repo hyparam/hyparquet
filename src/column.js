@@ -29,23 +29,23 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
   /** @type {ArrayLike<any> | undefined} */
   let dictionary = undefined
   let valuesSeen = 0
-  let byteOffset = 0 // byteOffset within the column
   /** @type {any[]} */
   const rowData = []
   const { element } = schemaPath[schemaPath.length - 1]
+  // column reader:
+  const reader = { view: new DataView(arrayBuffer, columnOffset), offset: 0 }
 
   while (valuesSeen < rowGroup.num_rows) {
     // parse column header
-    const { value: header, byteLength: headerLength } = parquetHeader(arrayBuffer, columnOffset + byteOffset)
-    byteOffset += headerLength
+    const header = parquetHeader(reader)
     if (header.compressed_page_size === undefined) {
       throw new Error(`parquet compressed page size is undefined in column '${columnMetadata.path_in_schema}'`)
     }
 
     // read compressed_page_size bytes starting at offset
     const compressedBytes = new Uint8Array(arrayBuffer).subarray(
-      columnOffset + byteOffset,
-      columnOffset + byteOffset + header.compressed_page_size
+      columnOffset + reader.offset,
+      columnOffset + reader.offset + header.compressed_page_size
     )
 
     // parse page data by type
@@ -134,7 +134,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
     } else {
       throw new Error(`parquet unsupported page type: ${header.type}`)
     }
-    byteOffset += header.compressed_page_size
+    reader.offset += header.compressed_page_size
   }
   if (rowData.length !== Number(rowGroup.num_rows)) {
     throw new Error(`parquet row data length ${rowData.length} does not match row group length ${rowGroup.num_rows}}`)
