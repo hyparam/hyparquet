@@ -1,5 +1,4 @@
 import { readVarInt } from './thrift.js'
-import { splice } from './utils.js'
 
 /**
  * Read `count` boolean values.
@@ -214,9 +213,7 @@ export function readRleBitPackedHybrid(reader, width, length, values) {
       seen += count
     } else {
       // bit-packed
-      const bitPacked = readBitPacked(reader, header, width, values.length - seen)
-      splice(values, bitPacked, seen)
-      seen += bitPacked.length
+      seen = readBitPacked(reader, header, width, values, seen)
     }
   }
 }
@@ -260,10 +257,11 @@ function readRle(reader, count, bitWidth, values, seen) {
  * @param {DataReader} reader - buffer to read data from
  * @param {number} header - header information
  * @param {number} bitWidth - width of each bit-packed group
- * @param {number} remaining - number of values remaining to be read
- * @returns {number[]} array of bit-packed values
+ * @param {number[]} values - output array
+ * @param {number} seen - number of values seen so far
+ * @returns {number} number of values seen
  */
-function readBitPacked(reader, header, bitWidth, remaining) {
+function readBitPacked(reader, header, bitWidth, values, seen) {
   // extract number of values to read from header
   let count = (header >> 1) << 3
   // mask for bitWidth number of bits
@@ -279,8 +277,6 @@ function readBitPacked(reader, header, bitWidth, remaining) {
   }
   let left = 8
   let right = 0
-  /** @type {number[]} */
-  const values = []
 
   // read values
   while (count) {
@@ -295,15 +291,14 @@ function readBitPacked(reader, header, bitWidth, remaining) {
       reader.offset++
       left += 8
     } else {
-      if (remaining > 0) {
+      if (seen < values.length) {
         // emit value by shifting off to the right and masking
-        values.push((data >> right) & mask)
-        remaining--
+        values[seen++] = (data >> right) & mask
       }
       count--
       right += bitWidth
     }
   }
 
-  return values
+  return seen
 }
