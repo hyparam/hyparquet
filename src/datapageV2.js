@@ -1,5 +1,6 @@
 import { decompressPage } from './column.js'
-import { readPlain, readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
+import { readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
+import { readPlain } from './plain.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel } from './schema.js'
 import { readVarInt, readZigZag } from './thrift.js'
 

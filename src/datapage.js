@@ -1,4 +1,5 @@
-import { readPlain, readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
+import { readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
+import { readPlain } from './plain.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel, isRequired, skipDefinitionBytes } from './schema.js'
 
 const skipNulls = false // TODO
