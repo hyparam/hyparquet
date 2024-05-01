@@ -209,9 +209,9 @@ export function readRleBitPackedHybrid(reader, width, length, values) {
     reader.offset = newOffset
     if ((header & 1) === 0) {
       // rle
-      const rle = readRle(reader, header, width)
-      splice(values, rle, seen)
-      seen += rle.length
+      const count = header >>> 1
+      readRle(reader, count, width, values, seen)
+      seen += count
     } else {
       // bit-packed
       const bitPacked = readBitPacked(reader, header, width, values.length - seen)
@@ -228,33 +228,29 @@ export function readRleBitPackedHybrid(reader, width, length, values) {
  * value that's repeated. Yields the value repeated count times.
  *
  * @param {DataReader} reader - buffer to read data from
- * @param {number} header - header information
+ * @param {number} count - number of values to read
  * @param {number} bitWidth - width of each bit-packed group
- * @returns {number[]} array of rle values
+ * @param {number[]} values - output array
+ * @param {number} seen - number of values seen so far
  */
-function readRle(reader, header, bitWidth) {
-  const count = header >>> 1
+function readRle(reader, count, bitWidth, values, seen) {
   const width = (bitWidth + 7) >> 3
   let value
   if (width === 1) {
     value = reader.view.getUint8(reader.offset)
-    reader.offset++
   } else if (width === 2) {
     value = reader.view.getUint16(reader.offset, true)
-    reader.offset += 2
   } else if (width === 4) {
     value = reader.view.getUint32(reader.offset, true)
-    reader.offset += 4
   } else {
     throw new Error(`parquet invalid rle width ${width}`)
   }
+  reader.offset += width
 
   // repeat value count times
-  const values = new Array(count)
   for (let i = 0; i < count; i++) {
-    values[i] = value
+    values[seen + i] = value
   }
-  return values
 }
 
 /**
