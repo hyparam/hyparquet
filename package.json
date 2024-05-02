@@ -1,6 +1,6 @@
 {
   "name": "hyparquet",
-  "version": "0.7.10",
+  "version": "0.7.11",
   "description": "parquet file parser for javascript",
   "keywords": [
     "parquet",
@@ -27,7 +27,7 @@
     "typecheck": "tsc"
   },
   "devDependencies": {
-    "@types/node": "20.12.7",
+    "@types/node": "20.12.8",
     "@typescript-eslint/eslint-plugin": "7.8.0",
     "@vitest/coverage-v8": "1.5.3",
     "eslint": "8.57.0",
