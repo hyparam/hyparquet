@@ -6,7 +6,6 @@ import {
   isListLike,
   isMapLike,
   isRequired,
-  skipDefinitionBytes,
 } from '../src/schema.js'
 
 describe('Parquet schema utils', () => {
@@ -61,11 +60,6 @@ describe('Parquet schema utils', () => {
     expect(getMaxDefinitionLevel(getSchemaPath(schema, ['child1']))).toBe(1)
     expect(getMaxDefinitionLevel(getSchemaPath(schema, ['child2']))).toBe(1)
     expect(getMaxDefinitionLevel(getSchemaPath(schema, ['child3']))).toBe(1)
-  })
-
-  it('skipDefinitionBytes', () => {
-    expect(skipDefinitionBytes(100)).toBe(6)
-    expect(skipDefinitionBytes(1000)).toBe(7)
   })
 
   it('isListLike', () => {

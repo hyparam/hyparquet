@@ -23,10 +23,15 @@ function readPlainBoolean(reader, count) {
  *
  * @param {DataReader} reader - buffer to read data from
  * @param {number} count - number of values to read
- * @returns {number[]} array of int32 values
+ * @returns {Int32Array} array of int32 values
  */
 function readPlainInt32(reader, count) {
-  const values = new Array(count)
+  if ((reader.view.byteOffset + reader.offset) % 4 === 0) {
+    const values = new Int32Array(reader.view.buffer, reader.view.byteOffset + reader.offset, count)
+    reader.offset += count * 4
+    return values
+  }
+  const values = new Int32Array(count)
   for (let i = 0; i < count; i++) {
     values[i] = reader.view.getInt32(reader.offset + i * 4, true)
   }
@@ -39,10 +44,15 @@ function readPlainInt32(reader, count) {
  *
  * @param {DataReader} reader - buffer to read data from
  * @param {number} count - number of values to read
- * @returns {bigint[]} array of int64 values
+ * @returns {BigInt64Array} array of int64 values
  */
 function readPlainInt64(reader, count) {
-  const values = new Array(count)
+  if ((reader.view.byteOffset + reader.offset) % 8 === 0) {
+    const values = new BigInt64Array(reader.view.buffer, reader.view.byteOffset + reader.offset, count)
+    reader.offset += count * 8
+    return values
+  }
+  const values = new BigInt64Array(count)
   for (let i = 0; i < count; i++) {
     values[i] = reader.view.getBigInt64(reader.offset + i * 8, true)
   }
@@ -73,13 +83,10 @@ function readPlainInt96(reader, count) {
  *
  * @param {DataReader} reader - buffer to read data from
  * @param {number} count - number of values to read
- * @returns {number[]} array of float values
+ * @returns {Float32Array} array of float values
  */
 function readPlainFloat(reader, count) {
-  const values = new Array(count)
-  for (let i = 0; i < count; i++) {
-    values[i] = reader.view.getFloat32(reader.offset + i * 4, true)
-  }
+  const values = new Float32Array(reader.view.buffer, reader.view.byteOffset + reader.offset, count)
   reader.offset += count * 4
   return values
 }
@@ -89,13 +96,10 @@ function readPlainFloat(reader, count) {
  *
  * @param {DataReader} reader - buffer to read data from
  * @param {number} count - number of values to read
- * @returns {number[]} array of double values
+ * @returns {Float64Array} array of double values
  */
 function readPlainDouble(reader, count) {
-  const values = new Array(count)
-  for (let i = 0; i < count; i++) {
-    values[i] = reader.view.getFloat64(reader.offset + i * 8, true)
-  }
+  const values = new Float64Array(reader.view.buffer, reader.view.byteOffset + reader.offset, count)
   reader.offset += count * 8
   return values
 }
@@ -137,12 +141,13 @@ function readPlainByteArrayFixed(reader, fixedLength) {
 /**
  * Read `count` values of the given type from the reader.view.
  *
+ * @typedef {import("./types.d.ts").DecodedArray} DecodedArray
  * @typedef {import("./types.d.ts").ParquetType} ParquetType
  * @param {DataReader} reader - buffer to read data from
  * @param {ParquetType} type - parquet type of the data
  * @param {number} count - number of values to read
  * @param {boolean} utf8 - whether to decode byte arrays as UTF-8
- * @returns {ArrayLike<any>} array of values
+ * @returns {DecodedArray} array of values
  */
 export function readPlain(reader, type, count, utf8) {
   if (count === 0) return []

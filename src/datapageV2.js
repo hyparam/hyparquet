@@ -23,7 +23,7 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
   const view = new DataView(compressedBytes.buffer, compressedBytes.byteOffset, compressedBytes.byteLength)
   const reader = { view, offset: 0 }
   /** @type {any} */
-  let values = []
+  let dataPage = []
 
   const daph2 = ph.data_page_header_v2
   if (!daph2) throw new Error('parquet data page header v2 is undefined')
@@ -56,7 +56,7 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
     }
     const pageView = new DataView(page.buffer, page.byteOffset, page.byteLength)
     const pageReader = { view: pageView, offset: 0 }
-    values = readPlain(pageReader, columnMetadata.type, nValues, utf8)
+    dataPage = readPlain(pageReader, columnMetadata.type, nValues, utf8)
   } else if (daph2.encoding === 'RLE') {
     const page = decompressPage(compressedBytes, uncompressedPageSize, columnMetadata.codec, compressors)
     const pageView = new DataView(page.buffer, page.byteOffset, page.byteLength)
@@ -65,8 +65,8 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
       throw new Error('parquet RLE encoding with nulls not supported')
     } else {
       const pageReader = { view: pageView, offset: 4 }
-      values = new Array(nValues)
-      readRleBitPackedHybrid(pageReader, bitWidth, uncompressedPageSize, values)
+      dataPage = new Array(nValues)
+      readRleBitPackedHybrid(pageReader, bitWidth, uncompressedPageSize, dataPage)
     }
   } else if (
     daph2.encoding === 'PLAIN_DICTIONARY' ||
@@ -77,18 +77,18 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
     const pageView = new DataView(page.buffer, page.byteOffset, page.byteLength)
     const bitWidth = pageView.getUint8(0)
     const pageReader = { view: pageView, offset: 1 }
-    values = new Array(nValues)
-    readRleBitPackedHybrid(pageReader, bitWidth, uncompressedPageSize, values)
+    dataPage = new Array(nValues)
+    readRleBitPackedHybrid(pageReader, bitWidth, uncompressedPageSize, dataPage)
   } else if (daph2.encoding === 'DELTA_BINARY_PACKED') {
     if (daph2.num_nulls) throw new Error('parquet delta-int not supported')
     const codec = daph2.is_compressed ? columnMetadata.codec : 'UNCOMPRESSED'
     const page = decompressPage(compressedBytes, uncompressedPageSize, codec, compressors)
-    deltaBinaryUnpack(page, nValues, values)
+    deltaBinaryUnpack(page, nValues, dataPage)
   } else {
     throw new Error(`parquet unsupported encoding: ${daph2.encoding}`)
   }
 
-  return { definitionLevels, repetitionLevels, value: values }
+  return { definitionLevels, repetitionLevels, dataPage }
 }
 
 /**

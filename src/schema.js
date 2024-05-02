@@ -94,22 +94,6 @@ export function getMaxDefinitionLevel(schemaPath) {
 }
 
 /**
- * Get the number of bytes to skip for definition levels.
- *
- * @param {number} num number of values
- * @returns {number} number of bytes to skip
- */
-export function skipDefinitionBytes(num) {
-  let byteLength = 6
-  let n = num >>> 8
-  while (n !== 0) {
-    byteLength++
-    n >>>= 7
-  }
-  return byteLength
-}
-
-/**
  * Get the column name as foo.bar and handle list and map like columns.
  *
  * @param {string[]} path

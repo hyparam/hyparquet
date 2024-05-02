@@ -16,10 +16,11 @@ export function widthFromMaxInt(value) {
  * If length is zero, then read as int32 at the start of the encoded data.
  *
  * @typedef {import("./types.d.ts").DataReader} DataReader
+ * @typedef {number[]} DecodedArray
  * @param {DataReader} reader - buffer to read data from
  * @param {number} width - width of each bit-packed group
  * @param {number} length - length of the encoded data
- * @param {number[]} values - output array
+ * @param {DecodedArray} values - output array
  */
 export function readRleBitPackedHybrid(reader, width, length, values) {
   if (!length) {
@@ -52,7 +53,7 @@ export function readRleBitPackedHybrid(reader, width, length, values) {
  * @param {DataReader} reader - buffer to read data from
  * @param {number} count - number of values to read
  * @param {number} bitWidth - width of each bit-packed group
- * @param {number[]} values - output array
+ * @param {DecodedArray} values - output array
  * @param {number} seen - number of values seen so far
  */
 function readRle(reader, count, bitWidth, values, seen) {

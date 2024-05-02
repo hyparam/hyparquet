@@ -56,13 +56,13 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       const page = decompressPage(
         compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec, compressors
       )
-      const { definitionLevels, repetitionLevels, value: dataPage } = readDataPage(page, daph, schemaPath, columnMetadata)
+      const { definitionLevels, repetitionLevels, dataPage } = readDataPage(page, daph, schemaPath, columnMetadata)
       valuesSeen += daph.num_values
 
       const dictionaryEncoding = daph.encoding === 'PLAIN_DICTIONARY' || daph.encoding === 'RLE_DICTIONARY'
 
       // construct output values: skip nulls and construct lists
-      /** @type {any[]} */
+      /** @type {DecodedArray} */
       let values
       if (repetitionLevels.length) {
         dereferenceDictionary(dictionary, dataPage)
@@ -109,7 +109,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       const daph2 = header.data_page_header_v2
       if (!daph2) throw new Error('parquet data page header v2 is undefined')
 
-      const { definitionLevels, repetitionLevels, value: dataPage } = readDataPageV2(
+      const { definitionLevels, repetitionLevels, dataPage } = readDataPageV2(
         compressedBytes, header, schemaPath, columnMetadata, compressors
       )
       valuesSeen += daph2.num_values
@@ -145,8 +145,9 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
 /**
  * Map data to dictionary values in place.
  *
+ * @typedef {import('./types.js').DecodedArray} DecodedArray
  * @param {ArrayLike<any> | undefined} dictionary
- * @param {number[]} dataPage
+ * @param {DecodedArray} dataPage
  */
 function dereferenceDictionary(dictionary, dataPage) {
   if (dictionary) {

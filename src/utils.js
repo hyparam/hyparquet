@@ -24,8 +24,10 @@ export function toJson(obj) {
 
 /**
  * Concatenate two arrays fast.
+ *
+ * @typedef {import('./types.js').DecodedArray} DecodedArray
  * @param {any[]} aaa first array
- * @param {any[]} bbb second array
+ * @param {DecodedArray} bbb second array
  */
 export function concat(aaa, bbb) {
   const chunk = 10000

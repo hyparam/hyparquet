@@ -1,13 +1,15 @@
-const dayMillis = 86400000000000 // 1 day in ms
+const dayMillis = 86400000000000 // 1 day in milliseconds
 
 /**
  * Convert known types from primitive to rich.
  *
- * @param {any[]} data series of primitive types
+ * @typedef {import('./types.js').DecodedArray} DecodedArray
+ * @param {DecodedArray} data series of primitive types
  * @param {import('./types.js').SchemaElement} schemaElement schema element for the data
- * @returns {any[]} series of rich types
+ * @returns {DecodedArray} series of rich types
  */
 export function convert(data, schemaElement) {
+  if (!Array.isArray(data)) return data
   const ctype = schemaElement.converted_type
   if (ctype === 'UTF8') {
     const decoder = new TextDecoder()

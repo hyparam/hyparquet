@@ -242,5 +242,13 @@ interface DataPageHeaderV2 {
 interface DataPage {
   definitionLevels: number[] | undefined
   repetitionLevels: number[]
-  value: any[]
+  dataPage: DecodedArray
 }
+
+export type DecodedArray =
+  Uint8Array |
+  Int32Array |
+  BigInt64Array |
+  Float32Array |
+  Float64Array |
+  any[]

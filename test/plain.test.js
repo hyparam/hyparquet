@@ -17,7 +17,7 @@ describe('readPlain', () => {
     view.setInt32(0, 123456789, true) // little-endian
     const reader = { view, offset: 0 }
     const result = readPlain(reader, 'INT32', 1, false)
-    expect(result).toEqual([123456789])
+    expect(result).toEqual(new Int32Array([123456789]))
     expect(reader.offset).toBe(4)
   })
 
@@ -26,7 +26,7 @@ describe('readPlain', () => {
     view.setBigInt64(0, BigInt('1234567890123456789'), true)
     const reader = { view, offset: 0 }
     const result = readPlain(reader, 'INT64', 1, false)
-    expect(result).toEqual([1234567890123456789n])
+    expect(result).toEqual(new BigInt64Array([1234567890123456789n]))
     expect(reader.offset).toBe(8)
   })
 
@@ -51,7 +51,7 @@ describe('readPlain', () => {
     view.setFloat32(0, 1234.5, true) // little-endian
     const reader = { view, offset: 0 }
     const result = readPlain(reader, 'FLOAT', 1, false)
-    expect(result).toEqual([1234.5])
+    expect(result).toEqual(new Float32Array([1234.5]))
     expect(reader.offset).toBe(4)
   })
 
@@ -60,7 +60,7 @@ describe('readPlain', () => {
     view.setFloat64(0, 12345.6789, true) // little-endian
     const reader = { view, offset: 0 }
     const result = readPlain(reader, 'DOUBLE', 1, false)
-    expect(result).toEqual([12345.6789])
+    expect(result).toEqual(new Float64Array([12345.6789]))
     expect(reader.offset).toBe(8)
   })
 

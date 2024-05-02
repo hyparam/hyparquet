@@ -1,17 +1,15 @@
 import { readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
 import { readPlain } from './plain.js'
-import { getMaxDefinitionLevel, getMaxRepetitionLevel, isRequired, skipDefinitionBytes } from './schema.js'
-
-const skipNulls = false // TODO
+import { getMaxDefinitionLevel, getMaxRepetitionLevel, isRequired } from './schema.js'
 
 /**
  * Read a data page from the given Uint8Array.
  *
- * @typedef {{ definitionLevels: number[], numNulls: number }} DefinitionLevels
  * @typedef {import("./types.d.ts").DataPage} DataPage
  * @typedef {import("./types.d.ts").ColumnMetaData} ColumnMetaData
  * @typedef {import("./types.d.ts").DataPageHeader} DataPageHeader
  * @typedef {import("./types.d.ts").SchemaTree} SchemaTree
+ * @typedef {import("./types.d.ts").DecodedArray} DecodedArray
  * @param {Uint8Array} bytes raw page data (should already be decompressed)
  * @param {DataPageHeader} daph data page header
  * @param {SchemaTree[]} schemaPath
@@ -21,25 +19,14 @@ const skipNulls = false // TODO
 export function readDataPage(bytes, daph, schemaPath, columnMetadata) {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
   const reader = { view, offset: 0 }
-  /** @type {any[]} */
-  let values = []
+  /** @type {DecodedArray} */
+  let dataPage = []
 
   // repetition levels
   const repetitionLevels = readRepetitionLevels(reader, daph, schemaPath)
 
   // definition levels
-  let definitionLevels = undefined
-  let numNulls = 0
-  // let maxDefinitionLevel = -1
-  // TODO: move into readDefinitionLevels
-  if (skipNulls && !isRequired(schemaPath)) {
-    // skip_definition_bytes
-    reader.offset += skipDefinitionBytes(daph.num_values)
-  } else {
-    const dl = readDefinitionLevels(reader, daph, schemaPath)
-    definitionLevels = dl.definitionLevels
-    numNulls = dl.numNulls
-  }
+  const { definitionLevels, numNulls } = readDefinitionLevels(reader, daph, schemaPath)
 
   // read values based on encoding
   const nValues = daph.num_values - numNulls
@@ -47,7 +34,7 @@ export function readDataPage(bytes, daph, schemaPath, columnMetadata) {
     const { element } = schemaPath[schemaPath.length - 1]
     const utf8 = element.converted_type === 'UTF8'
     const plainObj = readPlain(reader, columnMetadata.type, nValues, utf8)
-    values = Array.isArray(plainObj) ? plainObj : Array.from(plainObj)
+    dataPage = plainObj
   } else if (
     daph.encoding === 'PLAIN_DICTIONARY' ||
     daph.encoding === 'RLE_DICTIONARY' ||
@@ -63,17 +50,17 @@ export function readDataPage(bytes, daph, schemaPath, columnMetadata) {
       reader.offset++
     }
     if (bitWidth) {
-      values = new Array(nValues)
-      readRleBitPackedHybrid(reader, bitWidth, view.byteLength - reader.offset, values)
+      dataPage = new Array(nValues)
+      readRleBitPackedHybrid(reader, bitWidth, view.byteLength - reader.offset, dataPage)
     } else {
       // nval zeros
-      values = new Array(nValues).fill(0)
+      dataPage = new Array(nValues).fill(0)
     }
   } else {
     throw new Error(`parquet unsupported encoding: ${daph.encoding}`)
   }
 
-  return { definitionLevels, repetitionLevels, value: values }
+  return { definitionLevels, repetitionLevels, dataPage }
 }
 
 /**
@@ -119,7 +106,7 @@ function readRepetitionLevels(reader, daph, schemaPath) {
  * @param {DataReader} reader data view for the page
  * @param {DataPageHeader} daph data page header
  * @param {SchemaTree[]} schemaPath
- * @returns {DefinitionLevels} definition levels and number of bytes read
+ * @returns {{ definitionLevels: number[], numNulls: number }} definition levels
  */
 function readDefinitionLevels(reader, daph, schemaPath) {
   if (!isRequired(schemaPath)) {
