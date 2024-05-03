@@ -93,12 +93,11 @@ function readBitPacked(reader, header, bitWidth, values, seen) {
   // mask for bitWidth number of bits
   const mask = (1 << bitWidth) - 1
 
-  // Sometimes it tries to read outside of available memory, but it will be masked out anyway
   let data = 0
   if (reader.offset < reader.view.byteLength) {
-    data = reader.view.getUint8(reader.offset)
-    reader.offset++
+    data = reader.view.getUint8(reader.offset++)
   } else if (mask) {
+    // sometimes out-of-bounds reads are masked out
     throw new Error(`parquet bitpack offset ${reader.offset} out of range`)
   }
   let left = 8

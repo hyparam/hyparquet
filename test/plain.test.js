@@ -3,16 +3,16 @@ import { readPlain } from '../src/plain.js'
 
 describe('readPlain', () => {
 
-  it('reads BOOLEAN values correctly', () => {
+  it('reads BOOLEAN values', () => {
     const view = new DataView(new ArrayBuffer(1))
-    view.setUint8(0, 0b00000001) // Set the first bit to 1
+    view.setUint8(0, 0b00000101) // true, false, true
     const reader = { view, offset: 0 }
-    const result = readPlain(reader, 'BOOLEAN', 1, false)
-    expect(result).toEqual([true])
+    const result = readPlain(reader, 'BOOLEAN', 3, false)
+    expect(result).toEqual([true, false, true])
     expect(reader.offset).toBe(1)
   })
 
-  it('reads INT32 values correctly', () => {
+  it('reads INT32 values', () => {
     const view = new DataView(new ArrayBuffer(4))
     view.setInt32(0, 123456789, true) // little-endian
     const reader = { view, offset: 0 }
@@ -21,7 +21,7 @@ describe('readPlain', () => {
     expect(reader.offset).toBe(4)
   })
 
-  it('reads INT64 values correctly', () => {
+  it('reads INT64 values', () => {
     const view = new DataView(new ArrayBuffer(8))
     view.setBigInt64(0, BigInt('1234567890123456789'), true)
     const reader = { view, offset: 0 }
@@ -30,11 +30,11 @@ describe('readPlain', () => {
     expect(reader.offset).toBe(8)
   })
 
-  it('reads INT96 values correctly', () => {
+  it('reads INT96 values', () => {
     const buffer = new ArrayBuffer(12)
     const view = new DataView(buffer)
 
-    // Example INT96 value split into 64-bit low part and 32-bit high part
+    // INT96 value split into 64-bit low part and 32-bit high part
     const low = BigInt('0x0123456789ABCDEF')
     const high = 0x02345678
     view.setBigInt64(0, low, true)
@@ -46,7 +46,7 @@ describe('readPlain', () => {
     expect(reader.offset).toBe(12)
   })
 
-  it('reads FLOAT values correctly', () => {
+  it('reads FLOAT values', () => {
     const view = new DataView(new ArrayBuffer(4))
     view.setFloat32(0, 1234.5, true) // little-endian
     const reader = { view, offset: 0 }
@@ -55,7 +55,7 @@ describe('readPlain', () => {
     expect(reader.offset).toBe(4)
   })
 
-  it('reads DOUBLE values correctly', () => {
+  it('reads DOUBLE values', () => {
     const view = new DataView(new ArrayBuffer(8))
     view.setFloat64(0, 12345.6789, true) // little-endian
     const reader = { view, offset: 0 }
@@ -64,10 +64,10 @@ describe('readPlain', () => {
     expect(reader.offset).toBe(8)
   })
 
-  it('reads BYTE_ARRAY values correctly', () => {
+  it('reads BYTE_ARRAY values', () => {
     const view = new DataView(new ArrayBuffer(10))
-    view.setInt32(0, 3, true) // length of the first byte array
-    view.setUint8(4, 1) // first byte array data
+    view.setInt32(0, 3, true) // length 3
+    view.setUint8(4, 1)
     view.setUint8(5, 2)
     view.setUint8(6, 3)
     const reader = { view, offset: 0 }
@@ -76,7 +76,19 @@ describe('readPlain', () => {
     expect(reader.offset).toBe(7)
   })
 
-  it('reads FIXED_LEN_BYTE_ARRAY values correctly', () => {
+  it('reads BYTE_ARRAY values as strings', () => {
+    const view = new DataView(new ArrayBuffer(10))
+    view.setInt32(0, 3, true) // length 3
+    view.setUint8(4, 65)
+    view.setUint8(5, 66)
+    view.setUint8(6, 67)
+    const reader = { view, offset: 0 }
+    const result = readPlain(reader, 'BYTE_ARRAY', 1, true)
+    expect(result).toEqual(['ABC'])
+    expect(reader.offset).toBe(7)
+  })
+
+  it('reads FIXED_LEN_BYTE_ARRAY values', () => {
     const fixedLength = 3
     const view = new DataView(new ArrayBuffer(fixedLength))
     view.setUint8(0, 4)
