@@ -176,8 +176,8 @@ interface KeyValue {
 }
 
 export interface Statistics {
-  max?: Uint8Array // binary representation
-  min?: Uint8Array // binary representation
+  max?: string
+  min?: string
   null_count?: number
   distinct_count?: number
 }
