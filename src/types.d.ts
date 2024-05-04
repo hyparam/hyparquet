@@ -17,10 +17,13 @@ export interface DataReader {
 export interface FileMetaData {
   version: number
   schema: SchemaElement[]
-  num_rows: number
+  num_rows: bigint
   row_groups: RowGroup[]
   key_value_metadata?: KeyValue[]
   created_by?: string
+  // column_orders?: ColumnOrder[]
+  // encryption_algorithm?: EncryptionAlgorithm
+  // footer_signing_key_metadata?: Uint8Array
   metadata_length: number
 }
 
@@ -118,15 +121,24 @@ export type LogicalTypeType =
 
 export interface RowGroup {
   columns: ColumnChunk[]
-  total_byte_size: number
-  num_rows: number
+  total_byte_size: bigint
+  num_rows: bigint
   sorting_columns?: SortingColumn[]
+  file_offset?: bigint
+  total_compressed_size?: bigint
+  ordinal?: number
 }
 
 export interface ColumnChunk {
   file_path?: string
-  file_offset: number
+  file_offset: bigint
   meta_data?: ColumnMetaData
+  offset_index_offset?: bigint
+  offset_index_length?: number
+  column_index_offset?: bigint
+  column_index_length?: number
+  crypto_metadata?: ColumnCryptoMetaData
+  encrypted_column_metadata?: Uint8Array
 }
 
 export interface ColumnMetaData {
@@ -134,16 +146,21 @@ export interface ColumnMetaData {
   encodings: Encoding[]
   path_in_schema: string[]
   codec: CompressionCodec
-  num_values: number
-  total_uncompressed_size: number
-  total_compressed_size: number
+  num_values: bigint
+  total_uncompressed_size: bigint
+  total_compressed_size: bigint
   key_value_metadata?: KeyValue[]
-  data_page_offset: number
-  index_page_offset?: number
-  dictionary_page_offset?: number
+  data_page_offset: bigint
+  index_page_offset?: bigint
+  dictionary_page_offset?: bigint
   statistics?: Statistics
   encoding_stats?: PageEncodingStats[]
+  bloom_filter_offset?: bigint
+  bloom_filter_length?: number
+  size_statistics?: SizeStatistics
 }
+
+interface ColumnCryptoMetaData {}
 
 export type Encoding =
   'PLAIN' |
@@ -178,8 +195,18 @@ interface KeyValue {
 export interface Statistics {
   max?: string
   min?: string
-  null_count?: number
-  distinct_count?: number
+  null_count?: bigint
+  distinct_count?: bigint
+  max_value?: string
+  min_value?: string
+  is_max_value_exact?: boolean
+  is_min_value_exact?: boolean
+}
+
+interface SizeStatistics {
+  unencoded_byte_array_data_bytes?: bigint
+  repetition_level_histogram?: bigint[]
+  definition_level_histogram?: bigint[]
 }
 
 interface PageEncodingStats {
