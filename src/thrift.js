@@ -70,11 +70,10 @@ function readElement(reader, type) {
     return value
   }
   case CompactType.BINARY: {
-    // strings are encoded as utf-8, no \0 delimiter
     const stringLength = readVarInt(reader)
     const strBytes = new Uint8Array(reader.view.buffer, reader.view.byteOffset + reader.offset, stringLength)
     reader.offset += stringLength
-    return new TextDecoder().decode(strBytes)
+    return strBytes
   }
   case CompactType.LIST: {
     const [elemType, listSize] = readCollectionBegin(reader)

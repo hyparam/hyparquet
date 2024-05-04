@@ -75,7 +75,7 @@ describe('deserializeTCompactProtocol function', () => {
     expect(value.field_5).toBe(0x7fffffff) // I32
     expect(value.field_6).toBe(BigInt('0x7fffffffffffffff')) // I64
     expect(value.field_7).toBeCloseTo(123.456) // DOUBLE
-    expect(value.field_8).toBe('Hello, Thrift!') // STRING
+    expect(new TextDecoder().decode(value.field_8)).toBe('Hello, Thrift!') // STRING
   })
 
 })

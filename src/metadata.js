@@ -96,6 +96,10 @@ export function parquetMetadata(arrayBuffer) {
   const metadataOffset = metadataLengthOffset - metadataLength
   const reader = { view, offset: metadataOffset }
   const metadata = deserializeTCompactProtocol(reader)
+  const decoder = new TextDecoder()
+  function decode(/** @type {Uint8Array} */ value) {
+    return value && decoder.decode(value)
+  }
 
   // Parse metadata from thrift data
   const version = metadata.field_1
@@ -103,7 +107,7 @@ export function parquetMetadata(arrayBuffer) {
     type: ParquetType[field.field_1],
     type_length: field.field_2,
     repetition_type: FieldRepetitionType[field.field_3],
-    name: field.field_4,
+    name: decode(field.field_4),
     num_children: field.field_5,
     converted_type: ConvertedType[field.field_6],
     scale: field.field_7,
@@ -114,12 +118,12 @@ export function parquetMetadata(arrayBuffer) {
   const num_rows = metadata.field_3
   const row_groups = metadata.field_4.map((/** @type {any} */ rowGroup) => ({
     columns: rowGroup.field_1.map((/** @type {any} */ column) => ({
-      file_path: column.field_1,
+      file_path: decode(column.field_1),
       file_offset: column.field_2,
       meta_data: column.field_3 && {
         type: ParquetType[column.field_3.field_1],
         encodings: column.field_3.field_2?.map((/** @type {number} */ e) => Encoding[e]),
-        path_in_schema: column.field_3.field_3,
+        path_in_schema: column.field_3.field_3.map(decode),
         codec: CompressionCodec[column.field_3.field_4],
         num_values: column.field_3.field_5,
         total_uncompressed_size: column.field_3.field_6,
@@ -129,8 +133,8 @@ export function parquetMetadata(arrayBuffer) {
         index_page_offset: column.field_3.field_10,
         dictionary_page_offset: column.field_3.field_11,
         statistics: column.field_3.field_12 && {
-          max: column.field_3.field_12.field_1,
-          min: column.field_3.field_12.field_2,
+          max: decode(column.field_3.field_12.field_1),
+          min: decode(column.field_3.field_12.field_2),
           null_count: column.field_3.field_12.field_3,
           distinct_count: column.field_3.field_12.field_4,
         },
@@ -150,10 +154,10 @@ export function parquetMetadata(arrayBuffer) {
     })),
   }))
   const key_value_metadata = metadata.field_5?.map((/** @type {any} */ keyValue) => ({
-    key: keyValue.field_1,
-    value: keyValue.field_2,
+    key: decode(keyValue.field_1),
+    value: decode(keyValue.field_2),
   }))
-  const created_by = metadata.field_6
+  const created_by = decode(metadata.field_6)
 
   return {
     version,
@@ -192,7 +196,7 @@ function logicalType(logicalType) {
     }
   }
   // TODO: TimestampType
-  // TOFO: TimeType
+  // TODO: TimeType
   if (logicalType?.field_10) {
     return {
       logicalType: 'INTEGER',
