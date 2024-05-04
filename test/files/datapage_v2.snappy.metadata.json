@@ -39,8 +39,8 @@
             "num_values": 5,
             "path_in_schema": ["b"],
             "statistics": {
-              "max": "\u0005\u0000\u0000\u0000",
-              "min": "\u0001\u0000\u0000\u0000",
+              "max": 5,
+              "min": 1,
               "null_count": 0
             },
             "total_compressed_size": 49,
@@ -57,8 +57,8 @@
             "num_values": 5,
             "path_in_schema": ["c"],
             "statistics": {
-              "max": "\u0000\u0000\u0000\u0000\u0000\u0000\u0014@",
-              "min": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000@",
+              "max": 5,
+              "min": 2,
               "null_count": 0
             },
             "total_compressed_size": 88,
@@ -75,8 +75,8 @@
             "num_values": 5,
             "path_in_schema": ["d"],
             "statistics": {
-              "max": "\u0001",
-              "min": "\u0000",
+              "max": true,
+              "min": false,
               "null_count": 0
             },
             "total_compressed_size": 39,
@@ -97,8 +97,8 @@
               "element"
             ],
             "statistics": {
-              "max": "\u0003\u0000\u0000\u0000",
-              "min": "\u0001\u0000\u0000\u0000",
+              "max": 3,
+              "min": 1,
               "null_count": 2
             },
             "total_compressed_size": 78,

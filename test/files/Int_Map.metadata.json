@@ -34,10 +34,10 @@
             "num_values": 10,
             "path_in_schema": ["int_map", "key_value", "value"],
             "statistics": {
-              "max": "d\u0000\u0000\u0000",
-              "min": "\u0001\u0000\u0000\u0000",
-              "max_value": "d\u0000\u0000\u0000",
-              "min_value": "\u0001\u0000\u0000\u0000"
+              "max": 100,
+              "min": 1,
+              "max_value": 100,
+              "min_value": 1
             },
             "total_compressed_size": 60,
             "total_uncompressed_size": 59,

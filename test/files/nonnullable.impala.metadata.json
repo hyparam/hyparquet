@@ -21,8 +21,8 @@
             "num_values": 1,
             "path_in_schema": [ "ID" ],
             "statistics": {
-              "max": "\b\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
-              "min": "\b\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+              "max": 8,
+              "min": 8,
               "null_count": 0
             },
             "total_compressed_size": 49,
@@ -39,8 +39,8 @@
             "num_values": 1,
             "path_in_schema": [ "Int_Array", "list", "element" ],
             "statistics": {
-              "max": "����",
-              "min": "����",
+              "max": -1,
+              "min": -1,
               "null_count": 0
             },
             "total_compressed_size": 49,
@@ -63,8 +63,8 @@
               "element"
             ],
             "statistics": {
-              "max": "����",
-              "min": "����",
+              "max": -1,
+              "min": -2,
               "null_count": 1
             },
             "total_compressed_size": 55,
@@ -99,8 +99,8 @@
             "num_values": 1,
             "path_in_schema": [ "Int_Map", "map", "value" ],
             "statistics": {
-              "max": "����",
-              "min": "����",
+              "max": -1,
+              "min": -1,
               "null_count": 0
             },
             "total_compressed_size": 49,
@@ -147,8 +147,8 @@
               "value"
             ],
             "statistics": {
-              "max": "\u0001\u0000\u0000\u0000",
-              "min": "\u0001\u0000\u0000\u0000",
+              "max": 1,
+              "min": 1,
               "null_count": 3
             },
             "total_compressed_size": 51,
@@ -165,8 +165,8 @@
             "num_values": 1,
             "path_in_schema": [ "nested_Struct", "a" ],
             "statistics": {
-              "max": "����",
-              "min": "����",
+              "max": -1,
+              "min": -1,
               "null_count": 0
             },
             "total_compressed_size": 37,
@@ -183,8 +183,8 @@
             "num_values": 1,
             "path_in_schema": [ "nested_Struct", "B", "list", "element" ],
             "statistics": {
-              "max": "����",
-              "min": "����",
+              "max": -1,
+              "min": -1,
               "null_count": 0
             },
             "total_compressed_size": 49,
@@ -210,8 +210,8 @@
               "e"
             ],
             "statistics": {
-              "max": "����",
-              "min": "����",
+              "max": -1,
+              "min": -1,
               "null_count": 0
             },
             "total_compressed_size": 51,

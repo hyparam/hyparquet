@@ -19,8 +19,8 @@
               "long_col"
             ],
             "statistics": {
-              "max_value": "\u0001\u0002\u0000\u0000\u0000\u0000\u0000\u0000",
-              "min_value": "\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+              "max_value": 513,
+              "min_value": 1
             },
             "total_compressed_size": 1467,
             "total_uncompressed_size": 4155,

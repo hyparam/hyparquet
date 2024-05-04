@@ -115,9 +115,11 @@ export function parquetMetadata(arrayBuffer) {
     field_id: field.field_9,
     logical_type: logicalType(field.field_10),
   }))
+  // @ts-expect-error get types by column index
+  const columnTypes = schema.map(e => e.type).filter(e => e)
   const num_rows = metadata.field_3
   const row_groups = metadata.field_4.map((/** @type {any} */ rowGroup) => ({
-    columns: rowGroup.field_1.map((/** @type {any} */ column) => ({
+    columns: rowGroup.field_1.map((/** @type {any} */ column, /** @type {number} */ columnIndex) => ({
       file_path: decode(column.field_1),
       file_offset: column.field_2,
       meta_data: column.field_3 && {
@@ -132,16 +134,7 @@ export function parquetMetadata(arrayBuffer) {
         data_page_offset: column.field_3.field_9,
         index_page_offset: column.field_3.field_10,
         dictionary_page_offset: column.field_3.field_11,
-        statistics: column.field_3.field_12 && {
-          max: decode(column.field_3.field_12.field_1),
-          min: decode(column.field_3.field_12.field_2),
-          null_count: column.field_3.field_12.field_3,
-          distinct_count: column.field_3.field_12.field_4,
-          max_value: decode(column.field_3.field_12.field_5),
-          min_value: decode(column.field_3.field_12.field_6),
-          is_max_value_exact: column.field_3.field_12.field_7,
-          is_min_value_exact: column.field_3.field_12.field_8,
-        },
+        statistics: columnStats(column.field_3.field_12, columnTypes[columnIndex]),
         encoding_stats: column.field_3.field_13?.map((/** @type {any} */ encodingStat) => ({
           page_type: encodingStat.field_1,
           encoding: Encoding[encodingStat.field_2],
@@ -226,5 +219,47 @@ function logicalType(logicalType) {
   }
   if (logicalType) {
     return logicalType
+  }
+}
+
+/**
+ * Convert column statistics based on column type.
+ *
+ * @param {any} stats
+ * @param {import("./types.d.ts").ParquetType} type
+ * @returns {import("./types.d.ts").Statistics}
+ */
+function columnStats(stats, type) {
+  function convert(/** @type {Uint8Array} */ value) {
+    if (value === undefined) return value
+    if (type === 'BOOLEAN') return value[0] === 1
+    if (type === 'BYTE_ARRAY') return new TextDecoder().decode(value)
+    if (type === 'INT32') {
+      const view = new DataView(value.buffer, value.byteOffset, value.byteLength)
+      return view.getInt32(0, true)
+    }
+    if (type === 'INT64') {
+      const view = new DataView(value.buffer, value.byteOffset, value.byteLength)
+      return view.getBigInt64(0, true)
+    }
+    if (type === 'FLOAT') {
+      const view = new DataView(value.buffer, value.byteOffset, value.byteLength)
+      return view.getFloat32(0, true)
+    }
+    if (type === 'DOUBLE') {
+      const view = new DataView(value.buffer, value.byteOffset, value.byteLength)
+      return view.getFloat64(0, true)
+    }
+    return value
+  }
+  return stats && {
+    max: convert(stats.field_1),
+    min: convert(stats.field_2),
+    null_count: stats.field_3,
+    distinct_count: stats.field_4,
+    max_value: convert(stats.field_5),
+    min_value: convert(stats.field_6),
+    is_max_value_exact: stats.field_7,
+    is_min_value_exact: stats.field_8,
   }
 }

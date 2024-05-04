@@ -192,9 +192,11 @@ interface KeyValue {
   value?: string
 }
 
+type MinMaxType = bigint | boolean | number | string
+
 export interface Statistics {
-  max?: string
-  min?: string
+  max?: MinMaxType
+  min?: MinMaxType
   null_count?: bigint
   distinct_count?: bigint
   max_value?: string

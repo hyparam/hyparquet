@@ -32,10 +32,10 @@
             "num_values": 10,
             "path_in_schema": ["numbers"],
             "statistics": {
-              "max": "\n\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
-              "min": "\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
-              "max_value": "\n\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
-              "min_value": "\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+              "max": 10,
+              "min": 1,
+              "max_value": 10,
+              "min_value": 1,
               "null_count": 0
             },
             "total_compressed_size": 146,
@@ -66,10 +66,10 @@
             "num_values": 5,
             "path_in_schema": ["numbers"],
             "statistics": {
-              "max": "\u000f\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
-              "min": "\u000b\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
-              "max_value": "\u000f\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
-              "min_value": "\u000b\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+              "max": 15,
+              "min": 11,
+              "max_value": 15,
+              "min_value": 11,
               "null_count": 0
             },
             "total_compressed_size": 120,
