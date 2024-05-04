@@ -18,7 +18,10 @@
             "path_in_schema": [
               "long_col"
             ],
-            "statistics": {},
+            "statistics": {
+              "max_value": "\u0001\u0002\u0000\u0000\u0000\u0000\u0000\u0000",
+              "min_value": "\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+            },
             "total_compressed_size": 1467,
             "total_uncompressed_size": 4155,
             "type": "INT64"
@@ -26,7 +29,9 @@
         }
       ],
       "num_rows": 513,
-      "total_byte_size": 4155
+      "ordinal": 0,
+      "total_byte_size": 4155,
+      "total_compressed_size": 1467
     }
   ],
   "schema": [

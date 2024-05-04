@@ -16,7 +16,9 @@
             "path_in_schema": ["int_map", "key_value", "key"],
             "statistics": {
               "max": "k3",
-              "min": "k1"
+              "min": "k1",
+              "max_value": "k3",
+              "min_value": "k1"
             },
             "total_compressed_size": 64,
             "total_uncompressed_size": 82,
@@ -33,7 +35,9 @@
             "path_in_schema": ["int_map", "key_value", "value"],
             "statistics": {
               "max": "d\u0000\u0000\u0000",
-              "min": "\u0001\u0000\u0000\u0000"
+              "min": "\u0001\u0000\u0000\u0000",
+              "max_value": "d\u0000\u0000\u0000",
+              "min_value": "\u0001\u0000\u0000\u0000"
             },
             "total_compressed_size": 60,
             "total_uncompressed_size": 59,
@@ -41,6 +45,7 @@
           }
         }
       ],
+      "file_offset": 4,
       "num_rows": 7,
       "total_byte_size": 74752
     }

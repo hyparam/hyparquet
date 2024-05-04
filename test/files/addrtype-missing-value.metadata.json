@@ -34,12 +34,15 @@
             "statistics": {
               "max": "Intersection",
               "min": "Block",
+              "max_value": "Intersection",
+              "min_value": "Block",
               "null_count": 1,
               "distinct_count": 2
             }
           }
         }
       ],
+      "file_offset": 4,
       "total_byte_size": 33024,
       "num_rows": 10
     }

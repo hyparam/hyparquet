@@ -34,6 +34,8 @@
             "statistics": {
               "max": "\n\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
               "min": "\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+              "max_value": "\n\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+              "min_value": "\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
               "null_count": 0
             },
             "total_compressed_size": 146,
@@ -42,8 +44,11 @@
           }
         }
       ],
+      "file_offset": 4,
+      "num_rows": 10,
+      "ordinal": 0,
       "total_byte_size": 172,
-      "num_rows": 10
+      "total_compressed_size": 146
     },
     {
       "columns": [
@@ -63,6 +68,8 @@
             "statistics": {
               "max": "\u000f\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
               "min": "\u000b\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+              "max_value": "\u000f\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+              "min_value": "\u000b\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
               "null_count": 0
             },
             "total_compressed_size": 120,
@@ -71,8 +78,11 @@
           }
         }
       ],
+      "file_offset": 248,
+      "num_rows": 5,
+      "ordinal": 1,
       "total_byte_size": 126,
-      "num_rows": 5
+      "total_compressed_size": 120
     }
   ],
   "key_value_metadata": [
