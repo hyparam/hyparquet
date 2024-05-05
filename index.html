@@ -7,24 +7,31 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600&display=swap"/>
   </head>
   <body>
-    <nav>
-      <h1>hyparquet</h1>
-      <h2>parquet file reader</h2>
-      <p>
-        Online demo of <a href="https://github.com/hyparam/hyparquet">hyparquet</a>: a parser for apache parquet files.
-      </p>
-      <p>
-        Drag and drop a parquet file onto the dropzone to see parquet data.
-      </p>
-      <ul>
-        <li><a href="https://github.com/hyparam/hyparquet">github</a></li>
-        <li><a href="https://www.npmjs.com/package/hyparquet">npm</a></li>
-      </ul>
-      <div id="layout" class="layout"></div>
-      <div id="metadata" class="layout"></div>
-    </nav>
     <div id="dropzone">
-      <label id="welcome">Drop .parquet file here</label>
+      <div id="overlay">
+        Drop .parquet file
+      </div>
+      <nav>
+        <h1>hyparquet</h1>
+        <h2>parquet file reader</h2>
+        <p>
+          Online demo of <a href="https://github.com/hyparam/hyparquet">hyparquet</a>: a parser for apache parquet files.
+        </p>
+        <p>
+          Drag and drop a parquet file onto the dropzone to see parquet data.
+        </p>
+        <ul>
+          <li><a href="https://github.com/hyparam/hyparquet">github</a></li>
+          <li><a href="https://www.npmjs.com/package/hyparquet">npm</a></li>
+        </ul>
+        <div id="layout" class="layout"></div>
+        <div id="metadata" class="layout"></div>
+      </nav>
+      <div id="content">
+        <div id="welcome">
+          Drop .parquet file here
+        </div>
+      </div>
     </div>
     <input id="file-input" type="file">
 

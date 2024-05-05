@@ -1,18 +1,28 @@
-import { parquetMetadata, parquetMetadataAsync, parquetRead, toJson } from './src/hyparquet.js'
+import { parquetMetadata, parquetMetadataAsync, parquetRead, parquetSchema, toJson } from './src/hyparquet.js'
 
 const dropzone = document.getElementById('dropzone')
+const fileInput = document.getElementById('file-input')
+const content = document.getElementById('content')
+const welcome = document.getElementById('welcome')
+
 const layout = document.getElementById('layout')
 const metadataDiv = document.getElementById('metadata')
-const fileInput = document.getElementById('file-input')
+
+let enterCount = 0
+
+dropzone.addEventListener('dragenter', e => {
+  e.dataTransfer.dropEffect = 'copy'
+  dropzone.classList.add('over')
+  enterCount++
+})
 
 dropzone.addEventListener('dragover', e => {
   e.preventDefault()
-  e.dataTransfer.dropEffect = 'copy'
-  dropzone.classList.add('over')
 })
 
 dropzone.addEventListener('dragleave', () => {
-  dropzone.classList.remove('over')
+  enterCount--
+  if (!enterCount) dropzone.classList.remove('over')
 })
 
 dropzone.addEventListener('drop', e => {
@@ -37,18 +47,19 @@ dropzone.addEventListener('drop', e => {
 })
 
 async function processUrl(url) {
+  content.innerHTML = ''
   try {
     // Check if file is accessible and get its size
     const head = await fetch(url, { method: 'HEAD' })
     if (!head.ok) {
-      dropzone.innerHTML = `<strong>${url}</strong>`
-      dropzone.innerHTML += `<div class="error">Error fetching file\n${head.status} ${head.statusText}</div>`
+      content.innerHTML = `<strong>${url}</strong>`
+      content.innerHTML += `<div class="error">Error fetching file\n${head.status} ${head.statusText}</div>`
       return
     }
     const size = head.headers.get('content-length')
     if (!size) {
-      dropzone.innerHTML = `<strong>${url}</strong>`
-      dropzone.innerHTML += '<div class="error">Error fetching file\nNo content-length header</div>'
+      content.innerHTML = `<strong>${url}</strong>`
+      content.innerHTML += '<div class="error">Error fetching file\nNo content-length header</div>'
       return
     }
     // Construct an AsyncBuffer that fetches file chunks
@@ -56,6 +67,7 @@ async function processUrl(url) {
       byteLength: Number(size),
       slice: async (start, end) => {
         const rangeEnd = end === undefined ? '' : end - 1
+        console.log(`Fetch ${url} bytes=${start}-${rangeEnd}`)
         const res = await fetch(url, {
           headers: { Range: `bytes=${start}-${rangeEnd}` },
         })
@@ -63,38 +75,52 @@ async function processUrl(url) {
       },
     }
     const metadata = await parquetMetadataAsync(asyncBuffer)
-    url = `<a href="${url}">${url}</a>`
-    renderSidebar(asyncBuffer, metadata, url)
+    await render(asyncBuffer, metadata, `<a href="${url}">${url}</a>`)
   } catch (e) {
     console.error('Error fetching file', e)
-    dropzone.innerHTML = `<strong>${url}</strong>`
-    dropzone.innerHTML += `<div class="error">Error fetching file\n${e}</div>`
+    content.innerHTML = `<strong>${url}</strong>`
+    content.innerHTML += `<div class="error">Error fetching file\n${e}</div>`
   }
 }
 
 function processFile(file) {
+  content.innerHTML = ''
   const reader = new FileReader()
-  reader.onload = e => {
+  reader.onload = async e => {
     try {
       const arrayBuffer = e.target.result
       const metadata = parquetMetadata(arrayBuffer)
-      renderSidebar(arrayBuffer, metadata, file.name)
-      const startTime = performance.now()
-      // parquetRead({ file: arrayBuffer, onComplete(data) {
-      //   const ms = performance.now() - startTime
-      //   console.log(`parsed ${file.name} in ${ms.toFixed(0)} ms`)
-      // } }) // TODO
+      await render(arrayBuffer, metadata, file.name)
     } catch (e) {
       console.error('Error parsing file', e)
-      dropzone.innerHTML = `<strong>${file.name}</strong>`
-      dropzone.innerHTML += `<div class="error">Error parsing file\n${e}</div>`
+      content.innerHTML = `<strong>${file.name}</strong>`
+      content.innerHTML += `<div class="error">Error parsing file\n${e}</div>`
     }
   }
   reader.onerror = e => {
     console.error('Error reading file', e)
-    dropzone.innerText = `Error reading file\n${e.target.error}`
+    content.innerHTML = `<strong>${file.name}</strong>`
+    content.innerHTML += `<div class="error">Error reading file\n${e.target.error}</div>`
   }
   reader.readAsArrayBuffer(file)
+}
+
+async function render(asyncBuffer, metadata, name) {
+  renderSidebar(asyncBuffer, metadata, name)
+
+  const { children } = parquetSchema(metadata)
+  const header = children.map(child => child.element.name)
+
+  const startTime = performance.now()
+  await parquetRead({
+    file: asyncBuffer,
+    rowEnd: 1000,
+    onComplete(data) {
+      const ms = performance.now() - startTime
+      console.log(`parsed ${name} in ${ms.toFixed(0)} ms`)
+      content.appendChild(renderTable(header, data))
+    },
+  })
 }
 
 function renderSidebar(asyncBuffer, metadata, name) {
@@ -106,7 +132,7 @@ function renderSidebar(asyncBuffer, metadata, name) {
   metadataDiv.appendChild(fileMetadata(toJson(metadata)))
 }
 
-dropzone.addEventListener('click', () => {
+welcome.addEventListener('click', () => {
   fileInput.click()
 })
 
@@ -174,4 +200,29 @@ function fileMetadata(metadata) {
     div.classList.toggle('collapsed')
   })
   return div
+}
+
+function renderTable(header, data) {
+  const table = document.createElement('table')
+  const thead = document.createElement('thead')
+  const tbody = document.createElement('tbody')
+  const headerRow = document.createElement('tr')
+  for (const columnName of header) {
+    const th = document.createElement('th')
+    th.innerText = columnName
+    headerRow.appendChild(th)
+  }
+  thead.appendChild(headerRow)
+  table.appendChild(thead)
+  for (const row of data) {
+    const tr = document.createElement('tr')
+    for (const value of Object.values(row)) {
+      const td = document.createElement('td')
+      td.innerText = value
+      tr.appendChild(td)
+    }
+    tbody.appendChild(tr)
+  }
+  table.appendChild(tbody)
+  return table
 }

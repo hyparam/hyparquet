@@ -8,11 +8,15 @@ body {
   display: flex;
   font-family: sans-serif;
   height: 100vh;
+  width: 100vw;
 }
 nav {
-  width: 320px;
+  border-right: 1px solid #ddd;
+  min-width: 320px;
+  overflow-x: hidden;
   overflow-y: auto;
   padding: 10px;
+  width: 320px;
 }
 h1 {
   font-size: 20pt;
@@ -24,32 +28,110 @@ p {
   margin: 10px 0;
   width: 300px;
 }
-#welcome {
-  align-items: center;
-  cursor: pointer;
-  display: flex;
-  font-size: 20px;
-  height: 100%;
-  justify-content: center;
+.error {
+  color: #c11;
+  font-family: monospace;
+  white-space: pre-wrap;
 }
+
+#overlay {
+  align-items: center;
+  font-size: 125%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-color: rgba(240, 240, 240, 0.6);
+  backdrop-filter: blur(4px);
+  display: none;
+  padding: 12px;
+  z-index: 40;
+}
+
 #dropzone {
+  display: flex;
+  flex: 1;
+  max-width: 100vw;
+}
+
+#content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+}
+
+#welcome {
   border: 2px dashed #08e;
   border-radius: 10px;
   color: #444;
-  flex: 1;
   margin: 10px;
-  overflow: auto;
   padding: 10px;
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  flex: 1;
+  font-size: 20px;
+  justify-content: center;
 }
 input[type="file"] {
   display: none;
 }
-.over {
-  background-color: lightblue;
+#overlay {
+  font-size: 125%;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-color: rgba(240, 240, 240, 0.6);
+  backdrop-filter: blur(4px);
+  display: none;
+  padding: 12px;
+  z-index: 40;
 }
-.error {
-  color: #c11;
+.over #overlay {
+  display: flex;
 }
+
+/* table */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+table:focus-visible {
+  outline: none;
+}
+th {
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  background-color: #eaeaeb;
+  border: none;
+  border-top: 4px solid #706fb1;
+  border-bottom: 2px solid #c9c9c9;
+  box-sizing: content-box;
+  color: #444;
+  position: sticky;
+  top: -1px; /* fix 1px gap above thead */
+  user-select: none;
+}
+th, td {
+  border-bottom: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  height: 32px;
+  max-width: 1000px; /* prevent columns expanding */
+  padding: 4px 12px;
+  text-align: left;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: pre-wrap;
+}
+
 #layout {
   margin-top: 20px;
   word-break: break-all;
@@ -60,6 +142,9 @@ input[type="file"] {
 }
 .layout a:hover {
   text-decoration: underline;
+}
+.layout > strong {
+  font-size: 10pt;
 }
 .layout div {
   background-color: rgba(0, 0, 0, 0.05);
@@ -120,5 +205,5 @@ nav ul,
 
 #metadata pre {
   white-space: pre-wrap;
-  break-word: break-all;
+  word-break: break-all;
 }
