@@ -194,32 +194,41 @@ export function parquetSchema(metadata) {
 }
 
 /**
- * Parse logical type by type.
- *
- * @typedef {import("./types.d.ts").LogicalType} LogicalType
  * @param {any} logicalType
- * @returns {LogicalType | undefined}
+ * @returns {import("./types.d.ts").LogicalType | undefined}
  */
 function logicalType(logicalType) {
-  if (logicalType?.field_5) {
-    return {
-      logicalType: 'DECIMAL',
-      scale: logicalType.field_5.field_1,
-      precision: logicalType.field_5.field_2,
-    }
+  if (logicalType?.field_1) return { type: 'STRING' }
+  if (logicalType?.field_2) return { type: 'MAP' }
+  if (logicalType?.field_3) return { type: 'LIST' }
+  if (logicalType?.field_4) return { type: 'ENUM' }
+  if (logicalType?.field_5) return {
+    type: 'DECIMAL',
+    scale: logicalType.field_5.field_1,
+    precision: logicalType.field_5.field_2,
   }
-  // TODO: TimestampType
-  // TODO: TimeType
-  if (logicalType?.field_10) {
-    return {
-      logicalType: 'INTEGER',
-      bitWidth: logicalType.field_10.field_1,
-      isSigned: logicalType.field_10.field_2,
-    }
+  if (logicalType?.field_6) return { type: 'DATE' }
+  if (logicalType?.field_7) return {
+    type: 'TIME',
+    isAdjustedToUTC: logicalType.field_7.field_1,
+    unit: logicalType.field_7.field_2,
   }
-  if (logicalType) {
-    return logicalType
+  if (logicalType?.field_8) return {
+    type: 'TIMESTAMP',
+    isAdjustedToUTC: logicalType.field_8.field_1,
+    unit: logicalType.field_8.field_2,
   }
+  if (logicalType?.field_10) return {
+    type: 'INTEGER',
+    bitWidth: logicalType.field_10.field_1,
+    isSigned: logicalType.field_10.field_2,
+  }
+  if (logicalType?.field_11) return { type: 'NULL' }
+  if (logicalType?.field_12) return { type: 'JSON' }
+  if (logicalType?.field_13) return { type: 'BSON' }
+  if (logicalType?.field_14) return { type: 'UUID' }
+  if (logicalType?.field_15) return { type: 'FLOAT16' }
+  return logicalType
 }
 
 /**

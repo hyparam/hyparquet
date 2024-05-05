@@ -86,20 +86,36 @@ export type ConvertedType =
   'INTERVAL'
 
 type LogicalDecimalType = {
-  logicalType: 'DECIMAL'
+  type: 'DECIMAL'
   precision: number
   scale: number
 }
 
+type TimeUnit = 'MILLIS' | 'MICROS' | 'NANOS'
+
+type LogicalTimeType = {
+  type: 'TIME'
+  isAdjustedToUTC: boolean
+  unit: TimeUnit
+}
+
+type LogicalTimestampType = {
+  type: 'TIMESTAMP'
+  isAdjustedToUTC: boolean
+  unit: TimeUnit
+}
+
 type LogicalIntType = {
-  logicalType: 'INTEGER'
+  type: 'INTEGER'
   bitWidth: number
   isSigned: boolean
 }
 
 export type LogicalType =
-  { logicalType: LogicalTypeType } |
+  { type: LogicalTypeType } |
   LogicalDecimalType |
+  LogicalTimeType |
+  LogicalTimestampType |
   LogicalIntType
 
 export type LogicalTypeType =

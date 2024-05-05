@@ -218,11 +218,18 @@ function renderTable(header, data) {
     const tr = document.createElement('tr')
     for (const value of Object.values(row)) {
       const td = document.createElement('td')
-      td.innerText = value
+      td.innerText = stringify(value)
       tr.appendChild(td)
     }
     tbody.appendChild(tr)
   }
   table.appendChild(tbody)
   return table
+}
+
+function stringify(value) {
+  if (value === undefined) return ''
+  if (typeof value === 'string') return value
+  if (typeof value === 'object') return JSON.stringify(value)
+  return value
 }

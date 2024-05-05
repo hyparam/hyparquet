@@ -42,7 +42,7 @@
     {
       "converted_type": "UINT_64",
       "logical_type": {
-        "logicalType": "INTEGER",
+        "type": "INTEGER",
         "bitWidth": 64,
         "isSigned": false
       },
