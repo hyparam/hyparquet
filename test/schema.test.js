@@ -32,6 +32,7 @@ describe('Parquet schema utils', () => {
         children: [],
         count: 1,
         element: { name: 'child1', repetition_type: 'OPTIONAL' },
+        path: ['child1'],
       })
     })
 

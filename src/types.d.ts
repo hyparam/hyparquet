@@ -28,9 +28,10 @@ export interface FileMetaData {
 }
 
 export interface SchemaTree {
-  element: SchemaElement
   children: SchemaTree[]
   count: number
+  element: SchemaElement
+  path: string[]
 }
 
 export interface SchemaElement {

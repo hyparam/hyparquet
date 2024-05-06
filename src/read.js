@@ -1,7 +1,7 @@
 
 import { getColumnOffset, readColumn } from './column.js'
 import { parquetMetadataAsync } from './metadata.js'
-import { getColumnName, getSchemaPath, isMapLike } from './schema.js'
+import { getSchemaPath, isMapLike } from './schema.js'
 import { concat } from './utils.js'
 
 /**
@@ -89,7 +89,7 @@ async function readRowGroup(options, rowGroup, groupStart) {
   rowGroup.columns.forEach(({ meta_data: columnMetadata }) => {
     if (!columnMetadata) throw new Error('parquet column metadata is undefined')
     // skip columns that are not requested
-    if (columns && !columns.includes(getColumnName(columnMetadata.path_in_schema))) return
+    if (columns && !columns.includes(columnMetadata.path_in_schema[0])) return
 
     const startByte = getColumnOffset(columnMetadata)
     const endByte = startByte + Number(columnMetadata.total_compressed_size)
@@ -119,7 +119,7 @@ async function readRowGroup(options, rowGroup, groupStart) {
     if (!columnMetadata) throw new Error('parquet column metadata is undefined')
 
     // skip columns that are not requested
-    const columnName = getColumnName(columnMetadata.path_in_schema)
+    const columnName = columnMetadata.path_in_schema[0]
     if (columns && !columns.includes(columnName)) continue
 
     const columnStartByte = getColumnOffset(columnMetadata)

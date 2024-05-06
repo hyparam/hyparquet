@@ -1,30 +1,29 @@
 /**
- * @typedef {import('./types.js').SchemaElement} SchemaElement
- * @typedef {import('./types.js').SchemaTree} SchemaTree
- */
-
-/**
  * Build a tree from the schema elements.
  *
+ * @typedef {import('./types.js').SchemaElement} SchemaElement
+ * @typedef {import('./types.js').SchemaTree} SchemaTree
  * @param {SchemaElement[]} schema
  * @param {number} rootIndex index of the root element
+ * @param {string[]} path path to the element
  * @returns {SchemaTree} tree of schema elements
  */
-function schemaTree(schema, rootIndex) {
-  const root = schema[rootIndex]
+function schemaTree(schema, rootIndex, path) {
+  const element = schema[rootIndex]
   const children = []
   let count = 1
 
   // Read the specified number of children
-  if (root.num_children) {
-    while (children.length < root.num_children) {
-      const child = schemaTree(schema, rootIndex + count)
+  if (element.num_children) {
+    while (children.length < element.num_children) {
+      const childElement = schema[rootIndex + count]
+      const child = schemaTree(schema, rootIndex + count, [...path, childElement.name])
       count += child.count
       children.push(child)
     }
   }
 
-  return { count, element: root, children }
+  return { count, element, children, path }
 }
 
 /**
@@ -35,7 +34,7 @@ function schemaTree(schema, rootIndex) {
  * @returns {SchemaTree[]} list of schema elements
  */
 export function getSchemaPath(schema, name) {
-  let tree = schemaTree(schema, 0)
+  let tree = schemaTree(schema, 0, [])
   const path = [tree]
   for (const part of name) {
     const child = tree.children.find(child => child.element.name === part)
@@ -91,19 +90,6 @@ export function getMaxDefinitionLevel(schemaPath) {
     }
   }
   return maxLevel
-}
-
-/**
- * Get the column name as foo.bar and handle list and map like columns.
- *
- * @param {string[]} path
- * @returns {string} column name
- */
-export function getColumnName(path) {
-  return path.join('.')
-    .replace(/(\.list\.element)+/g, '')
-    .replace(/\.key_value\.key/g, '')
-    .replace(/\.key_value\.value/g, '')
 }
 
 /**

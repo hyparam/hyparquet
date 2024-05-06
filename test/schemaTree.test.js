@@ -30,6 +30,7 @@ const addrtypeSchema = {
         repetition_type: 'OPTIONAL',
         type: 'BYTE_ARRAY',
       },
+      path: ['ADDRTYPE'],
     },
   ],
   count: 2,
@@ -38,6 +39,7 @@ const addrtypeSchema = {
     num_children: 1,
     repetition_type: 'REQUIRED',
   },
+  path: [],
 }
 
 // Parquet v2 from pandas with 2 row groups
@@ -51,6 +53,7 @@ const rowgroupsSchema = {
         repetition_type: 'OPTIONAL',
         type: 'INT64',
       },
+      path: ['numbers'],
     },
   ],
   count: 2,
@@ -59,4 +62,5 @@ const rowgroupsSchema = {
     num_children: 1,
     repetition_type: 'REQUIRED',
   },
+  path: [],
 }
