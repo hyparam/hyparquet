@@ -95,11 +95,10 @@ export function getMaxDefinitionLevel(schemaPath) {
 /**
  * Check if a column is list-like.
  *
- * @param {SchemaTree[]} schemaPath
- * @returns {boolean} true if map-like
+ * @param {SchemaTree} schema
+ * @returns {boolean} true if list-like
  */
-export function isListLike(schemaPath) {
-  const schema = schemaPath.at(-3)
+export function isListLike(schema) {
   if (!schema) return false
   if (schema.element.converted_type !== 'LIST') return false
   if (schema.children.length > 1) return false
@@ -108,20 +107,16 @@ export function isListLike(schemaPath) {
   if (firstChild.children.length > 1) return false
   if (firstChild.element.repetition_type !== 'REPEATED') return false
 
-  const secondChild = firstChild.children[0]
-  if (secondChild.element.repetition_type !== 'REQUIRED') return false
-
   return true
 }
 
 /**
  * Check if a column is map-like.
  *
- * @param {SchemaTree[]} schemaPath
+ * @param {SchemaTree} schema
  * @returns {boolean} true if map-like
  */
-export function isMapLike(schemaPath) {
-  const schema = schemaPath.at(-3)
+export function isMapLike(schema) {
   if (!schema) return false
   if (schema.element.converted_type !== 'MAP') return false
   if (schema.children.length > 1) return false

@@ -157,7 +157,7 @@ async function readRowGroup(options, rowGroup, groupStart) {
         throw new Error(`parquet column length ${columnData.length} does not match row group length ${rowGroup.num_rows}`)
       }
 
-      if (isMapLike(schemaPath)) {
+      if (isMapLike(schemaPath[schemaPath.length - 3])) {
         const name = columnMetadata.path_in_schema.slice(0, -2).join('.')
         if (!maps.has(name)) {
           maps.set(name, columnData)
