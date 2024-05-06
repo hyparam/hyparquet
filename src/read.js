@@ -156,26 +156,22 @@ async function readRowGroup(options, rowGroup, groupStart) {
       let columnData = readColumn(
         arrayBuffer, bufferOffset, rowGroup, columnMetadata, schemaPath, compressors
       )
-      if (columnData.length !== Number(rowGroup.num_rows)) {
-        throw new Error(`parquet column length ${columnData.length} does not match row group length ${rowGroup.num_rows}`)
-      }
+      // assert(columnData.length === Number(rowGroup.num_rows)
 
-      // Only assemble nested columns
-      // TODO: if (columnMetadata.path_in_schema.length > 1) {
+      // TODO: fast path for non-nested columns
       // Save column data for assembly
       const subcolumn = columnMetadata.path_in_schema.join('.')
       subcolumnData.set(subcolumn, columnData)
-      // console.log('WTF subcolumnData', subcolumn, JSON.stringify(columnData))
       columnData = undefined
 
-      const subcolumns = subcolumnNames.get(columnMetadata.path_in_schema[0])
+      const subcolumns = subcolumnNames.get(columnName)
       if (subcolumns?.every(name => subcolumnData.has(name))) {
         // We have all data needed to assemble a top level column
         assembleNested(subcolumnData, schemaPath[1])
-        if (!subcolumnData.has(columnMetadata.path_in_schema[0])) {
-          throw new Error(`parquet column data not assembled: ${columnMetadata.path_in_schema[0]}`)
+        columnData = subcolumnData.get(columnName)
+        if (!columnData) {
+          throw new Error(`parquet column data not assembled: ${columnName}`)
         }
-        columnData = subcolumnData.get(columnMetadata.path_in_schema[0])
       }
 
       // do not emit column data until structs are fully parsed
