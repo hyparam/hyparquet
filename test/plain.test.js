@@ -7,7 +7,7 @@ describe('readPlain', () => {
     const view = new DataView(new ArrayBuffer(1))
     view.setUint8(0, 0b00000101) // true, false, true
     const reader = { view, offset: 0 }
-    const result = readPlain(reader, 'BOOLEAN', 3, false)
+    const result = readPlain(reader, 'BOOLEAN', 3)
     expect(result).toEqual([true, false, true])
     expect(reader.offset).toBe(1)
   })
@@ -16,7 +16,7 @@ describe('readPlain', () => {
     const view = new DataView(new ArrayBuffer(4))
     view.setInt32(0, 123456789, true) // little-endian
     const reader = { view, offset: 0 }
-    const result = readPlain(reader, 'INT32', 1, false)
+    const result = readPlain(reader, 'INT32', 1)
     expect(result).toEqual(new Int32Array([123456789]))
     expect(reader.offset).toBe(4)
   })
@@ -25,7 +25,7 @@ describe('readPlain', () => {
     const view = new DataView(new ArrayBuffer(8))
     view.setBigInt64(0, BigInt('1234567890123456789'), true)
     const reader = { view, offset: 0 }
-    const result = readPlain(reader, 'INT64', 1, false)
+    const result = readPlain(reader, 'INT64', 1)
     expect(result).toEqual(new BigInt64Array([1234567890123456789n]))
     expect(reader.offset).toBe(8)
   })
@@ -40,7 +40,7 @@ describe('readPlain', () => {
     view.setBigInt64(0, low, true)
     view.setInt32(8, high, true)
     const reader = { view, offset: 0 }
-    const result = readPlain(reader, 'INT96', 1, false)
+    const result = readPlain(reader, 'INT96', 1)
     const expectedValue = (BigInt(high) << BigInt(32)) | low
     expect(result).toEqual([expectedValue])
     expect(reader.offset).toBe(12)
@@ -50,7 +50,7 @@ describe('readPlain', () => {
     const view = new DataView(new ArrayBuffer(4))
     view.setFloat32(0, 1234.5, true) // little-endian
     const reader = { view, offset: 0 }
-    const result = readPlain(reader, 'FLOAT', 1, false)
+    const result = readPlain(reader, 'FLOAT', 1)
     expect(result).toEqual(new Float32Array([1234.5]))
     expect(reader.offset).toBe(4)
   })
@@ -59,7 +59,7 @@ describe('readPlain', () => {
     const view = new DataView(new ArrayBuffer(8))
     view.setFloat64(0, 12345.6789, true) // little-endian
     const reader = { view, offset: 0 }
-    const result = readPlain(reader, 'DOUBLE', 1, false)
+    const result = readPlain(reader, 'DOUBLE', 1)
     expect(result).toEqual(new Float64Array([12345.6789]))
     expect(reader.offset).toBe(8)
   })
@@ -71,20 +71,8 @@ describe('readPlain', () => {
     view.setUint8(5, 2)
     view.setUint8(6, 3)
     const reader = { view, offset: 0 }
-    const result = readPlain(reader, 'BYTE_ARRAY', 1, false)
+    const result = readPlain(reader, 'BYTE_ARRAY', 1)
     expect(result).toEqual([new Uint8Array([1, 2, 3])])
-    expect(reader.offset).toBe(7)
-  })
-
-  it('reads BYTE_ARRAY values as strings', () => {
-    const view = new DataView(new ArrayBuffer(10))
-    view.setInt32(0, 3, true) // length 3
-    view.setUint8(4, 65)
-    view.setUint8(5, 66)
-    view.setUint8(6, 67)
-    const reader = { view, offset: 0 }
-    const result = readPlain(reader, 'BYTE_ARRAY', 1, true)
-    expect(result).toEqual(['ABC'])
     expect(reader.offset).toBe(7)
   })
 
@@ -95,7 +83,7 @@ describe('readPlain', () => {
     view.setUint8(1, 5)
     view.setUint8(2, 6)
     const reader = { view, offset: 0 }
-    const result = readPlain(reader, 'FIXED_LEN_BYTE_ARRAY', fixedLength, false)
+    const result = readPlain(reader, 'FIXED_LEN_BYTE_ARRAY', fixedLength)
     expect(result).toEqual(new Uint8Array([4, 5, 6]))
     expect(reader.offset).toBe(fixedLength)
   })
@@ -105,7 +93,7 @@ describe('readPlain', () => {
     const reader = { view, offset: 0 }
     /** @type any */
     const invalidType = 'invalidType'
-    expect(() => readPlain(reader, invalidType, 1, false))
+    expect(() => readPlain(reader, invalidType, 1))
       .toThrow(`parquet unhandled type: ${invalidType}`)
   })
 })

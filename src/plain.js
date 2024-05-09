@@ -7,10 +7,9 @@
  * @param {DataReader} reader - buffer to read data from
  * @param {ParquetType} type - parquet type of the data
  * @param {number} count - number of values to read
- * @param {boolean} utf8 - whether to decode byte arrays as UTF-8
  * @returns {DecodedArray} array of values
  */
-export function readPlain(reader, type, count, utf8) {
+export function readPlain(reader, type, count) {
   if (count === 0) return []
   if (type === 'BOOLEAN') {
     return readPlainBoolean(reader, count)
@@ -25,12 +24,7 @@ export function readPlain(reader, type, count, utf8) {
   } else if (type === 'DOUBLE') {
     return readPlainDouble(reader, count)
   } else if (type === 'BYTE_ARRAY') {
-    const byteArray = readPlainByteArray(reader, count)
-    if (utf8) {
-      const decoder = new TextDecoder()
-      return byteArray.map(bytes => decoder.decode(bytes))
-    }
-    return byteArray
+    return readPlainByteArray(reader, count)
   } else if (type === 'FIXED_LEN_BYTE_ARRAY') {
     return readPlainByteArrayFixed(reader, count)
   } else {

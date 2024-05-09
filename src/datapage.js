@@ -31,10 +31,7 @@ export function readDataPage(bytes, daph, schemaPath, columnMetadata) {
   // read values based on encoding
   const nValues = daph.num_values - numNulls
   if (daph.encoding === 'PLAIN') {
-    const { element } = schemaPath[schemaPath.length - 1]
-    const utf8 = element.converted_type === 'UTF8'
-    const plainObj = readPlain(reader, columnMetadata.type, nValues, utf8)
-    dataPage = plainObj
+    dataPage = readPlain(reader, columnMetadata.type, nValues)
   } else if (
     daph.encoding === 'PLAIN_DICTIONARY' ||
     daph.encoding === 'RLE_DICTIONARY' ||
@@ -75,7 +72,7 @@ export function readDataPage(bytes, daph, schemaPath, columnMetadata) {
 export function readDictionaryPage(bytes, diph, columnMetadata) {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
   const reader = { view, offset: 0 }
-  return readPlain(reader, columnMetadata.type, diph.num_values, false)
+  return readPlain(reader, columnMetadata.type, diph.num_values)
 }
 
 /**
