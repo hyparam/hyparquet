@@ -230,6 +230,6 @@ function renderTable(header, data) {
 function stringify(value) {
   if (value === undefined) return ''
   if (typeof value === 'string') return value
-  if (typeof value === 'object') return JSON.stringify(value)
+  if (typeof value === 'object') return JSON.stringify(toJson(value))
   return value
 }

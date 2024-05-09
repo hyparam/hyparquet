@@ -122,4 +122,37 @@ describe('assembleObjects', () => {
       [undefined, [5, 6]],
     ])
   })
+
+  it('should handle nonnullable int_map_array keys', () => {
+    const definitionLevels = [3, 4, 3, 3]
+    const repetitionLevels = [0, 1, 1, 1]
+    const values = ['k1']
+    const result = assembleObjects(definitionLevels, repetitionLevels, values, true, 4, 2)
+    expect(result).toEqual([[[], ['k1'], [], []]])
+  })
+
+  it('should handle nonnullable int_map_array values', () => {
+    const definitionLevels = [3, 5, 3, 3]
+    const repetitionLevels = [0, 1, 1, 1]
+    const values = ['v1']
+    const result = assembleObjects(definitionLevels, repetitionLevels, values, true, 5, 2)
+    expect(result).toEqual([[[], ['v1'], [], []]])
+  })
+
+  it('should handle mixed optional and required', () => {
+    // from datapage_v2.snappy.parquet e
+    const definitionLevels = [2, 2, 2, 0, 0, 2, 2, 2, 2, 2]
+    const repetitionLevels = [0, 1, 1, 0, 0, 0, 1, 1, 0, 1]
+    const values = [1, 2, 3, 1, 2, 3, 1, 2]
+    const result = assembleObjects(definitionLevels, repetitionLevels, values, true, 2, 1)
+    expect(result).toEqual([[1, 2, 3], undefined, undefined, [1, 2, 3], [1, 2]])
+  })
+
+  it('should handle nested required', () => {
+    // from nonnullable.impala.parquet nested_Struct i
+    const definitionLevels = [0]
+    const repetitionLevels = [0]
+    const result = assembleObjects(definitionLevels, repetitionLevels, [], false, 2, 2)
+    expect(result).toEqual([[[]]])
+  })
 })

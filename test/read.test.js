@@ -23,10 +23,7 @@ describe('parquetRead', () => {
       file,
       rowEnd: 2,
       onComplete: rows => {
-        /* eslint-disable no-sparse-arrays */
-        expect(toJson(rows)).toEqual([
-          [1], [2],
-        ])
+        expect(toJson(rows)).toEqual([[1], [2]])
       },
     })
   })
@@ -45,7 +42,6 @@ describe('parquetRead', () => {
         })
       },
       onComplete: (rows) => {
-        /* eslint-disable no-sparse-arrays */
         expect(toJson(rows)).toEqual([
           [2],
           [3],
@@ -71,7 +67,6 @@ describe('parquetRead', () => {
         })
       },
       onComplete: rows => {
-        /* eslint-disable no-sparse-arrays */
         expect(toJson(rows)).toEqual([
           [[1, 2, 3]],
           [null],
@@ -105,7 +100,6 @@ describe('parquetRead', () => {
         })
       },
       onComplete: rows => {
-        /* eslint-disable no-sparse-arrays */
         expect(toJson(rows)).toEqual([
           [{ k1: 1, k2: 100 }],
           [{ k1: 2, k2: null }],
