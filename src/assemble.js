@@ -1,3 +1,5 @@
+import { isListLike, isMapLike } from './schema.js'
+
 /**
  * Dremel-assembly of arrays of values into lists
  *
@@ -81,3 +83,83 @@ export function assembleLists(
 }
 
 // TODO: depends on prior def level
+
+/**
+ * Assemble a nested structure from subcolumn data.
+ * https://github.com/apache/parquet-format/blob/apache-parquet-format-2.10.0/LogicalTypes.md
+ *
+ * @typedef {import('./types.d.ts').SchemaTree} SchemaTree
+ * @param {Map<string, any[]>} subcolumnData
+ * @param {SchemaTree} schema top-level schema element
+ * @param {number} depth
+ */
+export function assembleNested(subcolumnData, schema, depth = 0) {
+  if (schema.path.length - 1 !== depth) throw new Error(`WTF parquet struct-like column depth mismatch ${schema.path.length - 1} !== ${depth}`)
+  const path = schema.path.join('.')
+
+  if (isListLike(schema)) {
+    const sublist = schema.children[0].children[0]
+    assembleNested(subcolumnData, sublist, depth + 2)
+
+    const subcolumn = sublist.path.join('.')
+    const values = subcolumnData.get(subcolumn)
+    if (!values) throw new Error('parquet list-like column missing values')
+    subcolumnData.set(path, values)
+    subcolumnData.delete(subcolumn)
+    return
+  }
+
+  if (isMapLike(schema)) {
+    const mapName = schema.children[0].element.name
+
+    // Assemble keys and values
+    assembleNested(subcolumnData, schema.children[0].children[0], depth + 2)
+    assembleNested(subcolumnData, schema.children[0].children[1], depth + 2)
+
+    const keys = subcolumnData.get(`${path}.${mapName}.key`)
+    const values = subcolumnData.get(`${path}.${mapName}.value`)
+
+    if (!keys) throw new Error('parquet map-like column missing keys')
+    if (!values) throw new Error('parquet map-like column missing values')
+
+    if (keys.length !== values.length) {
+      throw new Error('parquet map-like column key/value length mismatch')
+    }
+
+    const out = assembleMaps(keys, values)
+
+    subcolumnData.delete(`${path}.${mapName}.key`)
+    subcolumnData.delete(`${path}.${mapName}.value`)
+    subcolumnData.set(path, out)
+    return
+  }
+}
+
+/**
+ * @param {any[]} keys
+ * @param {any[]} values
+ * @returns {any[]}
+ */
+function assembleMaps(keys, values) {
+  const out = []
+  for (let i = 0; i < keys.length; i++) {
+    // keys will be empty for {} and undefined for null
+    if (keys[i]) {
+      /** @type {Record<string, any>} */
+      const obj = {}
+      for (let j = 0; j < keys[i].length; j++) {
+        if (Array.isArray(keys[i][j])) {
+          // TODO: key should not be an array, this is an assemble bug?
+          keys[i][j] = keys[i][j][0]
+          values[i][j] = values[i][j][0]
+        }
+        if (!keys[i][j]) continue
+        obj[keys[i][j]] = values[i][j] === undefined ? null : values[i][j]
+      }
+      out.push(obj)
+    } else {
+      out.push(undefined)
+    }
+  }
+  return out
+}
