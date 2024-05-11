@@ -1,0 +1,2396 @@
+{
+  "created_by": "parquet-mr version 1.10.0 (build 031a6654009e3b82020012a18434c582bd74c73a)",
+  "metadata_length": 7492,
+  "num_rows": 200,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 4,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth0"
+            ],
+            "statistics": {
+              "max": 6374628540732952000,
+              "max_value": 6374628540732952000,
+              "min": 6374628540732952000,
+              "min_value": 6374628540732952000,
+              "null_count": 0
+            },
+            "total_compressed_size": 95,
+            "total_uncompressed_size": 95,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 99,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 99,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth1"
+            ],
+            "statistics": {
+              "max": 0,
+              "max_value": 0,
+              "min": -104,
+              "min_value": -104,
+              "null_count": 0
+            },
+            "total_compressed_size": 114,
+            "total_uncompressed_size": 114,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 213,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 213,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth2"
+            ],
+            "statistics": {
+              "max": 0,
+              "max_value": 0,
+              "min": -82,
+              "min_value": -82,
+              "null_count": 0
+            },
+            "total_compressed_size": 144,
+            "total_uncompressed_size": 144,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 357,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 357,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth3"
+            ],
+            "statistics": {
+              "max": 0,
+              "max_value": 0,
+              "min": -96,
+              "min_value": -96,
+              "null_count": 0
+            },
+            "total_compressed_size": 172,
+            "total_uncompressed_size": 172,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 529,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 529,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth4"
+            ],
+            "statistics": {
+              "max": 0,
+              "max_value": 0,
+              "min": -132,
+              "min_value": -132,
+              "null_count": 0
+            },
+            "total_compressed_size": 200,
+            "total_uncompressed_size": 200,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 729,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 729,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth5"
+            ],
+            "statistics": {
+              "max": 24,
+              "max_value": 24,
+              "min": -290,
+              "min_value": -290,
+              "null_count": 0
+            },
+            "total_compressed_size": 228,
+            "total_uncompressed_size": 228,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 957,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 957,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth6"
+            ],
+            "statistics": {
+              "max": 259,
+              "max_value": 259,
+              "min": -93,
+              "min_value": -93,
+              "null_count": 0
+            },
+            "total_compressed_size": 256,
+            "total_uncompressed_size": 256,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 1213,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 1213,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth7"
+            ],
+            "statistics": {
+              "max": 476,
+              "max_value": 476,
+              "min": -64,
+              "min_value": -64,
+              "null_count": 0
+            },
+            "total_compressed_size": 284,
+            "total_uncompressed_size": 284,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 1497,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 1497,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth8"
+            ],
+            "statistics": {
+              "max": 387,
+              "max_value": 387,
+              "min": -732,
+              "min_value": -732,
+              "null_count": 0
+            },
+            "total_compressed_size": 314,
+            "total_uncompressed_size": 314,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 1811,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 1811,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth9"
+            ],
+            "statistics": {
+              "max": 194,
+              "max_value": 194,
+              "min": -1572,
+              "min_value": -1572,
+              "null_count": 0
+            },
+            "total_compressed_size": 342,
+            "total_uncompressed_size": 342,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 2153,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 2153,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth10"
+            ],
+            "statistics": {
+              "max": 5336,
+              "max_value": 5336,
+              "min": -2353,
+              "min_value": -2353,
+              "null_count": 0
+            },
+            "total_compressed_size": 370,
+            "total_uncompressed_size": 370,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 2523,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 2523,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth11"
+            ],
+            "statistics": {
+              "max": 13445,
+              "max_value": 13445,
+              "min": -8028,
+              "min_value": -8028,
+              "null_count": 0
+            },
+            "total_compressed_size": 398,
+            "total_uncompressed_size": 398,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 2921,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 2921,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth12"
+            ],
+            "statistics": {
+              "max": 2017,
+              "max_value": 2017,
+              "min": -35523,
+              "min_value": -35523,
+              "null_count": 0
+            },
+            "total_compressed_size": 426,
+            "total_uncompressed_size": 426,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 3347,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 3347,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth13"
+            ],
+            "statistics": {
+              "max": 48649,
+              "max_value": 48649,
+              "min": -4096,
+              "min_value": -4096,
+              "null_count": 0
+            },
+            "total_compressed_size": 454,
+            "total_uncompressed_size": 454,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 3801,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 3801,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth14"
+            ],
+            "statistics": {
+              "max": 65709,
+              "max_value": 65709,
+              "min": -8244,
+              "min_value": -8244,
+              "null_count": 0
+            },
+            "total_compressed_size": 482,
+            "total_uncompressed_size": 482,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 4283,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 4283,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth15"
+            ],
+            "statistics": {
+              "max": 69786,
+              "max_value": 69786,
+              "min": -106702,
+              "min_value": -106702,
+              "null_count": 0
+            },
+            "total_compressed_size": 512,
+            "total_uncompressed_size": 512,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 4795,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 4795,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth16"
+            ],
+            "statistics": {
+              "max": 162951,
+              "max_value": 162951,
+              "min": -347012,
+              "min_value": -347012,
+              "null_count": 0
+            },
+            "total_compressed_size": 540,
+            "total_uncompressed_size": 540,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 5335,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 5335,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth17"
+            ],
+            "statistics": {
+              "max": 0,
+              "max_value": 0,
+              "min": -1054098,
+              "min_value": -1054098,
+              "null_count": 0
+            },
+            "total_compressed_size": 568,
+            "total_uncompressed_size": 568,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 5903,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 5903,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth18"
+            ],
+            "statistics": {
+              "max": 664380,
+              "max_value": 664380,
+              "min": -372793,
+              "min_value": -372793,
+              "null_count": 0
+            },
+            "total_compressed_size": 596,
+            "total_uncompressed_size": 596,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 6499,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 6499,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth19"
+            ],
+            "statistics": {
+              "max": 4001179,
+              "max_value": 4001179,
+              "min": -402775,
+              "min_value": -402775,
+              "null_count": 0
+            },
+            "total_compressed_size": 624,
+            "total_uncompressed_size": 624,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 7123,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 7123,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth20"
+            ],
+            "statistics": {
+              "max": 788039,
+              "max_value": 788039,
+              "min": -4434785,
+              "min_value": -4434785,
+              "null_count": 0
+            },
+            "total_compressed_size": 652,
+            "total_uncompressed_size": 652,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 7775,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 7775,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth21"
+            ],
+            "statistics": {
+              "max": 12455554,
+              "max_value": 12455554,
+              "min": -1070042,
+              "min_value": -1070042,
+              "null_count": 0
+            },
+            "total_compressed_size": 680,
+            "total_uncompressed_size": 680,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 8455,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 8455,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth22"
+            ],
+            "statistics": {
+              "max": 2189135,
+              "max_value": 2189135,
+              "min": -17987827,
+              "min_value": -17987827,
+              "null_count": 0
+            },
+            "total_compressed_size": 710,
+            "total_uncompressed_size": 710,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 9165,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 9165,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth23"
+            ],
+            "statistics": {
+              "max": 25967351,
+              "max_value": 25967351,
+              "min": -19361900,
+              "min_value": -19361900,
+              "null_count": 0
+            },
+            "total_compressed_size": 738,
+            "total_uncompressed_size": 738,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 9903,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 9903,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth24"
+            ],
+            "statistics": {
+              "max": 95688064,
+              "max_value": 95688064,
+              "min": -17271207,
+              "min_value": -17271207,
+              "null_count": 0
+            },
+            "total_compressed_size": 766,
+            "total_uncompressed_size": 766,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 10669,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 10669,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth25"
+            ],
+            "statistics": {
+              "max": 169215083,
+              "max_value": 169215083,
+              "min": -18759951,
+              "min_value": -18759951,
+              "null_count": 0
+            },
+            "total_compressed_size": 794,
+            "total_uncompressed_size": 794,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 11463,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 11463,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth26"
+            ],
+            "statistics": {
+              "max": 163626565,
+              "max_value": 163626565,
+              "min": -168761837,
+              "min_value": -168761837,
+              "null_count": 0
+            },
+            "total_compressed_size": 822,
+            "total_uncompressed_size": 822,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 12285,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 12285,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth27"
+            ],
+            "statistics": {
+              "max": 131734874,
+              "max_value": 131734874,
+              "min": -736933601,
+              "min_value": -736933601,
+              "null_count": 0
+            },
+            "total_compressed_size": 850,
+            "total_uncompressed_size": 850,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 13135,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 13135,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth28"
+            ],
+            "statistics": {
+              "max": 913547745,
+              "max_value": 913547745,
+              "min": -490714808,
+              "min_value": -490714808,
+              "null_count": 0
+            },
+            "total_compressed_size": 878,
+            "total_uncompressed_size": 878,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 14013,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 14013,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth29"
+            ],
+            "statistics": {
+              "max": 500305035,
+              "max_value": 500305035,
+              "min": -5834684238,
+              "min_value": -5834684238,
+              "null_count": 0
+            },
+            "total_compressed_size": 908,
+            "total_uncompressed_size": 908,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 14921,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 14921,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth30"
+            ],
+            "statistics": {
+              "max": 566280334,
+              "max_value": 566280334,
+              "min": -7728643109,
+              "min_value": -7728643109,
+              "null_count": 0
+            },
+            "total_compressed_size": 936,
+            "total_uncompressed_size": 936,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 15857,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 15857,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth31"
+            ],
+            "statistics": {
+              "max": 18831788461,
+              "max_value": 18831788461,
+              "min": -2498101101,
+              "min_value": -2498101101,
+              "null_count": 0
+            },
+            "total_compressed_size": 964,
+            "total_uncompressed_size": 964,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 16821,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 16821,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth32"
+            ],
+            "statistics": {
+              "max": 23720914586,
+              "max_value": 23720914586,
+              "min": -2147483648,
+              "min_value": -2147483648,
+              "null_count": 0
+            },
+            "total_compressed_size": 992,
+            "total_uncompressed_size": 992,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 17813,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 17813,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth33"
+            ],
+            "statistics": {
+              "max": 24075494509,
+              "max_value": 24075494509,
+              "min": -4817999329,
+              "min_value": -4817999329,
+              "null_count": 0
+            },
+            "total_compressed_size": 1020,
+            "total_uncompressed_size": 1020,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 18833,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 18833,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth34"
+            ],
+            "statistics": {
+              "max": 12118456329,
+              "max_value": 12118456329,
+              "min": -156025641218,
+              "min_value": -156025641218,
+              "null_count": 0
+            },
+            "total_compressed_size": 1048,
+            "total_uncompressed_size": 1048,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 19881,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 19881,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth35"
+            ],
+            "statistics": {
+              "max": 41614351758,
+              "max_value": 41614351758,
+              "min": -114682966820,
+              "min_value": -114682966820,
+              "null_count": 0
+            },
+            "total_compressed_size": 1076,
+            "total_uncompressed_size": 1076,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 20957,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 20957,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth36"
+            ],
+            "statistics": {
+              "max": 82484946621,
+              "max_value": 82484946621,
+              "min": -244178626927,
+              "min_value": -244178626927,
+              "null_count": 0
+            },
+            "total_compressed_size": 1106,
+            "total_uncompressed_size": 1106,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 22063,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 22063,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth37"
+            ],
+            "statistics": {
+              "max": 361459323159,
+              "max_value": 361459323159,
+              "min": -275190620271,
+              "min_value": -275190620271,
+              "null_count": 0
+            },
+            "total_compressed_size": 1134,
+            "total_uncompressed_size": 1134,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 23197,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 23197,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth38"
+            ],
+            "statistics": {
+              "max": 1665294434042,
+              "max_value": 1665294434042,
+              "min": -420452598502,
+              "min_value": -420452598502,
+              "null_count": 0
+            },
+            "total_compressed_size": 1162,
+            "total_uncompressed_size": 1162,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 24359,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 24359,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth39"
+            ],
+            "statistics": {
+              "max": 110454290134,
+              "max_value": 110454290134,
+              "min": -2926211785103,
+              "min_value": -2926211785103,
+              "null_count": 0
+            },
+            "total_compressed_size": 1190,
+            "total_uncompressed_size": 1190,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 25549,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 25549,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth40"
+            ],
+            "statistics": {
+              "max": 3215717068302,
+              "max_value": 3215717068302,
+              "min": -4988823342986,
+              "min_value": -4988823342986,
+              "null_count": 0
+            },
+            "total_compressed_size": 1218,
+            "total_uncompressed_size": 1218,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 26767,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 26767,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth41"
+            ],
+            "statistics": {
+              "max": 2166086616318,
+              "max_value": 2166086616318,
+              "min": -6488418568768,
+              "min_value": -6488418568768,
+              "null_count": 0
+            },
+            "total_compressed_size": 1246,
+            "total_uncompressed_size": 1246,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 28013,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 28013,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth42"
+            ],
+            "statistics": {
+              "max": 10182365256028,
+              "max_value": 10182365256028,
+              "min": -8738522616121,
+              "min_value": -8738522616121,
+              "null_count": 0
+            },
+            "total_compressed_size": 1274,
+            "total_uncompressed_size": 1274,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 29287,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 29287,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth43"
+            ],
+            "statistics": {
+              "max": 22909885827147,
+              "max_value": 22909885827147,
+              "min": -21214625470327,
+              "min_value": -21214625470327,
+              "null_count": 0
+            },
+            "total_compressed_size": 1304,
+            "total_uncompressed_size": 1304,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 30591,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 30591,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth44"
+            ],
+            "statistics": {
+              "max": 67902133645749,
+              "max_value": 67902133645749,
+              "min": -9796939892175,
+              "min_value": -9796939892175,
+              "null_count": 0
+            },
+            "total_compressed_size": 1332,
+            "total_uncompressed_size": 1332,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 31923,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 31923,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth45"
+            ],
+            "statistics": {
+              "max": 199494208930939,
+              "max_value": 199494208930939,
+              "min": -102473613757961,
+              "min_value": -102473613757961,
+              "null_count": 0
+            },
+            "total_compressed_size": 1360,
+            "total_uncompressed_size": 1360,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 33283,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 33283,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth46"
+            ],
+            "statistics": {
+              "max": 18564971260296,
+              "max_value": 18564971260296,
+              "min": -359696498357610,
+              "min_value": -359696498357610,
+              "null_count": 0
+            },
+            "total_compressed_size": 1388,
+            "total_uncompressed_size": 1388,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 34671,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 34671,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth47"
+            ],
+            "statistics": {
+              "max": 65624006999260,
+              "max_value": 65624006999260,
+              "min": -933995610201533,
+              "min_value": -933995610201533,
+              "null_count": 0
+            },
+            "total_compressed_size": 1416,
+            "total_uncompressed_size": 1416,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 36087,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 36087,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth48"
+            ],
+            "statistics": {
+              "max": 983500521840940,
+              "max_value": 983500521840940,
+              "min": -878019827431629,
+              "min_value": -878019827431629,
+              "null_count": 0
+            },
+            "total_compressed_size": 1444,
+            "total_uncompressed_size": 1444,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 37531,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 37531,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth49"
+            ],
+            "statistics": {
+              "max": 975533803684560,
+              "max_value": 975533803684560,
+              "min": -2091164446177739,
+              "min_value": -2091164446177739,
+              "null_count": 0
+            },
+            "total_compressed_size": 1472,
+            "total_uncompressed_size": 1472,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 39003,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 39003,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth50"
+            ],
+            "statistics": {
+              "max": 1276327559487856,
+              "max_value": 1276327559487856,
+              "min": -5741928190724373,
+              "min_value": -5741928190724373,
+              "null_count": 0
+            },
+            "total_compressed_size": 1502,
+            "total_uncompressed_size": 1502,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 40505,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 40505,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth51"
+            ],
+            "statistics": {
+              "max": 0,
+              "max_value": 0,
+              "min": -15996275819941210,
+              "min_value": -15996275819941210,
+              "null_count": 0
+            },
+            "total_compressed_size": 1530,
+            "total_uncompressed_size": 1530,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 42035,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 42035,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth52"
+            ],
+            "statistics": {
+              "max": 12697545666077932,
+              "max_value": 12697545666077932,
+              "min": -8823113595895130,
+              "min_value": -8823113595895130,
+              "null_count": 0
+            },
+            "total_compressed_size": 1558,
+            "total_uncompressed_size": 1558,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 43593,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 43593,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth53"
+            ],
+            "statistics": {
+              "max": 4785870085681342,
+              "max_value": 4785870085681342,
+              "min": -24800000653307090,
+              "min_value": -24800000653307090,
+              "null_count": 0
+            },
+            "total_compressed_size": 1586,
+            "total_uncompressed_size": 1586,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 45179,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 45179,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth54"
+            ],
+            "statistics": {
+              "max": 26202576654140990,
+              "max_value": 26202576654140990,
+              "min": -94647392931900700,
+              "min_value": -94647392931900700,
+              "null_count": 0
+            },
+            "total_compressed_size": 1614,
+            "total_uncompressed_size": 1614,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 46793,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 46793,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth55"
+            ],
+            "statistics": {
+              "max": 358302517069012860,
+              "max_value": 358302517069012860,
+              "min": -32197353745654772,
+              "min_value": -32197353745654772,
+              "null_count": 0
+            },
+            "total_compressed_size": 1642,
+            "total_uncompressed_size": 1642,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 48435,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 48435,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth56"
+            ],
+            "statistics": {
+              "max": 678791154000628000,
+              "max_value": 678791154000628000,
+              "min": -36028797018963970,
+              "min_value": -36028797018963970,
+              "null_count": 0
+            },
+            "total_compressed_size": 1670,
+            "total_uncompressed_size": 1670,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 50105,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 50105,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth57"
+            ],
+            "statistics": {
+              "max": 1444945950888122000,
+              "max_value": 1444945950888122000,
+              "min": -79246600304853010,
+              "min_value": -79246600304853010,
+              "null_count": 0
+            },
+            "total_compressed_size": 1700,
+            "total_uncompressed_size": 1700,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 51805,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 51805,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth58"
+            ],
+            "statistics": {
+              "max": 140747723990970260,
+              "max_value": 140747723990970260,
+              "min": -1492687553985044700,
+              "min_value": -1492687553985044700,
+              "null_count": 0
+            },
+            "total_compressed_size": 1728,
+            "total_uncompressed_size": 1728,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 53533,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 53533,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth59"
+            ],
+            "statistics": {
+              "max": 6318360990909070,
+              "max_value": 6318360990909070,
+              "min": -3778424577629102600,
+              "min_value": -3778424577629102600,
+              "null_count": 0
+            },
+            "total_compressed_size": 1756,
+            "total_uncompressed_size": 1756,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 55289,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 55289,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth60"
+            ],
+            "statistics": {
+              "max": 4574162334421820000,
+              "max_value": 4574162334421820000,
+              "min": -576460752303423500,
+              "min_value": -576460752303423500,
+              "null_count": 0
+            },
+            "total_compressed_size": 1784,
+            "total_uncompressed_size": 1784,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 57073,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 57073,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth61"
+            ],
+            "statistics": {
+              "max": 8803535686130339000,
+              "max_value": 8803535686130339000,
+              "min": -1155450847100944000,
+              "min_value": -1155450847100944000,
+              "null_count": 0
+            },
+            "total_compressed_size": 1812,
+            "total_uncompressed_size": 1812,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 58885,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 58885,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth62"
+            ],
+            "statistics": {
+              "max": 9026687750017193000,
+              "max_value": 9026687750017193000,
+              "min": -4454039315625288000,
+              "min_value": -4454039315625288000,
+              "null_count": 0
+            },
+            "total_compressed_size": 1840,
+            "total_uncompressed_size": 1840,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 60725,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 60725,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth63"
+            ],
+            "statistics": {
+              "max": 9150047972721274000,
+              "max_value": 9150047972721274000,
+              "min": -9220123451143280000,
+              "min_value": -9220123451143280000,
+              "null_count": 0
+            },
+            "total_compressed_size": 1868,
+            "total_uncompressed_size": 1868,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 62593,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 62593,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "bitwidth64"
+            ],
+            "statistics": {
+              "max": 8846115173408951000,
+              "max_value": 8846115173408951000,
+              "min": -9223372036854776000,
+              "min_value": -9223372036854776000,
+              "null_count": 0
+            },
+            "total_compressed_size": 1898,
+            "total_uncompressed_size": 1898,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 64491,
+          "meta_data": {
+            "codec": "UNCOMPRESSED",
+            "data_page_offset": 64491,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "DELTA_BINARY_PACKED",
+                "page_type": 3
+              }
+            ],
+            "encodings": [
+              "DELTA_BINARY_PACKED"
+            ],
+            "num_values": 200,
+            "path_in_schema": [
+              "int_value"
+            ],
+            "statistics": {
+              "max": 2142811258,
+              "max_value": 2142811258,
+              "min": -2078683524,
+              "min_value": -2078683524,
+              "null_count": 0
+            },
+            "total_compressed_size": 980,
+            "total_uncompressed_size": 980,
+            "type": "INT32"
+          }
+        }
+      ],
+      "num_rows": 200,
+      "total_byte_size": 65467
+    }
+  ],
+  "schema": [
+    {
+      "name": "hive_schema",
+      "num_children": 66
+    },
+    {
+      "name": "bitwidth0",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth1",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth2",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth3",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth4",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth5",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth6",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth7",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth8",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth9",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth10",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth11",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth12",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth13",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth14",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth15",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth16",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth17",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth18",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth19",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth20",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth21",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth22",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth23",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth24",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth25",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth26",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth27",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth28",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth29",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth30",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth31",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth32",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth33",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth34",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth35",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth36",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth37",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth38",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth39",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth40",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth41",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth42",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth43",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth44",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth45",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth46",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth47",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth48",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth49",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth50",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth51",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth52",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth53",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth54",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth55",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth56",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth57",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth58",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth59",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth60",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth61",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth62",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth63",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "bitwidth64",
+      "repetition_type": "OPTIONAL",
+      "type": "INT64"
+    },
+    {
+      "name": "int_value",
+      "repetition_type": "OPTIONAL",
+      "type": "INT32"
+    }
+  ],
+  "version": 1
+}

@@ -129,7 +129,7 @@ export function readVarInt(reader) {
   while (true) {
     const byte = reader.view.getUint8(reader.offset++)
     result |= (byte & 0x7f) << shift
-    if ((byte & 0x80) === 0) {
+    if (!(byte & 0x80)) {
       return result
     }
     shift += 7
@@ -143,15 +143,15 @@ export function readVarInt(reader) {
  * @returns {bigint} value
  */
 function readVarBigInt(reader) {
-  let result = BigInt(0)
-  let shift = BigInt(0)
+  let result = 0n
+  let shift = 0n
   while (true) {
-    const byte = BigInt(reader.view.getUint8(reader.offset++))
-    result |= (byte & BigInt(0x7f)) << shift
-    if ((byte & BigInt(0x80)) === BigInt(0)) {
+    const byte = reader.view.getUint8(reader.offset++)
+    result |= BigInt(byte & 0x7f) << shift
+    if (!(byte & 0x80)) {
       return result
     }
-    shift += BigInt(7)
+    shift += 7n
   }
 }
 
@@ -162,7 +162,7 @@ function readVarBigInt(reader) {
  * @param {DataReader} reader
  * @returns {number} value
  */
-export function readZigZag(reader) {
+function readZigZag(reader) {
   const zigzag = readVarInt(reader)
   // convert zigzag to int
   return (zigzag >>> 1) ^ -(zigzag & 1)
@@ -175,7 +175,7 @@ export function readZigZag(reader) {
  * @param {DataReader} reader
  * @returns {bigint} value
  */
-function readZigZagBigInt(reader) {
+export function readZigZagBigInt(reader) {
   const zigzag = readVarBigInt(reader)
   // convert zigzag to int
   return (zigzag >> BigInt(1)) ^ -(zigzag & BigInt(1))

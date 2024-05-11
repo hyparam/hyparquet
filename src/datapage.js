@@ -22,10 +22,8 @@ export function readDataPage(bytes, daph, schemaPath, columnMetadata) {
   /** @type {DecodedArray} */
   let dataPage = []
 
-  // repetition levels
+  // repetition and definition levels
   const repetitionLevels = readRepetitionLevels(reader, daph, schemaPath)
-
-  // definition levels
   const { definitionLevels, numNulls } = readDefinitionLevels(reader, daph, schemaPath)
 
   // read values based on encoding
@@ -38,11 +36,9 @@ export function readDataPage(bytes, daph, schemaPath, columnMetadata) {
     daph.encoding === 'RLE'
   ) {
     // bit width is stored as single byte
-    let bitWidth
+    let bitWidth = 1
     // TODO: RLE encoding uses bitWidth = schemaElement.type_length
-    if (columnMetadata.type === 'BOOLEAN') {
-      bitWidth = 1
-    } else {
+    if (columnMetadata.type !== 'BOOLEAN') {
       bitWidth = view.getUint8(reader.offset)
       reader.offset++
     }
@@ -63,9 +59,8 @@ export function readDataPage(bytes, daph, schemaPath, columnMetadata) {
 /**
  * Read a page containing dictionary data.
  *
- * @typedef {import("./types.d.ts").DictionaryPageHeader} DictionaryPageHeader
  * @param {Uint8Array} bytes raw page data
- * @param {DictionaryPageHeader} diph dictionary page header
+ * @param {import("./types.d.ts").DictionaryPageHeader} diph dictionary page header
  * @param {ColumnMetaData} columnMetadata
  * @returns {ArrayLike<any>} array of values
  */
