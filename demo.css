@@ -132,8 +132,11 @@ th, td {
   white-space: pre-wrap;
 }
 
-#layout {
+#filename {
+  font-size: 10pt;
   margin-top: 20px;
+}
+#layout {
   word-break: break-all;
 }
 .layout a {
@@ -142,9 +145,6 @@ th, td {
 }
 .layout a:hover {
   text-decoration: underline;
-}
-.layout > strong {
-  font-size: 10pt;
 }
 .layout div {
   background-color: rgba(0, 0, 0, 0.05);

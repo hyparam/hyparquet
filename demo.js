@@ -4,6 +4,7 @@ const dropzone = document.getElementById('dropzone')
 const fileInput = document.getElementById('file-input')
 const content = document.getElementById('content')
 const welcome = document.getElementById('welcome')
+const label = document.getElementById('filename')
 
 const layout = document.getElementById('layout')
 const metadataDiv = document.getElementById('metadata')
@@ -124,7 +125,7 @@ async function render(asyncBuffer, metadata, name) {
 }
 
 function renderSidebar(asyncBuffer, metadata, name) {
-  layout.innerHTML = `<strong>${name}</strong>`
+  label.innerText = name
   // render file layout
   layout.appendChild(fileLayout(metadata, asyncBuffer.byteLength))
   // display metadata
