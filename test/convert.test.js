@@ -31,7 +31,7 @@ describe('convert function', () => {
     const data = [100, 200]
     /** @type {SchemaElement} */
     const schemaElement = { name, converted_type: 'DECIMAL', scale: 2 }
-    expect(convert(data, schemaElement)).toEqual([10000, 20000])
+    expect(convert(data, schemaElement)).toEqual([1, 2])
   })
 
   it('converts bigint to DECIMAL', () => {
@@ -42,10 +42,10 @@ describe('convert function', () => {
   })
 
   it('converts bigint to DECIMAL with scale', () => {
-    const data = [BigInt(1000), BigInt(2000)]
+    const data = [BigInt(10), BigInt(20)]
     /** @type {SchemaElement} */
-    const schemaElement = { name, converted_type: 'DECIMAL', scale: 3 }
-    expect(convert(data, schemaElement)).toEqual([1000000n, 2000000n])
+    const schemaElement = { name, converted_type: 'DECIMAL', scale: 2 }
+    expect(convert(data, schemaElement)).toEqual([0.1, 0.2])
   })
 
   it('converts byte arrays to DECIMAL', () => {

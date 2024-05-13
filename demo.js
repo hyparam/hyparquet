@@ -127,6 +127,7 @@ async function render(asyncBuffer, metadata, name) {
 function renderSidebar(asyncBuffer, metadata, name) {
   label.innerText = name
   // render file layout
+  layout.innerHTML = ''
   layout.appendChild(fileLayout(metadata, asyncBuffer.byteLength))
   // display metadata
   metadataDiv.innerHTML = ''
