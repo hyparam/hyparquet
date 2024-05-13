@@ -16,13 +16,15 @@ export function convert(data, schemaElement) {
     return data.map(v => v && decoder.decode(v))
   }
   if (ctype === 'DECIMAL') {
-    const scaleFactor = schemaElement.scale ? Math.pow(10, schemaElement.scale) : 1
+    const scale = schemaElement.scale || 0
+    const precision = schemaElement.precision || 0
+    const factor = Math.pow(10, scale - precision)
     if (typeof data[0] === 'number') {
-      return scaleFactor === 1 ? data : data.map(v => v * scaleFactor)
+      return factor === 1 ? data : data.map(v => v * factor)
     } else if (typeof data[0] === 'bigint') {
-      return scaleFactor === 1 ? data : data.map(v => v * BigInt(scaleFactor))
+      return factor === 1 ? data : data.map(v => v * BigInt(factor))
     } else {
-      return data.map(v => parseDecimal(v) * scaleFactor)
+      return data.map(v => parseDecimal(v) * factor)
     }
   }
   if (ctype === 'DATE') {
