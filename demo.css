@@ -147,16 +147,7 @@ th, td {
   text-decoration: underline;
 }
 .layout div {
-  background-color: rgba(0, 0, 0, 0.05);
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 12px;
-  margin-top: 4px;
-  padding: 4px;
-  word-break: break-all;
-}
-.layout div {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(100, 80, 180, 0.05);
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 12px;
