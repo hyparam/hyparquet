@@ -1,4 +1,5 @@
 import { CompressionCodec, ConvertedType, Encoding, FieldRepetitionType, ParquetType } from './constants.js'
+import { parseFloat16 } from './convert.js'
 import { getSchemaPath } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
@@ -24,6 +25,7 @@ import { deserializeTCompactProtocol } from './thrift.js'
  *
  * @typedef {import("./types.d.ts").AsyncBuffer} AsyncBuffer
  * @typedef {import("./types.d.ts").FileMetaData} FileMetaData
+ * @typedef {import("./types.d.ts").SchemaElement} SchemaElement
  * @param {AsyncBuffer} asyncBuffer parquet file contents
  * @param {number} initialFetchSize initial fetch size in bytes
  * @returns {Promise<FileMetaData>} parquet metadata object
@@ -103,6 +105,7 @@ export function parquetMetadata(arrayBuffer) {
 
   // Parse metadata from thrift data
   const version = metadata.field_1
+  /** @type {SchemaElement[]} */
   const schema = metadata.field_2.map((/** @type {any} */ field) => ({
     type: ParquetType[field.field_1],
     type_length: field.field_2,
@@ -115,8 +118,8 @@ export function parquetMetadata(arrayBuffer) {
     field_id: field.field_9,
     logical_type: logicalType(field.field_10),
   }))
-  // @ts-expect-error get types by column index
-  const columnTypes = schema.map(e => e.type).filter(e => e)
+  // schema element per column index
+  const columnSchema = schema.filter(e => e.type)
   const num_rows = metadata.field_3
   const row_groups = metadata.field_4.map((/** @type {any} */ rowGroup) => ({
     columns: rowGroup.field_1.map((/** @type {any} */ column, /** @type {number} */ columnIndex) => ({
@@ -134,7 +137,7 @@ export function parquetMetadata(arrayBuffer) {
         data_page_offset: column.field_3.field_9,
         index_page_offset: column.field_3.field_10,
         dictionary_page_offset: column.field_3.field_11,
-        statistics: columnStats(column.field_3.field_12, columnTypes[columnIndex]),
+        statistics: columnStats(column.field_3.field_12, columnSchema[columnIndex]),
         encoding_stats: column.field_3.field_13?.map((/** @type {any} */ encodingStat) => ({
           page_type: encodingStat.field_1,
           encoding: Encoding[encodingStat.field_2],
@@ -235,10 +238,11 @@ function logicalType(logicalType) {
  * Convert column statistics based on column type.
  *
  * @param {any} stats
- * @param {import("./types.d.ts").ParquetType} type
+ * @param {SchemaElement} schema
  * @returns {import("./types.d.ts").Statistics}
  */
-function columnStats(stats, type) {
+function columnStats(stats, schema) {
+  const { type, logical_type } = schema
   function convert(/** @type {Uint8Array} */ value) {
     if (value === undefined) return value
     if (type === 'BOOLEAN') return value[0] === 1
@@ -258,6 +262,9 @@ function columnStats(stats, type) {
     if (type === 'DOUBLE') {
       const view = new DataView(value.buffer, value.byteOffset, value.byteLength)
       return view.getFloat64(0, true)
+    }
+    if (logical_type?.type === 'FLOAT16') {
+      return parseFloat16(value)
     }
     return value
   }

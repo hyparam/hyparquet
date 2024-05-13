@@ -45,6 +45,10 @@ export function convert(data, schemaElement) {
   if (ctype === 'INTERVAL') {
     throw new Error('parquet interval not supported')
   }
+  const logicalType = schemaElement.logical_type?.type
+  if (logicalType === 'FLOAT16') {
+    return Array.from(data).map(parseFloat16)
+  }
   return data
 }
 
@@ -70,4 +74,19 @@ function parseInt96Date(value) {
   const nano = Number((value & 0xffffffffffffffffn) / 1000000n)
   const millis = days * dayMillis + nano
   return new Date(millis)
+}
+
+/**
+ * @param {Uint8Array | undefined} bytes
+ * @returns {number | undefined}
+ */
+export function parseFloat16(bytes) {
+  if (!bytes) return undefined
+  const int16 = (bytes[1] << 8) | bytes[0]
+  const sign = int16 >> 15 ? -1 : 1
+  const exp = (int16 >> 10) & 0x1f
+  const frac = int16 & 0x3ff
+  if (exp === 0) return sign * Math.pow(2, -14) * (frac / 1024) // subnormals
+  if (exp === 0x1f) return frac ? NaN : sign * Infinity
+  return sign * Math.pow(2, exp - 15) * (1 + frac / 1024)
 }

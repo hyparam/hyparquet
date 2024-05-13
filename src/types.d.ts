@@ -44,7 +44,7 @@ export interface SchemaElement {
   scale?: number
   precision?: number
   field_id?: number
-  logicalType?: LogicalType
+  logical_type?: LogicalType
 }
 
 export type ParquetType =

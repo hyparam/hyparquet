@@ -27,7 +27,8 @@ describe('parquetRead test files', () => {
         onComplete: (rows) => {
           const base = filename.replace('.parquet', '')
           const expected = fileToJson(`test/files/${base}.json`)
-          expect(toJson(rows)).toEqual(expected)
+          // stringify and parse to make legal json
+          expect(JSON.parse(JSON.stringify(toJson(rows)))).toEqual(expected)
         },
       })
     })

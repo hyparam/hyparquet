@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "schema": [
+    {
+    "repetition_type": "REQUIRED",
+    "name": "schema",
+    "num_children": 1
+    },
+    {
+    "type": "FIXED_LEN_BYTE_ARRAY",
+    "type_length": 2,
+    "repetition_type": "OPTIONAL",
+    "name": "x",
+    "logical_type": {
+      "type": "FLOAT16"
+    }
+    }
+  ],
+  "num_rows": 8,
+  "row_groups": [
+    {
+    "columns": [
+      {
+      "file_offset": 80,
+      "meta_data": {
+        "type": "FIXED_LEN_BYTE_ARRAY",
+        "encodings": [
+          "PLAIN",
+          "RLE",
+          "RLE_DICTIONARY"
+        ],
+        "path_in_schema": [
+          "x"
+        ],
+        "codec": "UNCOMPRESSED",
+        "num_values": 8,
+        "total_uncompressed_size": 76,
+        "total_compressed_size": 76,
+        "data_page_offset": 32,
+        "dictionary_page_offset": 4,
+        "statistics": {
+        "max": 2,
+        "min": -2,
+        "null_count": 1,
+        "max_value": 2,
+        "min_value": -2
+      },
+      "encoding_stats": [
+        {
+          "page_type": 2,
+          "encoding": "PLAIN",
+          "count": 1
+        },
+        {
+          "page_type": 0,
+          "encoding": "RLE_DICTIONARY",
+          "count": 1
+        }
+        ]
+      }
+      }
+    ],
+    "total_byte_size": 76,
+    "num_rows": 8,
+    "file_offset": 4,
+    "total_compressed_size": 76,
+    "ordinal": 0
+    }
+  ],
+  "key_value_metadata": [
+    {
+    "key": "ARROW:schema",
+    "value": "/////3AAAAAQAAAAAAAKAAwABgAFAAgACgAAAAABBAAMAAAACAAIAAAABAAIAAAABAAAAAEAAAAUAAAAEAAUAAgABgAHAAwAAAAQABAAAAAAAAEDEAAAABgAAAAEAAAAAAAAAAEAAAB4AAAABAAEAAQAAAAAAAAA"
+    }
+  ],
+  "created_by": "parquet-cpp-arrow version 15.0.0-SNAPSHOT",
+  "metadata_length": 346
+}
