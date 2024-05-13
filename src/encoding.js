@@ -58,14 +58,14 @@ export function readRleBitPackedHybrid(reader, width, length, values) {
  */
 function readRle(reader, count, bitWidth, values, seen) {
   const width = (bitWidth + 7) >> 3
-  let value
+  let value = 0
   if (width === 1) {
     value = reader.view.getUint8(reader.offset)
   } else if (width === 2) {
     value = reader.view.getUint16(reader.offset, true)
   } else if (width === 4) {
     value = reader.view.getUint32(reader.offset, true)
-  } else {
+  } else if (width) {
     throw new Error(`parquet invalid rle width ${width}`)
   }
   reader.offset += width
