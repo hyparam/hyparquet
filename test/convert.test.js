@@ -59,7 +59,7 @@ describe('convert function', () => {
     const data = [1, 2] // days since epoch
     /** @type {SchemaElement} */
     const schemaElement = { name, converted_type: 'DATE' }
-    expect(convert(data, schemaElement)).toEqual([new Date(86400000000000), new Date(86400000000000 * 2)])
+    expect(convert(data, schemaElement)).toEqual([new Date(86400000), new Date(86400000 * 2)])
   })
 
   it('converts milliseconds to TIME_MILLIS', () => {
@@ -68,6 +68,14 @@ describe('convert function', () => {
     /** @type {SchemaElement} */
     const schemaElement = { name, converted_type: 'TIME_MILLIS' }
     expect(convert(data, schemaElement)).toEqual([new Date(now)])
+  })
+
+  it('converts INT96 to DATE', () => {
+    // from alltypes_plain.parquet
+    const data = [45284764452596988585705472n, 45284764452597048585705472n]
+    /** @type {SchemaElement} */
+    const schemaElement = { name, type: 'INT96' }
+    expect(convert(data, schemaElement)).toEqual([new Date('2009-03-01T00:00:00.000Z'), new Date('2009-03-01T00:01:00.000Z')])
   })
 
   it('parses strings to JSON', () => {

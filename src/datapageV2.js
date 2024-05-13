@@ -52,13 +52,9 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
     dataPage = readPlain(pageReader, columnMetadata.type, nValues)
   } else if (daph2.encoding === 'RLE') {
     const bitWidth = 1
-    if (daph2.num_nulls) {
-      throw new Error('parquet RLE encoding with nulls not supported')
-    } else {
-      const pageReader = { view: pageView, offset: 4 }
-      dataPage = new Array(nValues)
-      readRleBitPackedHybrid(pageReader, bitWidth, uncompressedPageSize, dataPage)
-    }
+    const pageReader = { view: pageView, offset: 4 }
+    dataPage = new Array(nValues)
+    readRleBitPackedHybrid(pageReader, bitWidth, uncompressedPageSize, dataPage)
   } else if (
     daph2.encoding === 'PLAIN_DICTIONARY' ||
     daph2.encoding === 'RLE_DICTIONARY'

@@ -93,7 +93,7 @@ function readPlainInt96(reader, count) {
   for (let i = 0; i < count; i++) {
     const low = reader.view.getBigInt64(reader.offset + i * 12, true)
     const high = reader.view.getInt32(reader.offset + i * 12 + 8, true)
-    values[i] = (BigInt(high) << BigInt(32)) | low
+    values[i] = (BigInt(high) << 64n) | low
   }
   reader.offset += count * 12
   return values

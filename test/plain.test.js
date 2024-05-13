@@ -41,7 +41,7 @@ describe('readPlain', () => {
     view.setInt32(8, high, true)
     const reader = { view, offset: 0 }
     const result = readPlain(reader, 'INT96', 1)
-    const expectedValue = (BigInt(high) << BigInt(32)) | low
+    const expectedValue = (BigInt(high) << 64n) | low
     expect(result).toEqual([expectedValue])
     expect(reader.offset).toBe(12)
   })

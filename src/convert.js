@@ -1,4 +1,4 @@
-const dayMillis = 86400000000000 // 1 day in milliseconds
+const dayMillis = 86400000 // 1 day in milliseconds
 
 /**
  * Convert known types from primitive to rich.
@@ -28,6 +28,9 @@ export function convert(data, schemaElement) {
   if (ctype === 'DATE') {
     return data.map(v => new Date(v * dayMillis))
   }
+  if (ctype === undefined && schemaElement.type === 'INT96') {
+    return data.map(parseInt96Date)
+  }
   if (ctype === 'TIME_MILLIS') {
     return data.map(v => new Date(v))
   }
@@ -44,8 +47,6 @@ export function convert(data, schemaElement) {
 }
 
 /**
- * Parse decimal from byte array.
- *
  * @param {Uint8Array} bytes
  * @returns {number}
  */
@@ -56,4 +57,15 @@ function parseDecimal(bytes) {
     value = value << 8 | byte
   }
   return value
+}
+
+/**
+ * @param {bigint} value
+ * @returns {Date}
+ */
+function parseInt96Date(value) {
+  const days = Number((value >> 64n) - 2440588n)
+  const nano = Number((value & 0xffffffffffffffffn) / 1000000n)
+  const millis = days * dayMillis + nano
+  return new Date(millis)
 }
