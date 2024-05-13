@@ -96,7 +96,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       const page = decompressPage(
         compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec, compressors
       )
-      dictionary = readDictionaryPage(page, diph, columnMetadata)
+      dictionary = readDictionaryPage(page, diph, columnMetadata, element.type_length)
     } else if (header.type === 'DATA_PAGE_V2') {
       const daph2 = header.data_page_header_v2
       if (!daph2) throw new Error('parquet data page header v2 is undefined')

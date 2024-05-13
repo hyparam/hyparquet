@@ -22,8 +22,6 @@ export function convert(data, schemaElement) {
       return Array.from(data).map(v => v * factor)
     } else if (typeof data[0] === 'bigint') {
       if (factor === 1) return data
-      // @ts-expect-error data is either BigInt64Array or bigint[]
-      if (factor > 1) return data.map(v => v * BigInt(factor))
       return Array.from(data).map(v => Number(v) * factor)
     } else {
       return Array.from(data).map(v => parseDecimal(v) * factor)

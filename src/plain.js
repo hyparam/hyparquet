@@ -7,9 +7,10 @@
  * @param {DataReader} reader - buffer to read data from
  * @param {ParquetType} type - parquet type of the data
  * @param {number} count - number of values to read
+ * @param {number | undefined} fixedLength - length of each fixed length byte array
  * @returns {DecodedArray} array of values
  */
-export function readPlain(reader, type, count) {
+export function readPlain(reader, type, count, fixedLength) {
   if (count === 0) return []
   if (type === 'BOOLEAN') {
     return readPlainBoolean(reader, count)
@@ -26,7 +27,8 @@ export function readPlain(reader, type, count) {
   } else if (type === 'BYTE_ARRAY') {
     return readPlainByteArray(reader, count)
   } else if (type === 'FIXED_LEN_BYTE_ARRAY') {
-    return readPlainByteArrayFixed(reader, count)
+    if (!fixedLength) throw new Error('parquet missing fixed length')
+    return readPlainByteArrayFixed(reader, count, fixedLength)
   } else {
     throw new Error(`parquet unhandled type: ${type}`)
   }
@@ -151,16 +153,18 @@ function readPlainByteArray(reader, count) {
  * Read a fixed length byte array.
  *
  * @param {DataReader} reader
+ * @param {number} count
  * @param {number} fixedLength
- * @returns {Uint8Array}
+ * @returns {Uint8Array[]}
  */
-function readPlainByteArrayFixed(reader, fixedLength) {
-  reader.offset += fixedLength
-  return new Uint8Array(
-    reader.view.buffer,
-    reader.view.byteOffset + reader.offset - fixedLength,
-    fixedLength
-  )
+function readPlainByteArrayFixed(reader, count, fixedLength) {
+  // assert(reader.view.byteLength - reader.offset >= count * fixedLength)
+  const values = new Array(count)
+  for (let i = 0; i < count; i++) {
+    values[i] = new Uint8Array(reader.view.buffer, reader.view.byteOffset + reader.offset, fixedLength)
+    reader.offset += fixedLength
+  }
+  return values
 }
 
 /**

@@ -1,0 +1,90 @@
+{
+    "version": 1,
+    "schema": [
+      {
+        "name": "spark_schema",
+        "num_children": 1
+      },
+      {
+        "type": "FIXED_LEN_BYTE_ARRAY",
+        "type_length": 11,
+        "repetition_type": "OPTIONAL",
+        "name": "value",
+        "converted_type": "DECIMAL",
+        "scale": 2,
+        "precision": 25
+      }
+    ],
+    "num_rows": 24,
+    "row_groups": [
+      {
+        "columns": [
+          {
+            "file_offset": 4,
+            "meta_data": {
+              "type": "FIXED_LEN_BYTE_ARRAY",
+              "encodings": [
+                "BIT_PACKED",
+                "RLE",
+                "PLAIN"
+              ],
+              "path_in_schema": [
+                "value"
+              ],
+              "codec": "UNCOMPRESSED",
+              "num_values": 24,
+              "total_uncompressed_size": 319,
+              "total_compressed_size": 319,
+              "data_page_offset": 4,
+              "statistics": {
+                "max": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  9,
+                  96
+                ],
+                "min": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  200
+                ],
+                "null_count": 0
+              },
+              "encoding_stats": [
+                {
+                  "page_type": 0,
+                  "encoding": "PLAIN",
+                  "count": 1
+                }
+              ]
+            }
+          }
+        ],
+        "total_byte_size": 319,
+        "num_rows": 24
+      }
+    ],
+    "key_value_metadata": [
+      {
+        "key": "org.apache.spark.sql.parquet.row.metadata",
+        "value": "{\"type\":\"struct\",\"fields\":[{\"name\":\"value\",\"type\":\"decimal(25,2)\",\"nullable\":true,\"metadata\":{}}]}"
+      }
+    ],
+    "created_by": "parquet-mr version 1.8.2 (build c6522788629e590a53eb79874b95f6c3ff11f16c)",
+    "metadata_length": 346
+  }

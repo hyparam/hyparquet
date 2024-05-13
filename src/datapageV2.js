@@ -49,7 +49,8 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
   const nValues = daph2.num_values - daph2.num_nulls
   if (daph2.encoding === 'PLAIN') {
     const pageReader = { view: pageView, offset: 0 }
-    dataPage = readPlain(pageReader, columnMetadata.type, nValues)
+    const { type_length } = schemaPath[schemaPath.length - 1].element
+    dataPage = readPlain(pageReader, columnMetadata.type, nValues, type_length)
   } else if (daph2.encoding === 'RLE') {
     const bitWidth = 1
     const pageReader = { view: pageView, offset: 4 }
