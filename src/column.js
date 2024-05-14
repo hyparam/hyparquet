@@ -23,7 +23,7 @@ import { concat } from './utils.js'
  * @param {ColumnMetaData} columnMetadata column metadata
  * @param {SchemaTree[]} schemaPath schema path for the column
  * @param {Compressors} [compressors] custom decompressors
- * @returns {ArrayLike<any>} array of values
+ * @returns {any[]} array of values
  */
 export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, schemaPath, compressors) {
   /** @type {ArrayLike<any> | undefined} */
@@ -43,9 +43,8 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
     }
 
     // read compressed_page_size bytes starting at offset
-    const compressedBytes = new Uint8Array(arrayBuffer).subarray(
-      columnOffset + reader.offset,
-      columnOffset + reader.offset + header.compressed_page_size
+    const compressedBytes = new Uint8Array(
+      arrayBuffer, columnOffset + reader.offset, header.compressed_page_size
     )
 
     // parse page data by type

@@ -1,4 +1,4 @@
-type Awaitable<T> = T | Promise<T>
+export type Awaitable<T> = T | Promise<T>
 
 /**
  * File-like object that can read slices of a file asynchronously.

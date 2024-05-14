@@ -109,10 +109,9 @@ async function readRowGroup(options, rowGroup, groupStart) {
   }
 
   /** @type {any[][]} */
-  const groupData = []
+  const groupColumnData = []
   const promises = []
   const maps = new Map()
-  let outputColumnIndex = 0
   // read column data
   for (let columnIndex = 0; columnIndex < rowGroup.columns.length; columnIndex++) {
     const columnMetadata = rowGroup.columns[columnIndex].meta_data
@@ -149,7 +148,7 @@ async function readRowGroup(options, rowGroup, groupStart) {
     // read column data async
     promises.push(buffer.then(arrayBuffer => {
       const schemaPath = getSchemaPath(metadata.schema, columnMetadata.path_in_schema)
-      /** @type {ArrayLike<any> | undefined} */
+      /** @type {any[] | undefined} */
       let columnData = readColumn(
         arrayBuffer, bufferOffset, rowGroup, columnMetadata, schemaPath, compressors
       )
@@ -207,25 +206,14 @@ async function readRowGroup(options, rowGroup, groupStart) {
         rowStart: groupStart,
         rowEnd: groupStart + columnData.length,
       })
-      // add colum data to group data only if onComplete is defined
-      if (options.onComplete) addColumn(groupData, outputColumnIndex, columnData)
-      outputColumnIndex++
+      // save column data only if onComplete is defined
+      if (options.onComplete) groupColumnData.push(columnData)
     }))
   }
   await Promise.all(promises)
-  return groupData
-}
-
-/**
- * Add a column to rows.
- *
- * @param {any[][]} rows rows to add column data to
- * @param {number} columnIndex column index to add
- * @param {ArrayLike<any>} columnData column data to add
- */
-function addColumn(rows, columnIndex, columnData) {
-  for (let i = 0; i < columnData.length; i++) {
-    if (!rows[i]) rows[i] = []
-    rows[i][columnIndex] = columnData[i]
+  if (options.onComplete) {
+    // transpose columns into rows
+    return groupColumnData[0].map((_, row) => groupColumnData.map(col => col[row]))
   }
+  return []
 }
