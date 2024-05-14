@@ -60,6 +60,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       )
       const { definitionLevels, repetitionLevels, dataPage } = readDataPage(page, daph, schemaPath, columnMetadata)
       valuesSeen += daph.num_values
+      // assert(!daph.statistics || daph.statistics.null_count === BigInt(daph.num_values - dataPage.length))
 
       // construct output values: skip nulls and construct lists
       if (repetitionLevels.length) {
@@ -83,10 +84,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
         dereferenceDictionary(dictionary, dataPage)
         values = convert(dataPage, element)
       }
-
-      // TODO: check that we are at the end of the page
-      // values.length !== daph.num_values isn't right. In cases like arrays,
-      // you need the total number of children, not the number of top-level values.
+      // assert(BigInt(values.length) === rowGroup.num_rows)
 
       concat(rowData, values)
     } else if (header.type === 'DICTIONARY_PAGE') {

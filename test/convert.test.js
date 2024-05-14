@@ -38,7 +38,7 @@ describe('convert function', () => {
     const data = [BigInt(1000), BigInt(2000)]
     /** @type {SchemaElement} */
     const schemaElement = { name, converted_type: 'DECIMAL' }
-    expect(convert(data, schemaElement)).toEqual([1000n, 2000n])
+    expect(convert(data, schemaElement)).toEqual([1000, 2000])
   })
 
   it('converts bigint to DECIMAL with scale', () => {
@@ -60,14 +60,6 @@ describe('convert function', () => {
     /** @type {SchemaElement} */
     const schemaElement = { name, converted_type: 'DATE' }
     expect(convert(data, schemaElement)).toEqual([new Date(86400000), new Date(86400000 * 2)])
-  })
-
-  it('converts milliseconds to TIME_MILLIS', () => {
-    const now = Date.now()
-    const data = [now]
-    /** @type {SchemaElement} */
-    const schemaElement = { name, converted_type: 'TIME_MILLIS' }
-    expect(convert(data, schemaElement)).toEqual([new Date(now)])
   })
 
   it('converts INT96 to DATE', () => {

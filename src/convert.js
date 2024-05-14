@@ -12,29 +12,34 @@ export function convert(data, schemaElement) {
   const ctype = schemaElement.converted_type
   if (ctype === 'UTF8') {
     const decoder = new TextDecoder()
-    return data.map(v => v && decoder.decode(v))
+    const arr = new Array(data.length)
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = data[i] && decoder.decode(data[i])
+    }
+    return arr
   }
   if (ctype === 'DECIMAL') {
     const scale = schemaElement.scale || 0
     const factor = Math.pow(10, -scale)
-    if (typeof data[0] === 'number') {
-      if (factor === 1) return data
-      return Array.from(data).map(v => v * factor)
-    } else if (typeof data[0] === 'bigint') {
-      if (factor === 1) return data
-      return Array.from(data).map(v => Number(v) * factor)
-    } else {
-      return Array.from(data).map(v => parseDecimal(v) * factor)
+    const arr = new Array(data.length)
+    for (let i = 0; i < arr.length; i++) {
+      if (data[0] instanceof Uint8Array) {
+        arr[i] = parseDecimal(data[i]) * factor
+      } else {
+        arr[i] = Number(data[i]) * factor
+      }
     }
-  }
-  if (ctype === 'DATE') {
-    return Array.from(data).map(v => new Date(v * dayMillis))
+    return arr
   }
   if (ctype === undefined && schemaElement.type === 'INT96') {
     return Array.from(data).map(parseInt96Date)
   }
-  if (ctype === 'TIME_MILLIS') {
-    return Array.from(data).map(v => new Date(v))
+  if (ctype === 'DATE') {
+    const arr = new Array(data.length)
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = new Date(data[i] * dayMillis)
+    }
+    return arr
   }
   if (ctype === 'JSON') {
     return data.map(v => JSON.parse(v))
@@ -45,10 +50,12 @@ export function convert(data, schemaElement) {
   if (ctype === 'INTERVAL') {
     throw new Error('parquet interval not supported')
   }
+  // TODO: ctype UINT
   const logicalType = schemaElement.logical_type?.type
   if (logicalType === 'FLOAT16') {
     return Array.from(data).map(parseFloat16)
   }
+  // TODO: logical types
   return data
 }
 
