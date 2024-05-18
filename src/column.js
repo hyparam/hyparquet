@@ -3,7 +3,7 @@ import { convert } from './convert.js'
 import { readDataPage, readDictionaryPage } from './datapage.js'
 import { readDataPageV2 } from './datapageV2.js'
 import { parquetHeader } from './header.js'
-import { getMaxDefinitionLevel, getMaxRepetitionLevel, isRequired } from './schema.js'
+import { getMaxDefinitionLevel, getMaxRepetitionLevel } from './schema.js'
 import { snappyUncompress } from './snappy.js'
 import { concat } from './utils.js'
 
@@ -39,7 +39,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
     // parse column header
     const header = parquetHeader(reader)
     if (header.compressed_page_size === undefined) {
-      throw new Error(`parquet compressed page size is undefined in column '${columnMetadata.path_in_schema}'`)
+      throw new Error('parquet compressed page size is undefined')
     }
 
     // read compressed_page_size bytes starting at offset
@@ -68,9 +68,9 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
         // Use repetition levels to construct lists
         const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
         const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
-        const isNullable = columnMetadata && !isRequired(schemaPath.slice(0, 2))
+        const repetitionPath = schemaPath.map(({ element }) => element.repetition_type)
         values = assembleLists(
-          definitionLevels, repetitionLevels, values, isNullable, maxDefinitionLevel, maxRepetitionLevel
+          definitionLevels, repetitionLevels, values, repetitionPath, maxDefinitionLevel, maxRepetitionLevel
         )
       } else {
         // wrap nested flat data by depth
@@ -95,11 +95,11 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       values = convert(dataPage, element)
       if (repetitionLevels.length || definitionLevels?.length) {
         // Use repetition levels to construct lists
-        const isNullable = columnMetadata && !isRequired(schemaPath.slice(0, 2))
         const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
         const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
+        const repetitionPath = schemaPath.map(({ element }) => element.repetition_type)
         values = assembleLists(
-          definitionLevels, repetitionLevels, values, isNullable, maxDefinitionLevel, maxRepetitionLevel
+          definitionLevels, repetitionLevels, values, repetitionPath, maxDefinitionLevel, maxRepetitionLevel
         )
       }
       concat(rowData, values)

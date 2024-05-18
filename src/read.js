@@ -1,7 +1,8 @@
 
+import { assembleNested } from './assemble.js'
 import { getColumnOffset, readColumn } from './column.js'
 import { parquetMetadataAsync } from './metadata.js'
-import { getSchemaPath, isMapLike } from './schema.js'
+import { getSchemaPath } from './schema.js'
 import { concat } from './utils.js'
 
 /**
@@ -111,7 +112,10 @@ async function readRowGroup(options, rowGroup, groupStart) {
   /** @type {any[][]} */
   const groupColumnData = []
   const promises = []
-  const maps = new Map()
+  // Top-level columns to assemble
+  const { children } = getSchemaPath(metadata.schema, [])[0]
+  const subcolumnNames = new Map(children.map(child => [child.element.name, getSubcolumns(child)]))
+  const subcolumnData = new Map() // columns to assemble as maps
   // read column data
   for (let columnIndex = 0; columnIndex < rowGroup.columns.length; columnIndex++) {
     const columnMetadata = rowGroup.columns[columnIndex].meta_data
@@ -152,48 +156,21 @@ async function readRowGroup(options, rowGroup, groupStart) {
       let columnData = readColumn(
         arrayBuffer, bufferOffset, rowGroup, columnMetadata, schemaPath, compressors
       )
-      if (columnData.length !== Number(rowGroup.num_rows)) {
-        throw new Error(`parquet column length ${columnData.length} does not match row group length ${rowGroup.num_rows}`)
-      }
+      // assert(columnData.length === Number(rowGroup.num_rows)
 
-      if (isMapLike(schemaPath[schemaPath.length - 3])) {
-        const name = columnMetadata.path_in_schema.slice(0, -2).join('.')
-        if (!maps.has(name)) {
-          maps.set(name, columnData)
-          columnData = undefined // do not emit column data until both key and value are read
-        } else {
-          if (columnMetadata.path_in_schema[0] === 'key') {
-            throw new Error('parquet map-like column key is not first') // TODO: support value-first
-          } else {
-            const values = columnData
-            const keys = maps.get(name)
-            const out = []
-            if (keys.length !== values.length) {
-              throw new Error('parquet map-like column key/value length mismatch')
-            }
-            // assemble map-like column data
-            for (let i = 0; i < keys.length; i++) {
-              // keys will be empty for {} and undefined for null
-              if (keys[i]) {
-                /** @type {Record<string, any>} */
-                const obj = {}
-                for (let j = 0; j < keys[i].length; j++) {
-                  if (Array.isArray(keys[i][j])) {
-                    // TODO: key should not be an array, this is an assemble bug?
-                    keys[i][j] = keys[i][j][0]
-                    values[i][j] = values[i][j][0]
-                  }
-                  if (!keys[i][j]) continue
-                  obj[keys[i][j]] = values[i][j] === undefined ? null : values[i][j]
-                }
-                out.push(obj)
-              } else {
-                out.push(undefined)
-              }
-            }
-            columnData = out
-          }
-          maps.delete(name)
+      // TODO: fast path for non-nested columns
+      // Save column data for assembly
+      const subcolumn = columnMetadata.path_in_schema.join('.')
+      subcolumnData.set(subcolumn, columnData)
+      columnData = undefined
+
+      const subcolumns = subcolumnNames.get(columnName)
+      if (subcolumns?.every(name => subcolumnData.has(name))) {
+        // We have all data needed to assemble a top level column
+        assembleNested(subcolumnData, schemaPath[1])
+        columnData = subcolumnData.get(columnName)
+        if (!columnData) {
+          throw new Error(`parquet column data not assembled: ${columnName}`)
         }
       }
 
@@ -216,4 +193,23 @@ async function readRowGroup(options, rowGroup, groupStart) {
     return groupColumnData[0].map((_, row) => groupColumnData.map(col => col[row]))
   }
   return []
+}
+
+
+/**
+ * Return a list of sub-columns needed to construct a top-level column.
+ *
+ * @param {import('./types.js').SchemaTree} schema
+ * @param {string[]} output
+ * @returns {string[]}
+ */
+function getSubcolumns(schema, output = []) {
+  if (schema.children.length) {
+    for (const child of schema.children) {
+      getSubcolumns(child, output)
+    }
+  } else {
+    output.push(schema.path.join('.'))
+  }
+  return output
 }
