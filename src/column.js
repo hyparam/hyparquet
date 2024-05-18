@@ -1,4 +1,4 @@
-import { assembleObjects } from './assemble.js'
+import { assembleLists } from './assemble.js'
 import { convert } from './convert.js'
 import { readDataPage, readDictionaryPage } from './datapage.js'
 import { readDataPageV2 } from './datapageV2.js'
@@ -62,38 +62,26 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       // assert(!daph.statistics || daph.statistics.null_count === BigInt(daph.num_values - dataPage.length))
 
       // construct output values: skip nulls and construct lists
-      if (repetitionLevels.length) {
-        dereferenceDictionary(dictionary, dataPage)
+      dereferenceDictionary(dictionary, dataPage)
+      values = convert(dataPage, element)
+      if (repetitionLevels.length || definitionLevels?.length) {
         // Use repetition levels to construct lists
-        const isNullable = columnMetadata && !isRequired(schemaPath.slice(0, 2))
         const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
         const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
-        // convert primitive types to rich types
-        values = convert(dataPage, element)
-        values = assembleObjects(
+        const isNullable = columnMetadata && !isRequired(schemaPath.slice(0, 2))
+        values = assembleLists(
           definitionLevels, repetitionLevels, values, isNullable, maxDefinitionLevel, maxRepetitionLevel
         )
-      } else if (definitionLevels?.length) {
-        const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
-        // Use definition levels to skip nulls
-        values = []
-        skipNulls(definitionLevels, maxDefinitionLevel, dataPage, dictionary, values)
-        values = convert(values, element)
       } else {
-        dereferenceDictionary(dictionary, dataPage)
-        values = convert(dataPage, element)
+        // wrap nested flat data by depth
+        for (let i = 2; i < schemaPath.length; i++) {
+          if (schemaPath[i].element.repetition_type !== 'REQUIRED') {
+            values = [values]
+          }
+        }
       }
       // assert(BigInt(values.length) === rowGroup.num_rows)
-
       concat(rowData, values)
-    } else if (header.type === 'DICTIONARY_PAGE') {
-      const diph = header.dictionary_page_header
-      if (!diph) throw new Error('parquet dictionary page header is undefined')
-
-      const page = decompressPage(
-        compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec, compressors
-      )
-      dictionary = readDictionaryPage(page, diph, columnMetadata, element.type_length)
     } else if (header.type === 'DATA_PAGE_V2') {
       const daph2 = header.data_page_header_v2
       if (!daph2) throw new Error('parquet data page header v2 is undefined')
@@ -103,26 +91,26 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       )
       valuesSeen += daph2.num_values
 
-      const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
-      const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
-      if (repetitionLevels.length) {
-        dereferenceDictionary(dictionary, dataPage)
-        values = convert(dataPage, element)
+      dereferenceDictionary(dictionary, dataPage)
+      values = convert(dataPage, element)
+      if (repetitionLevels.length || definitionLevels?.length) {
         // Use repetition levels to construct lists
-        values = assembleObjects(
-          definitionLevels, repetitionLevels, values, true, maxDefinitionLevel, maxRepetitionLevel
+        const isNullable = columnMetadata && !isRequired(schemaPath.slice(0, 2))
+        const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
+        const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
+        values = assembleLists(
+          definitionLevels, repetitionLevels, values, isNullable, maxDefinitionLevel, maxRepetitionLevel
         )
-      } else if (daph2.num_nulls) {
-        // skip nulls
-        if (!definitionLevels) throw new Error('parquet data page v2 nulls missing definition levels')
-        values = [] // TODO: copy straight into rowData, combine convert into skipNulls
-        skipNulls(definitionLevels, maxDefinitionLevel, dataPage, dictionary, values)
-        values = convert(values, element)
-      } else {
-        dereferenceDictionary(dictionary, dataPage)
-        values = convert(dataPage, element)
       }
       concat(rowData, values)
+    } else if (header.type === 'DICTIONARY_PAGE') {
+      const diph = header.dictionary_page_header
+      if (!diph) throw new Error('parquet dictionary page header is undefined')
+
+      const page = decompressPage(
+        compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec, compressors
+      )
+      dictionary = readDictionaryPage(page, diph, columnMetadata, element.type_length)
     } else {
       throw new Error(`parquet unsupported page type: ${header.type}`)
     }
@@ -189,35 +177,4 @@ export function decompressPage(compressedBytes, uncompressed_page_size, codec, c
     throw new Error(`parquet decompressed page length ${page?.length} does not match header ${uncompressed_page_size}`)
   }
   return page
-}
-
-/**
- * Expand data page list with nulls.
- *
- * @param {number[]} definitionLevels
- * @param {number} maxDefinitionLevel
- * @param {ArrayLike<any>} dataPage
- * @param {any} dictionary
- * @param {any[]} output
- */
-function skipNulls(definitionLevels, maxDefinitionLevel, dataPage, dictionary, output) {
-  if (output.length) throw new Error('parquet output array is not empty')
-  // Use definition levels to skip nulls
-  let index = 0
-  for (let i = 0; i < definitionLevels.length; i++) {
-    if (definitionLevels[i] === maxDefinitionLevel) {
-      if (index > dataPage.length) {
-        throw new Error(`parquet index ${index} exceeds data page length ${dataPage.length}`)
-      }
-      let v = dataPage[index++]
-
-      // map to dictionary value
-      if (dictionary) {
-        v = dictionary[v]
-      }
-      output[i] = v
-    } else {
-      output[i] = undefined
-    }
-  }
 }

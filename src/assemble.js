@@ -4,26 +4,28 @@
  * Reconstructs a complex nested structure from flat arrays of definition and repetition levels,
  * according to Dremel encoding.
  *
- * @param {number[] | undefined} definitionLevels definition levels
- * @param {number[]} repetitionLevels repetition levels
- * @param {ArrayLike<any>} values values to process
+ * @typedef {import('./types.d.ts').DecodedArray} DecodedArray
+ * @param {number[] | undefined} definitionLevels
+ * @param {number[]} repetitionLevels
+ * @param {DecodedArray} values
  * @param {boolean} isNullable can entries be null?
  * @param {number} maxDefinitionLevel definition level that corresponds to non-null
  * @param {number} maxRepetitionLevel repetition level that corresponds to a new row
- * @returns {any[]} array of values
+ * @returns {DecodedArray} array of values
  */
-export function assembleObjects(
+export function assembleLists(
   definitionLevels, repetitionLevels, values, isNullable, maxDefinitionLevel, maxRepetitionLevel
 ) {
+  const n = definitionLevels?.length || repetitionLevels.length
   let valueIndex = 0
   /** @type {any[]} */
   const output = []
+
+  // Track state of nested structures
+  const containerStack = [output]
   let currentContainer = output
 
-  // Trackers for nested structures.
-  const containerStack = [output]
-
-  for (let i = 0; i < repetitionLevels.length; i++) {
+  for (let i = 0; i < n; i++) {
     const def = definitionLevels?.length ? definitionLevels[i] : maxDefinitionLevel
     const rep = repetitionLevels[i]
 
@@ -67,7 +69,6 @@ export function assembleObjects(
       return [values]
     }
     // return max definition level of nested lists
-    /** @type {any[]} */
     for (let i = 0; i < maxDefinitionLevel; i++) {
       /** @type {any[]} */
       const newList = []
