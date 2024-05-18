@@ -1,5 +1,5 @@
 import { decompressPage } from './column.js'
-import { deltaBinaryUnpack, deltaByteArray } from './delta.js'
+import { deltaBinaryUnpack, deltaByteArray, deltaLengthByteArray } from './delta.js'
 import { readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
 import { readPlain } from './plain.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel } from './schema.js'
@@ -67,6 +67,9 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
     const int32 = columnMetadata.type === 'INT32'
     dataPage = int32 ? new Int32Array(nValues) : new BigInt64Array(nValues)
     deltaBinaryUnpack(pageReader, nValues, dataPage)
+  } else if (daph2.encoding === 'DELTA_LENGTH_BYTE_ARRAY') {
+    dataPage = new Array(nValues)
+    deltaLengthByteArray(pageReader, nValues, dataPage)
   } else if (daph2.encoding === 'DELTA_BYTE_ARRAY') {
     dataPage = new Array(nValues)
     deltaByteArray(pageReader, nValues, dataPage)

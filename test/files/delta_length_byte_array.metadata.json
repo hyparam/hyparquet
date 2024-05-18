@@ -1,0 +1,59 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "schema",
+      "num_children": 1,
+      "field_id": -1
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "FRUIT",
+      "converted_type": "UTF8",
+      "field_id": 1,
+      "logical_type": {
+        "type": "STRING"
+      }
+    }
+  ],
+  "num_rows": 1000,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 2629,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "DELTA_LENGTH_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "FRUIT"
+            ],
+            "codec": "ZSTD",
+            "num_values": 1000,
+            "total_uncompressed_size": 23747,
+            "total_compressed_size": 2625,
+            "data_page_offset": 4,
+            "encoding_stats": [
+              {
+                "page_type": 3,
+                "encoding": "DELTA_LENGTH_BYTE_ARRAY",
+                "count": 1
+              }
+            ]
+          }
+        }
+      ],
+      "total_byte_size": 23747,
+      "num_rows": 1000,
+      "file_offset": 0,
+      "total_compressed_size": 2625,
+      "ordinal": 0
+    }
+  ],
+  "metadata_length": 105
+}

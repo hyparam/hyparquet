@@ -66,6 +66,20 @@ export function deltaBinaryUnpack(reader, nValues, output) {
  * @param {number} nValues
  * @param {Uint8Array[]} output
  */
+export function deltaLengthByteArray(reader, nValues, output) {
+  const lengths = new Int32Array(nValues)
+  deltaBinaryUnpack(reader, nValues, lengths)
+  for (let i = 0; i < nValues; i++) {
+    output[i] = new Uint8Array(reader.view.buffer, reader.view.byteOffset + reader.offset, lengths[i])
+    reader.offset += lengths[i]
+  }
+}
+
+/**
+ * @param {DataReader} reader
+ * @param {number} nValues
+ * @param {Uint8Array[]} output
+ */
 export function deltaByteArray(reader, nValues, output) {
   const prefixData = new Int32Array(nValues)
   deltaBinaryUnpack(reader, nValues, prefixData)
