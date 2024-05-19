@@ -174,6 +174,17 @@ parquetRead({ file, compressors: {
 }})
 ```
 
+Parquet encodings:
+ - [X] PLAIN
+ - [X] PLAIN_DICTIONARY
+ - [X] RLE_DICTIONARY
+ - [X] RLE
+ - [X] BIT_PACKED
+ - [X] DELTA_BINARY_PACKED
+ - [ ] DELTA_BYTE_ARRAY
+ - [ ] DELTA_LENGTH_BYTE_ARRAY
+ - [ ] BYTE_STREAM_SPLIT
+
 ## Hysnappy
 
 The most common compression codec used in parquet is snappy compression.

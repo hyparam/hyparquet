@@ -1,8 +1,8 @@
 import { decompressPage } from './column.js'
+import { deltaBinaryUnpack } from './delta.js'
 import { readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
 import { readPlain } from './plain.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel } from './schema.js'
-import { readVarInt, readZigZagBigInt } from './thrift.js'
 
 /**
  * Read a data page from the given Uint8Array.
@@ -66,7 +66,7 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
   } else if (daph2.encoding === 'DELTA_BINARY_PACKED') {
     const int32 = columnMetadata.type === 'INT32'
     dataPage = int32 ? new Int32Array(nValues) : new BigInt64Array(nValues)
-    deltaBinaryUnpack(page, nValues, dataPage)
+    deltaBinaryUnpack(pageReader, nValues, dataPage)
   } else {
     throw new Error(`parquet unsupported encoding: ${daph2.encoding}`)
   }
@@ -107,62 +107,5 @@ function readDefinitionLevelsV2(reader, daph2, maxDefinitionLevel) {
     const values = new Array(daph2.num_values)
     readRleBitPackedHybrid(reader, bitWidth, daph2.definition_levels_byte_length, values)
     return values
-  }
-}
-
-/**
- * @param {Uint8Array} page page data
- * @param {number} nValues number of values to read
- * @param {Int32Array | BigInt64Array} values array to write to
- */
-function deltaBinaryUnpack(page, nValues, values) {
-  const int32 = values instanceof Int32Array
-  const view = new DataView(page.buffer, page.byteOffset, page.byteLength)
-  const reader = { view, offset: 0 }
-  const blockSize = readVarInt(reader)
-  const miniblockPerBlock = readVarInt(reader)
-  let count = readVarInt(reader)
-  let value = readZigZagBigInt(reader) // first value
-  let valueIndex = 0
-  values[valueIndex++] = int32 ? Number(value) : value
-
-  const valuesPerMiniblock = blockSize / miniblockPerBlock
-
-  while (valueIndex < nValues) {
-    const minDelta = readZigZagBigInt(reader)
-    const bitWidths = new Uint8Array(miniblockPerBlock)
-    for (let i = 0; i < miniblockPerBlock; i++) {
-      bitWidths[i] = page[reader.offset++]
-    }
-
-    for (let i = 0; i < miniblockPerBlock; i++) {
-      let miniblockCount = Math.min(count, valuesPerMiniblock)
-      const bitWidth = BigInt(bitWidths[i])
-      if (bitWidth) {
-        if (count > 1) {
-          const mask = (1n << bitWidth) - 1n
-          let bitpackPos = 0n
-          while (count && miniblockCount) {
-            let bits = BigInt(view.getUint8(reader.offset)) >> bitpackPos & mask // TODO: don't re-read value every time
-            bitpackPos += bitWidth
-            while (bitpackPos >= 8) {
-              bitpackPos -= 8n
-              reader.offset++
-              bits |= BigInt(view.getUint8(reader.offset)) << bitWidth - bitpackPos & mask
-            }
-            const delta = minDelta + bits
-            value += delta
-            values[valueIndex++] = int32 ? Number(value) : value
-            count--
-            miniblockCount--
-          }
-        }
-      } else {
-        for (let j = 0; j < valuesPerMiniblock && valueIndex < nValues; j++) {
-          value += minDelta
-          values[valueIndex++] = int32 ? Number(value) : value
-        }
-      }
-    }
   }
 }
