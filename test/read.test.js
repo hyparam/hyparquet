@@ -79,7 +79,7 @@ describe('parquetRead', () => {
   })
 
   it('read a map-like column', async () => {
-    const file = fileToAsyncBuffer('test/files/Int_Map.parquet')
+    const file = fileToAsyncBuffer('test/files/nullable.impala.parquet')
     await parquetRead({
       file,
       columns: ['int_map'],
