@@ -47,7 +47,7 @@ function readPlainBoolean(reader, count) {
     const byteOffset = reader.offset + Math.floor(i / 8)
     const bitOffset = i % 8
     const byte = reader.view.getUint8(byteOffset)
-    values[i] = (byte & (1 << bitOffset)) !== 0
+    values[i] = (byte & 1 << bitOffset) !== 0
   }
   reader.offset += Math.ceil(count / 8)
   return values
@@ -95,7 +95,7 @@ function readPlainInt96(reader, count) {
   for (let i = 0; i < count; i++) {
     const low = reader.view.getBigInt64(reader.offset + i * 12, true)
     const high = reader.view.getInt32(reader.offset + i * 12 + 8, true)
-    values[i] = (BigInt(high) << 64n) | low
+    values[i] = BigInt(high) << 64n | low
   }
   reader.offset += count * 12
   return values

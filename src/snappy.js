@@ -101,8 +101,8 @@ export function snappyUncompress(input, output) {
       switch (c & 0x3) {
       case 1:
         // Copy with 1-byte offset
-        len = ((c >>> 2) & 0x7) + 4
-        offset = input[pos] + ((c >>> 5) << 8)
+        len = (c >>> 2 & 0x7) + 4
+        offset = input[pos] + (c >>> 5 << 8)
         pos++
         break
       case 2:

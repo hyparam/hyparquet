@@ -42,26 +42,25 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
     page = decompressPage(page, uncompressedPageSize, columnMetadata.codec, compressors)
   }
   const pageView = new DataView(page.buffer, page.byteOffset, page.byteLength)
+  const pageReader = { view: pageView, offset: 0 }
 
   // read values based on encoding
   /** @type {import('./types.d.ts').DecodedArray} */
   let dataPage = []
   const nValues = daph2.num_values - daph2.num_nulls
   if (daph2.encoding === 'PLAIN') {
-    const pageReader = { view: pageView, offset: 0 }
     const { type_length } = schemaPath[schemaPath.length - 1].element
     dataPage = readPlain(pageReader, columnMetadata.type, nValues, type_length)
   } else if (daph2.encoding === 'RLE') {
-    const bitWidth = 1
-    const pageReader = { view: pageView, offset: 4 }
+    pageReader.offset = 4
     dataPage = new Array(nValues)
-    readRleBitPackedHybrid(pageReader, bitWidth, uncompressedPageSize, dataPage)
+    readRleBitPackedHybrid(pageReader, 1, uncompressedPageSize, dataPage)
   } else if (
     daph2.encoding === 'PLAIN_DICTIONARY' ||
     daph2.encoding === 'RLE_DICTIONARY'
   ) {
     const bitWidth = pageView.getUint8(0)
-    const pageReader = { view: pageView, offset: 1 }
+    pageReader.offset = 1
     dataPage = new Array(nValues)
     readRleBitPackedHybrid(pageReader, bitWidth, uncompressedPageSize, dataPage)
   } else if (daph2.encoding === 'DELTA_BINARY_PACKED') {
@@ -76,13 +75,11 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
 }
 
 /**
- * Read the repetition levels from this page, if any.
- *
  * @typedef {import("./types.d.ts").DataReader} DataReader
- * @param {DataReader} reader data view for the page
- * @param {DataPageHeaderV2} daph2 data page header
+ * @param {DataReader} reader
+ * @param {DataPageHeaderV2} daph2 data page header v2
  * @param {SchemaTree[]} schemaPath
- * @returns {any[]} repetition levels and number of bytes read
+ * @returns {any[]} repetition levels
  */
 export function readRepetitionLevelsV2(reader, daph2, schemaPath) {
   const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
@@ -98,12 +95,10 @@ export function readRepetitionLevelsV2(reader, daph2, schemaPath) {
 }
 
 /**
- * Read the definition levels from this page, if any.
- *
- * @param {DataReader} reader data view for the page
+ * @param {DataReader} reader
  * @param {DataPageHeaderV2} daph2 data page header v2
  * @param {number} maxDefinitionLevel
- * @returns {number[] | undefined} definition levels and number of bytes read
+ * @returns {number[] | undefined} definition levels
  */
 function readDefinitionLevelsV2(reader, daph2, maxDefinitionLevel) {
   if (maxDefinitionLevel) {
@@ -116,8 +111,6 @@ function readDefinitionLevelsV2(reader, daph2, maxDefinitionLevel) {
 }
 
 /**
- * Unpack the delta binary packed encoding.
- *
  * @param {Uint8Array} page page data
  * @param {number} nValues number of values to read
  * @param {Int32Array | BigInt64Array} values array to write to
@@ -150,12 +143,12 @@ function deltaBinaryUnpack(page, nValues, values) {
           const mask = (1n << bitWidth) - 1n
           let bitpackPos = 0n
           while (count && miniblockCount) {
-            let bits = (BigInt(view.getUint8(reader.offset)) >> bitpackPos) & mask // TODO: don't re-read value every time
+            let bits = BigInt(view.getUint8(reader.offset)) >> bitpackPos & mask // TODO: don't re-read value every time
             bitpackPos += bitWidth
             while (bitpackPos >= 8) {
               bitpackPos -= 8n
               reader.offset++
-              bits |= (BigInt(view.getUint8(reader.offset)) << bitWidth - bitpackPos) & mask
+              bits |= BigInt(view.getUint8(reader.offset)) << bitWidth - bitpackPos & mask
             }
             const delta = minDelta + bits
             value += delta

@@ -89,9 +89,9 @@ function parseInt96Date(value) {
  */
 export function parseFloat16(bytes) {
   if (!bytes) return undefined
-  const int16 = (bytes[1] << 8) | bytes[0]
+  const int16 = bytes[1] << 8 | bytes[0]
   const sign = int16 >> 15 ? -1 : 1
-  const exp = (int16 >> 10) & 0x1f
+  const exp = int16 >> 10 & 0x1f
   const frac = int16 & 0x3ff
   if (exp === 0) return sign * Math.pow(2, -14) * (frac / 1024) // subnormals
   if (exp === 0x1f) return frac ? NaN : sign * Infinity

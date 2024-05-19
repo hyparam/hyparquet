@@ -57,7 +57,7 @@ export function readRleBitPackedHybrid(reader, width, length, values) {
  * @param {number} seen - number of values seen so far
  */
 function readRle(reader, count, bitWidth, values, seen) {
-  const width = (bitWidth + 7) >> 3
+  const width = bitWidth + 7 >> 3
   let value = 0
   if (width === 1) {
     value = reader.view.getUint8(reader.offset)
@@ -89,7 +89,7 @@ function readRle(reader, count, bitWidth, values, seen) {
  */
 function readBitPacked(reader, header, bitWidth, values, seen) {
   // extract number of values to read from header
-  let count = (header >> 1) << 3
+  let count = header >> 1 << 3
   // mask for bitWidth number of bits
   const mask = (1 << bitWidth) - 1
 
@@ -118,7 +118,7 @@ function readBitPacked(reader, header, bitWidth, values, seen) {
     } else {
       if (seen < values.length) {
         // emit value by shifting off to the right and masking
-        values[seen++] = (data >> right) & mask
+        values[seen++] = data >> right & mask
       }
       count--
       right += bitWidth

@@ -165,7 +165,7 @@ function readVarBigInt(reader) {
 function readZigZag(reader) {
   const zigzag = readVarInt(reader)
   // convert zigzag to int
-  return (zigzag >>> 1) ^ -(zigzag & 1)
+  return zigzag >>> 1 ^ -(zigzag & 1)
 }
 
 /**
@@ -178,7 +178,7 @@ function readZigZag(reader) {
 export function readZigZagBigInt(reader) {
   const zigzag = readVarBigInt(reader)
   // convert zigzag to int
-  return (zigzag >> BigInt(1)) ^ -(zigzag & BigInt(1))
+  return zigzag >> BigInt(1) ^ -(zigzag & BigInt(1))
 }
 
 /**
@@ -247,7 +247,7 @@ export function toVarInt(n) {
       varInt[idx++] = n
       break
     } else {
-      varInt[idx++] = (n & 0x7f) | 0x80
+      varInt[idx++] = n & 0x7f | 0x80
       n >>>= 7
     }
   }
