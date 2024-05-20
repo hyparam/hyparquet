@@ -13,7 +13,7 @@
     [[null, 1, 2, null], [3, null, 4], [], null],
     {"k1": 2, "k2": null},
     [{"k1": 1, "k3": null}, null, {}],
-    {"A":null,"b":[null],"C":{"d":[[{"E":null,"F":null},{"E":10,"F":"aaa"},{"E":null,"F":null},{"E":-10,"F":"bbb"},{"E":null,"F":null}],[{"E":11,"F":"c"},{}],[],null]},"g":{"g1":{"H":{"i":[2.2,null]}},"g2":{"H":{"i":[]}},"g3":{},"g4":{"H":{}},"g5":{"H":{}}}}
+    {"A":null,"b":[null],"C":{"d":[[{"E":null,"F":null},{"E":10,"F":"aaa"},{"E":null,"F":null},{"E":-10,"F":"bbb"},{"E":null,"F":null}],[{"E":11,"F":"c"},null],[],null]},"g":{"g1":{"H":{"i":[2.2,null]}},"g2":{"H":{"i":[]}},"g3":null,"g4":{"H":{}},"g5":{}}}
   ],
   [
     3,
@@ -37,7 +37,7 @@
     null,
     {},
     null,
-    {"A":null,"C":{},"g":{"foo":{"H":{"i":[2.2,3.3]}}}}
+    {"A":null,"g":{"foo":{"H":{"i":[2.2,3.3]}}}}
   ],
   [
     6,
@@ -45,7 +45,7 @@
     null,
     null,
     null,
-    {}
+    null
   ],
   [
     7,
@@ -53,6 +53,6 @@
     [null, [5, 6]],
     {"k1": null, "k3": null},
     null,
-    {"A":7,"b":[2,3,null],"C":{"d":[[],[{}],null]}}
+    {"A":7,"b":[2,3,null],"C":{"d":[[],[null],null]}}
   ]
 ]

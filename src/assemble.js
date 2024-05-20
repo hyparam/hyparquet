@@ -151,9 +151,6 @@ export function assembleNested(subcolumnData, schema, depth = 0) {
       assembleNested(subcolumnData, child, nextDepth)
       const childData = subcolumnData.get(child.path.join('.'))
       if (!childData) throw new Error('parquet struct-like column missing child data')
-      if (child.element.repetition_type === 'OPTIONAL') {
-        flattenAtDepth(childData, depth)
-      }
       struct[child.element.name] = childData
     }
     // remove children
@@ -161,7 +158,9 @@ export function assembleNested(subcolumnData, schema, depth = 0) {
       subcolumnData.delete(child.path.join('.'))
     }
     // invert struct by depth
-    subcolumnData.set(path, invertStruct(struct, depth))
+    const inverted = invertStruct(struct, nextDepth)
+    if (optional) flattenAtDepth(inverted, depth)
+    subcolumnData.set(path, inverted)
     return
   }
   // assert(schema.element.repetition_type !== 'REPEATED')
