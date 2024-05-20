@@ -149,9 +149,20 @@ await parquetRead({
 
 The parquet format is known to be a sprawling format which includes options for a wide array of compression schemes, encoding types, and data structures.
 
-Hyparquet does not support 100% of all parquet files.
-Supporting every possible compression codec available in parquet would blow up the size of the hyparquet library.
-In practice, most parquet files use snappy compression.
+Supported parquet encodings:
+ - [X] PLAIN
+ - [X] PLAIN_DICTIONARY
+ - [X] RLE_DICTIONARY
+ - [X] RLE
+ - [X] BIT_PACKED
+ - [X] DELTA_BINARY_PACKED
+ - [X] DELTA_BYTE_ARRAY
+ - [X] DELTA_LENGTH_BYTE_ARRAY
+ - [X] BYTE_STREAM_SPLIT
+
+## Compression
+
+Supporting every possible compression codec available in parquet would blow up the size of the hyparquet library. In practice, most parquet files use snappy compression.
 
 Parquet compression types supported by default:
  - [X] Uncompressed
@@ -163,29 +174,9 @@ Parquet compression types supported by default:
  - [ ] ZSTD
  - [ ] LZ4_RAW
 
-You can extend support for other compression codecs using the `compressors` option.
+You can provide custom compression codecs using the `compressors` option.
 
-```js
-import { parquetRead } from 'hyparquet'
-import { gunzipSync } from 'zlib'
-
-await parquetRead({ file, compressors: {
-  GZIP: (input, output) => output.set(gunzipSync(input)), // add gzip support
-}})
-```
-
-Parquet encodings:
- - [X] PLAIN
- - [X] PLAIN_DICTIONARY
- - [X] RLE_DICTIONARY
- - [X] RLE
- - [X] BIT_PACKED
- - [X] DELTA_BINARY_PACKED
- - [X] DELTA_BYTE_ARRAY
- - [X] DELTA_LENGTH_BYTE_ARRAY
- - [ ] BYTE_STREAM_SPLIT
-
-## Hysnappy
+## hysnappy
 
 The most common compression codec used in parquet is snappy compression.
 Hyparquet includes a built-in snappy decompressor written in javascript.
@@ -199,12 +190,27 @@ To use hysnappy for faster parsing of large parquet files, override the `SNAPPY`
 import { parquetRead } from 'hyparquet'
 import { snappyUncompressor } from 'hysnappy'
 
-await parquetRead({ file, compressors: {
-  SNAPPY: snappyUncompressor(),
-}})
+await parquetRead({
+  file,
+  compressors: {
+    SNAPPY: snappyUncompressor(),
+  },
+  onComplete: console.log,
+})
 ```
 
 Parsing a [420mb wikipedia parquet file](https://huggingface.co/datasets/wikimedia/wikipedia/resolve/main/20231101.en/train-00000-of-00041.parquet) using hysnappy reduces parsing time by 40% (4.1s to 2.3s).
+
+## hyparquet-compressors
+
+You can include support for ALL parquet compression codecs using the [hyparquet-compressors](https://github.com/hyparam/hyparquet-compressors) library.
+
+```js
+import { parquetRead } from 'hyparquet'
+import { compressors } from 'hyparquet-compressors'
+
+await parquetRead({ file, compressors, onComplete: console.log })
+```
 
 ## References
 
