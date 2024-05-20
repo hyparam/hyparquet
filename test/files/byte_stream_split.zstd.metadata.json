@@ -1,0 +1,104 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "schema",
+      "num_children": 2
+    },
+    {
+      "type": "FLOAT",
+      "repetition_type": "OPTIONAL",
+      "name": "f32"
+    },
+    {
+      "type": "DOUBLE",
+      "repetition_type": "OPTIONAL",
+      "name": "f64"
+    }
+  ],
+  "num_rows": 300,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 1162,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "BYTE_STREAM_SPLIT"
+            ],
+            "path_in_schema": [
+              "f32"
+            ],
+            "codec": "ZSTD",
+            "num_values": 300,
+            "total_uncompressed_size": 1255,
+            "total_compressed_size": 1158,
+            "data_page_offset": 4,
+            "statistics": {
+              "max": 2.3831448554992676,
+              "min": -2.772592782974243,
+              "null_count": 0,
+              "max_value": 2.3831448554992676,
+              "min_value": -2.772592782974243
+            },
+            "encoding_stats": [
+              {
+                "page_type": 0,
+                "encoding": "BYTE_STREAM_SPLIT",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 3513,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "BYTE_STREAM_SPLIT"
+            ],
+            "path_in_schema": [
+              "f64"
+            ],
+            "codec": "ZSTD",
+            "num_values": 300,
+            "total_uncompressed_size": 2471,
+            "total_compressed_size": 2283,
+            "data_page_offset": 1230,
+            "statistics": {
+              "max": 2.6962240525635797,
+              "min": -3.0461430547999266,
+              "null_count": 0,
+              "max_value": 2.6962240525635797,
+              "min_value": -3.0461430547999266
+            },
+            "encoding_stats": [
+              {
+                "page_type": 0,
+                "encoding": "BYTE_STREAM_SPLIT",
+                "count": 1
+              }
+            ]
+          }
+        }
+      ],
+      "total_byte_size": 3726,
+      "num_rows": 300,
+      "file_offset": 4,
+      "total_compressed_size": 3441,
+      "ordinal": 0
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "ARROW:schema",
+      "value": "/////6AAAAAQAAAAAAAKAAwABgAFAAgACgAAAAABBAAMAAAACAAIAAAABAAIAAAABAAAAAIAAABAAAAABAAAANj///8AAAEDEAAAABQAAAAEAAAAAAAAAAMAAABmNjQAxv///wAAAgAQABQACAAGAAcADAAAABAAEAAAAAAAAQMQAAAAHAAAAAQAAAAAAAAAAwAAAGYzMgAAAAYACAAGAAYAAAAAAAEA"
+    }
+  ],
+  "created_by": "parquet-cpp-arrow version 14.0.2",
+  "metadata_length": 498
+}

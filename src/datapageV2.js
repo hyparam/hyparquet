@@ -1,3 +1,4 @@
+import { byteStreamSplit } from './byteStreamSplit.js'
 import { decompressPage } from './column.js'
 import { deltaBinaryUnpack, deltaByteArray, deltaLengthByteArray } from './delta.js'
 import { readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
@@ -22,7 +23,7 @@ import { getMaxDefinitionLevel, getMaxRepetitionLevel } from './schema.js'
 export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, compressors) {
   const view = new DataView(compressedBytes.buffer, compressedBytes.byteOffset, compressedBytes.byteLength)
   const reader = { view, offset: 0 }
-
+  const { codec, type } = columnMetadata
   const daph2 = ph.data_page_header_v2
   if (!daph2) throw new Error('parquet data page header v2 is undefined')
 
@@ -38,9 +39,7 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
   const uncompressedPageSize = ph.uncompressed_page_size - daph2.definition_levels_byte_length - daph2.repetition_levels_byte_length
 
   let page = compressedBytes.subarray(reader.offset)
-  if (daph2.is_compressed && columnMetadata.codec !== 'UNCOMPRESSED') {
-    page = decompressPage(page, uncompressedPageSize, columnMetadata.codec, compressors)
-  }
+  page = decompressPage(page, uncompressedPageSize, codec, compressors)
   const pageView = new DataView(page.buffer, page.byteOffset, page.byteLength)
   const pageReader = { view: pageView, offset: 0 }
 
@@ -50,7 +49,7 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
   const nValues = daph2.num_values - daph2.num_nulls
   if (daph2.encoding === 'PLAIN') {
     const { type_length } = schemaPath[schemaPath.length - 1].element
-    dataPage = readPlain(pageReader, columnMetadata.type, nValues, type_length)
+    dataPage = readPlain(pageReader, type, nValues, type_length)
   } else if (daph2.encoding === 'RLE') {
     pageReader.offset = 4
     dataPage = new Array(nValues)
@@ -64,7 +63,7 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
     dataPage = new Array(nValues)
     readRleBitPackedHybrid(pageReader, bitWidth, uncompressedPageSize, dataPage)
   } else if (daph2.encoding === 'DELTA_BINARY_PACKED') {
-    const int32 = columnMetadata.type === 'INT32'
+    const int32 = type === 'INT32'
     dataPage = int32 ? new Int32Array(nValues) : new BigInt64Array(nValues)
     deltaBinaryUnpack(pageReader, nValues, dataPage)
   } else if (daph2.encoding === 'DELTA_LENGTH_BYTE_ARRAY') {
@@ -73,6 +72,11 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
   } else if (daph2.encoding === 'DELTA_BYTE_ARRAY') {
     dataPage = new Array(nValues)
     deltaByteArray(pageReader, nValues, dataPage)
+  } else if (daph2.encoding === 'BYTE_STREAM_SPLIT') {
+    if (type === 'FLOAT') dataPage = new Float32Array(nValues)
+    else if (type === 'DOUBLE') dataPage = new Float64Array(nValues)
+    else throw new Error(`parquet byte_stream_split unsupported type: ${type}`)
+    byteStreamSplit(pageReader, nValues, dataPage)
   } else {
     throw new Error(`parquet unsupported encoding: ${daph2.encoding}`)
   }

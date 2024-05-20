@@ -98,17 +98,6 @@ describe('readRleBitPackedHybrid', () => {
     expect(() => readRleBitPackedHybrid(reader, 1, 3, values))
       .toThrow('parquet bitpack offset 1 out of range')
   })
-
-  it('throws for negative implicit length', () => {
-    const buffer = new ArrayBuffer(4)
-    const view = new DataView(buffer)
-    view.setInt32(0, -1, true) // negative length
-    const reader = { view, offset: 0 }
-
-    const values = new Array(3)
-    expect(() => readRleBitPackedHybrid(reader, 1, 0, values))
-      .toThrow('parquet invalid rle/bitpack length -1')
-  })
 })
 
 describe('widthFromMaxInt', () => {

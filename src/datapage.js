@@ -1,3 +1,4 @@
+import { byteStreamSplit } from './byteStreamSplit.js'
 import { readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
 import { readPlain } from './plain.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel, isRequired } from './schema.js'
@@ -16,11 +17,11 @@ import { getMaxDefinitionLevel, getMaxRepetitionLevel, isRequired } from './sche
  * @param {ColumnMetaData} columnMetadata
  * @returns {DataPage} definition levels, repetition levels, and array of values
  */
-export function readDataPage(bytes, daph, schemaPath, columnMetadata) {
+export function readDataPage(bytes, daph, schemaPath, { type }) {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
   const reader = { view, offset: 0 }
   /** @type {DecodedArray} */
-  let dataPage = []
+  let dataPage
 
   // repetition and definition levels
   const repetitionLevels = readRepetitionLevels(reader, daph, schemaPath)
@@ -30,26 +31,25 @@ export function readDataPage(bytes, daph, schemaPath, columnMetadata) {
   const nValues = daph.num_values - numNulls
   if (daph.encoding === 'PLAIN') {
     const { type_length } = schemaPath[schemaPath.length - 1].element
-    dataPage = readPlain(reader, columnMetadata.type, nValues, type_length)
+    dataPage = readPlain(reader, type, nValues, type_length)
   } else if (
     daph.encoding === 'PLAIN_DICTIONARY' ||
     daph.encoding === 'RLE_DICTIONARY' ||
     daph.encoding === 'RLE'
   ) {
-    // bit width is stored as single byte
-    let bitWidth = 1
     // TODO: RLE encoding uses bitWidth = schemaElement.type_length
-    if (columnMetadata.type !== 'BOOLEAN') {
-      bitWidth = view.getUint8(reader.offset)
-      reader.offset++
-    }
+    const bitWidth = type === 'BOOLEAN' ? 1 : view.getUint8(reader.offset++)
     if (bitWidth) {
       dataPage = new Array(nValues)
       readRleBitPackedHybrid(reader, bitWidth, view.byteLength - reader.offset, dataPage)
     } else {
-      // nval zeros
-      dataPage = new Array(nValues).fill(0)
+      dataPage = new Uint8Array(nValues) // nValue zeroes
     }
+  } else if (daph.encoding === 'BYTE_STREAM_SPLIT') {
+    if (type === 'FLOAT') dataPage = new Float32Array(nValues)
+    else if (type === 'DOUBLE') dataPage = new Float64Array(nValues)
+    else throw new Error(`parquet byte_stream_split unsupported type: ${type}`)
+    byteStreamSplit(reader, nValues, dataPage)
   } else {
     throw new Error(`parquet unsupported encoding: ${daph.encoding}`)
   }

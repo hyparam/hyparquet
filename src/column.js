@@ -143,8 +143,7 @@ function dereferenceDictionary(dictionary, dataPage) {
  * @param {ColumnMetaData} columnMetadata
  * @returns {number} byte offset
  */
-export function getColumnOffset(columnMetadata) {
-  const { dictionary_page_offset, data_page_offset } = columnMetadata
+export function getColumnOffset({ dictionary_page_offset, data_page_offset }) {
   let columnOffset = dictionary_page_offset
   if (dictionary_page_offset === undefined || data_page_offset < dictionary_page_offset) {
     columnOffset = data_page_offset
@@ -160,7 +159,7 @@ export function getColumnOffset(columnMetadata) {
  * @returns {Uint8Array}
  */
 export function decompressPage(compressedBytes, uncompressed_page_size, codec, compressors) {
-  /** @type {Uint8Array | undefined} */
+  /** @type {Uint8Array} */
   let page
   const customDecompressor = compressors?.[codec]
   if (codec === 'UNCOMPRESSED') {

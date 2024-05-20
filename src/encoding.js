@@ -24,22 +24,20 @@ export function widthFromMaxInt(value) {
  */
 export function readRleBitPackedHybrid(reader, width, length, values) {
   if (!length) {
-    length = reader.view.getInt32(reader.offset, true)
+    length = reader.view.getUint32(reader.offset, true)
     reader.offset += 4
-    if (length < 0) throw new Error(`parquet invalid rle/bitpack length ${length}`)
   }
   let seen = 0
-  const startOffset = reader.offset
-  while (reader.offset - startOffset < length && seen < values.length) {
+  while (seen < values.length) {
     const header = readVarInt(reader)
-    if ((header & 1) === 0) {
+    if (header & 1) {
+      // bit-packed
+      seen = readBitPacked(reader, header, width, values, seen)
+    } else {
       // rle
       const count = header >>> 1
       readRle(reader, count, width, values, seen)
       seen += count
-    } else {
-      // bit-packed
-      seen = readBitPacked(reader, header, width, values, seen)
     }
   }
 }

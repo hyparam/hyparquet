@@ -169,7 +169,7 @@ You can extend support for other compression codecs using the `compressors` opti
 import { parquetRead } from 'hyparquet'
 import { gunzipSync } from 'zlib'
 
-parquetRead({ file, compressors: {
+await parquetRead({ file, compressors: {
   GZIP: (input, output) => output.set(gunzipSync(input)), // add gzip support
 }})
 ```
@@ -199,7 +199,7 @@ To use hysnappy for faster parsing of large parquet files, override the `SNAPPY`
 import { parquetRead } from 'hyparquet'
 import { snappyUncompressor } from 'hysnappy'
 
-parquetRead({ file, compressors: {
+await parquetRead({ file, compressors: {
   SNAPPY: snappyUncompressor(),
 }})
 ```
