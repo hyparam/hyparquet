@@ -1,0 +1,164 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "schema",
+      "num_children": 3
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "c0"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "c1"
+    },
+    {
+      "type": "DOUBLE",
+      "repetition_type": "OPTIONAL",
+      "name": "v11"
+    }
+  ],
+  "num_rows": 4,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 112,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "c0"
+            ],
+            "codec": "BROTLI",
+            "num_values": 4,
+            "total_uncompressed_size": 100,
+            "total_compressed_size": 108,
+            "data_page_offset": 38,
+            "dictionary_page_offset": 4,
+            "statistics": {
+              "max": 1593604801,
+              "min": 1593604800,
+              "null_count": 0,
+              "max_value": 1593604801,
+              "min_value": 1593604800
+            },
+            "encoding_stats": [
+              {
+                "page_type": 2,
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": 0,
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 280,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "c1"
+            ],
+            "codec": "BROTLI",
+            "num_values": 4,
+            "total_uncompressed_size": 68,
+            "total_compressed_size": 76,
+            "data_page_offset": 236,
+            "dictionary_page_offset": 204,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "def",
+              "min_value": "abc"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 2,
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": 0,
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 460,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "v11"
+            ],
+            "codec": "BROTLI",
+            "num_values": 4,
+            "total_uncompressed_size": 109,
+            "total_compressed_size": 116,
+            "data_page_offset": 385,
+            "dictionary_page_offset": 344,
+            "statistics": {
+              "max": 42.125,
+              "min": 7.7,
+              "null_count": 0,
+              "max_value": 42.125,
+              "min_value": 7.7
+            },
+            "encoding_stats": [
+              {
+                "page_type": 2,
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": 0,
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ]
+          }
+        }
+      ],
+      "total_byte_size": 277,
+      "num_rows": 4,
+      "file_offset": 4,
+      "total_compressed_size": 300,
+      "ordinal": 0
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "pandas",
+      "value": "{\"index_columns\": [{\"kind\": \"range\", \"name\": null, \"start\": 0, \"stop\": 4, \"step\": 1}], \"column_indexes\": [{\"name\": null, \"field_name\": null, \"pandas_type\": \"unicode\", \"numpy_type\": \"object\", \"metadata\": {\"encoding\": \"UTF-8\"}}], \"columns\": [{\"name\": \"c0\", \"field_name\": \"c0\", \"pandas_type\": \"int64\", \"numpy_type\": \"int64\", \"metadata\": null}, {\"name\": \"c1\", \"field_name\": \"c1\", \"pandas_type\": \"bytes\", \"numpy_type\": \"object\", \"metadata\": null}, {\"name\": \"v11\", \"field_name\": \"v11\", \"pandas_type\": \"float64\", \"numpy_type\": \"float64\", \"metadata\": null}], \"creator\": {\"library\": \"pyarrow\", \"version\": \"15.0.0\"}, \"pandas_version\": \"2.1.4\"}"
+    },
+    {
+      "key": "ARROW:schema",
+      "value": "/////4gDAAAQAAAAAAAKAA4ABgAFAAgACgAAAAABBAAQAAAAAAAKAAwAAAAEAAgACgAAALACAAAEAAAAAQAAAAwAAAAIAAwABAAIAAgAAAAIAAAAEAAAAAYAAABwYW5kYXMAAHkCAAB7ImluZGV4X2NvbHVtbnMiOiBbeyJraW5kIjogInJhbmdlIiwgIm5hbWUiOiBudWxsLCAic3RhcnQiOiAwLCAic3RvcCI6IDQsICJzdGVwIjogMX1dLCAiY29sdW1uX2luZGV4ZXMiOiBbeyJuYW1lIjogbnVsbCwgImZpZWxkX25hbWUiOiBudWxsLCAicGFuZGFzX3R5cGUiOiAidW5pY29kZSIsICJudW1weV90eXBlIjogIm9iamVjdCIsICJtZXRhZGF0YSI6IHsiZW5jb2RpbmciOiAiVVRGLTgifX1dLCAiY29sdW1ucyI6IFt7Im5hbWUiOiAiYzAiLCAiZmllbGRfbmFtZSI6ICJjMCIsICJwYW5kYXNfdHlwZSI6ICJpbnQ2NCIsICJudW1weV90eXBlIjogImludDY0IiwgIm1ldGFkYXRhIjogbnVsbH0sIHsibmFtZSI6ICJjMSIsICJmaWVsZF9uYW1lIjogImMxIiwgInBhbmRhc190eXBlIjogImJ5dGVzIiwgIm51bXB5X3R5cGUiOiAib2JqZWN0IiwgIm1ldGFkYXRhIjogbnVsbH0sIHsibmFtZSI6ICJ2MTEiLCAiZmllbGRfbmFtZSI6ICJ2MTEiLCAicGFuZGFzX3R5cGUiOiAiZmxvYXQ2NCIsICJudW1weV90eXBlIjogImZsb2F0NjQiLCAibWV0YWRhdGEiOiBudWxsfV0sICJjcmVhdG9yIjogeyJsaWJyYXJ5IjogInB5YXJyb3ciLCAidmVyc2lvbiI6ICIxNS4wLjAifSwgInBhbmRhc192ZXJzaW9uIjogIjIuMS40In0AAAADAAAAdAAAADgAAAAEAAAAqP///wAAAQMQAAAAHAAAAAQAAAAAAAAAAwAAAHYxMQAAAAYACAAGAAYAAAAAAAIA2P///wAAAQQQAAAAGAAAAAQAAAAAAAAAAgAAAGMxAAAEAAQABAAAABAAFAAIAAYABwAMAAAAEAAQAAAAAAABAhAAAAAcAAAABAAAAAAAAAACAAAAYzAAAAgADAAIAAcACAAAAAAAAAFAAAAA"
+    }
+  ],
+  "created_by": "parquet-cpp-arrow version 15.0.0",
+  "metadata_length": 2242
+}

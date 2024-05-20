@@ -1,0 +1,133 @@
+{
+  "created_by": "parquet-cpp version 1.5.1-SNAPSHOT",
+  "metadata_length": 330,
+  "num_rows": 4,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 89,
+          "meta_data": {
+            "codec": "LZ4_RAW",
+            "data_page_offset": 4,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "PLAIN",
+                "page_type": 0
+              }
+            ],
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "num_values": 4,
+            "path_in_schema": [
+              "c0"
+            ],
+            "statistics": {
+              "max": 1593604801,
+              "max_value": 1593604801,
+              "min": 1593604800,
+              "min_value": 1593604800,
+              "null_count": 0
+            },
+            "total_compressed_size": 85,
+            "total_uncompressed_size": 93,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 229,
+          "meta_data": {
+            "codec": "LZ4_RAW",
+            "data_page_offset": 171,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "PLAIN",
+                "page_type": 0
+              }
+            ],
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "num_values": 4,
+            "path_in_schema": [
+              "c1"
+            ],
+            "statistics": {
+              "max_value": "def",
+              "min_value": "abc",
+              "null_count": 0
+            },
+            "total_compressed_size": 58,
+            "total_uncompressed_size": 59,
+            "type": "BYTE_ARRAY"
+          }
+        },
+        {
+          "file_offset": 375,
+          "meta_data": {
+            "codec": "LZ4_RAW",
+            "data_page_offset": 280,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "PLAIN",
+                "page_type": 0
+              }
+            ],
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "num_values": 4,
+            "path_in_schema": [
+              "v11"
+            ],
+            "statistics": {
+              "max": 42.125,
+              "max_value": 42.125,
+              "min": 7.7,
+              "min_value": 7.7,
+              "null_count": 0
+            },
+            "total_compressed_size": 95,
+            "total_uncompressed_size": 99,
+            "type": "DOUBLE"
+          }
+        }
+      ],
+      "file_offset": 89,
+      "num_rows": 4,
+      "ordinal": 0,
+      "total_byte_size": 251,
+      "total_compressed_size": 238
+    }
+  ],
+  "schema": [
+    {
+      "name": "schema",
+      "num_children": 3,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "name": "c0",
+      "repetition_type": "REQUIRED",
+      "type": "INT64"
+    },
+    {
+      "name": "c1",
+      "repetition_type": "REQUIRED",
+      "type": "BYTE_ARRAY"
+    },
+    {
+      "name": "v11",
+      "repetition_type": "OPTIONAL",
+      "type": "DOUBLE"
+    }
+  ],
+  "version": 1
+}

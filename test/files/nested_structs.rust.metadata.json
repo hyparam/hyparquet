@@ -1,0 +1,6801 @@
+{
+ "version": 1,
+ "schema": [
+   {
+     "name": "schema",
+     "num_children": 36
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "roll_num",
+     "num_children": 6
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "min",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "max",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "mean",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "sum",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "variance",
+     "converted_type": "INT_64"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "PC_CUR",
+     "num_children": 6
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "min",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "max",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "mean",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "sum",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "variance",
+     "converted_type": "INT_64"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "CVA_2012",
+     "num_children": 6
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "min",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "max",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "mean",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "sum",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "variance",
+     "converted_type": "INT_64"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "CVA_2016",
+     "num_children": 6
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "min",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "max",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "mean",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "sum",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "variance",
+     "converted_type": "INT_64"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "BIA_3",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "BIA_4",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "ACTUAL_FRONTAGE",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "ACTUAL_DEPTH",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "ACTUAL_LOT_SIZE",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "GLA",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "SOURCE_GLA",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "IPS_GLA",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "GLA_ALL",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "bia",
+     "num_children": 6
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "min",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "max",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "mean",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "sum",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "variance",
+     "converted_type": "INT_64"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "EFFECTIVE_LOT_SIZE",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "effective_lot_area",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "EFFECTIVE_FRONTAGE",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "EFFECTIVE_DEPTH",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "rw_area_tot",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "effective_lot_sqft",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "dup",
+     "num_children": 6
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "min",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "max",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "mean",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "sum",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "variance",
+     "converted_type": "INT_64"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "nonCTXT",
+     "num_children": 6
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "min",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "max",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "mean",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "sum",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "variance",
+     "converted_type": "INT_64"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "vacantland",
+     "num_children": 6
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "min",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "max",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "mean",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "sum",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "variance",
+     "converted_type": "INT_64"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "parkingbillboard",
+     "num_children": 6
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "min",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "max",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "mean",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "sum",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "variance",
+     "converted_type": "INT_64"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "cvalte10",
+     "num_children": 6
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "min",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "max",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "mean",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "sum",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "variance",
+     "converted_type": "INT_64"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "condootherhotel",
+     "num_children": 6
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "min",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "max",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "mean",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "sum",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "variance",
+     "converted_type": "INT_64"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "calculated_lot_size",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "calculated_efflot_size",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "missingsite",
+     "num_children": 6
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "min",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "max",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "mean",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "sum",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "variance",
+     "converted_type": "INT_64"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "missinggla",
+     "num_children": 6
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "min",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "max",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "mean",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "sum",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "variance",
+     "converted_type": "INT_64"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "missingsitegla",
+     "num_children": 6
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "min",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "max",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "mean",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "sum",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "variance",
+     "converted_type": "INT_64"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "actual_lot_size_sqft",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "lotsize_sqft",
+     "num_children": 6
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "min"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "max"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "mean"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "sum"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REQUIRED",
+     "name": "variance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "num_children": 6
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "min",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "max",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "mean",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "sum",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "variance",
+     "converted_type": "INT_64"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "ul_observation_date",
+     "num_children": 6
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "min",
+     "converted_type": "TIMESTAMP_MICROS"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "max",
+     "converted_type": "TIMESTAMP_MICROS"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "mean",
+     "converted_type": "TIMESTAMP_MICROS"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "sum",
+     "converted_type": "TIMESTAMP_MICROS"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "variance",
+     "converted_type": "TIMESTAMP_MICROS"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "ul_tz_offset_minutes_ul_observation_date",
+     "num_children": 6
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "min",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "max",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "mean",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "count",
+     "converted_type": "UINT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "sum",
+     "converted_type": "INT_64"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "REQUIRED",
+     "name": "variance",
+     "converted_type": "INT_64"
+   }
+ ],
+ "num_rows": 1,
+ "row_groups": [
+   {
+     "columns": [
+       {
+         "file_offset": 86,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "roll_num",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 35,
+           "dictionary_page_offset": 4,
+           "statistics": {
+             "max_value": 190406409000602,
+             "min_value": 190406409000602
+           }
+         }
+       },
+       {
+         "file_offset": 232,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "roll_num",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 181,
+           "dictionary_page_offset": 150,
+           "statistics": {
+             "max_value": 190407175004000,
+             "min_value": 190407175004000
+           }
+         }
+       },
+       {
+         "file_offset": 380,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "roll_num",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 329,
+           "dictionary_page_offset": 298,
+           "statistics": {
+             "max_value": 190406671229999,
+             "min_value": 190406671229999
+           }
+         }
+       },
+       {
+         "file_offset": 529,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "roll_num",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 478,
+           "dictionary_page_offset": 447,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 679,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "roll_num",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 628,
+           "dictionary_page_offset": 597,
+           "statistics": {
+             "max_value": 94251302258849570,
+             "min_value": 94251302258849570
+           }
+         }
+       },
+       {
+         "file_offset": 827,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "roll_num",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 776,
+           "dictionary_page_offset": 745,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 980,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "PC_CUR",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 929,
+           "dictionary_page_offset": 898,
+           "statistics": {
+             "max_value": 115,
+             "min_value": 115
+           }
+         }
+       },
+       {
+         "file_offset": 1126,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "PC_CUR",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 1075,
+           "dictionary_page_offset": 1044,
+           "statistics": {
+             "max_value": 742,
+             "min_value": 742
+           }
+         }
+       },
+       {
+         "file_offset": 1272,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "PC_CUR",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 1221,
+           "dictionary_page_offset": 1190,
+           "statistics": {
+             "max_value": 416,
+             "min_value": 416
+           }
+         }
+       },
+       {
+         "file_offset": 1419,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "PC_CUR",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 1368,
+           "dictionary_page_offset": 1337,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 1567,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "PC_CUR",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 1516,
+           "dictionary_page_offset": 1485,
+           "statistics": {
+             "max_value": 206195,
+             "min_value": 206195
+           }
+         }
+       },
+       {
+         "file_offset": 1713,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "PC_CUR",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 1662,
+           "dictionary_page_offset": 1631,
+           "statistics": {
+             "max_value": 10374,
+             "min_value": 10374
+           }
+         }
+       },
+       {
+         "file_offset": 1864,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "CVA_2012",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 1813,
+           "dictionary_page_offset": 1782,
+           "statistics": {
+             "max_value": 737,
+             "min_value": 737
+           }
+         }
+       },
+       {
+         "file_offset": 2012,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "CVA_2012",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 1961,
+           "dictionary_page_offset": 1930,
+           "statistics": {
+             "max_value": 32150509,
+             "min_value": 32150509
+           }
+         }
+       },
+       {
+         "file_offset": 2160,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "CVA_2012",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 2109,
+           "dictionary_page_offset": 2078,
+           "statistics": {
+             "max_value": 2401239,
+             "min_value": 2401239
+           }
+         }
+       },
+       {
+         "file_offset": 2309,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "CVA_2012",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 2258,
+           "dictionary_page_offset": 2227,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 2459,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "CVA_2012",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 2408,
+           "dictionary_page_offset": 2377,
+           "statistics": {
+             "max_value": 1188613496,
+             "min_value": 1188613496
+           }
+         }
+       },
+       {
+         "file_offset": 2607,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "CVA_2012",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 2556,
+           "dictionary_page_offset": 2525,
+           "statistics": {
+             "max_value": 12977533288261,
+             "min_value": 12977533288261
+           }
+         }
+       },
+       {
+         "file_offset": 2760,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "CVA_2016",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 2709,
+           "dictionary_page_offset": 2678,
+           "statistics": {
+             "max_value": 1000,
+             "min_value": 1000
+           }
+         }
+       },
+       {
+         "file_offset": 2908,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "CVA_2016",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 2857,
+           "dictionary_page_offset": 2826,
+           "statistics": {
+             "max_value": 35195000,
+             "min_value": 35195000
+           }
+         }
+       },
+       {
+         "file_offset": 3056,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "CVA_2016",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 3005,
+           "dictionary_page_offset": 2974,
+           "statistics": {
+             "max_value": 3519838,
+             "min_value": 3519838
+           }
+         }
+       },
+       {
+         "file_offset": 3205,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "CVA_2016",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 3154,
+           "dictionary_page_offset": 3123,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 3355,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "CVA_2016",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 3304,
+           "dictionary_page_offset": 3273,
+           "statistics": {
+             "max_value": 1742320297,
+             "min_value": 1742320297
+           }
+         }
+       },
+       {
+         "file_offset": 3503,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "CVA_2016",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 3452,
+           "dictionary_page_offset": 3421,
+           "statistics": {
+             "max_value": 24581100553044,
+             "min_value": 24581100553044
+           }
+         }
+       },
+       {
+         "file_offset": 3656,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "BIA_3",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 3605,
+           "dictionary_page_offset": 3574,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 3801,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "BIA_3",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 3750,
+           "dictionary_page_offset": 3719,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 3946,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "BIA_3",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 3895,
+           "dictionary_page_offset": 3864,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 4092,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "BIA_3",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 4041,
+           "dictionary_page_offset": 4010,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 4239,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "BIA_3",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 4188,
+           "dictionary_page_offset": 4157,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 4384,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "BIA_3",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 4333,
+           "dictionary_page_offset": 4302,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 4534,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "BIA_4",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 4483,
+           "dictionary_page_offset": 4452,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 4679,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "BIA_4",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 4628,
+           "dictionary_page_offset": 4597,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 4824,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "BIA_4",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 4773,
+           "dictionary_page_offset": 4742,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 4970,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "BIA_4",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 4919,
+           "dictionary_page_offset": 4888,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 5117,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "BIA_4",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 5066,
+           "dictionary_page_offset": 5035,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 5262,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "BIA_4",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 5211,
+           "dictionary_page_offset": 5180,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 5412,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_FRONTAGE",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 5361,
+           "dictionary_page_offset": 5330,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 5567,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_FRONTAGE",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 5516,
+           "dictionary_page_offset": 5485,
+           "statistics": {
+             "max_value": 658.63,
+             "min_value": 658.63
+           }
+         }
+       },
+       {
+         "file_offset": 5722,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_FRONTAGE",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 5671,
+           "dictionary_page_offset": 5640,
+           "statistics": {
+             "max_value": 57.76452991452993,
+             "min_value": 57.76452991452993
+           }
+         }
+       },
+       {
+         "file_offset": 5878,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_FRONTAGE",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 5827,
+           "dictionary_page_offset": 5796,
+           "statistics": {
+             "max_value": 351,
+             "min_value": 351
+           }
+         }
+       },
+       {
+         "file_offset": 6035,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_FRONTAGE",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 5984,
+           "dictionary_page_offset": 5953,
+           "statistics": {
+             "max_value": 20275.350000000006,
+             "min_value": 20275.350000000006
+           }
+         }
+       },
+       {
+         "file_offset": 6190,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_FRONTAGE",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 6139,
+           "dictionary_page_offset": 6108,
+           "statistics": {
+             "max_value": 6310.500499135526,
+             "min_value": 6310.500499135526
+           }
+         }
+       },
+       {
+         "file_offset": 6350,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_DEPTH",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 6299,
+           "dictionary_page_offset": 6268,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 6502,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_DEPTH",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 6451,
+           "dictionary_page_offset": 6420,
+           "statistics": {
+             "max_value": 312.16,
+             "min_value": 312.16
+           }
+         }
+       },
+       {
+         "file_offset": 6654,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_DEPTH",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 6603,
+           "dictionary_page_offset": 6572,
+           "statistics": {
+             "max_value": 49.40901785714286,
+             "min_value": 49.40901785714286
+           }
+         }
+       },
+       {
+         "file_offset": 6807,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_DEPTH",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 6756,
+           "dictionary_page_offset": 6725,
+           "statistics": {
+             "max_value": 336,
+             "min_value": 336
+           }
+         }
+       },
+       {
+         "file_offset": 6961,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_DEPTH",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 6910,
+           "dictionary_page_offset": 6879,
+           "statistics": {
+             "max_value": 16601.43,
+             "min_value": 16601.43
+           }
+         }
+       },
+       {
+         "file_offset": 7113,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_DEPTH",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 7062,
+           "dictionary_page_offset": 7031,
+           "statistics": {
+             "max_value": 3214.842695450431,
+             "min_value": 3214.842695450431
+           }
+         }
+       },
+       {
+         "file_offset": 7270,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_LOT_SIZE",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 7219,
+           "dictionary_page_offset": 7188,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 7425,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_LOT_SIZE",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 7374,
+           "dictionary_page_offset": 7343,
+           "statistics": {
+             "max_value": 74136,
+             "min_value": 74136
+           }
+         }
+       },
+       {
+         "file_offset": 7580,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_LOT_SIZE",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 7529,
+           "dictionary_page_offset": 7498,
+           "statistics": {
+             "max_value": 6162.133196721318,
+             "min_value": 6162.133196721318
+           }
+         }
+       },
+       {
+         "file_offset": 7736,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_LOT_SIZE",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 7685,
+           "dictionary_page_offset": 7654,
+           "statistics": {
+             "max_value": 366,
+             "min_value": 366
+           }
+         }
+       },
+       {
+         "file_offset": 7893,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_LOT_SIZE",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 7842,
+           "dictionary_page_offset": 7811,
+           "statistics": {
+             "max_value": 2255340.7500000023,
+             "min_value": 2255340.7500000023
+           }
+         }
+       },
+       {
+         "file_offset": 8048,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ACTUAL_LOT_SIZE",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 7997,
+           "dictionary_page_offset": 7966,
+           "statistics": {
+             "max_value": 104255249.59826614,
+             "min_value": 104255249.59826614
+           }
+         }
+       },
+       {
+         "file_offset": 8208,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "GLA",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 8157,
+           "dictionary_page_offset": 8126,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 8352,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "GLA",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 8301,
+           "dictionary_page_offset": 8270,
+           "statistics": {
+             "max_value": 523800,
+             "min_value": 523800
+           }
+         }
+       },
+       {
+         "file_offset": 8498,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "GLA",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 8447,
+           "dictionary_page_offset": 8416,
+           "statistics": {
+             "max_value": 19484.146706586827,
+             "min_value": 19484.146706586827
+           }
+         }
+       },
+       {
+         "file_offset": 8645,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "GLA",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 8594,
+           "dictionary_page_offset": 8563,
+           "statistics": {
+             "max_value": 334,
+             "min_value": 334
+           }
+         }
+       },
+       {
+         "file_offset": 8793,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "GLA",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 8742,
+           "dictionary_page_offset": 8711,
+           "statistics": {
+             "max_value": 6507705,
+             "min_value": 6507705
+           }
+         }
+       },
+       {
+         "file_offset": 8939,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "GLA",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 8888,
+           "dictionary_page_offset": 8857,
+           "statistics": {
+             "max_value": 3563198650.906335,
+             "min_value": 3563198650.906335
+           }
+         }
+       },
+       {
+         "file_offset": 9090,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "SOURCE_GLA",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 9039,
+           "dictionary_page_offset": 9008,
+           "statistics": {
+             "max_value": 2628,
+             "min_value": 2628
+           }
+         }
+       },
+       {
+         "file_offset": 9243,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "SOURCE_GLA",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 9192,
+           "dictionary_page_offset": 9161,
+           "statistics": {
+             "max_value": 16085,
+             "min_value": 16085
+           }
+         }
+       },
+       {
+         "file_offset": 9396,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "SOURCE_GLA",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 9345,
+           "dictionary_page_offset": 9314,
+           "statistics": {
+             "max_value": 6698.8,
+             "min_value": 6698.8
+           }
+         }
+       },
+       {
+         "file_offset": 9550,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "SOURCE_GLA",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 9499,
+           "dictionary_page_offset": 9468,
+           "statistics": {
+             "max_value": 10,
+             "min_value": 10
+           }
+         }
+       },
+       {
+         "file_offset": 9705,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "SOURCE_GLA",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 9654,
+           "dictionary_page_offset": 9623,
+           "statistics": {
+             "max_value": 66988,
+             "min_value": 66988
+           }
+         }
+       },
+       {
+         "file_offset": 9858,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "SOURCE_GLA",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 9807,
+           "dictionary_page_offset": 9776,
+           "statistics": {
+             "max_value": 28540252.400000002,
+             "min_value": 28540252.400000002
+           }
+         }
+       },
+       {
+         "file_offset": 10016,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "IPS_GLA",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 9965,
+           "dictionary_page_offset": 9934,
+           "statistics": {
+             "max_value": 288,
+             "min_value": 288
+           }
+         }
+       },
+       {
+         "file_offset": 10166,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "IPS_GLA",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 10115,
+           "dictionary_page_offset": 10084,
+           "statistics": {
+             "max_value": 1985,
+             "min_value": 1985
+           }
+         }
+       },
+       {
+         "file_offset": 10316,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "IPS_GLA",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 10265,
+           "dictionary_page_offset": 10234,
+           "statistics": {
+             "max_value": 1285,
+             "min_value": 1285
+           }
+         }
+       },
+       {
+         "file_offset": 10467,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "IPS_GLA",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 10416,
+           "dictionary_page_offset": 10385,
+           "statistics": {
+             "max_value": 4,
+             "min_value": 4
+           }
+         }
+       },
+       {
+         "file_offset": 10619,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "IPS_GLA",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 10568,
+           "dictionary_page_offset": 10537,
+           "statistics": {
+             "max_value": 5140,
+             "min_value": 5140
+           }
+         }
+       },
+       {
+         "file_offset": 10769,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "IPS_GLA",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 10718,
+           "dictionary_page_offset": 10687,
+           "statistics": {
+             "max_value": 509875.3333333333,
+             "min_value": 509875.3333333333
+           }
+         }
+       },
+       {
+         "file_offset": 10924,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "GLA_ALL",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 10873,
+           "dictionary_page_offset": 10842,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 11074,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "GLA_ALL",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 11023,
+           "dictionary_page_offset": 10992,
+           "statistics": {
+             "max_value": 523800,
+             "min_value": 523800
+           }
+         }
+       },
+       {
+         "file_offset": 11224,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "GLA_ALL",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 11173,
+           "dictionary_page_offset": 11142,
+           "statistics": {
+             "max_value": 18907.566091954024,
+             "min_value": 18907.566091954024
+           }
+         }
+       },
+       {
+         "file_offset": 11375,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "GLA_ALL",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 11324,
+           "dictionary_page_offset": 11293,
+           "statistics": {
+             "max_value": 348,
+             "min_value": 348
+           }
+         }
+       },
+       {
+         "file_offset": 11527,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "GLA_ALL",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 11476,
+           "dictionary_page_offset": 11445,
+           "statistics": {
+             "max_value": 6579833,
+             "min_value": 6579833
+           }
+         }
+       },
+       {
+         "file_offset": 11677,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "GLA_ALL",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 11626,
+           "dictionary_page_offset": 11595,
+           "statistics": {
+             "max_value": 3428378496.7881336,
+             "min_value": 3428378496.7881336
+           }
+         }
+       },
+       {
+         "file_offset": 11832,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "bia",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 11781,
+           "dictionary_page_offset": 11750,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 11978,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "bia",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 11927,
+           "dictionary_page_offset": 11896,
+           "statistics": {
+             "max_value": 1,
+             "min_value": 1
+           }
+         }
+       },
+       {
+         "file_offset": 12124,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "bia",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 12073,
+           "dictionary_page_offset": 12042,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 12271,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "bia",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 12220,
+           "dictionary_page_offset": 12189,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 12419,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "bia",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 12368,
+           "dictionary_page_offset": 12337,
+           "statistics": {
+             "max_value": 452,
+             "min_value": 452
+           }
+         }
+       },
+       {
+         "file_offset": 12565,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "bia",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 12514,
+           "dictionary_page_offset": 12483,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 12716,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_LOT_SIZE",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 12665,
+           "dictionary_page_offset": 12634,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 12877,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_LOT_SIZE",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 12826,
+           "dictionary_page_offset": 12795,
+           "statistics": {
+             "max_value": 64749.63000000001,
+             "min_value": 64749.63000000001
+           }
+         }
+       },
+       {
+         "file_offset": 13038,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_LOT_SIZE",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 12987,
+           "dictionary_page_offset": 12956,
+           "statistics": {
+             "max_value": 4951.024888352274,
+             "min_value": 4951.024888352274
+           }
+         }
+       },
+       {
+         "file_offset": 13200,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_LOT_SIZE",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 13149,
+           "dictionary_page_offset": 13118,
+           "statistics": {
+             "max_value": 352,
+             "min_value": 352
+           }
+         }
+       },
+       {
+         "file_offset": 13363,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_LOT_SIZE",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 13312,
+           "dictionary_page_offset": 13281,
+           "statistics": {
+             "max_value": 1742760.7607000005,
+             "min_value": 1742760.7607000005
+           }
+         }
+       },
+       {
+         "file_offset": 13524,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_LOT_SIZE",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 13473,
+           "dictionary_page_offset": 13442,
+           "statistics": {
+             "max_value": 81195383.98823886,
+             "min_value": 81195383.98823886
+           }
+         }
+       },
+       {
+         "file_offset": 13690,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "effective_lot_area",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 13639,
+           "dictionary_page_offset": 13608,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 13851,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "effective_lot_area",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 13800,
+           "dictionary_page_offset": 13769,
+           "statistics": {
+             "max_value": 2.8000000000000003,
+             "min_value": 2.8000000000000003
+           }
+         }
+       },
+       {
+         "file_offset": 14012,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "effective_lot_area",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 13961,
+           "dictionary_page_offset": 13930,
+           "statistics": {
+             "max_value": 0.14237550619122732,
+             "min_value": 0.14237550619122732
+           }
+         }
+       },
+       {
+         "file_offset": 14174,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "effective_lot_area",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 14123,
+           "dictionary_page_offset": 14092,
+           "statistics": {
+             "max_value": 352,
+             "min_value": 352
+           }
+         }
+       },
+       {
+         "file_offset": 14337,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "effective_lot_area",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 14286,
+           "dictionary_page_offset": 14255,
+           "statistics": {
+             "max_value": 50.11617817931202,
+             "min_value": 50.11617817931202
+           }
+         }
+       },
+       {
+         "file_offset": 14498,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "effective_lot_area",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 14447,
+           "dictionary_page_offset": 14416,
+           "statistics": {
+             "max_value": 0.07516922114035923,
+             "min_value": 0.07516922114035923
+           }
+         }
+       },
+       {
+         "file_offset": 14664,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_FRONTAGE",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 14613,
+           "dictionary_page_offset": 14582,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 14825,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_FRONTAGE",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 14774,
+           "dictionary_page_offset": 14743,
+           "statistics": {
+             "max_value": 658063,
+             "min_value": 658063
+           }
+         }
+       },
+       {
+         "file_offset": 14986,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_FRONTAGE",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 14935,
+           "dictionary_page_offset": 14904,
+           "statistics": {
+             "max_value": 1991.3067846607655,
+             "min_value": 1991.3067846607655
+           }
+         }
+       },
+       {
+         "file_offset": 15148,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_FRONTAGE",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 15097,
+           "dictionary_page_offset": 15066,
+           "statistics": {
+             "max_value": 339,
+             "min_value": 339
+           }
+         }
+       },
+       {
+         "file_offset": 15311,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_FRONTAGE",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 15260,
+           "dictionary_page_offset": 15229,
+           "statistics": {
+             "max_value": 675052.9999999995,
+             "min_value": 675052.9999999995
+           }
+         }
+       },
+       {
+         "file_offset": 15472,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_FRONTAGE",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 15421,
+           "dictionary_page_offset": 15390,
+           "statistics": {
+             "max_value": 1277234044.0126908,
+             "min_value": 1277234044.0126908
+           }
+         }
+       },
+       {
+         "file_offset": 15638,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_DEPTH",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 15587,
+           "dictionary_page_offset": 15556,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 15796,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_DEPTH",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 15745,
+           "dictionary_page_offset": 15714,
+           "statistics": {
+             "max_value": 300.7,
+             "min_value": 300.7
+           }
+         }
+       },
+       {
+         "file_offset": 15954,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_DEPTH",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 15903,
+           "dictionary_page_offset": 15872,
+           "statistics": {
+             "max_value": 65.32364985163204,
+             "min_value": 65.32364985163204
+           }
+         }
+       },
+       {
+         "file_offset": 16113,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_DEPTH",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 16062,
+           "dictionary_page_offset": 16031,
+           "statistics": {
+             "max_value": 337,
+             "min_value": 337
+           }
+         }
+       },
+       {
+         "file_offset": 16273,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_DEPTH",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 16222,
+           "dictionary_page_offset": 16191,
+           "statistics": {
+             "max_value": 22014.069999999996,
+             "min_value": 22014.069999999996
+           }
+         }
+       },
+       {
+         "file_offset": 16431,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "EFFECTIVE_DEPTH",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 16380,
+           "dictionary_page_offset": 16349,
+           "statistics": {
+             "max_value": 3904.805190507992,
+             "min_value": 3904.805190507992
+           }
+         }
+       },
+       {
+         "file_offset": 16594,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "rw_area_tot",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 16543,
+           "dictionary_page_offset": 16512,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 16748,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "rw_area_tot",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 16697,
+           "dictionary_page_offset": 16666,
+           "statistics": {
+             "max_value": 18169,
+             "min_value": 18169
+           }
+         }
+       },
+       {
+         "file_offset": 16902,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "rw_area_tot",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 16851,
+           "dictionary_page_offset": 16820,
+           "statistics": {
+             "max_value": 1528.077097505669,
+             "min_value": 1528.077097505669
+           }
+         }
+       },
+       {
+         "file_offset": 17057,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "rw_area_tot",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 17006,
+           "dictionary_page_offset": 16975,
+           "statistics": {
+             "max_value": 441,
+             "min_value": 441
+           }
+         }
+       },
+       {
+         "file_offset": 17213,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "rw_area_tot",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 17162,
+           "dictionary_page_offset": 17131,
+           "statistics": {
+             "max_value": 673882,
+             "min_value": 673882
+           }
+         }
+       },
+       {
+         "file_offset": 17367,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "rw_area_tot",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 17316,
+           "dictionary_page_offset": 17285,
+           "statistics": {
+             "max_value": 6122348.621315204,
+             "min_value": 6122348.621315204
+           }
+         }
+       },
+       {
+         "file_offset": 17526,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "effective_lot_sqft",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 17475,
+           "dictionary_page_offset": 17444,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 17687,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "effective_lot_sqft",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 17636,
+           "dictionary_page_offset": 17605,
+           "statistics": {
+             "max_value": 121968,
+             "min_value": 121968
+           }
+         }
+       },
+       {
+         "file_offset": 17848,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "effective_lot_sqft",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 17797,
+           "dictionary_page_offset": 17766,
+           "statistics": {
+             "max_value": 6201.877049689864,
+             "min_value": 6201.877049689864
+           }
+         }
+       },
+       {
+         "file_offset": 18010,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "effective_lot_sqft",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 17959,
+           "dictionary_page_offset": 17928,
+           "statistics": {
+             "max_value": 352,
+             "min_value": 352
+           }
+         }
+       },
+       {
+         "file_offset": 18173,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "effective_lot_sqft",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 18122,
+           "dictionary_page_offset": 18091,
+           "statistics": {
+             "max_value": 2183060.721490832,
+             "min_value": 2183060.721490832
+           }
+         }
+       },
+       {
+         "file_offset": 18334,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "effective_lot_sqft",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 18283,
+           "dictionary_page_offset": 18252,
+           "statistics": {
+             "max_value": 142631612.6463931,
+             "min_value": 142631612.6463931
+           }
+         }
+       },
+       {
+         "file_offset": 18500,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "dup",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 18449,
+           "dictionary_page_offset": 18418,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 18646,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "dup",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 18595,
+           "dictionary_page_offset": 18564,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 18792,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "dup",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 18741,
+           "dictionary_page_offset": 18710,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 18939,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "dup",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 18888,
+           "dictionary_page_offset": 18857,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 19087,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "dup",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 19036,
+           "dictionary_page_offset": 19005,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 19233,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "dup",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 19182,
+           "dictionary_page_offset": 19151,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 19384,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "nonCTXT",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 19333,
+           "dictionary_page_offset": 19302,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 19534,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "nonCTXT",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 19483,
+           "dictionary_page_offset": 19452,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 19684,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "nonCTXT",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 19633,
+           "dictionary_page_offset": 19602,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 19835,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "nonCTXT",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 19784,
+           "dictionary_page_offset": 19753,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 19987,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "nonCTXT",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 19936,
+           "dictionary_page_offset": 19905,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 20137,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "nonCTXT",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 20086,
+           "dictionary_page_offset": 20055,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 20292,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "vacantland",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 20241,
+           "dictionary_page_offset": 20210,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 20445,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "vacantland",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 20394,
+           "dictionary_page_offset": 20363,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 20598,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "vacantland",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 20547,
+           "dictionary_page_offset": 20516,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 20752,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "vacantland",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 20701,
+           "dictionary_page_offset": 20670,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 20907,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "vacantland",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 20856,
+           "dictionary_page_offset": 20825,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 21060,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "vacantland",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 21009,
+           "dictionary_page_offset": 20978,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 21218,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "parkingbillboard",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 21167,
+           "dictionary_page_offset": 21136,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 21377,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "parkingbillboard",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 21326,
+           "dictionary_page_offset": 21295,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 21536,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "parkingbillboard",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 21485,
+           "dictionary_page_offset": 21454,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 21696,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "parkingbillboard",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 21645,
+           "dictionary_page_offset": 21614,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 21857,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "parkingbillboard",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 21806,
+           "dictionary_page_offset": 21775,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 22016,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "parkingbillboard",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 21965,
+           "dictionary_page_offset": 21934,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 22180,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "cvalte10",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 22129,
+           "dictionary_page_offset": 22098,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 22331,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "cvalte10",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 22280,
+           "dictionary_page_offset": 22249,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 22482,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "cvalte10",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 22431,
+           "dictionary_page_offset": 22400,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 22634,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "cvalte10",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 22583,
+           "dictionary_page_offset": 22552,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 22787,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "cvalte10",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 22736,
+           "dictionary_page_offset": 22705,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 22938,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "cvalte10",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 22887,
+           "dictionary_page_offset": 22856,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 23094,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "condootherhotel",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 23043,
+           "dictionary_page_offset": 23012,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 23252,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "condootherhotel",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 23201,
+           "dictionary_page_offset": 23170,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 23410,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "condootherhotel",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 23359,
+           "dictionary_page_offset": 23328,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 23569,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "condootherhotel",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 23518,
+           "dictionary_page_offset": 23487,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 23729,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "condootherhotel",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 23678,
+           "dictionary_page_offset": 23647,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 23887,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "condootherhotel",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 23836,
+           "dictionary_page_offset": 23805,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 24050,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "calculated_lot_size",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 23999,
+           "dictionary_page_offset": 23968,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 24212,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "calculated_lot_size",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 24161,
+           "dictionary_page_offset": 24130,
+           "statistics": {
+             "max_value": 100,
+             "min_value": 100
+           }
+         }
+       },
+       {
+         "file_offset": 24374,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "calculated_lot_size",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 24323,
+           "dictionary_page_offset": 24292,
+           "statistics": {
+             "max_value": 1.2345679012345678,
+             "min_value": 1.2345679012345678
+           }
+         }
+       },
+       {
+         "file_offset": 24537,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "calculated_lot_size",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 24486,
+           "dictionary_page_offset": 24455,
+           "statistics": {
+             "max_value": 81,
+             "min_value": 81
+           }
+         }
+       },
+       {
+         "file_offset": 24701,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "calculated_lot_size",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 24650,
+           "dictionary_page_offset": 24619,
+           "statistics": {
+             "max_value": 100,
+             "min_value": 100
+           }
+         }
+       },
+       {
+         "file_offset": 24863,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "calculated_lot_size",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 24812,
+           "dictionary_page_offset": 24781,
+           "statistics": {
+             "max_value": 123.45679012345684,
+             "min_value": 123.45679012345684
+           }
+         }
+       },
+       {
+         "file_offset": 25030,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "calculated_efflot_size",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 24979,
+           "dictionary_page_offset": 24948,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 25195,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "calculated_efflot_size",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 25144,
+           "dictionary_page_offset": 25113,
+           "statistics": {
+             "max_value": 4172.084000000002,
+             "min_value": 4172.084000000002
+           }
+         }
+       },
+       {
+         "file_offset": 25360,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "calculated_efflot_size",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 25309,
+           "dictionary_page_offset": 25278,
+           "statistics": {
+             "max_value": 42.29786138613863,
+             "min_value": 42.29786138613863
+           }
+         }
+       },
+       {
+         "file_offset": 25526,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "calculated_efflot_size",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 25475,
+           "dictionary_page_offset": 25444,
+           "statistics": {
+             "max_value": 101,
+             "min_value": 101
+           }
+         }
+       },
+       {
+         "file_offset": 25693,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "calculated_efflot_size",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 25642,
+           "dictionary_page_offset": 25611,
+           "statistics": {
+             "max_value": 4272.084000000002,
+             "min_value": 4272.084000000002
+           }
+         }
+       },
+       {
+         "file_offset": 25858,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "calculated_efflot_size",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 25807,
+           "dictionary_page_offset": 25776,
+           "statistics": {
+             "max_value": 172355.84886194076,
+             "min_value": 172355.84886194076
+           }
+         }
+       },
+       {
+         "file_offset": 26028,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missingsite",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 25977,
+           "dictionary_page_offset": 25946,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 26182,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missingsite",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 26131,
+           "dictionary_page_offset": 26100,
+           "statistics": {
+             "max_value": 1,
+             "min_value": 1
+           }
+         }
+       },
+       {
+         "file_offset": 26336,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missingsite",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 26285,
+           "dictionary_page_offset": 26254,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 26491,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missingsite",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 26440,
+           "dictionary_page_offset": 26409,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 26647,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missingsite",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 26596,
+           "dictionary_page_offset": 26565,
+           "statistics": {
+             "max_value": 208,
+             "min_value": 208
+           }
+         }
+       },
+       {
+         "file_offset": 26801,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missingsite",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 26750,
+           "dictionary_page_offset": 26719,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 26960,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missinggla",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 26909,
+           "dictionary_page_offset": 26878,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 27113,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missinggla",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 27062,
+           "dictionary_page_offset": 27031,
+           "statistics": {
+             "max_value": 1,
+             "min_value": 1
+           }
+         }
+       },
+       {
+         "file_offset": 27266,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missinggla",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 27215,
+           "dictionary_page_offset": 27184,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 27420,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missinggla",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 27369,
+           "dictionary_page_offset": 27338,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 27575,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missinggla",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 27524,
+           "dictionary_page_offset": 27493,
+           "statistics": {
+             "max_value": 44,
+             "min_value": 44
+           }
+         }
+       },
+       {
+         "file_offset": 27728,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missinggla",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 27677,
+           "dictionary_page_offset": 27646,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 27886,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missingsitegla",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 27835,
+           "dictionary_page_offset": 27804,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 28043,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missingsitegla",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 27992,
+           "dictionary_page_offset": 27961,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 28200,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missingsitegla",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 28149,
+           "dictionary_page_offset": 28118,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 28358,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missingsitegla",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 28307,
+           "dictionary_page_offset": 28276,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 28517,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missingsitegla",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 28466,
+           "dictionary_page_offset": 28435,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 28674,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "missingsitegla",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 28623,
+           "dictionary_page_offset": 28592,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 28836,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "actual_lot_size_sqft",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 28785,
+           "dictionary_page_offset": 28754,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 28999,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "actual_lot_size_sqft",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 28948,
+           "dictionary_page_offset": 28917,
+           "statistics": {
+             "max_value": 121968,
+             "min_value": 121968
+           }
+         }
+       },
+       {
+         "file_offset": 29162,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "actual_lot_size_sqft",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 29111,
+           "dictionary_page_offset": 29080,
+           "statistics": {
+             "max_value": 8685.222814207653,
+             "min_value": 8685.222814207653
+           }
+         }
+       },
+       {
+         "file_offset": 29326,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "actual_lot_size_sqft",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 29275,
+           "dictionary_page_offset": 29244,
+           "statistics": {
+             "max_value": 366,
+             "min_value": 366
+           }
+         }
+       },
+       {
+         "file_offset": 29491,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "actual_lot_size_sqft",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 29440,
+           "dictionary_page_offset": 29409,
+           "statistics": {
+             "max_value": 3178791.550000001,
+             "min_value": 3178791.550000001
+           }
+         }
+       },
+       {
+         "file_offset": 29654,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "actual_lot_size_sqft",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 29603,
+           "dictionary_page_offset": 29572,
+           "statistics": {
+             "max_value": 243347757.98270744,
+             "min_value": 243347757.98270744
+           }
+         }
+       },
+       {
+         "file_offset": 29822,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "lotsize_sqft",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 29771,
+           "dictionary_page_offset": 29740,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 29977,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "lotsize_sqft",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 29926,
+           "dictionary_page_offset": 29895,
+           "statistics": {
+             "max_value": 121968,
+             "min_value": 121968
+           }
+         }
+       },
+       {
+         "file_offset": 30132,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "lotsize_sqft",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 30081,
+           "dictionary_page_offset": 30050,
+           "statistics": {
+             "max_value": 8841.174394454862,
+             "min_value": 8841.174394454862
+           }
+         }
+       },
+       {
+         "file_offset": 30288,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "lotsize_sqft",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 30237,
+           "dictionary_page_offset": 30206,
+           "statistics": {
+             "max_value": 364,
+             "min_value": 364
+           }
+         }
+       },
+       {
+         "file_offset": 30445,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "lotsize_sqft",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 30394,
+           "dictionary_page_offset": 30363,
+           "statistics": {
+             "max_value": 3218187.4795815693,
+             "min_value": 3218187.4795815693
+           }
+         }
+       },
+       {
+         "file_offset": 30600,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "lotsize_sqft",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 30549,
+           "dictionary_page_offset": 30518,
+           "statistics": {
+             "max_value": 244563632.41811454,
+             "min_value": 244563632.41811454
+           }
+         }
+       },
+       {
+         "file_offset": 30760,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "count",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 30709,
+           "dictionary_page_offset": 30678,
+           "statistics": {
+             "max_value": 1,
+             "min_value": 1
+           }
+         }
+       },
+       {
+         "file_offset": 30908,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "count",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 30857,
+           "dictionary_page_offset": 30826,
+           "statistics": {
+             "max_value": 1,
+             "min_value": 1
+           }
+         }
+       },
+       {
+         "file_offset": 31056,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "count",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 31005,
+           "dictionary_page_offset": 30974,
+           "statistics": {
+             "max_value": 1,
+             "min_value": 1
+           }
+         }
+       },
+       {
+         "file_offset": 31205,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "count",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 31154,
+           "dictionary_page_offset": 31123,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 31355,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "count",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 31304,
+           "dictionary_page_offset": 31273,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 31503,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "count",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 31452,
+           "dictionary_page_offset": 31421,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 31656,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ul_observation_date",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 31605,
+           "dictionary_page_offset": 31574,
+           "statistics": {
+             "max_value": 1608822900000000000,
+             "min_value": 1608822900000000000
+           }
+         }
+       },
+       {
+         "file_offset": 31818,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ul_observation_date",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 31767,
+           "dictionary_page_offset": 31736,
+           "statistics": {
+             "max_value": 1608822900000000000,
+             "min_value": 1608822900000000000
+           }
+         }
+       },
+       {
+         "file_offset": 31980,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ul_observation_date",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 31929,
+           "dictionary_page_offset": 31898,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 32143,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ul_observation_date",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 32092,
+           "dictionary_page_offset": 32061,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 32307,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ul_observation_date",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 32256,
+           "dictionary_page_offset": 32225,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 32469,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ul_observation_date",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 32418,
+           "dictionary_page_offset": 32387,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 32636,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ul_tz_offset_minutes_ul_observation_date",
+             "min"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 32585,
+           "dictionary_page_offset": 32554,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 32819,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ul_tz_offset_minutes_ul_observation_date",
+             "max"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 32768,
+           "dictionary_page_offset": 32737,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 33002,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ul_tz_offset_minutes_ul_observation_date",
+             "mean"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 32951,
+           "dictionary_page_offset": 32920,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 33186,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ul_tz_offset_minutes_ul_observation_date",
+             "count"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 33135,
+           "dictionary_page_offset": 33104,
+           "statistics": {
+             "max_value": 495,
+             "min_value": 495
+           }
+         }
+       },
+       {
+         "file_offset": 33371,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ul_tz_offset_minutes_ul_observation_date",
+             "sum"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 33320,
+           "dictionary_page_offset": 33289,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       },
+       {
+         "file_offset": 33554,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY",
+             "RLE"
+           ],
+           "path_in_schema": [
+             "ul_tz_offset_minutes_ul_observation_date",
+             "variance"
+           ],
+           "codec": "ZSTD",
+           "num_values": 1,
+           "total_uncompressed_size": 64,
+           "total_compressed_size": 82,
+           "data_page_offset": 33503,
+           "dictionary_page_offset": 33472,
+           "statistics": {
+             "max_value": 0,
+             "min_value": 0
+           }
+         }
+       }
+     ],
+     "total_byte_size": 17712,
+     "num_rows": 1
+   }
+ ],
+ "created_by": "UrbanLogiq",
+ "metadata_length": 19372
+}

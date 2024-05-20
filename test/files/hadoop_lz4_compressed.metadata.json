@@ -1,0 +1,145 @@
+{
+  "created_by": "parquet-mr version 1.10.1 (build a89df8f9932b6ef6633d06069e50c9b7970bebd1)",
+  "metadata_length": 376,
+  "num_rows": 4,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "codec": "LZ4",
+            "data_page_offset": 4,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "PLAIN_DICTIONARY",
+                "page_type": 2
+              },
+              {
+                "count": 1,
+                "encoding": "PLAIN_DICTIONARY",
+                "page_type": 0
+              }
+            ],
+            "encodings": [
+              "BIT_PACKED",
+              "PLAIN_DICTIONARY"
+            ],
+            "num_values": 4,
+            "path_in_schema": [
+              "c0"
+            ],
+            "statistics": {
+              "max": 1593604801,
+              "max_value": 1593604801,
+              "min": 1593604800,
+              "min_value": 1593604800,
+              "null_count": 0
+            },
+            "total_compressed_size": 112,
+            "total_uncompressed_size": 93,
+            "type": "INT64"
+          }
+        },
+        {
+          "file_offset": 116,
+          "meta_data": {
+            "codec": "LZ4",
+            "data_page_offset": 116,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "PLAIN_DICTIONARY",
+                "page_type": 2
+              },
+              {
+                "count": 1,
+                "encoding": "PLAIN_DICTIONARY",
+                "page_type": 0
+              }
+            ],
+            "encodings": [
+              "BIT_PACKED",
+              "PLAIN_DICTIONARY"
+            ],
+            "num_values": 4,
+            "path_in_schema": [
+              "c1"
+            ],
+            "statistics": {
+              "max_value": "def",
+              "min_value": "abc",
+              "null_count": 0
+            },
+            "total_compressed_size": 79,
+            "total_uncompressed_size": 61,
+            "type": "BYTE_ARRAY"
+          }
+        },
+        {
+          "file_offset": 195,
+          "meta_data": {
+            "codec": "LZ4",
+            "data_page_offset": 195,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "PLAIN_DICTIONARY",
+                "page_type": 2
+              },
+              {
+                "count": 1,
+                "encoding": "PLAIN_DICTIONARY",
+                "page_type": 0
+              }
+            ],
+            "encodings": [
+              "BIT_PACKED",
+              "PLAIN_DICTIONARY",
+              "RLE"
+            ],
+            "num_values": 4,
+            "path_in_schema": [
+              "v11"
+            ],
+            "statistics": {
+              "max": 42.125,
+              "max_value": 42.125,
+              "min": 7.7,
+              "min_value": 7.7,
+              "null_count": 0
+            },
+            "total_compressed_size": 123,
+            "total_uncompressed_size": 108,
+            "type": "DOUBLE"
+          }
+        }
+      ],
+      "num_rows": 4,
+      "total_byte_size": 262
+    }
+  ],
+  "schema": [
+    {
+      "name": "",
+      "num_children": 3
+    },
+    {
+      "name": "c0",
+      "repetition_type": "REQUIRED",
+      "type": "INT64"
+    },
+    {
+      "name": "c1",
+      "repetition_type": "REQUIRED",
+      "type": "BYTE_ARRAY"
+    },
+    {
+      "name": "v11",
+      "repetition_type": "OPTIONAL",
+      "type": "DOUBLE"
+    }
+  ],
+  "version": 1
+}
