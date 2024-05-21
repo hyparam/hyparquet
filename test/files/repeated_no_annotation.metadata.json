@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "name": "user",
+      "num_children": 2
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "REQUIRED",
+      "name": "id"
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "phoneNumbers",
+      "num_children": 1
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "phone",
+      "num_children": 2
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "REQUIRED",
+      "name": "number"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "kind",
+      "converted_type": "UTF8"
+    }
+  ],
+  "num_rows": 0,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 64,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "id"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6,
+            "total_uncompressed_size": 60,
+            "total_compressed_size": 60,
+            "data_page_offset": 42,
+            "dictionary_page_offset": 4
+          }
+        },
+        {
+          "file_offset": 173,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "phoneNumbers",
+              "phone",
+              "number"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 8,
+            "total_uncompressed_size": 80,
+            "total_compressed_size": 80,
+            "data_page_offset": 139,
+            "dictionary_page_offset": 93
+          }
+        },
+        {
+          "file_offset": 294,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "phoneNumbers",
+              "phone",
+              "kind"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 8,
+            "total_uncompressed_size": 65,
+            "total_compressed_size": 65,
+            "data_page_offset": 261,
+            "dictionary_page_offset": 229
+          }
+        }
+      ],
+      "total_byte_size": 205,
+      "num_rows": 6
+    }
+  ],
+  "created_by": "parquet-rs version 0.3.0 (build b45ce7cba2199f22d93269c150d8a83916c69b5e)",
+  "metadata_length": 306
+}

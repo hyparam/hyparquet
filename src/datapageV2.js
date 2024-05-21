@@ -1,7 +1,6 @@
-import { byteStreamSplit } from './byteStreamSplit.js'
 import { decompressPage } from './column.js'
 import { deltaBinaryUnpack, deltaByteArray, deltaLengthByteArray } from './delta.js'
-import { readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
+import { byteStreamSplit, readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
 import { readPlain } from './plain.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel } from './schema.js'
 

@@ -38,9 +38,8 @@ export async function parquetRead(options) {
   options.metadata ||= await parquetMetadataAsync(options.file)
   if (!options.metadata) throw new Error('parquet metadata not found')
 
-  const { metadata, onComplete } = options
+  const { metadata, onComplete, rowEnd } = options
   const rowStart = options.rowStart || 0
-  const rowEnd = options.rowEnd || Number(metadata.num_rows)
   /** @type {any[][]} */
   const rowData = []
 
@@ -50,13 +49,13 @@ export async function parquetRead(options) {
     // number of rows in this row group
     const groupRows = Number(rowGroup.num_rows)
     // if row group overlaps with row range, read it
-    if (groupStart + groupRows >= rowStart && groupStart < rowEnd) {
+    if (groupStart + groupRows >= rowStart && (rowEnd === undefined || groupStart < rowEnd)) {
       // read row group
       const groupData = await readRowGroup(options, rowGroup, groupStart)
       if (onComplete) {
         // filter to rows in range
         const start = Math.max(rowStart - groupStart, 0)
-        const end = Math.min(rowEnd - groupStart, groupRows)
+        const end = rowEnd === undefined ? undefined : rowEnd - groupStart
         concat(rowData, groupData.slice(start, end))
       }
     }

@@ -158,7 +158,8 @@ export function assembleNested(subcolumnData, schema, depth = 0) {
       subcolumnData.delete(child.path.join('.'))
     }
     // invert struct by depth
-    const inverted = invertStruct(struct, nextDepth)
+    const invertDepth = schema.element.repetition_type === 'REQUIRED' ? depth : depth + 1
+    const inverted = invertStruct(struct, invertDepth)
     if (optional) flattenAtDepth(inverted, depth)
     subcolumnData.set(path, inverted)
     return

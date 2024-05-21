@@ -1,5 +1,4 @@
-import { byteStreamSplit } from './byteStreamSplit.js'
-import { readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
+import { byteStreamSplit, readRleBitPackedHybrid, widthFromMaxInt } from './encoding.js'
 import { readPlain } from './plain.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel, isRequired } from './schema.js'
 

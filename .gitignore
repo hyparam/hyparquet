@@ -3,4 +3,5 @@ package-lock.json
 coverage
 *.tgz
 .vscode
+.DS_Store
 /*.parquet
