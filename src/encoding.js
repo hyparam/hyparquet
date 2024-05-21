@@ -16,7 +16,7 @@ export function widthFromMaxInt(value) {
  * If length is zero, then read as int32 at the start of the encoded data.
  *
  * @typedef {import("./types.d.ts").DataReader} DataReader
- * @typedef {number[]} DecodedArray
+ * @typedef {import("./types.d.ts").DecodedArray} DecodedArray
  * @param {DataReader} reader - buffer to read data from
  * @param {number} width - width of each bit-packed group
  * @param {number} length - length of the encoded data
@@ -81,14 +81,12 @@ function readRle(reader, count, bitWidth, values, seen) {
  * @param {DataReader} reader - buffer to read data from
  * @param {number} header - header information
  * @param {number} bitWidth - width of each bit-packed group
- * @param {number[]} values - output array
+ * @param {DecodedArray} values - output array
  * @param {number} seen - number of values seen so far
  * @returns {number} number of values seen
  */
 function readBitPacked(reader, header, bitWidth, values, seen) {
-  // extract number of values to read from header
-  let count = header >> 1 << 3
-  // mask for bitWidth number of bits
+  let count = header >> 1 << 3 // values to read
   const mask = (1 << bitWidth) - 1
 
   let data = 0
@@ -115,7 +113,7 @@ function readBitPacked(reader, header, bitWidth, values, seen) {
       left += 8
     } else {
       if (seen < values.length) {
-        // emit value by shifting off to the right and masking
+        // emit value
         values[seen++] = data >> right & mask
       }
       count--
@@ -127,16 +125,54 @@ function readBitPacked(reader, header, bitWidth, values, seen) {
 }
 
 /**
+ * @typedef {import("./types.d.ts").ParquetType} ParquetType
  * @param {DataReader} reader
- * @param {number} nValues
- * @param {Float32Array | Float64Array} output
+ * @param {number} count
+ * @param {ParquetType} type
+ * @param {number | undefined} typeLength
+ * @returns {DecodedArray}
  */
-export function byteStreamSplit(reader, nValues, output) {
-  const byteWidth = output instanceof Float32Array ? 4 : 8
-  const bytes = new Uint8Array(output.buffer)
-  for (let b = 0; b < byteWidth; b++) {
-    for (let i = 0; i < nValues; i++) {
-      bytes[i * byteWidth + b] = reader.view.getUint8(reader.offset++)
+export function byteStreamSplit(reader, count, type, typeLength) {
+  const width = byteWidth(type, typeLength)
+  const bytes = new Uint8Array(count * width)
+  for (let b = 0; b < width; b++) {
+    for (let i = 0; i < count; i++) {
+      bytes[i * width + b] = reader.view.getUint8(reader.offset++)
     }
+  }
+  // interpret bytes as typed array
+  if (type === 'FLOAT') return new Float32Array(bytes.buffer)
+  else if (type === 'DOUBLE') return new Float64Array(bytes.buffer)
+  else if (type === 'INT32') return new Int32Array(bytes.buffer)
+  else if (type === 'INT64') return new BigInt64Array(bytes.buffer)
+  else if (type === 'FIXED_LEN_BYTE_ARRAY') {
+    // split into arrays of typeLength
+    const split = new Array(count)
+    for (let i = 0; i < count; i++) {
+      split[i] = bytes.subarray(i * width, (i + 1) * width)
+    }
+    return split
+  }
+  throw new Error(`parquet byte_stream_split unsupported type: ${type}`)
+}
+
+/**
+ * @param {ParquetType} type
+ * @param {number | undefined} typeLength
+ * @returns {number}
+ */
+function byteWidth(type, typeLength) {
+  switch (type) {
+  case 'INT32':
+  case 'FLOAT':
+    return 4
+  case 'INT64':
+  case 'DOUBLE':
+    return 8
+  case 'FIXED_LEN_BYTE_ARRAY':
+    if (!typeLength) throw new Error('parquet byteWidth missing type_length')
+    return typeLength
+  default:
+    throw new Error(`parquet unsupported type: ${type}`)
   }
 }

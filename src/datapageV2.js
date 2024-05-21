@@ -72,10 +72,8 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
     dataPage = new Array(nValues)
     deltaByteArray(pageReader, nValues, dataPage)
   } else if (daph2.encoding === 'BYTE_STREAM_SPLIT') {
-    if (type === 'FLOAT') dataPage = new Float32Array(nValues)
-    else if (type === 'DOUBLE') dataPage = new Float64Array(nValues)
-    else throw new Error(`parquet byte_stream_split unsupported type: ${type}`)
-    byteStreamSplit(pageReader, nValues, dataPage)
+    const { type_length } = schemaPath[schemaPath.length - 1].element
+    dataPage = byteStreamSplit(reader, nValues, type, type_length)
   } else {
     throw new Error(`parquet unsupported encoding: ${daph2.encoding}`)
   }
