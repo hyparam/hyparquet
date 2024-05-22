@@ -53,6 +53,7 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
     // assert(columnMetadata.type === 'BOOLEAN')
     dataPage = new Array(nValues)
     readRleBitPackedHybrid(pageReader, 1, 0, dataPage)
+    dataPage = dataPage.map(x => !!x)
   } else if (
     daph2.encoding === 'PLAIN_DICTIONARY' ||
     daph2.encoding === 'RLE_DICTIONARY'
