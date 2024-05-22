@@ -44,7 +44,7 @@ export function readPlain(reader, type, count, fixedLength) {
 function readPlainBoolean(reader, count) {
   const values = new Array(count)
   for (let i = 0; i < count; i++) {
-    const byteOffset = reader.offset + Math.floor(i / 8)
+    const byteOffset = reader.offset + (i / 8 | 0)
     const bitOffset = i % 8
     const byte = reader.view.getUint8(byteOffset)
     values[i] = (byte & 1 << bitOffset) !== 0

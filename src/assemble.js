@@ -162,7 +162,6 @@ export function assembleNested(subcolumnData, schema, depth = 0) {
     const inverted = invertStruct(struct, invertDepth)
     if (optional) flattenAtDepth(inverted, depth)
     subcolumnData.set(path, inverted)
-    return
   }
   // assert(schema.element.repetition_type !== 'REPEATED')
 }

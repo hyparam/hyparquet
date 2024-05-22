@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { readRleBitPackedHybrid, widthFromMaxInt } from '../src/encoding.js'
+import { bitWidth, readRleBitPackedHybrid } from '../src/encoding.js'
 
 describe('readRleBitPackedHybrid', () => {
   it('reads RLE values with explicit length', () => {
@@ -100,14 +100,15 @@ describe('readRleBitPackedHybrid', () => {
   })
 })
 
-describe('widthFromMaxInt', () => {
+describe('bitWidth', () => {
   it('calculates bit widths', () => {
-    // Test a range of inputs and their expected outputs
-    expect(widthFromMaxInt(0)).toBe(0)
-    expect(widthFromMaxInt(1)).toBe(1)
-    expect(widthFromMaxInt(255)).toBe(8)
-    expect(widthFromMaxInt(256)).toBe(9)
-    expect(widthFromMaxInt(1023)).toBe(10)
-    expect(widthFromMaxInt(1048575)).toBe(20)
+    expect(bitWidth(0)).toBe(0)
+    expect(bitWidth(1)).toBe(1)
+    expect(bitWidth(7)).toBe(3)
+    expect(bitWidth(8)).toBe(4)
+    expect(bitWidth(255)).toBe(8)
+    expect(bitWidth(256)).toBe(9)
+    expect(bitWidth(1023)).toBe(10)
+    expect(bitWidth(1048575)).toBe(20)
   })
 })

@@ -46,21 +46,6 @@ export function getSchemaPath(schema, name) {
 }
 
 /**
- * Check if the schema path and all its ancestors are required.
- *
- * @param {SchemaTree[]} schemaPath
- * @returns {boolean} true if the element is required
- */
-export function isRequired(schemaPath) {
-  for (const { element } of schemaPath.slice(1)) {
-    if (element.repetition_type !== 'REQUIRED') {
-      return false
-    }
-  }
-  return true
-}
-
-/**
  * Get the max repetition level for a given schema path.
  *
  * @param {SchemaTree[]} schemaPath

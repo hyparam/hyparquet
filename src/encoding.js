@@ -6,18 +6,18 @@ import { readVarInt } from './thrift.js'
  * @param {number} value
  * @returns {number}
  */
-export function widthFromMaxInt(value) {
-  return Math.ceil(Math.log2(value + 1))
+export function bitWidth(value) {
+  return 32 - Math.clz32(value)
 }
 
 /**
  * Read values from a run-length encoded/bit-packed hybrid encoding.
  *
- * If length is zero, then read as int32 at the start of the encoded data.
+ * If length is zero, then read int32 length at the start.
  *
  * @typedef {import("./types.d.ts").DataReader} DataReader
  * @typedef {import("./types.d.ts").DecodedArray} DecodedArray
- * @param {DataReader} reader - buffer to read data from
+ * @param {DataReader} reader
  * @param {number} width - width of each bit-packed group
  * @param {number} length - length of the encoded data
  * @param {DecodedArray} output
