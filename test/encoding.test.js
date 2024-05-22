@@ -14,7 +14,7 @@ describe('readRleBitPackedHybrid', () => {
     const reader = { view, offset: 0 }
 
     const values = new Array(6)
-    readRleBitPackedHybrid(reader, 1, 6, values)
+    readRleBitPackedHybrid(reader, 1, 4, values)
     expect(reader.offset).toBe(4)
     expect(values).toEqual([1, 1, 1, 100, 100, 100])
   })
@@ -42,7 +42,7 @@ describe('readRleBitPackedHybrid', () => {
     const reader = { view, offset: 0 }
 
     const values = new Array(3)
-    readRleBitPackedHybrid(reader, 32, 3, values)
+    readRleBitPackedHybrid(reader, 32, 5, values)
     expect(reader.offset).toBe(5)
     expect(values).toEqual([234000, 234000, 234000])
   })
@@ -62,7 +62,7 @@ describe('readRleBitPackedHybrid', () => {
     // Bit-packed values: false, false, true
     const buffer = new ArrayBuffer(8)
     const view = new DataView(buffer)
-    view.setInt32(0, 3, true) // length 3 little-endian
+    view.setInt32(0, 2, true) // length 2 little-endian
     view.setUint8(4, 0b00000011) // Bit-packed header for 1-8 values
     view.setUint8(5, 0b00000100) // Bit-packed values (false, false, true)
     const reader = { view, offset: 0 }
@@ -83,7 +83,7 @@ describe('readRleBitPackedHybrid', () => {
     const reader = { view, offset: 0 }
 
     const values = new Array(9)
-    readRleBitPackedHybrid(reader, 1, 9, values)
+    readRleBitPackedHybrid(reader, 1, 3, values)
     expect(reader.offset).toBe(3)
     expect(values).toEqual([1, 1, 1, 1, 1, 1, 1, 1, 1])
   })

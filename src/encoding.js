@@ -1,10 +1,10 @@
 import { readVarInt } from './thrift.js'
 
 /**
- * Convert the value specified to a bit width.
+ * Minimum bits needed to store value.
  *
- * @param {number} value - value to convert to bitwidth
- * @returns {number} bit width of the value
+ * @param {number} value
+ * @returns {number}
  */
 export function widthFromMaxInt(value) {
   return Math.ceil(Math.log2(value + 1))
@@ -20,41 +20,39 @@ export function widthFromMaxInt(value) {
  * @param {DataReader} reader - buffer to read data from
  * @param {number} width - width of each bit-packed group
  * @param {number} length - length of the encoded data
- * @param {DecodedArray} values - output array
+ * @param {DecodedArray} output
  */
-export function readRleBitPackedHybrid(reader, width, length, values) {
+export function readRleBitPackedHybrid(reader, width, length, output) {
   if (!length) {
-    length = reader.view.getUint32(reader.offset, true)
+    // length = reader.view.getUint32(reader.offset, true)
     reader.offset += 4
   }
   let seen = 0
-  while (seen < values.length) {
+  while (seen < output.length) {
     const header = readVarInt(reader)
     if (header & 1) {
       // bit-packed
-      seen = readBitPacked(reader, header, width, values, seen)
+      seen = readBitPacked(reader, header, width, output, seen)
     } else {
       // rle
       const count = header >>> 1
-      readRle(reader, count, width, values, seen)
+      readRle(reader, count, width, output, seen)
       seen += count
     }
   }
+  // assert(reader.offset - startOffset === length)
 }
 
 /**
- * Read a run-length encoded value.
+ * Run-length encoding: read value with bitWidth and repeat it count times.
  *
- * The count is determined from the header and the width is used to grab the
- * value that's repeated. Yields the value repeated count times.
- *
- * @param {DataReader} reader - buffer to read data from
- * @param {number} count - number of values to read
- * @param {number} bitWidth - width of each bit-packed group
- * @param {DecodedArray} values - output array
- * @param {number} seen - number of values seen so far
+ * @param {DataReader} reader
+ * @param {number} count
+ * @param {number} bitWidth
+ * @param {DecodedArray} output
+ * @param {number} seen
  */
-function readRle(reader, count, bitWidth, values, seen) {
+function readRle(reader, count, bitWidth, output, seen) {
   const width = bitWidth + 7 >> 3
   let value = 0
   if (width === 1) {
@@ -70,7 +68,7 @@ function readRle(reader, count, bitWidth, values, seen) {
 
   // repeat value count times
   for (let i = 0; i < count; i++) {
-    values[seen + i] = value
+    output[seen + i] = value
   }
 }
 
@@ -78,14 +76,14 @@ function readRle(reader, count, bitWidth, values, seen) {
  * Read a bit-packed run of the rle/bitpack hybrid.
  * Supports width > 8 (crossing bytes).
  *
- * @param {DataReader} reader - buffer to read data from
- * @param {number} header - header information
- * @param {number} bitWidth - width of each bit-packed group
- * @param {DecodedArray} values - output array
- * @param {number} seen - number of values seen so far
- * @returns {number} number of values seen
+ * @param {DataReader} reader
+ * @param {number} header - bit-pack header
+ * @param {number} bitWidth
+ * @param {DecodedArray} output
+ * @param {number} seen
+ * @returns {number} total output values so far
  */
-function readBitPacked(reader, header, bitWidth, values, seen) {
+function readBitPacked(reader, header, bitWidth, output, seen) {
   let count = header >> 1 << 3 // values to read
   const mask = (1 << bitWidth) - 1
 
@@ -112,9 +110,9 @@ function readBitPacked(reader, header, bitWidth, values, seen) {
       reader.offset++
       left += 8
     } else {
-      if (seen < values.length) {
+      if (seen < output.length) {
         // emit value
-        values[seen++] = data >> right & mask
+        output[seen++] = data >> right & mask
       }
       count--
       right += bitWidth

@@ -36,7 +36,6 @@ export function readDataPage(bytes, daph, schemaPath, { type }) {
     daph.encoding === 'RLE_DICTIONARY' ||
     daph.encoding === 'RLE'
   ) {
-    // TODO: RLE encoding uses bitWidth = schemaElement.type_length
     const bitWidth = type === 'BOOLEAN' ? 1 : view.getUint8(reader.offset++)
     if (bitWidth) {
       dataPage = new Array(nValues)

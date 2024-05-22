@@ -50,17 +50,16 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
     const { type_length } = schemaPath[schemaPath.length - 1].element
     dataPage = readPlain(pageReader, type, nValues, type_length)
   } else if (daph2.encoding === 'RLE') {
-    pageReader.offset = 4
+    // assert(columnMetadata.type === 'BOOLEAN')
     dataPage = new Array(nValues)
-    readRleBitPackedHybrid(pageReader, 1, uncompressedPageSize, dataPage)
+    readRleBitPackedHybrid(pageReader, 1, 0, dataPage)
   } else if (
     daph2.encoding === 'PLAIN_DICTIONARY' ||
     daph2.encoding === 'RLE_DICTIONARY'
   ) {
-    const bitWidth = pageView.getUint8(0)
-    pageReader.offset = 1
+    const bitWidth = pageView.getUint8(pageReader.offset++)
     dataPage = new Array(nValues)
-    readRleBitPackedHybrid(pageReader, bitWidth, uncompressedPageSize, dataPage)
+    readRleBitPackedHybrid(pageReader, bitWidth, uncompressedPageSize - 1, dataPage)
   } else if (daph2.encoding === 'DELTA_BINARY_PACKED') {
     const int32 = type === 'INT32'
     dataPage = int32 ? new Int32Array(nValues) : new BigInt64Array(nValues)
