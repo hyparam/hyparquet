@@ -28,14 +28,14 @@ import { concat } from './utils.js'
 export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, schemaPath, compressors) {
   /** @type {ArrayLike<any> | undefined} */
   let dictionary = undefined
-  let valuesSeen = 0
+  let seen = 0
   /** @type {any[]} */
   const rowData = []
   const { element } = schemaPath[schemaPath.length - 1]
   // column reader:
   const reader = { view: new DataView(arrayBuffer, columnOffset), offset: 0 }
 
-  while (valuesSeen < rowGroup.num_rows) {
+  while (seen < rowGroup.num_rows) {
     // parse column header
     const header = parquetHeader(reader)
     if (header.compressed_page_size === undefined) {
@@ -58,7 +58,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
         compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec, compressors
       )
       const { definitionLevels, repetitionLevels, dataPage } = readDataPage(page, daph, schemaPath, columnMetadata)
-      valuesSeen += daph.num_values
+      seen += daph.num_values
       // assert(!daph.statistics || daph.statistics.null_count === BigInt(daph.num_values - dataPage.length))
 
       // construct output values: skip nulls and construct lists
@@ -89,7 +89,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       const { definitionLevels, repetitionLevels, dataPage } = readDataPageV2(
         compressedBytes, header, schemaPath, columnMetadata, compressors
       )
-      valuesSeen += daph2.num_values
+      seen += daph2.num_values
 
       dereferenceDictionary(dictionary, dataPage)
       values = convert(dataPage, element)
@@ -145,7 +145,7 @@ function dereferenceDictionary(dictionary, dataPage) {
  */
 export function getColumnOffset({ dictionary_page_offset, data_page_offset }) {
   let columnOffset = dictionary_page_offset
-  if (dictionary_page_offset === undefined || data_page_offset < dictionary_page_offset) {
+  if (!dictionary_page_offset || data_page_offset < dictionary_page_offset) {
     columnOffset = data_page_offset
   }
   return Number(columnOffset)
