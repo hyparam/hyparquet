@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "name": "hive_schema",
+      "num_children": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "my_map",
+      "num_children": 1,
+      "converted_type": "MAP",
+      "logical_type": {
+        "type": "MAP"
+      }
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "key_value",
+      "num_children": 2,
+      "converted_type": "MAP_KEY_VALUE"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "key",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    }
+  ],
+  "num_rows": 1,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "my_map",
+              "key_value",
+              "key"
+            ],
+            "codec": "GZIP",
+            "num_values": 2,
+            "total_uncompressed_size": 54,
+            "total_compressed_size": 69,
+            "data_page_offset": 4,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "parent",
+              "min_value": "name"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 0,
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 198,
+          "offset_index_length": 11,
+          "column_index_offset": 145,
+          "column_index_length": 25,
+          "crypto_metadata": 25
+        },
+        {
+          "file_offset": 73,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "my_map",
+              "key_value",
+              "value"
+            ],
+            "codec": "GZIP",
+            "num_values": 2,
+            "total_uncompressed_size": 57,
+            "total_compressed_size": 72,
+            "data_page_offset": 73,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "report",
+              "min_value": "another"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 0,
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 209,
+          "offset_index_length": 12,
+          "column_index_offset": 170,
+          "column_index_length": 28,
+          "crypto_metadata": 28
+        }
+      ],
+      "total_byte_size": 111,
+      "num_rows": 1,
+      "file_offset": 4,
+      "total_compressed_size": 141,
+      "ordinal": 0
+    }
+  ],
+  "created_by": "parquet-mr version 1.12.2 (build 77e30c8093386ec52c3cfa6c34b7ef3321322c94)",
+  "metadata_length": 366
+}

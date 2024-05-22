@@ -126,7 +126,7 @@ export function isMapLike(schema) {
   if (firstChild.element.repetition_type !== 'REPEATED') return false
 
   const keyChild = firstChild.children.find(child => child.element.name === 'key')
-  if (keyChild?.element.repetition_type !== 'REQUIRED') return false
+  if (keyChild?.element.repetition_type === 'REPEATED') return false
 
   const valueChild = firstChild.children.find(child => child.element.name === 'value')
   if (valueChild?.element.repetition_type === 'REPEATED') return false
