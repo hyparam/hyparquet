@@ -54,13 +54,11 @@ export function readDataPage(bytes, daph, schemaPath, { type }) {
 }
 
 /**
- * Read a page containing dictionary data.
- *
  * @param {Uint8Array} bytes raw page data
  * @param {import("./types.d.ts").DictionaryPageHeader} diph dictionary page header
  * @param {ColumnMetaData} columnMetadata
  * @param {number | undefined} typeLength - type_length from schema
- * @returns {ArrayLike<any>} array of values
+ * @returns {DecodedArray}
  */
 export function readDictionaryPage(bytes, diph, columnMetadata, typeLength) {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)

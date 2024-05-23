@@ -1,5 +1,5 @@
 import { assembleLists } from './assemble.js'
-import { convert } from './convert.js'
+import { convert, dereferenceDictionary } from './convert.js'
 import { readDataPage, readDictionaryPage } from './datapage.js'
 import { readDataPageV2 } from './datapageV2.js'
 import { parquetHeader } from './header.js'
@@ -11,6 +11,7 @@ import { concat } from './utils.js'
  * Parse column data from a buffer.
  *
  * @typedef {import('./types.js').ColumnMetaData} ColumnMetaData
+ * @typedef {import('./types.js').DecodedArray} DecodedArray
  * @param {import('./types.js').DataReader} reader
  * @param {import('./types.js').RowGroup} rowGroup row group metadata
  * @param {ColumnMetaData} columnMetadata column metadata
@@ -20,7 +21,7 @@ import { concat } from './utils.js'
  */
 export function readColumn(reader, rowGroup, columnMetadata, schemaPath, { compressors, utf8 }) {
   const { element } = schemaPath[schemaPath.length - 1]
-  /** @type {ArrayLike<any> | undefined} */
+  /** @type {DecodedArray | undefined} */
   let dictionary = undefined
   let seen = 0
   /** @type {any[]} */
@@ -49,8 +50,8 @@ export function readColumn(reader, rowGroup, columnMetadata, schemaPath, { compr
       // assert(!daph.statistics || daph.statistics.null_count === BigInt(daph.num_values - dataPage.length))
 
       // construct output values: skip nulls and construct lists
-      dereferenceDictionary(dictionary, dataPage)
-      values = convert(dataPage, element, utf8)
+      values = dereferenceDictionary(dictionary, dataPage)
+      values = convert(values, element, utf8)
       if (repetitionLevels.length || definitionLevels?.length) {
         // Use repetition levels to construct lists
         const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
@@ -78,8 +79,8 @@ export function readColumn(reader, rowGroup, columnMetadata, schemaPath, { compr
       )
       seen += daph2.num_values
 
-      dereferenceDictionary(dictionary, dataPage)
-      values = convert(dataPage, element, utf8)
+      values = dereferenceDictionary(dictionary, dataPage)
+      values = convert(values, element, utf8)
       if (repetitionLevels.length || definitionLevels?.length) {
         // Use repetition levels to construct lists
         const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
@@ -107,21 +108,6 @@ export function readColumn(reader, rowGroup, columnMetadata, schemaPath, { compr
     throw new Error(`parquet row data length ${rowData.length} does not match row group length ${rowGroup.num_rows}}`)
   }
   return rowData
-}
-
-/**
- * Map data to dictionary values in place.
- *
- * @typedef {import('./types.js').DecodedArray} DecodedArray
- * @param {ArrayLike<any> | undefined} dictionary
- * @param {DecodedArray} dataPage
- */
-function dereferenceDictionary(dictionary, dataPage) {
-  if (dictionary) {
-    for (let i = 0; i < dataPage.length; i++) {
-      dataPage[i] = dictionary[dataPage[i]]
-    }
-  }
 }
 
 /**

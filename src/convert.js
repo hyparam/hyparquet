@@ -97,3 +97,25 @@ export function parseFloat16(bytes) {
   if (exp === 0x1f) return frac ? NaN : sign * Infinity
   return sign * Math.pow(2, exp - 15) * (1 + frac / 1024)
 }
+
+/**
+ * Map data to dictionary values in place.
+ *
+ * @param {DecodedArray | undefined} dictionary
+ * @param {DecodedArray} dataPage
+ * @returns {DecodedArray}
+ */
+export function dereferenceDictionary(dictionary, dataPage) {
+  let output = dataPage
+  if (dictionary) {
+    if (dataPage instanceof Uint8Array && !(dictionary instanceof Uint8Array)) {
+      // upgrade dataPage to match dictionary type
+      // @ts-expect-error not my fault typescript doesn't understand constructors
+      output = new dictionary.constructor(dataPage.length)
+    }
+    for (let i = 0; i < dataPage.length; i++) {
+      output[i] = dictionary[dataPage[i]]
+    }
+  }
+  return output
+}

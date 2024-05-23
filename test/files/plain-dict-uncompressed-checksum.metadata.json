@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "name": "m",
+      "num_children": 2
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "REQUIRED",
+      "name": "long_field"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "binary_field"
+    }
+  ],
+  "num_rows": 1000,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 31,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN_DICTIONARY",
+              "BIT_PACKED"
+            ],
+            "path_in_schema": [
+              "long_field"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1000,
+            "total_uncompressed_size": 54,
+            "total_compressed_size": 54,
+            "data_page_offset": 31,
+            "dictionary_page_offset": 4,
+            "statistics": {
+              "max": 0,
+              "min": 0,
+              "null_count": 0,
+              "max_value": 0,
+              "min_value": 0
+            },
+            "encoding_stats": [
+              {
+                "page_type": 2,
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": 0,
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 262,
+          "offset_index_length": 10,
+          "column_index_offset": 144,
+          "column_index_length": 31,
+          "crypto_metadata": 31
+        },
+        {
+          "file_offset": 117,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN_DICTIONARY",
+              "BIT_PACKED"
+            ],
+            "path_in_schema": [
+              "binary_field"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1000,
+            "total_uncompressed_size": 86,
+            "total_compressed_size": 86,
+            "data_page_offset": 117,
+            "dictionary_page_offset": 58,
+            "statistics": {
+              "max": "a655fd0e-9949-4059-bcae-fd6a002a4652",
+              "min": "a655fd0e-9949-4059-bcae-fd6a002a4652",
+              "null_count": 0,
+              "max_value": "a655fd0e-9949-4059-bcae-fd6a002a4652",
+              "min_value": "a655fd0e-9949-4059-bcae-fd6a002a4652"
+            },
+            "encoding_stats": [
+              {
+                "page_type": 2,
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": 0,
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ]
+          },
+          "offset_index_offset": 272,
+          "offset_index_length": 11,
+          "column_index_offset": 175,
+          "column_index_length": 87,
+          "crypto_metadata": 87
+        }
+      ],
+      "total_byte_size": 140,
+      "num_rows": 1000,
+      "file_offset": 4,
+      "total_compressed_size": 140,
+      "ordinal": 0
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "writer.model.name",
+      "value": "example"
+    }
+  ],
+  "created_by": "parquet-mr version 1.13.0-SNAPSHOT (build 261f7d2679407c833545b56f4c85a4ae8b5c9ed4)",
+  "metadata_length": 525
+}

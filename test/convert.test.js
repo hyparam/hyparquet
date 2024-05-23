@@ -111,7 +111,8 @@ describe('convert function', () => {
 })
 
 describe('parseFloat16', () => {
-  it('should convert numbers', () => {
+  it('convert float16 numbers', () => {
+    expect(parseFloat16(undefined)).toBe(undefined)
     expect(parseFloat16(new Uint8Array([0x00, 0xbc]))).toBe(-1)
     expect(parseFloat16(new Uint8Array([0x00, 0x00]))).toBe(0)
     expect(parseFloat16(new Uint8Array([0x00, 0x38]))).toBe(0.5)
@@ -119,22 +120,22 @@ describe('parseFloat16', () => {
     expect(parseFloat16(new Uint8Array([0x00, 0x40]))).toBe(2)
   })
 
-  it('should convert -0', () => {
+  it('convert float16 -0', () => {
     expect(parseFloat16(new Uint8Array([0x00, 0x80]))).toBe(-0)
     expect(parseFloat16(new Uint8Array([0x00, 0x80]))).not.toBe(0)
   })
 
-  it('should convert Infinity', () => {
+  it('convert float16 Infinity', () => {
     expect(parseFloat16(new Uint8Array([0x00, 0x7c]))).toBe(Infinity)
     expect(parseFloat16(new Uint8Array([0x00, 0xfc]))).toBe(-Infinity)
   })
 
-  it('should convert NaN', () => {
+  it('convert float16 NaN', () => {
     expect(parseFloat16(new Uint8Array([0x00, 0x7e]))).toBeNaN()
     expect(parseFloat16(new Uint8Array([0x01, 0x7e]))).toBeNaN()
   })
 
-  it('should convert a subnormal number', () => {
+  it('convert float16 subnormal number', () => {
     expect(parseFloat16(new Uint8Array([0xff, 0x03])))
       .toBeCloseTo(Math.pow(2, -14) * (1023 / 1024), 5)
   })
