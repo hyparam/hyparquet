@@ -1,0 +1,4 @@
+[
+  [{ "f64_field": null, "str_field": "hello" }],
+  [{ "f64_field": 1.23, "str_field": null }]
+]

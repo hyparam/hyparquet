@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "name": "test",
+      "num_children": 1
+    },
+    {
+      "repetition_type": "REQUIRED",
+      "name": "inner",
+      "num_children": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "str_field",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "DOUBLE",
+      "repetition_type": "OPTIONAL",
+      "name": "f64_field"
+    }
+  ],
+  "num_rows": 2,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "inner",
+              "str_field"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 2,
+            "total_uncompressed_size": 32,
+            "total_compressed_size": 34,
+            "key_value_metadata": [],
+            "data_page_offset": 4,
+            "statistics": {
+              "null_count": 1,
+              "distinct_count": 1
+            }
+          }
+        },
+        {
+          "file_offset": 38,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "inner",
+              "f64_field"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 2,
+            "total_uncompressed_size": 31,
+            "total_compressed_size": 33,
+            "key_value_metadata": [],
+            "data_page_offset": 38,
+            "statistics": {
+              "null_count": 1,
+              "distinct_count": 1,
+              "max_value": 1.23,
+              "min_value": 1.23
+            }
+          }
+        }
+      ],
+      "total_byte_size": 0,
+      "num_rows": 2
+    }
+  ],
+  "key_value_metadata": [],
+  "created_by": "parquet-go",
+  "metadata_length": 203
+}
