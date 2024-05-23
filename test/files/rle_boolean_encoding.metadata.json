@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "name": "table",
+      "num_children": 1
+    },
+    {
+      "type": "BOOLEAN",
+      "repetition_type": "OPTIONAL",
+      "name": "datatype_boolean",
+      "field_id": 1
+    }
+  ],
+  "num_rows": 68,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BOOLEAN",
+            "encodings": [
+              "RLE"
+            ],
+            "path_in_schema": [
+              "datatype_boolean"
+            ],
+            "codec": "GZIP",
+            "num_values": 68,
+            "total_uncompressed_size": 49,
+            "total_compressed_size": 69,
+            "data_page_offset": 4,
+            "statistics": {
+              "max": true,
+              "min": false,
+              "null_count": 6,
+              "max_value": true,
+              "min_value": false
+            }
+          }
+        }
+      ],
+      "total_byte_size": 69,
+      "num_rows": 68
+    }
+  ],
+  "metadata_length": 111
+}

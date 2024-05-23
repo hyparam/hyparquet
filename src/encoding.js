@@ -57,6 +57,7 @@ function readRle(reader, count, bitWidth, output, seen) {
   let value = 0
   if (width === 1) {
     value = reader.view.getUint8(reader.offset)
+    // assert(value < 1 << bitWidth)
   } else if (width === 2) {
     value = reader.view.getUint16(reader.offset, true)
   } else if (width === 4) {

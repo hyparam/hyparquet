@@ -3,6 +3,7 @@ import { deltaBinaryUnpack, deltaByteArray, deltaLengthByteArray } from './delta
 import { bitWidth, byteStreamSplit, readRleBitPackedHybrid } from './encoding.js'
 import { readPlain } from './plain.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel } from './schema.js'
+import { readVarInt } from './thrift.js'
 
 /**
  * Read a data page from the given Uint8Array.
@@ -31,6 +32,11 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
   // assert(reader.offset === daph2.repetition_levels_byte_length)
 
   // definition levels
+  const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
+  if (columnMetadata.type === 'BOOLEAN' && maxDefinitionLevel) {
+    // special case for boolean data page v2
+    readVarInt(reader) // assert(=== num_values)
+  }
   const definitionLevels = readDefinitionLevelsV2(reader, daph2, schemaPath)
   // assert(reader.offset === daph2.repetition_levels_byte_length + daph2.definition_levels_byte_length)
 
