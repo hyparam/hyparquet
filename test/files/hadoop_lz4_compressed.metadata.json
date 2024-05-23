@@ -14,12 +14,12 @@
               {
                 "count": 1,
                 "encoding": "PLAIN_DICTIONARY",
-                "page_type": 2
+                "page_type": "DICTIONARY_PAGE"
               },
               {
                 "count": 1,
                 "encoding": "PLAIN_DICTIONARY",
-                "page_type": 0
+                "page_type": "DATA_PAGE"
               }
             ],
             "encodings": [
@@ -51,12 +51,12 @@
               {
                 "count": 1,
                 "encoding": "PLAIN_DICTIONARY",
-                "page_type": 2
+                "page_type": "DICTIONARY_PAGE"
               },
               {
                 "count": 1,
                 "encoding": "PLAIN_DICTIONARY",
-                "page_type": 0
+                "page_type": "DATA_PAGE"
               }
             ],
             "encodings": [
@@ -86,12 +86,12 @@
               {
                 "count": 1,
                 "encoding": "PLAIN_DICTIONARY",
-                "page_type": 2
+                "page_type": "DICTIONARY_PAGE"
               },
               {
                 "count": 1,
                 "encoding": "PLAIN_DICTIONARY",
-                "page_type": 0
+                "page_type": "DATA_PAGE"
               }
             ],
             "encodings": [

@@ -86,7 +86,7 @@
             },
             "encoding_stats": [
               {
-                "page_type": 3,
+                "page_type": "DATA_PAGE_V2",
                 "encoding": "DELTA_BYTE_ARRAY",
                 "count": 1
               }
@@ -115,7 +115,7 @@
             },
             "encoding_stats": [
               {
-                "page_type": 3,
+                "page_type": "DATA_PAGE_V2",
                 "encoding": "DELTA_BYTE_ARRAY",
                 "count": 1
               }
@@ -144,7 +144,7 @@
             },
             "encoding_stats": [
               {
-                "page_type": 3,
+                "page_type": "DATA_PAGE_V2",
                 "encoding": "DELTA_BYTE_ARRAY",
                 "count": 1
               }
@@ -173,7 +173,7 @@
             },
             "encoding_stats": [
               {
-                "page_type": 3,
+                "page_type": "DATA_PAGE_V2",
                 "encoding": "DELTA_BYTE_ARRAY",
                 "count": 1
               }
@@ -202,7 +202,7 @@
             },
             "encoding_stats": [
               {
-                "page_type": 3,
+                "page_type": "DATA_PAGE_V2",
                 "encoding": "DELTA_BYTE_ARRAY",
                 "count": 1
               }
@@ -231,7 +231,7 @@
             },
             "encoding_stats": [
               {
-                "page_type": 3,
+                "page_type": "DATA_PAGE_V2",
                 "encoding": "DELTA_BYTE_ARRAY",
                 "count": 1
               }
@@ -258,7 +258,7 @@
             },
             "encoding_stats": [
               {
-                "page_type": 3,
+                "page_type": "DATA_PAGE_V2",
                 "encoding": "DELTA_BYTE_ARRAY",
                 "count": 1
               }
@@ -287,7 +287,7 @@
             },
             "encoding_stats": [
               {
-                "page_type": 3,
+                "page_type": "DATA_PAGE_V2",
                 "encoding": "DELTA_BYTE_ARRAY",
                 "count": 1
               }
@@ -316,7 +316,7 @@
             },
             "encoding_stats": [
               {
-                "page_type": 3,
+                "page_type": "DATA_PAGE_V2",
                 "encoding": "DELTA_BYTE_ARRAY",
                 "count": 1
               }

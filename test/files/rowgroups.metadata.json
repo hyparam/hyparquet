@@ -25,8 +25,8 @@
             "data_page_offset": 71,
             "dictionary_page_offset": 4,
             "encoding_stats": [
-              { "count": 1, "encoding": "PLAIN", "page_type": 2 },
-              { "count": 1, "encoding": "RLE_DICTIONARY", "page_type": 0 }
+              { "count": 1, "encoding": "PLAIN", "page_type": "DICTIONARY_PAGE" },
+              { "count": 1, "encoding": "RLE_DICTIONARY", "page_type": "DATA_PAGE" }
             ],
             "encodings": ["PLAIN", "RLE", "RLE_DICTIONARY"],
             "num_values": 10,
@@ -59,8 +59,8 @@
             "data_page_offset": 294,
             "dictionary_page_offset": 248,
             "encoding_stats": [
-              { "count": 1, "encoding": "PLAIN", "page_type": 2 },
-              { "count": 1, "encoding": "RLE_DICTIONARY", "page_type": 0 }
+              { "count": 1, "encoding": "PLAIN", "page_type": "DICTIONARY_PAGE" },
+              { "count": 1, "encoding": "RLE_DICTIONARY", "page_type": "DATA_PAGE" }
             ],
             "encodings": ["PLAIN", "RLE", "RLE_DICTIONARY"],
             "num_values": 5,

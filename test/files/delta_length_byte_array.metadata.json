@@ -40,7 +40,7 @@
             "data_page_offset": 4,
             "encoding_stats": [
               {
-                "page_type": 3,
+                "page_type": "DATA_PAGE_V2",
                 "encoding": "DELTA_LENGTH_BYTE_ARRAY",
                 "count": 1
               }

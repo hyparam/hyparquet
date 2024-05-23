@@ -68,7 +68,7 @@
             },
             "encoding_stats": [
               {
-                "page_type": 0,
+                "page_type": "DATA_PAGE",
                 "encoding": "PLAIN",
                 "count": 1
               }
@@ -105,7 +105,7 @@
             },
             "encoding_stats": [
               {
-                "page_type": 0,
+                "page_type": "DATA_PAGE",
                 "encoding": "PLAIN",
                 "count": 1
               }

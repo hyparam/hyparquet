@@ -14,7 +14,7 @@
               {
                 "count": 1,
                 "encoding": "PLAIN",
-                "page_type": 0
+                "page_type": "DATA_PAGE"
               }
             ],
             "encodings": [
@@ -46,7 +46,7 @@
               {
                 "count": 1,
                 "encoding": "PLAIN",
-                "page_type": 0
+                "page_type": "DATA_PAGE"
               }
             ],
             "encodings": [
@@ -76,7 +76,7 @@
               {
                 "count": 1,
                 "encoding": "PLAIN",
-                "page_type": 0
+                "page_type": "DATA_PAGE"
               }
             ],
             "encodings": [

@@ -1,4 +1,4 @@
-import { CompressionCodec, ConvertedType, Encoding, FieldRepetitionType, ParquetType } from './constants.js'
+import { CompressionCodec, ConvertedType, Encoding, FieldRepetitionType, PageType, ParquetType } from './constants.js'
 import { parseFloat16 } from './convert.js'
 import { getSchemaPath } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
@@ -139,7 +139,7 @@ export function parquetMetadata(arrayBuffer) {
         dictionary_page_offset: column.field_3.field_11,
         statistics: columnStats(column.field_3.field_12, columnSchema[columnIndex]),
         encoding_stats: column.field_3.field_13?.map((/** @type {any} */ encodingStat) => ({
-          page_type: encodingStat.field_1,
+          page_type: PageType[encodingStat.field_1],
           encoding: Encoding[encodingStat.field_2],
           count: encodingStat.field_3,
         })),

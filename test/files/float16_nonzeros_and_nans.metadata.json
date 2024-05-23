@@ -47,12 +47,12 @@
       },
       "encoding_stats": [
         {
-          "page_type": 2,
+          "page_type": "DICTIONARY_PAGE",
           "encoding": "PLAIN",
           "count": 1
         },
         {
-          "page_type": 0,
+          "page_type": "DATA_PAGE",
           "encoding": "RLE_DICTIONARY",
           "count": 1
         }
