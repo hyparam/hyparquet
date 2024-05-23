@@ -81,7 +81,7 @@ export async function parquetRead(options) {
  * @returns {Promise<any[][]>} resolves to row data
  */
 async function readRowGroup(options, rowGroup, groupStart) {
-  const { file, metadata, columns, compressors } = options
+  const { file, metadata, columns } = options
   if (!metadata) throw new Error('parquet metadata not found')
 
   // loop through metadata to find min/max bytes to read
@@ -151,10 +151,9 @@ async function readRowGroup(options, rowGroup, groupStart) {
     // read column data async
     promises.push(buffer.then(arrayBuffer => {
       const schemaPath = getSchemaPath(metadata.schema, columnMetadata.path_in_schema)
+      const reader = { view: new DataView(arrayBuffer), offset: bufferOffset }
       /** @type {any[] | undefined} */
-      let columnData = readColumn(
-        arrayBuffer, bufferOffset, rowGroup, columnMetadata, schemaPath, compressors
-      )
+      let columnData = readColumn(reader, rowGroup, columnMetadata, schemaPath, options)
       // assert(columnData.length === Number(rowGroup.num_rows)
 
       // TODO: fast path for non-nested columns

@@ -13,11 +13,27 @@ describe('convert function', () => {
     expect(convert(data, schemaElement)).toEqual(data)
   })
 
-  it('converts byte arrays to UTF8 strings', () => {
-    const data = [new TextEncoder().encode('test'), new TextEncoder().encode('vitest')]
+  it('converts byte arrays to utf8', () => {
+    const data = [new TextEncoder().encode('foo'), new TextEncoder().encode('bar')]
     /** @type {SchemaElement} */
     const schemaElement = { name, converted_type: 'UTF8' }
-    expect(convert(data, schemaElement)).toEqual(['test', 'vitest'])
+    expect(convert(data, schemaElement)).toEqual(['foo', 'bar'])
+  })
+
+  it('converts byte arrays to utf8 default true', () => {
+    const data = [new TextEncoder().encode('foo'), new TextEncoder().encode('bar')]
+    /** @type {SchemaElement} */
+    const schemaElement = { name, type: 'BYTE_ARRAY' }
+    expect(convert(data, schemaElement)).toEqual(['foo', 'bar'])
+  })
+
+  it('preserves byte arrays utf8=false', () => {
+    const data = [new TextEncoder().encode('foo'), new TextEncoder().encode('bar')]
+    /** @type {SchemaElement} */
+    const schemaElement = { name, type: 'BYTE_ARRAY' }
+    expect(convert(data, schemaElement, false)).toEqual([
+      new Uint8Array([102, 111, 111]), new Uint8Array([98, 97, 114]),
+    ])
   })
 
   it('converts numbers to DECIMAL', () => {

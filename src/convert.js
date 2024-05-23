@@ -6,18 +6,11 @@ const dayMillis = 86400000 // 1 day in milliseconds
  * @typedef {import('./types.js').DecodedArray} DecodedArray
  * @param {DecodedArray} data series of primitive types
  * @param {import('./types.js').SchemaElement} schemaElement schema element for the data
+ * @param {boolean | undefined} utf8 decode bytes as utf8?
  * @returns {DecodedArray} series of rich types
  */
-export function convert(data, schemaElement) {
+export function convert(data, schemaElement, utf8 = true) {
   const ctype = schemaElement.converted_type
-  if (ctype === 'UTF8') {
-    const decoder = new TextDecoder()
-    const arr = new Array(data.length)
-    for (let i = 0; i < arr.length; i++) {
-      arr[i] = data[i] && decoder.decode(data[i])
-    }
-    return arr
-  }
   if (ctype === 'DECIMAL') {
     const scale = schemaElement.scale || 0
     const factor = Math.pow(10, -scale)
@@ -50,12 +43,19 @@ export function convert(data, schemaElement) {
   if (ctype === 'INTERVAL') {
     throw new Error('parquet interval not supported')
   }
+  if (ctype === 'UTF8' || utf8 && schemaElement.type === 'BYTE_ARRAY') {
+    const decoder = new TextDecoder()
+    const arr = new Array(data.length)
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = data[i] && decoder.decode(data[i])
+    }
+    return arr
+  }
   // TODO: ctype UINT
   const logicalType = schemaElement.logical_type?.type
   if (logicalType === 'FLOAT16') {
     return Array.from(data).map(parseFloat16)
   }
-  // TODO: logical types
   return data
 }
 

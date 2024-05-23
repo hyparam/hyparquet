@@ -8,43 +8,32 @@ import { snappyUncompress } from './snappy.js'
 import { concat } from './utils.js'
 
 /**
- * @typedef {import('./types.js').SchemaTree} SchemaTree
- * @typedef {import('./types.js').ColumnMetaData} ColumnMetaData
- * @typedef {import('./types.js').Compressors} Compressors
- * @typedef {import('./types.js').RowGroup} RowGroup
- */
-
-/**
  * Parse column data from a buffer.
  *
- * @param {ArrayBuffer} arrayBuffer parquet file contents
- * @param {number} columnOffset offset to start reading from
- * @param {RowGroup} rowGroup row group metadata
+ * @typedef {import('./types.js').ColumnMetaData} ColumnMetaData
+ * @param {import('./types.js').DataReader} reader
+ * @param {import('./types.js').RowGroup} rowGroup row group metadata
  * @param {ColumnMetaData} columnMetadata column metadata
- * @param {SchemaTree[]} schemaPath schema path for the column
- * @param {Compressors} [compressors] custom decompressors
+ * @param {import('./types.js').SchemaTree[]} schemaPath schema path for the column
+ * @param {import('./hyparquet.js').ParquetReadOptions} options read options
  * @returns {any[]} array of values
  */
-export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, schemaPath, compressors) {
+export function readColumn(reader, rowGroup, columnMetadata, schemaPath, { compressors, utf8 }) {
+  const { element } = schemaPath[schemaPath.length - 1]
   /** @type {ArrayLike<any> | undefined} */
   let dictionary = undefined
   let seen = 0
   /** @type {any[]} */
   const rowData = []
-  const { element } = schemaPath[schemaPath.length - 1]
-  // column reader:
-  const reader = { view: new DataView(arrayBuffer, columnOffset), offset: 0 }
 
   while (seen < rowGroup.num_rows) {
     // parse column header
     const header = parquetHeader(reader)
-    if (header.compressed_page_size === undefined) {
-      throw new Error('parquet compressed page size is undefined')
-    }
+    // assert(header.compressed_page_size !== undefined)
 
     // read compressed_page_size bytes starting at offset
     const compressedBytes = new Uint8Array(
-      arrayBuffer, columnOffset + reader.offset, header.compressed_page_size
+      reader.view.buffer, reader.view.byteOffset + reader.offset, header.compressed_page_size
     )
 
     // parse page data by type
@@ -54,16 +43,14 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       const daph = header.data_page_header
       if (!daph) throw new Error('parquet data page header is undefined')
 
-      const page = decompressPage(
-        compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec, compressors
-      )
+      const page = decompressPage(compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec, compressors)
       const { definitionLevels, repetitionLevels, dataPage } = readDataPage(page, daph, schemaPath, columnMetadata)
       seen += daph.num_values
       // assert(!daph.statistics || daph.statistics.null_count === BigInt(daph.num_values - dataPage.length))
 
       // construct output values: skip nulls and construct lists
       dereferenceDictionary(dictionary, dataPage)
-      values = convert(dataPage, element)
+      values = convert(dataPage, element, utf8)
       if (repetitionLevels.length || definitionLevels?.length) {
         // Use repetition levels to construct lists
         const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
@@ -92,7 +79,7 @@ export function readColumn(arrayBuffer, columnOffset, rowGroup, columnMetadata, 
       seen += daph2.num_values
 
       dereferenceDictionary(dictionary, dataPage)
-      values = convert(dataPage, element)
+      values = convert(dataPage, element, utf8)
       if (repetitionLevels.length || definitionLevels?.length) {
         // Use repetition levels to construct lists
         const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
@@ -155,7 +142,7 @@ export function getColumnOffset({ dictionary_page_offset, data_page_offset }) {
  * @param {Uint8Array} compressedBytes
  * @param {number} uncompressed_page_size
  * @param {import('./types.js').CompressionCodec} codec
- * @param {Compressors | undefined} compressors
+ * @param {import('./types.js').Compressors | undefined} compressors
  * @returns {Uint8Array}
  */
 export function decompressPage(compressedBytes, uncompressed_page_size, codec, compressors) {
