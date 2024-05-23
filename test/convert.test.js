@@ -86,11 +86,38 @@ describe('convert function', () => {
     expect(convert(data, schemaElement)).toEqual([new Date('2009-03-01T00:00:00.000Z'), new Date('2009-03-01T00:01:00.000Z')])
   })
 
+  it('converts epoch time to TIMESTAMP_MILLIS', () => {
+    const data = [1716506900000n, 1716507000000n]
+    /** @type {SchemaElement} */
+    const schemaElement = { name, converted_type: 'TIMESTAMP_MILLIS' }
+    expect(convert(data, schemaElement)).toEqual([
+      new Date('2024-05-23T23:28:20.000Z'), new Date('2024-05-23T23:30:00.000Z'),
+    ])
+  })
+
+  it('converts epoch time to TIMESTAMP_MICROS', () => {
+    const data = [1716506900000000n, 1716507000000000n]
+    /** @type {SchemaElement} */
+    const schemaElement = { name, converted_type: 'TIMESTAMP_MICROS' }
+    expect(convert(data, schemaElement)).toEqual([
+      new Date('2024-05-23T23:28:20.000Z'), new Date('2024-05-23T23:30:00.000Z'),
+    ])
+  })
+
   it('parses strings to JSON', () => {
+    const encoder = new TextEncoder()
     const data = ['{"key": true}', '{"quay": 314}']
+      .map(str => encoder.encode(str))
     /** @type {SchemaElement} */
     const schemaElement = { name, converted_type: 'JSON' }
     expect(convert(data, schemaElement)).toEqual([{ key: true }, { quay: 314 }])
+  })
+
+  it('converts to float16', () => {
+    const data = [new Uint8Array([0x00, 0x3c]), new Uint8Array([0x00, 0x40])]
+    /** @type {SchemaElement} */
+    const schemaElement = { name, logical_type: { type: 'FLOAT16' } }
+    expect(convert(data, schemaElement)).toEqual([1, 2])
   })
 
   it('throws error for BSON conversion', () => {

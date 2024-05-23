@@ -34,8 +34,23 @@ export function convert(data, schemaElement, utf8 = true) {
     }
     return arr
   }
+  if (ctype === 'TIMESTAMP_MILLIS') {
+    const arr = new Array(data.length)
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = new Date(Number(data[i]))
+    }
+    return arr
+  }
+  if (ctype === 'TIMESTAMP_MICROS') {
+    const arr = new Array(data.length)
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = new Date(Number(data[i] / 1000n))
+    }
+    return arr
+  }
   if (ctype === 'JSON') {
-    return data.map(v => JSON.parse(v))
+    const decoder = new TextDecoder()
+    return data.map(v => JSON.parse(decoder.decode(v)))
   }
   if (ctype === 'BSON') {
     throw new Error('parquet bson not supported')
