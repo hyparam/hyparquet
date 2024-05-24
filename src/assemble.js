@@ -108,8 +108,13 @@ export function assembleNested(subcolumnData, schema, depth = 0) {
   const nextDepth = optional ? depth + 1 : depth
 
   if (isListLike(schema)) {
-    const sublist = schema.children[0].children[0]
-    assembleNested(subcolumnData, sublist, nextDepth + 1)
+    let sublist = schema.children[0]
+    let subDepth = nextDepth
+    if (sublist.children.length === 1) {
+      sublist = sublist.children[0]
+      subDepth++
+    }
+    assembleNested(subcolumnData, sublist, subDepth)
 
     const subcolumn = sublist.path.join('.')
     const values = subcolumnData.get(subcolumn)

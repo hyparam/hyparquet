@@ -1,0 +1,38 @@
+[
+  [
+    {
+      "alternateAllele": null,
+      "end": null,
+      "filtersApplied": null,
+      "filtersFailed": null,
+      "filtersPassed": null,
+      "names": ["name"],
+      "quality": null,
+      "referenceAllele": null,
+      "referenceName": null,
+      "splitFromMultiAllelic": false,
+      "start": null
+    },
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    false,
+    false,
+    null,
+    null
+  ]
+]

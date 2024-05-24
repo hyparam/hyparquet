@@ -1,0 +1,4043 @@
+{
+ "version": 1,
+ "schema": [
+   {
+     "name": "org.bdgenomics.formats.avro.Genotype",
+     "num_children": 22
+   },
+   {
+     "repetition_type": "OPTIONAL",
+     "name": "variant",
+     "num_children": 12
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "referenceName",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "OPTIONAL",
+     "name": "start"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "OPTIONAL",
+     "name": "end"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "names",
+     "num_children": 1,
+     "converted_type": "LIST",
+     "logical_type": {
+       "type": "LIST"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "REPEATED",
+     "name": "array",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BOOLEAN",
+     "repetition_type": "OPTIONAL",
+     "name": "splitFromMultiAllelic"
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "referenceAllele",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "alternateAllele",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "OPTIONAL",
+     "name": "quality"
+   },
+   {
+     "type": "BOOLEAN",
+     "repetition_type": "OPTIONAL",
+     "name": "filtersApplied"
+   },
+   {
+     "type": "BOOLEAN",
+     "repetition_type": "OPTIONAL",
+     "name": "filtersPassed"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "filtersFailed",
+     "num_children": 1,
+     "converted_type": "LIST",
+     "logical_type": {
+       "type": "LIST"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "REPEATED",
+     "name": "array",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "repetition_type": "OPTIONAL",
+     "name": "annotation",
+     "num_children": 18
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "ancestralAllele",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "alleleCount"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "readDepth"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "forwardReadDepth"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "reverseReadDepth"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "referenceReadDepth"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "referenceForwardReadDepth"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "referenceReverseReadDepth"
+   },
+   {
+     "type": "FLOAT",
+     "repetition_type": "OPTIONAL",
+     "name": "alleleFrequency"
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "cigar",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BOOLEAN",
+     "repetition_type": "OPTIONAL",
+     "name": "dbSnp"
+   },
+   {
+     "type": "BOOLEAN",
+     "repetition_type": "OPTIONAL",
+     "name": "hapMap2"
+   },
+   {
+     "type": "BOOLEAN",
+     "repetition_type": "OPTIONAL",
+     "name": "hapMap3"
+   },
+   {
+     "type": "BOOLEAN",
+     "repetition_type": "OPTIONAL",
+     "name": "validated"
+   },
+   {
+     "type": "BOOLEAN",
+     "repetition_type": "OPTIONAL",
+     "name": "thousandGenomes"
+   },
+   {
+     "type": "BOOLEAN",
+     "repetition_type": "OPTIONAL",
+     "name": "somatic"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "transcriptEffects",
+     "num_children": 1,
+     "converted_type": "LIST",
+     "logical_type": {
+       "type": "LIST"
+     }
+   },
+   {
+     "repetition_type": "REPEATED",
+     "name": "array",
+     "num_children": 26
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "alternateAllele",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "effects",
+     "num_children": 1,
+     "converted_type": "LIST",
+     "logical_type": {
+       "type": "LIST"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "REPEATED",
+     "name": "array",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "impact",
+     "converted_type": "ENUM",
+     "logical_type": {
+       "type": "ENUM"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "geneName",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "geneId",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "featureType",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "featureId",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "biotype",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "strand",
+     "converted_type": "ENUM",
+     "logical_type": {
+       "type": "ENUM"
+     }
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "rank"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "total"
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "genomicHgvs",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "transcriptHgvs",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "proteinHgvs",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "cdnaPosition"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "cdnaLength"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "codingSequencePosition"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "codingSequenceLength"
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "referenceCodingSequence",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "alternateCodingSequence",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "proteinPosition"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "proteinLength"
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "referenceProteinSequence",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "alternateProteinSequence",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "distance"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "messages",
+     "num_children": 1,
+     "converted_type": "LIST",
+     "logical_type": {
+       "type": "LIST"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "REPEATED",
+     "name": "array",
+     "converted_type": "ENUM",
+     "logical_type": {
+       "type": "ENUM"
+     }
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "attributes",
+     "num_children": 1,
+     "converted_type": "MAP",
+     "logical_type": {
+       "type": "MAP"
+     }
+   },
+   {
+     "repetition_type": "REPEATED",
+     "name": "key_value",
+     "num_children": 2,
+     "converted_type": "MAP_KEY_VALUE"
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "REQUIRED",
+     "name": "key",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "REQUIRED",
+     "name": "value",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "referenceName",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "OPTIONAL",
+     "name": "start"
+   },
+   {
+     "type": "INT64",
+     "repetition_type": "OPTIONAL",
+     "name": "end"
+   },
+   {
+     "repetition_type": "OPTIONAL",
+     "name": "variantCallingAnnotations",
+     "num_children": 15
+   },
+   {
+     "type": "BOOLEAN",
+     "repetition_type": "OPTIONAL",
+     "name": "filtersApplied"
+   },
+   {
+     "type": "BOOLEAN",
+     "repetition_type": "OPTIONAL",
+     "name": "filtersPassed"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "filtersFailed",
+     "num_children": 1,
+     "converted_type": "LIST",
+     "logical_type": {
+       "type": "LIST"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "REPEATED",
+     "name": "array",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BOOLEAN",
+     "repetition_type": "OPTIONAL",
+     "name": "downsampled"
+   },
+   {
+     "type": "FLOAT",
+     "repetition_type": "OPTIONAL",
+     "name": "baseQRankSum"
+   },
+   {
+     "type": "FLOAT",
+     "repetition_type": "OPTIONAL",
+     "name": "fisherStrandBiasPValue"
+   },
+   {
+     "type": "FLOAT",
+     "repetition_type": "OPTIONAL",
+     "name": "rmsMapQ"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "mapq0Reads"
+   },
+   {
+     "type": "FLOAT",
+     "repetition_type": "OPTIONAL",
+     "name": "mqRankSum"
+   },
+   {
+     "type": "FLOAT",
+     "repetition_type": "OPTIONAL",
+     "name": "readPositionRankSum"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "genotypePriors",
+     "num_children": 1,
+     "converted_type": "LIST",
+     "logical_type": {
+       "type": "LIST"
+     }
+   },
+   {
+     "type": "FLOAT",
+     "repetition_type": "REPEATED",
+     "name": "array"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "genotypePosteriors",
+     "num_children": 1,
+     "converted_type": "LIST",
+     "logical_type": {
+       "type": "LIST"
+     }
+   },
+   {
+     "type": "FLOAT",
+     "repetition_type": "REPEATED",
+     "name": "array"
+   },
+   {
+     "type": "FLOAT",
+     "repetition_type": "OPTIONAL",
+     "name": "vqslod"
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "culprit",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "attributes",
+     "num_children": 1,
+     "converted_type": "MAP",
+     "logical_type": {
+       "type": "MAP"
+     }
+   },
+   {
+     "repetition_type": "REPEATED",
+     "name": "key_value",
+     "num_children": 2,
+     "converted_type": "MAP_KEY_VALUE"
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "REQUIRED",
+     "name": "key",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "REQUIRED",
+     "name": "value",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "sampleId",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "sampleDescription",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "processingDescription",
+     "converted_type": "UTF8",
+     "logical_type": {
+       "type": "STRING"
+     }
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "alleles",
+     "num_children": 1,
+     "converted_type": "LIST",
+     "logical_type": {
+       "type": "LIST"
+     }
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "REPEATED",
+     "name": "array",
+     "converted_type": "ENUM",
+     "logical_type": {
+       "type": "ENUM"
+     }
+   },
+   {
+     "type": "FLOAT",
+     "repetition_type": "OPTIONAL",
+     "name": "expectedAlleleDosage"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "referenceReadDepth"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "alternateReadDepth"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "readDepth"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "minReadDepth"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "genotypeQuality"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "genotypeLikelihoods",
+     "num_children": 1,
+     "converted_type": "LIST",
+     "logical_type": {
+       "type": "LIST"
+     }
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REPEATED",
+     "name": "array"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "nonReferenceLikelihoods",
+     "num_children": 1,
+     "converted_type": "LIST",
+     "logical_type": {
+       "type": "LIST"
+     }
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REPEATED",
+     "name": "array"
+   },
+   {
+     "repetition_type": "REQUIRED",
+     "name": "strandBiasComponents",
+     "num_children": 1,
+     "converted_type": "LIST",
+     "logical_type": {
+       "type": "LIST"
+     }
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "REPEATED",
+     "name": "array"
+   },
+   {
+     "type": "BOOLEAN",
+     "repetition_type": "OPTIONAL",
+     "name": "splitFromMultiAllelic"
+   },
+   {
+     "type": "BOOLEAN",
+     "repetition_type": "OPTIONAL",
+     "name": "phased"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "phaseSetId"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "phaseQuality"
+   }
+ ],
+ "num_rows": 1,
+ "row_groups": [
+   {
+     "columns": [
+       {
+         "file_offset": 4,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "referenceName"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 4,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6051,
+         "offset_index_length": 10,
+         "column_index_offset": 4672,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 54,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "start"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 54,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6061,
+         "offset_index_length": 10,
+         "column_index_offset": 4687,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 104,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "end"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 104,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6071,
+         "offset_index_length": 11,
+         "column_index_offset": 4702,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 154,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "names",
+             "array"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 44,
+           "total_compressed_size": 59,
+           "data_page_offset": 154,
+           "statistics": {
+             "max": "name",
+             "min": "name",
+             "null_count": 0,
+             "max_value": "name",
+             "min_value": "name"
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6082,
+         "offset_index_length": 11,
+         "column_index_offset": 4717,
+         "column_index_length": 23,
+         "crypto_metadata": 23
+       },
+       {
+         "file_offset": 213,
+         "meta_data": {
+           "type": "BOOLEAN",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "splitFromMultiAllelic"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 31,
+           "total_compressed_size": 51,
+           "data_page_offset": 213,
+           "statistics": {
+             "max": false,
+             "min": false,
+             "null_count": 0,
+             "max_value": false,
+             "min_value": false
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6093,
+         "offset_index_length": 11,
+         "column_index_offset": 4740,
+         "column_index_length": 17,
+         "crypto_metadata": 17
+       },
+       {
+         "file_offset": 264,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "referenceAllele"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 264,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6104,
+         "offset_index_length": 11,
+         "column_index_offset": 4757,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 314,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "alternateAllele"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 314,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6115,
+         "offset_index_length": 11,
+         "column_index_offset": 4772,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 364,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "quality"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 364,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6126,
+         "offset_index_length": 11,
+         "column_index_offset": 4787,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 414,
+         "meta_data": {
+           "type": "BOOLEAN",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "filtersApplied"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 414,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6137,
+         "offset_index_length": 11,
+         "column_index_offset": 4802,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 464,
+         "meta_data": {
+           "type": "BOOLEAN",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "filtersPassed"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 464,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6148,
+         "offset_index_length": 11,
+         "column_index_offset": 4817,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 514,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "filtersFailed",
+             "array"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 36,
+           "total_compressed_size": 53,
+           "data_page_offset": 514,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6159,
+         "offset_index_length": 11,
+         "column_index_offset": 4832,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 567,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "ancestralAllele"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 567,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6170,
+         "offset_index_length": 11,
+         "column_index_offset": 4847,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 617,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "alleleCount"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 617,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6181,
+         "offset_index_length": 11,
+         "column_index_offset": 4862,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 667,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "readDepth"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 667,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6192,
+         "offset_index_length": 11,
+         "column_index_offset": 4877,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 717,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "forwardReadDepth"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 717,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6203,
+         "offset_index_length": 11,
+         "column_index_offset": 4892,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 767,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "reverseReadDepth"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 767,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6214,
+         "offset_index_length": 11,
+         "column_index_offset": 4907,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 817,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "referenceReadDepth"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 817,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6225,
+         "offset_index_length": 11,
+         "column_index_offset": 4922,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 867,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "referenceForwardReadDepth"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 867,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6236,
+         "offset_index_length": 11,
+         "column_index_offset": 4937,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 917,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "referenceReverseReadDepth"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 917,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6247,
+         "offset_index_length": 11,
+         "column_index_offset": 4952,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 967,
+         "meta_data": {
+           "type": "FLOAT",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "alleleFrequency"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 967,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6258,
+         "offset_index_length": 11,
+         "column_index_offset": 4967,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1017,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "cigar"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 1017,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6269,
+         "offset_index_length": 11,
+         "column_index_offset": 4982,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1067,
+         "meta_data": {
+           "type": "BOOLEAN",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "dbSnp"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 1067,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6280,
+         "offset_index_length": 11,
+         "column_index_offset": 4997,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1117,
+         "meta_data": {
+           "type": "BOOLEAN",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "hapMap2"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 1117,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6291,
+         "offset_index_length": 11,
+         "column_index_offset": 5012,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1167,
+         "meta_data": {
+           "type": "BOOLEAN",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "hapMap3"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 1167,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6302,
+         "offset_index_length": 11,
+         "column_index_offset": 5027,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1217,
+         "meta_data": {
+           "type": "BOOLEAN",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "validated"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 1217,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6313,
+         "offset_index_length": 11,
+         "column_index_offset": 5042,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1267,
+         "meta_data": {
+           "type": "BOOLEAN",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "thousandGenomes"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 1267,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6324,
+         "offset_index_length": 11,
+         "column_index_offset": 5057,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1317,
+         "meta_data": {
+           "type": "BOOLEAN",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "somatic"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 1317,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6335,
+         "offset_index_length": 11,
+         "column_index_offset": 5072,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1367,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "alternateAllele"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 1367,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6346,
+         "offset_index_length": 11,
+         "column_index_offset": 5087,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1421,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "effects",
+             "array"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 38,
+           "total_compressed_size": 55,
+           "data_page_offset": 1421,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6357,
+         "offset_index_length": 11,
+         "column_index_offset": 5102,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1476,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "impact"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 1476,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6368,
+         "offset_index_length": 11,
+         "column_index_offset": 5117,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1530,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "geneName"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 1530,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6379,
+         "offset_index_length": 11,
+         "column_index_offset": 5132,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1584,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "geneId"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 1584,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6390,
+         "offset_index_length": 11,
+         "column_index_offset": 5147,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1638,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "featureType"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 1638,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6401,
+         "offset_index_length": 11,
+         "column_index_offset": 5162,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1692,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "featureId"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 1692,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6412,
+         "offset_index_length": 11,
+         "column_index_offset": 5177,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1746,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "biotype"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 1746,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6423,
+         "offset_index_length": 11,
+         "column_index_offset": 5192,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1800,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "strand"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 1800,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6434,
+         "offset_index_length": 11,
+         "column_index_offset": 5207,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1854,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "rank"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 1854,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6445,
+         "offset_index_length": 11,
+         "column_index_offset": 5222,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1908,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "total"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 1908,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6456,
+         "offset_index_length": 11,
+         "column_index_offset": 5237,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 1962,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "genomicHgvs"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 1962,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6467,
+         "offset_index_length": 11,
+         "column_index_offset": 5252,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2016,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "transcriptHgvs"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 2016,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6478,
+         "offset_index_length": 11,
+         "column_index_offset": 5267,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2070,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "proteinHgvs"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 2070,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6489,
+         "offset_index_length": 11,
+         "column_index_offset": 5282,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2124,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "cdnaPosition"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 2124,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6500,
+         "offset_index_length": 11,
+         "column_index_offset": 5297,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2178,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "cdnaLength"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 2178,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6511,
+         "offset_index_length": 11,
+         "column_index_offset": 5312,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2232,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "codingSequencePosition"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 2232,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6522,
+         "offset_index_length": 11,
+         "column_index_offset": 5327,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2286,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "codingSequenceLength"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 2286,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6533,
+         "offset_index_length": 11,
+         "column_index_offset": 5342,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2340,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "referenceCodingSequence"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 2340,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6544,
+         "offset_index_length": 11,
+         "column_index_offset": 5357,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2394,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "alternateCodingSequence"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 2394,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6555,
+         "offset_index_length": 11,
+         "column_index_offset": 5372,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2448,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "proteinPosition"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 2448,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6566,
+         "offset_index_length": 11,
+         "column_index_offset": 5387,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2502,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "proteinLength"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 2502,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6577,
+         "offset_index_length": 11,
+         "column_index_offset": 5402,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2556,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "referenceProteinSequence"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 2556,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6588,
+         "offset_index_length": 11,
+         "column_index_offset": 5417,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2610,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "alternateProteinSequence"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 2610,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6599,
+         "offset_index_length": 11,
+         "column_index_offset": 5432,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2664,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "distance"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 37,
+           "total_compressed_size": 54,
+           "data_page_offset": 2664,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6610,
+         "offset_index_length": 11,
+         "column_index_offset": 5447,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2718,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "transcriptEffects",
+             "array",
+             "messages",
+             "array"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 38,
+           "total_compressed_size": 55,
+           "data_page_offset": 2718,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6621,
+         "offset_index_length": 11,
+         "column_index_offset": 5462,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2773,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "attributes",
+             "key_value",
+             "key"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 36,
+           "total_compressed_size": 53,
+           "data_page_offset": 2773,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6632,
+         "offset_index_length": 11,
+         "column_index_offset": 5477,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2826,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variant",
+             "annotation",
+             "attributes",
+             "key_value",
+             "value"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 36,
+           "total_compressed_size": 53,
+           "data_page_offset": 2826,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6643,
+         "offset_index_length": 11,
+         "column_index_offset": 5492,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2879,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "referenceName"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 29,
+           "total_compressed_size": 49,
+           "data_page_offset": 2879,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6654,
+         "offset_index_length": 11,
+         "column_index_offset": 5507,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2928,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "start"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 29,
+           "total_compressed_size": 49,
+           "data_page_offset": 2928,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6665,
+         "offset_index_length": 11,
+         "column_index_offset": 5522,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 2977,
+         "meta_data": {
+           "type": "INT64",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "end"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 29,
+           "total_compressed_size": 49,
+           "data_page_offset": 2977,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6676,
+         "offset_index_length": 11,
+         "column_index_offset": 5537,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3026,
+         "meta_data": {
+           "type": "BOOLEAN",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variantCallingAnnotations",
+             "filtersApplied"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 3026,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6687,
+         "offset_index_length": 11,
+         "column_index_offset": 5552,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3076,
+         "meta_data": {
+           "type": "BOOLEAN",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variantCallingAnnotations",
+             "filtersPassed"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 3076,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6698,
+         "offset_index_length": 11,
+         "column_index_offset": 5567,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3126,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variantCallingAnnotations",
+             "filtersFailed",
+             "array"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 35,
+           "total_compressed_size": 51,
+           "data_page_offset": 3126,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6709,
+         "offset_index_length": 11,
+         "column_index_offset": 5582,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3177,
+         "meta_data": {
+           "type": "BOOLEAN",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variantCallingAnnotations",
+             "downsampled"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 3177,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6720,
+         "offset_index_length": 11,
+         "column_index_offset": 5597,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3227,
+         "meta_data": {
+           "type": "FLOAT",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variantCallingAnnotations",
+             "baseQRankSum"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 3227,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6731,
+         "offset_index_length": 11,
+         "column_index_offset": 5612,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3277,
+         "meta_data": {
+           "type": "FLOAT",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variantCallingAnnotations",
+             "fisherStrandBiasPValue"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 3277,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6742,
+         "offset_index_length": 11,
+         "column_index_offset": 5627,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3327,
+         "meta_data": {
+           "type": "FLOAT",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variantCallingAnnotations",
+             "rmsMapQ"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 3327,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6753,
+         "offset_index_length": 11,
+         "column_index_offset": 5642,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3377,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variantCallingAnnotations",
+             "mapq0Reads"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 3377,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6764,
+         "offset_index_length": 11,
+         "column_index_offset": 5657,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3427,
+         "meta_data": {
+           "type": "FLOAT",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variantCallingAnnotations",
+             "mqRankSum"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 3427,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6775,
+         "offset_index_length": 11,
+         "column_index_offset": 5672,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3477,
+         "meta_data": {
+           "type": "FLOAT",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variantCallingAnnotations",
+             "readPositionRankSum"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 3477,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6786,
+         "offset_index_length": 11,
+         "column_index_offset": 5687,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3527,
+         "meta_data": {
+           "type": "FLOAT",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variantCallingAnnotations",
+             "genotypePriors",
+             "array"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 35,
+           "total_compressed_size": 51,
+           "data_page_offset": 3527,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6797,
+         "offset_index_length": 11,
+         "column_index_offset": 5702,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3578,
+         "meta_data": {
+           "type": "FLOAT",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variantCallingAnnotations",
+             "genotypePosteriors",
+             "array"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 35,
+           "total_compressed_size": 51,
+           "data_page_offset": 3578,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6808,
+         "offset_index_length": 11,
+         "column_index_offset": 5717,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3629,
+         "meta_data": {
+           "type": "FLOAT",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variantCallingAnnotations",
+             "vqslod"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 3629,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6819,
+         "offset_index_length": 11,
+         "column_index_offset": 5732,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3679,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variantCallingAnnotations",
+             "culprit"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 30,
+           "total_compressed_size": 50,
+           "data_page_offset": 3679,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6830,
+         "offset_index_length": 11,
+         "column_index_offset": 5747,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3729,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variantCallingAnnotations",
+             "attributes",
+             "key_value",
+             "key"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 35,
+           "total_compressed_size": 51,
+           "data_page_offset": 3729,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6841,
+         "offset_index_length": 11,
+         "column_index_offset": 5762,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3780,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "variantCallingAnnotations",
+             "attributes",
+             "key_value",
+             "value"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 35,
+           "total_compressed_size": 51,
+           "data_page_offset": 3780,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6852,
+         "offset_index_length": 11,
+         "column_index_offset": 5777,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3831,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "sampleId"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 29,
+           "total_compressed_size": 49,
+           "data_page_offset": 3831,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6863,
+         "offset_index_length": 11,
+         "column_index_offset": 5792,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3880,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "sampleDescription"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 29,
+           "total_compressed_size": 49,
+           "data_page_offset": 3880,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6874,
+         "offset_index_length": 11,
+         "column_index_offset": 5807,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3929,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "processingDescription"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 29,
+           "total_compressed_size": 49,
+           "data_page_offset": 3929,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6885,
+         "offset_index_length": 11,
+         "column_index_offset": 5822,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 3978,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "alleles",
+             "array"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 35,
+           "total_compressed_size": 51,
+           "data_page_offset": 3978,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6896,
+         "offset_index_length": 11,
+         "column_index_offset": 5837,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 4029,
+         "meta_data": {
+           "type": "FLOAT",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "expectedAlleleDosage"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 29,
+           "total_compressed_size": 49,
+           "data_page_offset": 4029,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6907,
+         "offset_index_length": 11,
+         "column_index_offset": 5852,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 4078,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "referenceReadDepth"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 29,
+           "total_compressed_size": 49,
+           "data_page_offset": 4078,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6918,
+         "offset_index_length": 11,
+         "column_index_offset": 5867,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 4127,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "alternateReadDepth"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 29,
+           "total_compressed_size": 49,
+           "data_page_offset": 4127,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6929,
+         "offset_index_length": 11,
+         "column_index_offset": 5882,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 4176,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "readDepth"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 29,
+           "total_compressed_size": 49,
+           "data_page_offset": 4176,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6940,
+         "offset_index_length": 11,
+         "column_index_offset": 5897,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 4225,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "minReadDepth"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 29,
+           "total_compressed_size": 49,
+           "data_page_offset": 4225,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6951,
+         "offset_index_length": 11,
+         "column_index_offset": 5912,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 4274,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "genotypeQuality"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 29,
+           "total_compressed_size": 49,
+           "data_page_offset": 4274,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6962,
+         "offset_index_length": 11,
+         "column_index_offset": 5927,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 4323,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "genotypeLikelihoods",
+             "array"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 35,
+           "total_compressed_size": 51,
+           "data_page_offset": 4323,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6973,
+         "offset_index_length": 11,
+         "column_index_offset": 5942,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 4374,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "nonReferenceLikelihoods",
+             "array"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 35,
+           "total_compressed_size": 51,
+           "data_page_offset": 4374,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6984,
+         "offset_index_length": 11,
+         "column_index_offset": 5957,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 4425,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "strandBiasComponents",
+             "array"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 35,
+           "total_compressed_size": 51,
+           "data_page_offset": 4425,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 6995,
+         "offset_index_length": 11,
+         "column_index_offset": 5972,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 4476,
+         "meta_data": {
+           "type": "BOOLEAN",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "splitFromMultiAllelic"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 29,
+           "total_compressed_size": 49,
+           "data_page_offset": 4476,
+           "statistics": {
+             "max": false,
+             "min": false,
+             "null_count": 0,
+             "max_value": false,
+             "min_value": false
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 7006,
+         "offset_index_length": 11,
+         "column_index_offset": 5987,
+         "column_index_length": 17,
+         "crypto_metadata": 17
+       },
+       {
+         "file_offset": 4525,
+         "meta_data": {
+           "type": "BOOLEAN",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "phased"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 29,
+           "total_compressed_size": 49,
+           "data_page_offset": 4525,
+           "statistics": {
+             "max": false,
+             "min": false,
+             "null_count": 0,
+             "max_value": false,
+             "min_value": false
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 7017,
+         "offset_index_length": 11,
+         "column_index_offset": 6004,
+         "column_index_length": 17,
+         "crypto_metadata": 17
+       },
+       {
+         "file_offset": 4574,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "phaseSetId"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 29,
+           "total_compressed_size": 49,
+           "data_page_offset": 4574,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 7028,
+         "offset_index_length": 11,
+         "column_index_offset": 6021,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       },
+       {
+         "file_offset": 4623,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "BIT_PACKED",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "phaseQuality"
+           ],
+           "codec": "GZIP",
+           "num_values": 1,
+           "total_uncompressed_size": 29,
+           "total_compressed_size": 49,
+           "data_page_offset": 4623,
+           "statistics": {
+             "null_count": 1
+           },
+           "encoding_stats": [
+             {
+               "page_type": "DATA_PAGE",
+               "encoding": "PLAIN",
+               "count": 1
+             }
+           ]
+         },
+         "offset_index_offset": 7039,
+         "offset_index_length": 11,
+         "column_index_offset": 6036,
+         "column_index_length": 15,
+         "crypto_metadata": 15
+       }
+     ],
+     "total_byte_size": 2976,
+     "num_rows": 1,
+     "file_offset": 4,
+     "total_compressed_size": 4668,
+     "ordinal": 0
+   }
+ ],
+ "key_value_metadata": [
+   {
+     "key": "parquet.avro.schema",
+     "value": "{\"type\":\"record\",\"name\":\"Genotype\",\"namespace\":\"org.bdgenomics.formats.avro\",\"doc\":\"Genotype.\",\"fields\":[{\"name\":\"variant\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"Variant\",\"doc\":\"Variant.\",\"fields\":[{\"name\":\"referenceName\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"The reference this variant exists on. VCF column 1 \\\"CONTIG\\\".\",\"default\":null},{\"name\":\"start\",\"type\":[\"null\",\"long\"],\"doc\":\"The zero-based start position of this variant on the reference.\\n   VCF column 2 \\\"POS\\\" converted to zero-based coordinate system, closed-open intervals.\",\"default\":null},{\"name\":\"end\",\"type\":[\"null\",\"long\"],\"doc\":\"The zero-based, exclusive end position of this variant on the reference.\\n   Calculated by start + referenceAllele.length().\",\"default\":null},{\"name\":\"names\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},\"doc\":\"Zero or more unique names or identifiers for this variant. If this is a dbSNP\\n   variant it is encouraged to use the rs number(s). VCF column 3 \\\"ID\\\" shared across\\n   all alleles in the same VCF record.\",\"default\":[]},{\"name\":\"splitFromMultiAllelic\",\"type\":[\"boolean\",\"null\"],\"doc\":\"We split multi-allelic VCF lines into multiple single-alternate records.\\n   This bit is set if that happened for this record.\",\"default\":false},{\"name\":\"referenceAllele\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"A string describing the reference allele at this site. VCF column 4 \\\"REF\\\".\",\"default\":null},{\"name\":\"alternateAllele\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"A string describing the alternate allele at this site. VCF column 5 \\\"ALT\\\" split\\n   for multi-allelic sites.\",\"default\":null},{\"name\":\"quality\",\"type\":[\"null\",\"double\"],\"doc\":\"The Phred scaled probability that this allele is variant. VCF column 6 \\\"QUAL\\\".\\n   If this record is multi-allelic, this value may be incorrect.\",\"default\":null},{\"name\":\"filtersApplied\",\"type\":[\"null\",\"boolean\"],\"doc\":\"True if filters were applied for this variant. VCF column 7 \\\"FILTER\\\" any value other\\n   than the missing value.\",\"default\":null},{\"name\":\"filtersPassed\",\"type\":[\"null\",\"boolean\"],\"doc\":\"True if all filters for this variant passed. VCF column 7 \\\"FILTER\\\" value PASS.\",\"default\":null},{\"name\":\"filtersFailed\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},\"doc\":\"Zero or more filters that failed for this variant. VCF column 7 \\\"FILTER\\\" shared across\\n   all alleles in the same VCF record.\",\"default\":[]},{\"name\":\"annotation\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"VariantAnnotation\",\"doc\":\"Variant annotation.\",\"fields\":[{\"name\":\"ancestralAllele\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"Ancestral allele, VCF INFO reserved key AA, Number=1, shared across all alternate\\n   alleles in the same VCF record.\",\"default\":null},{\"name\":\"alleleCount\",\"type\":[\"null\",\"int\"],\"doc\":\"Allele count, VCF INFO reserved key AC, Number=A, split for multi-allelic sites into\\n   a single integer value.\",\"default\":null},{\"name\":\"readDepth\",\"type\":[\"null\",\"int\"],\"doc\":\"Total read depth, VCF INFO reserved key AD, Number=R, split for multi-allelic\\n   sites into single integer values for the reference allele (referenceReadDepth) and\\n   the alternate allele (readDepth, this field).\",\"default\":null},{\"name\":\"forwardReadDepth\",\"type\":[\"null\",\"int\"],\"doc\":\"Forward strand read depth, VCF INFO reserved key ADF, Number=R, split for\\n   multi-allelic sites into single integer values for the reference allele\\n   (referenceForwardReadDepth) and the alternate allele (forwardReadDepth, this field).\",\"default\":null},{\"name\":\"reverseReadDepth\",\"type\":[\"null\",\"int\"],\"doc\":\"Reverse strand read depth, VCF INFO reserved key ADR, Number=R, split for\\n   multi-allelic sites into single integer values for the reference allele\\n   (referenceReverseReadDepth) and the alternate allele (reverseReadDepth, this field).\",\"default\":null},{\"name\":\"referenceReadDepth\",\"type\":[\"null\",\"int\"],\"doc\":\"Total read depth, VCF INFO reserved key AD, Number=R, split for multi-allelic\\n   sites into single integer values for the reference allele (referenceReadDepth, this field)\\n   and the alternate allele (readDepth).\",\"default\":null},{\"name\":\"referenceForwardReadDepth\",\"type\":[\"null\",\"int\"],\"doc\":\"Forward strand read depth, VCF INFO reserved key ADF, Number=R, split for\\n   multi-allelic sites into single integer values for the reference allele\\n   (referenceForwardReadDepth, this field) and the alternate allele (forwardReadDepth).\",\"default\":null},{\"name\":\"referenceReverseReadDepth\",\"type\":[\"null\",\"int\"],\"doc\":\"Reverse strand read depth, VCF INFO reserved key ADR, Number=R, split for\\n   multi-allelic sites into single integer values for the reference allele\\n   (referenceReverseReadDepth, this field) and the alternate allele (reverseReadDepth).\",\"default\":null},{\"name\":\"alleleFrequency\",\"type\":[\"null\",\"float\"],\"doc\":\"Minor allele frequency, VCF INFO reserved key AF, Number=A, split for multi-allelic\\n   sites into a single float value. Use this when frequencies are estimated from primary\\n   data, not calculated from called genotypes.\",\"default\":null},{\"name\":\"cigar\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"CIGAR string describing how to align an alternate allele to the reference\\n   allele, VCF INFO reserved key CIGAR, Number=A, split for multi-allelic sites into\\n   a single string value.\",\"default\":null},{\"name\":\"dbSnp\",\"type\":[\"null\",\"boolean\"],\"doc\":\"Membership in dbSNP, VCF INFO reserved key DB, Number=0. Until Number=A and\\n   Number=R flags are supported by the VCF specification, this value is shared\\n   across all alternate alleles in the same VCF record.\",\"default\":null},{\"name\":\"hapMap2\",\"type\":[\"null\",\"boolean\"],\"doc\":\"Membership in HapMap2, VCF INFO reserved key H2, Number=0. Until Number=A and\\n   Number=R flags are supported by the VCF specification, this value is shared\\n   across all alternate alleles in the same VCF record.\",\"default\":null},{\"name\":\"hapMap3\",\"type\":[\"null\",\"boolean\"],\"doc\":\"Membership in HapMap3, VCF INFO reserved key H3, Number=0. Until Number=A and\\n   Number=R flags are supported by the VCF specification, this value is shared\\n   across all alternate alleles in the same VCF record.\",\"default\":null},{\"name\":\"validated\",\"type\":[\"null\",\"boolean\"],\"doc\":\"Validated by follow up experiment, VCF INFO reserved key VALIDATED, Number=0.\\n   Until Number=A and Number=R flags are supported by the VCF specification, this\\n   value is shared across all alternate alleles in the same VCF record.\",\"default\":null},{\"name\":\"thousandGenomes\",\"type\":[\"null\",\"boolean\"],\"doc\":\"Membership in 1000 Genomes, VCF INFO reserved key 1000G, Number=0. Until\\n   Number=A and Number=R flags are supported by the VCF specification, this\\n   value is shared across all alternate alleles in the same VCF record.\",\"default\":null},{\"name\":\"somatic\",\"type\":[\"boolean\",\"null\"],\"doc\":\"True if this variant call is somatic; in this case, the reference allele will\\n   have been observed in another sample. VCF INFO reserved key \\\"SOMATIC\\\", Number=0.\\n   Until Number=A and Number=R flags are supported by the VCF specification, this value\\n   is shared across all alleles in the same VCF record.\",\"default\":false},{\"name\":\"transcriptEffects\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"TranscriptEffect\",\"doc\":\"Annotation of a variant in the context of a feature, typically a transcript.\",\"fields\":[{\"name\":\"alternateAllele\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"Alternate allele for this variant annotation.\",\"default\":null},{\"name\":\"effects\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},\"doc\":\"One or more annotations (also referred to as effects or consequences) of the\\n   variant in the context of the feature identified by featureId. Must be\\n   Sequence Ontology (SO, see http://www.sequenceontology.org) term names, e.g.\\n   stop_gained, missense_variant, synonymous_variant, upstream_gene_variant.\",\"default\":[]},{\"name\":\"impact\",\"type\":[\"null\",{\"type\":\"enum\",\"name\":\"Impact\",\"doc\":\"Putative impact of a variant annotation.\",\"symbols\":[\"HIGH\",\"MODERATE\",\"LOW\",\"MODIFIER\"]}],\"doc\":\"Putative impact of the annotation; a simple estimation of putative impact/\\n   deleteriousness.\",\"default\":null},{\"name\":\"geneName\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"Common gene name (HGNC), e.g. BRCA2. May be closest gene if annotation\\n   is intergenic.\",\"default\":null},{\"name\":\"geneId\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"Gene identifier, e.g. Ensembl Gene identifier, ENSG00000139618. May be\\n   closest gene if annotation is intergenic.\",\"default\":null},{\"name\":\"featureType\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"Feature type, may use Sequence Ontology term names. Typically transcript.\",\"default\":null},{\"name\":\"featureId\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"Feature identifier, e.g. Ensembl Transcript identifier and version, ENST00000380152.7.\",\"default\":null},{\"name\":\"biotype\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"Feature biotype, e.g. Protein coding or Non coding. See http://vega.sanger.ac.uk/info/about/gene_and_transcript_types.html.\",\"default\":null},{\"name\":\"strand\",\"type\":[\"null\",{\"type\":\"enum\",\"name\":\"Strand\",\"doc\":\"Strand of an alignment or feature.\",\"symbols\":[\"FORWARD\",\"REVERSE\",\"INDEPENDENT\",\"UNKNOWN\"]}],\"doc\":\"Feature strand, if known.\",\"default\":null},{\"name\":\"rank\",\"type\":[\"null\",\"int\"],\"doc\":\"Intron or exon rank.\",\"default\":null},{\"name\":\"total\",\"type\":[\"null\",\"int\"],\"doc\":\"Total number of introns or exons.\",\"default\":null},{\"name\":\"genomicHgvs\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"HGVS.g description of the variant. See http://www.hgvs.org/mutnomen/recs-DNA.html.\",\"default\":null},{\"name\":\"transcriptHgvs\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"HGVS.c description of the variant. See http://www.hgvs.org/mutnomen/recs-DNA.html.\",\"default\":null},{\"name\":\"proteinHgvs\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"HGVS.p description of the variant, if coding. See http://www.hgvs.org/mutnomen/recs-prot.html.\",\"default\":null},{\"name\":\"cdnaPosition\",\"type\":[\"null\",\"int\"],\"doc\":\"cDNA sequence position (one based).\",\"default\":null},{\"name\":\"cdnaLength\",\"type\":[\"null\",\"int\"],\"doc\":\"cDNA sequence length in base pairs (one based).\",\"default\":null},{\"name\":\"codingSequencePosition\",\"type\":[\"null\",\"int\"],\"doc\":\"Coding sequence position (one based, includes START and STOP codons).\",\"default\":null},{\"name\":\"codingSequenceLength\",\"type\":[\"null\",\"int\"],\"doc\":\"Coding sequence length in base pairs (one based, includes START and STOP codons).\",\"default\":null},{\"name\":\"referenceCodingSequence\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"Coding sequence for the reference allele.\",\"default\":null},{\"name\":\"alternateCodingSequence\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"Coding sequence of this alternate allele.\",\"default\":null},{\"name\":\"proteinPosition\",\"type\":[\"null\",\"int\"],\"doc\":\"Protein sequence position (one based, includes START but not STOP).\",\"default\":null},{\"name\":\"proteinLength\",\"type\":[\"null\",\"int\"],\"doc\":\"Protein sequence length in amino acids (one based, includes START but not STOP).\",\"default\":null},{\"name\":\"referenceProteinSequence\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"Protein sequence for the reference allele.\",\"default\":null},{\"name\":\"alternateProteinSequence\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"Protein sequence of this alternate allele.\",\"default\":null},{\"name\":\"distance\",\"type\":[\"null\",\"int\"],\"doc\":\"Distance in base pairs to the feature.\",\"default\":null},{\"name\":\"messages\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"enum\",\"name\":\"VariantAnnotationMessage\",\"doc\":\"Errors, warnings, or informative messages regarding variant annotation accuracy.\",\"symbols\":[\"ERROR_CHROMOSOME_NOT_FOUND\",\"ERROR_OUT_OF_CHROMOSOME_RANGE\",\"WARNING_REF_DOES_NOT_MATCH_GENOME\",\"WARNING_SEQUENCE_NOT_AVAILABLE\",\"WARNING_TRANSCRIPT_INCOMPLETE\",\"WARNING_TRANSCRIPT_MULTIPLE_STOP_CODONS\",\"WARNING_TRANSCRIPT_NO_START_CODON\",\"INFO_REALIGN_3_PRIME\",\"INFO_COMPOUND_ANNOTATION\",\"INFO_NON_REFERENCE_ANNOTATION\"]}},\"doc\":\"Zero or more errors, warnings, or informative messages regarding variant annotation accuracy.\",\"default\":[]}]}},\"doc\":\"Zero or more transcript effects, predicted by a tool such as SnpEff or Ensembl VEP,\\n   one per transcript (or other feature). VCF INFO key ANN, split for multi-allelic\\n   sites. See http://snpeff.sourceforge.net/VCFannotationformat_v1.0.pdf.\",\"default\":[]},{\"name\":\"attributes\",\"type\":{\"type\":\"map\",\"values\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"avro.java.string\":\"String\"},\"doc\":\"Additional variant attributes that do not fit into the standard fields above.\\n   The values are stored as strings, even for flag, integer, and float types. VCF\\n   INFO key values with Number=., Number=0, Number=1, and Number=[n] are shared across\\n   all alternate alleles in the same VCF record. VCF INFO key values with Number=A are\\n   split for multi-allelic sites into a single value. VCF INFO key values with Number=R\\n   are split into an array of two values, [reference allele, alternate allele], separated\\n   by commas, e.g. \\\"0,1\\\".\",\"default\":{}}]}],\"doc\":\"Annotation for this variant, if any.\",\"default\":null}]}],\"doc\":\"The variant called at this site.\",\"default\":null},{\"name\":\"referenceName\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"The reference that this genotype's variant exists on.\",\"default\":null},{\"name\":\"start\",\"type\":[\"null\",\"long\"],\"doc\":\"The zero-based start position of this genotype's variant on the reference.\",\"default\":null},{\"name\":\"end\",\"type\":[\"null\",\"long\"],\"doc\":\"The zero-based, exclusive end position of this genotype's variant on the reference.\",\"default\":null},{\"name\":\"variantCallingAnnotations\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"VariantCallingAnnotations\",\"doc\":\"This record represents all stats that, inside a VCF, are stored outside of the\\n sample but are computed based on the samples. For instance, MAPQ0 is an aggregate\\n stat computed from all samples and stored inside the INFO line.\",\"fields\":[{\"name\":\"filtersApplied\",\"type\":[\"null\",\"boolean\"],\"doc\":\"True if filters were applied for this genotype call. FORMAT field \\\"FT\\\" any value other\\n   than the missing value.\",\"default\":null},{\"name\":\"filtersPassed\",\"type\":[\"null\",\"boolean\"],\"doc\":\"True if all filters for this genotype call passed. FORMAT field \\\"FT\\\" value PASS.\",\"default\":null},{\"name\":\"filtersFailed\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},\"doc\":\"Zero or more filters that failed for this genotype call from FORMAT field \\\"FT\\\".\",\"default\":[]},{\"name\":\"downsampled\",\"type\":[\"null\",\"boolean\"],\"doc\":\"True if the reads covering this site were randomly downsampled to reduce coverage.\",\"default\":null},{\"name\":\"baseQRankSum\",\"type\":[\"null\",\"float\"],\"doc\":\"The Wilcoxon rank-sum test statistic of the base quality scores. The base quality\\n   scores are separated by whether or not the base supports the reference or the\\n   alternate allele.\",\"default\":null},{\"name\":\"fisherStrandBiasPValue\",\"type\":[\"null\",\"float\"],\"doc\":\"The Fisher's exact test score for the strand bias of the reference and alternate\\n   alleles. Stored as a phred scaled probability. Thus, if:\\n\\n   * a = The number of positive strand reads covering the reference allele\\n   * b = The number of positive strand reads covering the alternate allele\\n   * c = The number of negative strand reads covering the reference allele\\n   * d = The number of negative strand reads covering the alternate allele\\n\\n   This value takes the score:\\n   \\n   -10 log((a + b)! * (c + d)! * (a + c)! * (b + d)! / (a! b! c! d! n!)\\n\\n   Where n = a + b + c + d.\",\"default\":null},{\"name\":\"rmsMapQ\",\"type\":[\"null\",\"float\"],\"doc\":\"The root mean square of the mapping qualities of reads covering this site.\",\"default\":null},{\"name\":\"mapq0Reads\",\"type\":[\"null\",\"int\"],\"doc\":\"The number of reads at this site with mapping quality equal to 0.\",\"default\":null},{\"name\":\"mqRankSum\",\"type\":[\"null\",\"float\"],\"doc\":\"The Wilcoxon rank-sum test statistic of the mapping quality scores. The mapping\\n   quality scores are separated by whether or not the read supported the reference or the\\n   alternate allele.\",\"default\":null},{\"name\":\"readPositionRankSum\",\"type\":[\"null\",\"float\"],\"doc\":\"The Wilcoxon rank-sum test statistic of the position of the base in the read at this site.\\n   The positions are separated by whether or not the base supports the reference or the\\n   alternate allele.\",\"default\":null},{\"name\":\"genotypePriors\",\"type\":{\"type\":\"array\",\"items\":\"float\"},\"doc\":\"The log scale prior probabilities of the various genotype states at this site.\\n   The number of elements in this array should be equal to the ploidy at this\\n   site, plus 1.\",\"default\":[]},{\"name\":\"genotypePosteriors\",\"type\":{\"type\":\"array\",\"items\":\"float\"},\"doc\":\"The log scaled posterior probabilities of the various genotype states at this site,\\n   in this sample. The number of elements in this array should be equal to the ploidy at\\n   this site, plus 1.\",\"default\":[]},{\"name\":\"vqslod\",\"type\":[\"null\",\"float\"],\"doc\":\"The log-odds ratio of being a true vs. false variant under a trained statistical model.\\n   This model can be a multivariate Gaussian mixture, support vector machine, etc.\",\"default\":null},{\"name\":\"culprit\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"If known, the feature that contributed the most to this variant being classified as\\n   a false variant.\",\"default\":null},{\"name\":\"attributes\",\"type\":{\"type\":\"map\",\"values\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"avro.java.string\":\"String\"},\"doc\":\"Additional feature info that doesn't fit into the standard fields above.\\n   They are all encoded as (string, string) key-value pairs.\",\"default\":{}}]}],\"doc\":\"Statistics collected at this site, if available.\",\"default\":null},{\"name\":\"sampleId\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"The unique identifier for this sample. Join with Sample.id for sample metadata.\",\"default\":null},{\"name\":\"sampleDescription\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"A description of this sample.\",\"default\":null},{\"name\":\"processingDescription\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"doc\":\"A string describing the provenance of this sample and the processing applied\\n   in genotyping this sample.\",\"default\":null},{\"name\":\"alleles\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"enum\",\"name\":\"GenotypeAllele\",\"doc\":\"An enumeration that describes the allele that corresponds to a genotype.\",\"symbols\":[\"REF\",\"ALT\",\"OTHER_ALT\",\"NO_CALL\"]}},\"doc\":\"An array describing the genotype called at this site. The length of this\\n   array is equal to the ploidy of the sample at this site. This array may\\n   reference OTHER_ALT alleles if this site is multi-allelic in this sample.\",\"default\":[]},{\"name\":\"expectedAlleleDosage\",\"type\":[\"null\",\"float\"],\"doc\":\"The expected dosage of the alternate allele in this sample.\",\"default\":null},{\"name\":\"referenceReadDepth\",\"type\":[\"null\",\"int\"],\"doc\":\"The number of reads that show evidence for the reference at this site.\",\"default\":null},{\"name\":\"alternateReadDepth\",\"type\":[\"null\",\"int\"],\"doc\":\"The number of reads that show evidence for this alternate allele at this site.\",\"default\":null},{\"name\":\"readDepth\",\"type\":[\"null\",\"int\"],\"doc\":\"The total number of reads at this site. May not equal (alternateReadDepth +\\n   referenceReadDepth) if this site shows evidence of multiple alternate alleles.\\n   Analogous to VCF's DP.\",\"default\":null},{\"name\":\"minReadDepth\",\"type\":[\"null\",\"int\"],\"doc\":\"The minimum number of reads seen at this site across samples when joint\\n   calling variants. Analogous to VCF's MIN_DP.\",\"default\":null},{\"name\":\"genotypeQuality\",\"type\":[\"null\",\"int\"],\"doc\":\"The phred-scaled probability that we're correct for this genotype call.\\n   Analogous to VCF's GQ.\",\"default\":null},{\"name\":\"genotypeLikelihoods\",\"type\":{\"type\":\"array\",\"items\":\"double\"},\"doc\":\"Log scaled likelihoods that we have n copies of this alternate allele.\\n   The number of elements in this array should be equal to the ploidy at this\\n   site, plus 1. Analogous to VCF's PL.\",\"default\":[]},{\"name\":\"nonReferenceLikelihoods\",\"type\":{\"type\":\"array\",\"items\":\"double\"},\"doc\":\"Log scaled likelihoods that we have n non-reference alleles at this site.\\n   The number of elements in this array should be equal to the ploidy at this\\n   site, plus 1.\",\"default\":[]},{\"name\":\"strandBiasComponents\",\"type\":{\"type\":\"array\",\"items\":\"int\"},\"doc\":\"Component statistics which comprise the Fisher's Exact Test to detect strand bias.\\n   If populated, this element should have length 4.\",\"default\":[]},{\"name\":\"splitFromMultiAllelic\",\"type\":[\"boolean\",\"null\"],\"doc\":\"We split multi-allelic VCF lines into multiple single-alternate records.\\n   This bit is set if that happened for this record.\",\"default\":false},{\"name\":\"phased\",\"type\":[\"boolean\",\"null\"],\"doc\":\"True if this genotype is phased.\",\"default\":false},{\"name\":\"phaseSetId\",\"type\":[\"null\",\"int\"],\"doc\":\"The ID of this phase set, if this genotype is phased. Should only be populated\\n   if phased == true; else should be null.\",\"default\":null},{\"name\":\"phaseQuality\",\"type\":[\"null\",\"int\"],\"doc\":\"Phred scaled quality score for the phasing of this genotype, if this genotype\\n   is phased. Should only be populated if phased == true; else should be null.\",\"default\":null}]}"
+   },
+   {
+     "key": "writer.model.name",
+     "value": "avro"
+   }
+ ],
+ "created_by": "parquet-mr version 1.12.2 (build 77e30c8093386ec52c3cfa6c34b7ef3321322c94)",
+ "metadata_length": 32488
+}
