@@ -1,0 +1,241 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "name": "root",
+      "num_children": 5
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "REQUIRED",
+      "name": "timestamp",
+      "logical_type": {
+        "type": "TIMESTAMP",
+        "isAdjustedToUTC": false,
+        "unit": {
+          "field_1": {}
+        }
+      }
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "item_id",
+      "converted_type": "UINT_32",
+      "logical_type": {
+        "type": "INTEGER",
+        "bitWidth": 32,
+        "isSigned": false
+      }
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "currency_id",
+      "converted_type": "UINT_32",
+      "logical_type": {
+        "type": "INTEGER",
+        "bitWidth": 32,
+        "isSigned": false
+      }
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "REQUIRED",
+      "name": "count"
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "REQUIRED",
+      "name": "mf",
+      "converted_type": "UINT_16",
+      "logical_type": {
+        "type": "INTEGER",
+        "bitWidth": 16,
+        "isSigned": false
+      }
+    }
+  ],
+  "num_rows": 4,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 77,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "timestamp"
+            ],
+            "codec": "ZSTD",
+            "num_values": 4,
+            "total_uncompressed_size": 78,
+            "total_compressed_size": 73,
+            "data_page_offset": 4,
+            "statistics": {
+              "null_count": 0,
+              "max_value": 1669570964280,
+              "min_value": 1669570963514
+            }
+          },
+          "offset_index_offset": 656,
+          "offset_index_length": 11,
+          "column_index_offset": 531,
+          "column_index_length": 31,
+          "crypto_metadata": 31
+        },
+        {
+          "file_offset": 197,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "item_id"
+            ],
+            "codec": "ZSTD",
+            "num_values": 4,
+            "total_uncompressed_size": 56,
+            "total_compressed_size": 65,
+            "data_page_offset": 132,
+            "statistics": {
+              "null_count": 0,
+              "max_value": 85016,
+              "min_value": 1184
+            }
+          },
+          "offset_index_offset": 667,
+          "offset_index_length": 12,
+          "column_index_offset": 562,
+          "column_index_length": 23,
+          "crypto_metadata": 23
+        },
+        {
+          "file_offset": 279,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "currency_id"
+            ],
+            "codec": "ZSTD",
+            "num_values": 4,
+            "total_uncompressed_size": 28,
+            "total_compressed_size": 37,
+            "data_page_offset": 242,
+            "statistics": {
+              "null_count": 4
+            }
+          },
+          "offset_index_offset": 679,
+          "offset_index_length": 11,
+          "column_index_offset": 585,
+          "column_index_length": 17,
+          "crypto_metadata": 17
+        },
+        {
+          "file_offset": 383,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "count"
+            ],
+            "codec": "ZSTD",
+            "num_values": 4,
+            "total_uncompressed_size": 78,
+            "total_compressed_size": 68,
+            "data_page_offset": 315,
+            "statistics": {
+              "null_count": 0,
+              "max_value": 1,
+              "min_value": -1
+            }
+          },
+          "offset_index_offset": 690,
+          "offset_index_length": 12,
+          "column_index_offset": 602,
+          "column_index_length": 31,
+          "crypto_metadata": 31
+        },
+        {
+          "file_offset": 492,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "mf"
+            ],
+            "codec": "ZSTD",
+            "num_values": 4,
+            "total_uncompressed_size": 54,
+            "total_compressed_size": 57,
+            "data_page_offset": 435,
+            "statistics": {
+              "null_count": 0,
+              "max_value": 343,
+              "min_value": 343
+            }
+          },
+          "offset_index_offset": 702,
+          "offset_index_length": 11,
+          "column_index_offset": 633,
+          "column_index_length": 23,
+          "crypto_metadata": 23
+        }
+      ],
+      "total_byte_size": 294,
+      "num_rows": 4,
+      "file_offset": 4,
+      "total_compressed_size": 300,
+      "ordinal": 0
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "addon_version",
+      "value": "1.8.0"
+    },
+    {
+      "key": "map",
+      "value": "18"
+    },
+    {
+      "key": "character",
+      "value": "Undeadscarlight"
+    },
+    {
+      "key": "level",
+      "value": "80"
+    },
+    {
+      "key": "start",
+      "value": "2022-11-27T17:42:35.480941703Z"
+    },
+    {
+      "key": "end",
+      "value": "2022-11-27T17:43:01.105178597Z"
+    },
+    {
+      "key": "ARROW:schema",
+      "value": "/////5oBAAAEAAAA8v///xQAAAAEAAEAAAAKAAsACAAKAAQA+P///wwAAAAIAAgAAAAEAAUAAAAoAQAA4AAAAJQAAABIAAAABAAAAOz///80AAAAIAAAABgAAAACAAAAEAARAAQAAAAQAAgAAAAMAAAAAAD2////EAAAAAAABgAIAAQAAgAAAG1mAADs////OAAAACAAAAAYAAAAAgAAABAAEQAEAAAAEAAIAAAADAAAAAAA9P///0AAAAABAAAACAAJAAQACAAFAAAAY291bnQAAADs////NAAAACAAAAAYAAAAAQIAABAAEgAEABAAEQAIAAAADAAAAAAA9v///yAAAAAAAAYACAAEAAsAAABjdXJyZW5jeV9pZADs////NAAAACAAAAAYAAAAAQIAABAAEgAEABAAEQAIAAAADAAAAAAA9v///yAAAAAAAAYACAAEAAcAAABpdGVtX2lkAOz///8wAAAAIAAAABgAAAAKAAAAEAARAAQAAAAQAAgAAAAMAAAAAAD6////AQAGAAYABAAJAAAAdGltZXN0YW1wAA=="
+    }
+  ],
+  "created_by": "Arrow2 - Native Rust implementation of Arrow",
+  "metadata_length": 1218
+}

@@ -71,6 +71,13 @@ export function convert(data, schemaElement, utf8 = true) {
   if (logicalType === 'FLOAT16') {
     return Array.from(data).map(parseFloat16)
   }
+  if (logicalType === 'TIMESTAMP') {
+    const arr = new Array(data.length)
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = new Date(Number(data[i]))
+    }
+    return arr
+  }
   return data
 }
 
