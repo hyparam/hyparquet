@@ -1,0 +1,102 @@
+[
+  [
+    "tt0000001",
+    {
+      "category": "self",
+      "characters": ["[\"Self\"]"],
+      "job": "\\N",
+      "nconst": "nm1588970",
+      "ordering": 1
+    }
+  ],
+  [
+    "tt0000001",
+    {
+      "category": "director",
+      "characters": ["\\N"],
+      "job": "\\N",
+      "nconst": "nm0005690",
+      "ordering": 2
+    }
+  ],
+  [
+    "tt0000001",
+    {
+      "category": "cinematographer",
+      "characters": ["\\N"],
+      "job": "director of photography",
+      "nconst": "nm0374658",
+      "ordering": 3
+    }
+  ],
+  [
+    "tt0000002",
+    {
+      "category": "director",
+      "characters": ["\\N"],
+      "job": "\\N",
+      "nconst": "nm0721526",
+      "ordering": 1
+    }
+  ],
+  [
+    "tt0000002",
+    {
+      "category": "composer",
+      "characters": ["\\N"],
+      "job": "\\N",
+      "nconst": "nm1335271",
+      "ordering": 2
+    }
+  ],
+  [
+    "tt0000003",
+    {
+      "category": "director",
+      "characters": ["\\N"],
+      "job": "\\N",
+      "nconst": "nm0721526",
+      "ordering": 1
+    }
+  ],
+  [
+    "tt0000003",
+    {
+      "category": "producer",
+      "characters": ["\\N"],
+      "job": "producer",
+      "nconst": "nm1770680",
+      "ordering": 2
+    }
+  ],
+  [
+    "tt0000003",
+    {
+      "category": "composer",
+      "characters": ["\\N"],
+      "job": "\\N",
+      "nconst": "nm1335271",
+      "ordering": 3
+    }
+  ],
+  [
+    "tt0000003",
+    {
+      "category": "editor",
+      "characters": ["\\N"],
+      "job": "\\N",
+      "nconst": "nm5442200",
+      "ordering": 4
+    }
+  ],
+  [
+    "tt0000004",
+    {
+      "category": "director",
+      "characters": ["\\N"],
+      "job": "\\N",
+      "nconst": "nm0721526",
+      "ordering": 1
+    }
+  ]
+]

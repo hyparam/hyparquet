@@ -64,7 +64,7 @@ export function readColumn(reader, rowGroup, columnMetadata, schemaPath, { compr
         // wrap nested flat data by depth
         for (let i = 2; i < schemaPath.length; i++) {
           if (schemaPath[i].element.repetition_type !== 'REQUIRED') {
-            values = [values]
+            values = Array.from(values, e => [e])
           }
         }
       }

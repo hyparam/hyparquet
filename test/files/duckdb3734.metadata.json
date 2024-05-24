@@ -1,0 +1,231 @@
+{
+ "version": 1,
+ "schema": [
+   {
+     "repetition_type": "REQUIRED",
+     "name": "duckdb_schema",
+     "num_children": 2
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "tconst",
+     "num_children": 0,
+     "converted_type": "UTF8"
+   },
+   {
+     "repetition_type": "OPTIONAL",
+     "name": "principals",
+     "num_children": 5
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "OPTIONAL",
+     "name": "ordering",
+     "num_children": 0,
+     "converted_type": "INT_32"
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "nconst",
+     "num_children": 0,
+     "converted_type": "UTF8"
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "category",
+     "num_children": 0,
+     "converted_type": "UTF8"
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "job",
+     "num_children": 0,
+     "converted_type": "UTF8"
+   },
+   {
+     "repetition_type": "OPTIONAL",
+     "name": "characters",
+     "num_children": 1,
+     "converted_type": "LIST"
+   },
+   {
+     "repetition_type": "REPEATED",
+     "name": "list",
+     "num_children": 1
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "OPTIONAL",
+     "name": "element",
+     "num_children": 0,
+     "converted_type": "UTF8"
+   }
+ ],
+ "num_rows": 10,
+ "row_groups": [
+   {
+     "columns": [
+       {
+         "file_offset": 0,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "PLAIN",
+             "RLE_DICTIONARY"
+           ],
+           "path_in_schema": [
+             "tconst"
+           ],
+           "codec": "SNAPPY",
+           "num_values": 10,
+           "total_uncompressed_size": 0,
+           "total_compressed_size": 83,
+           "data_page_offset": 4,
+           "statistics": {
+             "max": "tt0000004",
+             "min": "tt0000001",
+             "null_count": 0,
+             "max_value": "tt0000004",
+             "min_value": "tt0000001"
+           }
+         }
+       },
+       {
+         "file_offset": 0,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "principals",
+             "ordering"
+           ],
+           "codec": "SNAPPY",
+           "num_values": 10,
+           "total_uncompressed_size": 0,
+           "total_compressed_size": 53,
+           "data_page_offset": 87,
+           "statistics": {
+             "max": 4,
+             "min": 1,
+             "null_count": 0,
+             "max_value": 4,
+             "min_value": 1
+           }
+         }
+       },
+       {
+         "file_offset": 0,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "principals",
+             "nconst"
+           ],
+           "codec": "SNAPPY",
+           "num_values": 10,
+           "total_uncompressed_size": 0,
+           "total_compressed_size": 116,
+           "data_page_offset": 140,
+           "statistics": {
+             "max": "nm5442200",
+             "min": "nm0005690",
+             "null_count": 0,
+             "max_value": "nm5442200",
+             "min_value": "nm0005690"
+           }
+         }
+       },
+       {
+         "file_offset": 0,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "principals",
+             "category"
+           ],
+           "codec": "SNAPPY",
+           "num_values": 10,
+           "total_uncompressed_size": 0,
+           "total_compressed_size": 121,
+           "data_page_offset": 256,
+           "statistics": {
+             "max": "self",
+             "min": "cinematographer",
+             "null_count": 0,
+             "max_value": "self",
+             "min_value": "cinematographer"
+           }
+         }
+       },
+       {
+         "file_offset": 0,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "principals",
+             "job"
+           ],
+           "codec": "SNAPPY",
+           "num_values": 10,
+           "total_uncompressed_size": 0,
+           "total_compressed_size": 90,
+           "data_page_offset": 377,
+           "statistics": {
+             "max": "producer",
+             "min": "\\N",
+             "null_count": 0,
+             "max_value": "producer",
+             "min_value": "\\N"
+           }
+         }
+       },
+       {
+         "file_offset": 0,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "principals",
+             "characters",
+             "list",
+             "element"
+           ],
+           "codec": "SNAPPY",
+           "num_values": 10,
+           "total_uncompressed_size": 0,
+           "total_compressed_size": 50,
+           "data_page_offset": 467,
+           "statistics": {
+             "max": "\\N",
+             "min": "[\"Self\"]",
+             "max_value": "\\N",
+             "min_value": "[\"Self\"]"
+           }
+         }
+       }
+     ],
+     "total_byte_size": 0,
+     "num_rows": 10,
+     "file_offset": 4
+   }
+ ],
+ "created_by": "DuckDB",
+ "metadata_length": 690
+}
