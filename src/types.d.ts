@@ -113,28 +113,30 @@ type LogicalIntType = {
 }
 
 export type LogicalType =
-  { type: LogicalTypeType } |
+  { type: LogicalTypeSimple } |
   LogicalDecimalType |
   LogicalTimeType |
   LogicalTimestampType |
   LogicalIntType
 
-export type LogicalTypeType =
-  'STRING' | // convertedType UTF8
-  'MAP' | // convertedType MAP
-  'LIST' | // convertedType LIST
-  'ENUM' | // convertedType ENUM
-  'DECIMAL' | // convertedType DECIMAL + precision/scale
-  'DATE' | // convertedType DATE
+type LogicalTypeSimple =
+  'STRING' |
+  'MAP' |
+  'LIST' |
+  'ENUM' |
+  'DECIMAL' |
+  'DATE' |
+  'INTERVAL' |
+  'NULL' |
+  'JSON' |
+  'BSON' |
+  'UUID' |
+  'FLOAT16'
+
+export type LogicalTypeType = LogicalTypeSimple |
   'TIME' | // convertedType TIME_MILLIS or TIME_MICROS
   'TIMESTAMP' | // convertedType TIMESTAMP_MILLIS or TIMESTAMP_MICROS
-  'INTEGER' | // convertedType INT or UINT
-  'INTERVAL' | // convertedType INT or UINT
-  'NULL' | // no convertedType
-  'JSON' | // convertedType JSON
-  'BSON' | // convertedType BSON
-  'UUID' | // no convertedType
-  'FLOAT16' // no convertedType
+  'INTEGER' // convertedType INT or UINT
 
 export interface RowGroup {
   columns: ColumnChunk[]

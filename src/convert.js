@@ -102,14 +102,17 @@ export function convert(data, schemaElement, utf8 = true) {
     }
     return arr
   }
-  const logicalType = schemaElement.logical_type?.type
-  if (logicalType === 'FLOAT16') {
+  if (schemaElement.logical_type?.type === 'FLOAT16') {
     return Array.from(data).map(parseFloat16)
   }
-  if (logicalType === 'TIMESTAMP') {
+  if (schemaElement.logical_type?.type === 'TIMESTAMP') {
+    const { unit } = schemaElement.logical_type
+    let factor = 1n
+    if (unit === 'MICROS') factor = 1000n
+    if (unit === 'NANOS') factor = 1000000n
     const arr = new Array(data.length)
     for (let i = 0; i < arr.length; i++) {
-      arr[i] = new Date(Number(data[i]))
+      arr[i] = new Date(Number(data[i] / factor))
     }
     return arr
   }

@@ -236,12 +236,13 @@ function logicalType(logicalType) {
 
 /**
  * @param {any} unit
- * @returns {import("./types.d.ts").TimeUnit | undefined}
+ * @returns {import("./types.d.ts").TimeUnit}
  */
 function timeUnit(unit) {
   if (unit.field_1) return 'MILLIS'
   if (unit.field_2) return 'MICROS'
   if (unit.field_3) return 'NANOS'
+  throw new Error('parquet time unit required')
 }
 
 /**

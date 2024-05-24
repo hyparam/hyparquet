@@ -1,0 +1,467 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "name": "root",
+      "num_children": 17
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "linkback_length"
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "agent_call_sid"
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "client_sid"
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "agent_sid"
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "call_date",
+      "logical_type": {
+        "type": "TIMESTAMP",
+        "isAdjustedToUTC": true,
+        "unit": "NANOS"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "call_type",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "call_sid"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "skills",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "result"
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "call_wait_duration"
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "transfer_duration"
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "wrap_up_duration"
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "talk_duration"
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "hold_duration"
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "call_month_epoch"
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "call_date_epoch"
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "_version"
+    }
+  ],
+  "num_rows": 1,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 38,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "linkback_length"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1,
+            "total_uncompressed_size": 32,
+            "total_compressed_size": 34,
+            "data_page_offset": 4
+          },
+          "offset_index_offset": 1138,
+          "offset_index_length": 10
+        },
+        {
+          "file_offset": 107,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "agent_call_sid"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1,
+            "total_uncompressed_size": 32,
+            "total_compressed_size": 34,
+            "data_page_offset": 73
+          },
+          "offset_index_offset": 1148,
+          "offset_index_length": 11
+        },
+        {
+          "file_offset": 176,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "client_sid"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1,
+            "total_uncompressed_size": 32,
+            "total_compressed_size": 34,
+            "data_page_offset": 142
+          },
+          "offset_index_offset": 1159,
+          "offset_index_length": 11
+        },
+        {
+          "file_offset": 241,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "agent_sid"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1,
+            "total_uncompressed_size": 32,
+            "total_compressed_size": 34,
+            "data_page_offset": 207
+          },
+          "offset_index_offset": 1170,
+          "offset_index_length": 11
+        },
+        {
+          "file_offset": 305,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "call_date"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1,
+            "total_uncompressed_size": 32,
+            "total_compressed_size": 34,
+            "data_page_offset": 271
+          },
+          "offset_index_offset": 1181,
+          "offset_index_length": 11
+        },
+        {
+          "file_offset": 373,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "call_type"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1,
+            "total_uncompressed_size": 36,
+            "total_compressed_size": 38,
+            "data_page_offset": 335
+          },
+          "offset_index_offset": 1192,
+          "offset_index_length": 11
+        },
+        {
+          "file_offset": 437,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "call_sid"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1,
+            "total_uncompressed_size": 32,
+            "total_compressed_size": 34,
+            "data_page_offset": 403
+          },
+          "offset_index_offset": 1203,
+          "offset_index_length": 11
+        },
+        {
+          "file_offset": 498,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "skills"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1,
+            "total_uncompressed_size": 30,
+            "total_compressed_size": 32,
+            "data_page_offset": 466
+          },
+          "offset_index_offset": 1214,
+          "offset_index_length": 11
+        },
+        {
+          "file_offset": 559,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "result"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1,
+            "total_uncompressed_size": 32,
+            "total_compressed_size": 34,
+            "data_page_offset": 525
+          },
+          "offset_index_offset": 1225,
+          "offset_index_length": 11
+        },
+        {
+          "file_offset": 620,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "call_wait_duration"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1,
+            "total_uncompressed_size": 32,
+            "total_compressed_size": 34,
+            "data_page_offset": 586
+          },
+          "offset_index_offset": 1236,
+          "offset_index_length": 11
+        },
+        {
+          "file_offset": 693,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "transfer_duration"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1,
+            "total_uncompressed_size": 32,
+            "total_compressed_size": 34,
+            "data_page_offset": 659
+          },
+          "offset_index_offset": 1247,
+          "offset_index_length": 11
+        },
+        {
+          "file_offset": 765,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "wrap_up_duration"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1,
+            "total_uncompressed_size": 32,
+            "total_compressed_size": 34,
+            "data_page_offset": 731
+          },
+          "offset_index_offset": 1258,
+          "offset_index_length": 11
+        },
+        {
+          "file_offset": 836,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "talk_duration"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1,
+            "total_uncompressed_size": 32,
+            "total_compressed_size": 34,
+            "data_page_offset": 802
+          },
+          "offset_index_offset": 1269,
+          "offset_index_length": 11
+        },
+        {
+          "file_offset": 904,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "hold_duration"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1,
+            "total_uncompressed_size": 32,
+            "total_compressed_size": 34,
+            "data_page_offset": 870
+          },
+          "offset_index_offset": 1280,
+          "offset_index_length": 11
+        },
+        {
+          "file_offset": 972,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "call_month_epoch"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1,
+            "total_uncompressed_size": 32,
+            "total_compressed_size": 34,
+            "data_page_offset": 938
+          },
+          "offset_index_offset": 1291,
+          "offset_index_length": 11
+        },
+        {
+          "file_offset": 1043,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "call_date_epoch"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1,
+            "total_uncompressed_size": 32,
+            "total_compressed_size": 34,
+            "data_page_offset": 1009
+          },
+          "offset_index_offset": 1302,
+          "offset_index_length": 11
+        },
+        {
+          "file_offset": 1109,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "_version"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1,
+            "total_uncompressed_size": 28,
+            "total_compressed_size": 30,
+            "data_page_offset": 1079
+          },
+          "offset_index_offset": 1313,
+          "offset_index_length": 11
+        }
+      ],
+      "total_byte_size": 542,
+      "num_rows": 1,
+      "file_offset": 4,
+      "total_compressed_size": 576,
+      "ordinal": 0
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "ARROW:schema",
+      "value": "/////5wFAAAEAAAA8v///xQAAAAEAAEAAAAKAAsACAAKAAQA+P///wwAAAAIAAgAAAAEABEAAAAcBQAAyAQAAHgEAAAoBAAA0AMAAIwDAAA8AwAA/AIAALACAABYAgAAAAIAAKgBAABUAQAAAAEAAKgAAABUAAAABAAAAOz///84AAAAIAAAABgAAAABAgAAEAASAAQAEAARAAgAAAAMAAAAAAD0////IAAAAAEAAAAIAAkABAAIAAgAAABfdmVyc2lvbgAAAADs////OAAAACAAAAAYAAAAAQIAABAAEgAEABAAEQAIAAAADAAAAAAA9P///0AAAAABAAAACAAJAAQACAAPAAAAY2FsbF9kYXRlX2Vwb2NoAOz///84AAAAIAAAABgAAAABAgAAEAASAAQAEAARAAgAAAAMAAAAAAD0////QAAAAAEAAAAIAAkABAAIABAAAABjYWxsX21vbnRoX2Vwb2NoAAAAAOz///84AAAAIAAAABgAAAABAgAAEAASAAQAEAARAAgAAAAMAAAAAAD0////QAAAAAEAAAAIAAkABAAIAA0AAABob2xkX2R1cmF0aW9uAAAA7P///zgAAAAgAAAAGAAAAAECAAAQABIABAAQABEACAAAAAwAAAAAAPT///9AAAAAAQAAAAgACQAEAAgADQAAAHRhbGtfZHVyYXRpb24AAADs////OAAAACAAAAAYAAAAAQIAABAAEgAEABAAEQAIAAAADAAAAAAA9P///0AAAAABAAAACAAJAAQACAAQAAAAd3JhcF91cF9kdXJhdGlvbgAAAADs////OAAAACAAAAAYAAAAAQIAABAAEgAEABAAEQAIAAAADAAAAAAA9P///0AAAAABAAAACAAJAAQACAARAAAAdHJhbnNmZXJfZHVyYXRpb24AAADs////OAAAACAAAAAYAAAAAQIAABAAEgAEABAAEQAIAAAADAAAAAAA9P///0AAAAABAAAACAAJAAQACAASAAAAY2FsbF93YWl0X2R1cmF0aW9uAADs////OAAAACAAAAAYAAAAAQIAABAAEgAEABAAEQAIAAAADAAAAAAA9P///0AAAAABAAAACAAJAAQACAAGAAAAcmVzdWx0AADs////LAAAACAAAAAYAAAAARQAABAAEgAEABAAEQAIAAAADAAAAAAA/P///wQABAAGAAAAc2tpbGxzAADs////OAAAACAAAAAYAAAAAQIAABAAEgAEABAAEQAIAAAADAAAAAAA9P///0AAAAABAAAACAAJAAQACAAIAAAAY2FsbF9zaWQAAAAA7P///ywAAAAgAAAAGAAAAAEUAAAQABIABAAQABEACAAAAAwAAAAAAPz///8EAAQACQAAAGNhbGxfdHlwZQAAAOz///9AAAAAIAAAABgAAAABCgAAEAASAAQAEAARAAgAAAAMAAAAAAD0////EAAAAAMAAAAIAAoACAAEAAMAAABVVEMACQAAAGNhbGxfZGF0ZQAAAOz///84AAAAIAAAABgAAAABAgAAEAASAAQAEAARAAgAAAAMAAAAAAD0////QAAAAAEAAAAIAAkABAAIAAkAAABhZ2VudF9zaWQAAADs////OAAAACAAAAAYAAAAAQIAABAAEgAEABAAEQAIAAAADAAAAAAA9P///0AAAAABAAAACAAJAAQACAAKAAAAY2xpZW50X3NpZAAA7P///zgAAAAgAAAAGAAAAAECAAAQABIABAAQABEACAAAAAwAAAAAAPT///9AAAAAAQAAAAgACQAEAAgADgAAAGFnZW50X2NhbGxfc2lkAADs////OAAAACAAAAAYAAAAAQIAABAAEgAEABAAEQAIAAAADAAAAAAA9P///0AAAAABAAAACAAJAAQACAAPAAAAbGlua2JhY2tfbGVuZ3RoAA=="
+    }
+  ],
+  "created_by": "Arrow2 - Native Rust implementation of Arrow",
+  "metadata_length": 3098
+}
