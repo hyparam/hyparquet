@@ -1,0 +1,91 @@
+{
+ "version": 1,
+ "schema": [
+   {
+     "name": "root",
+     "num_children": 3
+   },
+   {
+     "type": "BYTE_ARRAY",
+     "repetition_type": "REPEATED",
+     "name": "stringArray",
+     "converted_type": "UTF8"
+   },
+   {
+     "type": "INT32",
+     "repetition_type": "REPEATED",
+     "name": "intArray"
+   },
+   {
+     "type": "DOUBLE",
+     "repetition_type": "REPEATED",
+     "name": "doubleArray"
+   }
+ ],
+ "num_rows": 100,
+ "row_groups": [
+   {
+     "columns": [
+       {
+         "file_offset": 4802,
+         "meta_data": {
+           "type": "BYTE_ARRAY",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "stringArray"
+           ],
+           "codec": "UNCOMPRESSED",
+           "num_values": 449,
+           "total_uncompressed_size": 4798,
+           "total_compressed_size": 4798,
+           "data_page_offset": 4
+         }
+       },
+       {
+         "file_offset": 5874,
+         "meta_data": {
+           "type": "INT32",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "intArray"
+           ],
+           "codec": "UNCOMPRESSED",
+           "num_values": 237,
+           "total_uncompressed_size": 1038,
+           "total_compressed_size": 1038,
+           "data_page_offset": 4836
+         }
+       },
+       {
+         "file_offset": 7663,
+         "meta_data": {
+           "type": "DOUBLE",
+           "encodings": [
+             "RLE",
+             "PLAIN"
+           ],
+           "path_in_schema": [
+             "doubleArray"
+           ],
+           "codec": "UNCOMPRESSED",
+           "num_values": 225,
+           "total_uncompressed_size": 1757,
+           "total_compressed_size": 1757,
+           "data_page_offset": 5906
+         }
+       }
+     ],
+     "total_byte_size": 7694,
+     "num_rows": 100
+   }
+ ],
+ "key_value_metadata": [],
+ "created_by": "parquet.js",
+ "metadata_length": 211
+}

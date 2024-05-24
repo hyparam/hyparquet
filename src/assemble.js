@@ -49,7 +49,10 @@ export function assembleLists(
     currentContainer = containerStack.at(-1)
 
     // Go deeper to end of definition level
-    while (currentDepth < repetitionPath.length - 2 && (currentDefLevel < def || repetitionPath[currentDepth + 1] === 'REQUIRED')) {
+    while (
+      (currentDepth < repetitionPath.length - 2 || repetitionPath[currentDepth + 1] === 'REPEATED') &&
+      (currentDefLevel < def || repetitionPath[currentDepth + 1] === 'REQUIRED')
+    ) {
       currentDepth++
       if (repetitionPath[currentDepth] !== 'REQUIRED') {
         /** @type {any[]} */
