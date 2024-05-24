@@ -3,7 +3,7 @@ import { readPlain } from './plain.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel } from './schema.js'
 
 /**
- * Read a data page from the given Uint8Array.
+ * Read a data page from uncompressed reader.
  *
  * @typedef {import("./types.d.ts").DataPage} DataPage
  * @typedef {import("./types.d.ts").ColumnMetaData} ColumnMetaData
