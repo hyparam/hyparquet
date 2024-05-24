@@ -12,9 +12,7 @@
       "logical_type": {
         "type": "TIMESTAMP",
         "isAdjustedToUTC": false,
-        "unit": {
-          "field_1": {}
-        }
+        "unit": "MILLIS"
       }
     },
     {

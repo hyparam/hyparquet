@@ -214,12 +214,12 @@ function logicalType(logicalType) {
   if (logicalType?.field_7) return {
     type: 'TIME',
     isAdjustedToUTC: logicalType.field_7.field_1,
-    unit: logicalType.field_7.field_2,
+    unit: timeUnit(logicalType.field_7.field_2),
   }
   if (logicalType?.field_8) return {
     type: 'TIMESTAMP',
     isAdjustedToUTC: logicalType.field_8.field_1,
-    unit: logicalType.field_8.field_2,
+    unit: timeUnit(logicalType.field_8.field_2),
   }
   if (logicalType?.field_10) return {
     type: 'INTEGER',
@@ -232,6 +232,16 @@ function logicalType(logicalType) {
   if (logicalType?.field_14) return { type: 'UUID' }
   if (logicalType?.field_15) return { type: 'FLOAT16' }
   return logicalType
+}
+
+/**
+ * @param {any} unit
+ * @returns {import("./types.d.ts").TimeUnit | undefined}
+ */
+function timeUnit(unit) {
+  if (unit.field_1) return 'MILLIS'
+  if (unit.field_2) return 'MICROS'
+  if (unit.field_3) return 'NANOS'
 }
 
 /**

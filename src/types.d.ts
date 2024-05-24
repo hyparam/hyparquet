@@ -92,7 +92,7 @@ type LogicalDecimalType = {
   scale: number
 }
 
-type TimeUnit = 'MILLIS' | 'MICROS' | 'NANOS'
+export type TimeUnit = 'MILLIS' | 'MICROS' | 'NANOS'
 
 type LogicalTimeType = {
   type: 'TIME'
