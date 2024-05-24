@@ -189,4 +189,11 @@ describe('assembleLists', () => {
     const result = assembleLists([], repetitionLevels, values, nullable, 3, 1)
     expect(result).toEqual([[['a', 'b', 'c']], [['d', 'e', 'f']]])
   })
+
+  it('handle complex.parquet with nested require', () => {
+    const definitionLevels = [1, 1]
+    const values = ['a', 'b']
+    const result = assembleLists(definitionLevels, [], values, [undefined, 'OPTIONAL', 'REQUIRED', 'REQUIRED'], 1, 0)
+    expect(result).toEqual([['a'], ['b']])
+  })
 })

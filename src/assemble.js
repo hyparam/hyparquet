@@ -37,7 +37,7 @@ export function assembleLists(
     const rep = repetitionLevels[i]
 
     // Pop up to start of rep level
-    while (currentDepth && (rep < currentRepLevel || repetitionPath[currentDepth] === 'OPTIONAL')) {
+    while (currentDepth && (rep < currentRepLevel || repetitionPath[currentDepth] !== 'REPEATED')) {
       if (repetitionPath[currentDepth] !== 'REQUIRED') {
         containerStack.pop()
         currentDefLevel--
