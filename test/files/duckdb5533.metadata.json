@@ -76,8 +76,8 @@
             "data_page_offset": 4,
             "statistics": {
               "null_count": 0,
-              "max_value": 1669570964280,
-              "min_value": 1669570963514
+              "max_value": "2022-11-27T17:42:44.280Z",
+              "min_value": "2022-11-27T17:42:43.514Z"
             }
           },
           "offset_index_offset": 656,

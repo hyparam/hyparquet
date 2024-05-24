@@ -1,5 +1,5 @@
 import { CompressionCodec, ConvertedType, Encoding, FieldRepetitionType, PageType, ParquetType } from './constants.js'
-import { parseFloat16 } from './convert.js'
+import { parseDecimal, parseFloat16 } from './convert.js'
 import { getSchemaPath } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
@@ -252,30 +252,22 @@ function timeUnit(unit) {
  * @returns {import("./types.d.ts").Statistics}
  */
 function columnStats(stats, schema) {
-  const { type, logical_type } = schema
+  const { type, converted_type, logical_type } = schema
   function convert(/** @type {Uint8Array} */ value) {
     if (value === undefined) return value
     if (type === 'BOOLEAN') return value[0] === 1
     if (type === 'BYTE_ARRAY') return new TextDecoder().decode(value)
-    if (type === 'INT32') {
-      const view = new DataView(value.buffer, value.byteOffset, value.byteLength)
-      return view.getInt32(0, true)
-    }
-    if (type === 'INT64') {
-      const view = new DataView(value.buffer, value.byteOffset, value.byteLength)
-      return view.getBigInt64(0, true)
-    }
-    if (type === 'FLOAT') {
-      const view = new DataView(value.buffer, value.byteOffset, value.byteLength)
-      return view.getFloat32(0, true)
-    }
-    if (type === 'DOUBLE') {
-      const view = new DataView(value.buffer, value.byteOffset, value.byteLength)
-      return view.getFloat64(0, true)
-    }
-    if (logical_type?.type === 'FLOAT16') {
-      return parseFloat16(value)
-    }
+    const view = new DataView(value.buffer, value.byteOffset, value.byteLength)
+    if (type === 'FLOAT') return view.getFloat32(0, true)
+    if (type === 'DOUBLE') return view.getFloat64(0, true)
+    if (type === 'INT32' && converted_type === 'DATE') return new Date(view.getInt32(0, true) * 86400000)
+    if (type === 'INT64' && converted_type === 'TIMESTAMP_MICROS') return new Date(Number(view.getBigInt64(0, true) / 1000n))
+    if (type === 'INT64' && converted_type === 'TIMESTAMP_MILLIS') return new Date(Number(view.getBigInt64(0, true)))
+    if (type === 'INT64' && logical_type?.type === 'TIMESTAMP') return new Date(Number(view.getBigInt64(0, true)))
+    if (type === 'INT32') return view.getInt32(0, true)
+    if (type === 'INT64') return view.getBigInt64(0, true)
+    if (converted_type === 'DECIMAL') return parseDecimal(value) * Math.pow(10, -(schema.scale || 0))
+    if (logical_type?.type === 'FLOAT16') return parseFloat16(value)
     return value
   }
   return stats && {

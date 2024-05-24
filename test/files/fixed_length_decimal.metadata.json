@@ -37,32 +37,8 @@
               "total_compressed_size": 319,
               "data_page_offset": 4,
               "statistics": {
-                "max": [
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  9,
-                  96
-                ],
-                "min": [
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  200
-                ],
+                "max": 24,
+                "min": 2,
                 "null_count": 0
               },
               "encoding_stats": [

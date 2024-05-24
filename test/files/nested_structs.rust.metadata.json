@@ -6511,8 +6511,8 @@
            "data_page_offset": 31605,
            "dictionary_page_offset": 31574,
            "statistics": {
-             "max_value": 1608822900000000000,
-             "min_value": 1608822900000000000
+             "max_value": "+052951-07-27T10:00:00.000Z",
+             "min_value": "+052951-07-27T10:00:00.000Z"
            }
          }
        },
@@ -6536,8 +6536,8 @@
            "data_page_offset": 31767,
            "dictionary_page_offset": 31736,
            "statistics": {
-             "max_value": 1608822900000000000,
-             "min_value": 1608822900000000000
+             "max_value": "+052951-07-27T10:00:00.000Z",
+             "min_value": "+052951-07-27T10:00:00.000Z"
            }
          }
        },
@@ -6561,8 +6561,8 @@
            "data_page_offset": 31929,
            "dictionary_page_offset": 31898,
            "statistics": {
-             "max_value": 0,
-             "min_value": 0
+             "max_value": "1970-01-01T00:00:00.000Z",
+             "min_value": "1970-01-01T00:00:00.000Z"
            }
          }
        },
@@ -6611,8 +6611,8 @@
            "data_page_offset": 32256,
            "dictionary_page_offset": 32225,
            "statistics": {
-             "max_value": 0,
-             "min_value": 0
+             "max_value": "1970-01-01T00:00:00.000Z",
+             "min_value": "1970-01-01T00:00:00.000Z"
            }
          }
        },
@@ -6636,8 +6636,8 @@
            "data_page_offset": 32418,
            "dictionary_page_offset": 32387,
            "statistics": {
-             "max_value": 0,
-             "min_value": 0
+             "max_value": "1970-01-01T00:00:00.000Z",
+             "min_value": "1970-01-01T00:00:00.000Z"
            }
          }
        },

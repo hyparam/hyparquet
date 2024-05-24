@@ -530,31 +530,11 @@
             "total_compressed_size": 736,
             "data_page_offset": 11065,
             "statistics": {
-              "max": [
-                0,
-                19,
-                139,
-                153
-              ],
-              "min": [
-                0,
-                9,
-                177,
-                23
-              ],
+              "max": 1280.921,
+              "min": 635.159,
               "null_count": 0,
-              "max_value": [
-                0,
-                19,
-                139,
-                153
-              ],
-              "min_value": [
-                0,
-                9,
-                177,
-                23
-              ]
+              "max_value": 1280.921,
+              "min_value": 635.159
             },
             "encoding_stats": [
               {
@@ -582,31 +562,11 @@
             "total_compressed_size": 643,
             "data_page_offset": 11882,
             "statistics": {
-              "max": [
-                0,
-                19,
-                139,
-                153
-              ],
-              "min": [
-                0,
-                9,
-                177,
-                23
-              ],
+              "max": 1280.921,
+              "min": 635.159,
               "null_count": 0,
-              "max_value": [
-                0,
-                19,
-                139,
-                153
-              ],
-              "min_value": [
-                0,
-                9,
-                177,
-                23
-              ]
+              "max_value": 1280.921,
+              "min_value": 635.159
             },
             "encoding_stats": [
               {

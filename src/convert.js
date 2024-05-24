@@ -120,7 +120,7 @@ export function convert(data, schemaElement, utf8 = true) {
  * @param {Uint8Array} bytes
  * @returns {number}
  */
-function parseDecimal(bytes) {
+export function parseDecimal(bytes) {
   // TODO: handle signed
   let value = 0
   for (const byte of bytes) {
