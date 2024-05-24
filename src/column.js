@@ -1,5 +1,5 @@
 import { assembleLists } from './assemble.js'
-import { convert, dereferenceDictionary } from './convert.js'
+import { convertWithDictionary } from './convert.js'
 import { readDataPage, readDictionaryPage } from './datapage.js'
 import { readDataPageV2 } from './datapageV2.js'
 import { parquetHeader } from './header.js'
@@ -49,11 +49,9 @@ export function readColumn(reader, rowGroup, columnMetadata, schemaPath, { compr
       seen += daph.num_values
       // assert(!daph.statistics || daph.statistics.null_count === BigInt(daph.num_values - dataPage.length))
 
-      // construct output values: skip nulls and construct lists
-      values = dereferenceDictionary(dictionary, dataPage)
-      values = convert(values, element, utf8)
+      // convert types, dereference dictionary, and assemble lists
+      values = convertWithDictionary(dataPage, dictionary, element, daph.encoding, utf8)
       if (repetitionLevels.length || definitionLevels?.length) {
-        // Use repetition levels to construct lists
         const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
         const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
         const repetitionPath = schemaPath.map(({ element }) => element.repetition_type)
@@ -79,10 +77,9 @@ export function readColumn(reader, rowGroup, columnMetadata, schemaPath, { compr
       )
       seen += daph2.num_values
 
-      values = dereferenceDictionary(dictionary, dataPage)
-      values = convert(values, element, utf8)
+      // convert types, dereference dictionary, and assemble lists
+      values = convertWithDictionary(dataPage, dictionary, element, daph2.encoding, utf8)
       if (repetitionLevels.length || definitionLevels?.length) {
-        // Use repetition levels to construct lists
         const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
         const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
         const repetitionPath = schemaPath.map(({ element }) => element.repetition_type)

@@ -1,11 +1,40 @@
 const dayMillis = 86400000 // 1 day in milliseconds
 
 /**
- * Convert known types from primitive to rich.
+ * Convert known types from primitive to rich, and dereference dictionary.
  *
  * @typedef {import('./types.js').DecodedArray} DecodedArray
+ * @typedef {import('./types.js').SchemaElement} SchemaElement
  * @param {DecodedArray} data series of primitive types
- * @param {import('./types.js').SchemaElement} schemaElement schema element for the data
+ * @param {DecodedArray | undefined} dictionary
+ * @param {SchemaElement} schemaElement
+ * @param {import('./types.js').Encoding} encoding
+ * @param {boolean | undefined} utf8 decode bytes as utf8?
+ * @returns {DecodedArray} series of rich types
+ */
+export function convertWithDictionary(data, dictionary, schemaElement, encoding, utf8 = true) {
+  if (dictionary && encoding.endsWith('_DICTIONARY')) {
+    // convert dictionary
+    dictionary = convert(dictionary, schemaElement, utf8)
+    let output = data
+    if (data instanceof Uint8Array && !(dictionary instanceof Uint8Array)) {
+      // @ts-expect-error upgrade data to match dictionary type with fancy constructor
+      output = new dictionary.constructor(data.length)
+    }
+    for (let i = 0; i < data.length; i++) {
+      output[i] = dictionary[data[i]]
+    }
+    return output
+  } else {
+    return convert(data, schemaElement, utf8)
+  }
+}
+
+/**
+ * Convert known types from primitive to rich.
+ *
+ * @param {DecodedArray} data series of primitive types
+ * @param {SchemaElement} schemaElement
  * @param {boolean | undefined} utf8 decode bytes as utf8?
  * @returns {DecodedArray} series of rich types
  */
@@ -124,26 +153,4 @@ export function parseFloat16(bytes) {
   if (exp === 0) return sign * Math.pow(2, -14) * (frac / 1024) // subnormals
   if (exp === 0x1f) return frac ? NaN : sign * Infinity
   return sign * Math.pow(2, exp - 15) * (1 + frac / 1024)
-}
-
-/**
- * Map data to dictionary values in place.
- *
- * @param {DecodedArray | undefined} dictionary
- * @param {DecodedArray} dataPage
- * @returns {DecodedArray}
- */
-export function dereferenceDictionary(dictionary, dataPage) {
-  let output = dataPage
-  if (dictionary) {
-    if (dataPage instanceof Uint8Array && !(dictionary instanceof Uint8Array)) {
-      // upgrade dataPage to match dictionary type
-      // @ts-expect-error not my fault typescript doesn't understand constructors
-      output = new dictionary.constructor(dataPage.length)
-    }
-    for (let i = 0; i < dataPage.length; i++) {
-      output[i] = dictionary[dataPage[i]]
-    }
-  }
-  return output
 }
