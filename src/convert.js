@@ -66,7 +66,13 @@ export function convert(data, schemaElement, utf8 = true) {
     }
     return arr
   }
-  // TODO: ctype UINT
+  if (ctype === 'UINT_64') {
+    const arr = new BigUint64Array(data.length)
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = BigInt(data[i])
+    }
+    return arr
+  }
   const logicalType = schemaElement.logical_type?.type
   if (logicalType === 'FLOAT16') {
     return Array.from(data).map(parseFloat16)

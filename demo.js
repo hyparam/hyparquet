@@ -229,10 +229,13 @@ function renderTable(header, data) {
   return table
 }
 
-function stringify(value) {
-  if (value === undefined) return ''
-  value = toJson(value)
+function stringify(value, depth = 0) {
+  if (value === null) return depth ? 'null' : ''
+  if (value === undefined) return depth ? 'undefined' : ''
+  if (typeof value === 'bigint') return value.toString()
   if (typeof value === 'string') return value
-  if (typeof value === 'object') return JSON.stringify(value)
+  if (Array.isArray(value)) return `[${value.map(v => stringify(v, depth + 1)).join(', ')}]`
+  if (value instanceof Date) return value.toISOString()
+  if (typeof value === 'object') return `{${Object.entries(value).map(([k, v]) => `${k}: ${stringify(v, depth + 1)}`).join(', ')}}`
   return value
 }

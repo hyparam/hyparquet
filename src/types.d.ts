@@ -295,6 +295,7 @@ export type DecodedArray =
   Uint8Array |
   Int32Array |
   BigInt64Array |
+  BigUint64Array |
   Float32Array |
   Float64Array |
   any[]
