@@ -43,7 +43,9 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
   const uncompressedPageSize = ph.uncompressed_page_size - daph2.definition_levels_byte_length - daph2.repetition_levels_byte_length
 
   let page = compressedBytes.subarray(reader.offset)
-  page = decompressPage(page, uncompressedPageSize, codec, compressors)
+  if (daph2.is_compressed !== false) {
+    page = decompressPage(page, uncompressedPageSize, codec, compressors)
+  }
   const pageView = new DataView(page.buffer, page.byteOffset, page.byteLength)
   const pageReader = { view: pageView, offset: 0 }
 
