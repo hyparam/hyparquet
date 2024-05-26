@@ -1,10 +1,9 @@
 import { assembleLists } from './assemble.js'
 import { convertWithDictionary } from './convert.js'
-import { readDataPage, readDictionaryPage } from './datapage.js'
+import { decompressPage, readDataPage, readDictionaryPage } from './datapage.js'
 import { readDataPageV2 } from './datapageV2.js'
 import { parquetHeader } from './header.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel } from './schema.js'
-import { snappyUncompress } from './snappy.js'
 import { concat } from './utils.js'
 
 /**
@@ -119,31 +118,4 @@ export function getColumnOffset({ dictionary_page_offset, data_page_offset }) {
     columnOffset = data_page_offset
   }
   return Number(columnOffset)
-}
-
-/**
- * @param {Uint8Array} compressedBytes
- * @param {number} uncompressed_page_size
- * @param {import('./types.js').CompressionCodec} codec
- * @param {import('./types.js').Compressors | undefined} compressors
- * @returns {Uint8Array}
- */
-export function decompressPage(compressedBytes, uncompressed_page_size, codec, compressors) {
-  /** @type {Uint8Array} */
-  let page
-  const customDecompressor = compressors?.[codec]
-  if (codec === 'UNCOMPRESSED') {
-    page = compressedBytes
-  } else if (customDecompressor) {
-    page = customDecompressor(compressedBytes, uncompressed_page_size)
-  } else if (codec === 'SNAPPY') {
-    page = new Uint8Array(uncompressed_page_size)
-    snappyUncompress(compressedBytes, page)
-  } else {
-    throw new Error(`parquet unsupported compression codec: ${codec}`)
-  }
-  if (page?.length !== uncompressed_page_size) {
-    throw new Error(`parquet decompressed page length ${page?.length} does not match header ${uncompressed_page_size}`)
-  }
-  return page
 }

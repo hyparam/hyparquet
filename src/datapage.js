@@ -1,6 +1,7 @@
 import { bitWidth, byteStreamSplit, readRleBitPackedHybrid } from './encoding.js'
 import { readPlain } from './plain.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel } from './schema.js'
+import { snappyUncompress } from './snappy.js'
 
 /**
  * Read a data page from uncompressed reader.
@@ -106,4 +107,31 @@ function readDefinitionLevels(reader, daph, schemaPath) {
   if (numNulls === 0) definitionLevels.length = 0
 
   return { definitionLevels, numNulls }
+}
+
+/**
+ * @param {Uint8Array} compressedBytes
+ * @param {number} uncompressed_page_size
+ * @param {import('./types.js').CompressionCodec} codec
+ * @param {import('./types.js').Compressors | undefined} compressors
+ * @returns {Uint8Array}
+ */
+export function decompressPage(compressedBytes, uncompressed_page_size, codec, compressors) {
+  /** @type {Uint8Array} */
+  let page
+  const customDecompressor = compressors?.[codec]
+  if (codec === 'UNCOMPRESSED') {
+    page = compressedBytes
+  } else if (customDecompressor) {
+    page = customDecompressor(compressedBytes, uncompressed_page_size)
+  } else if (codec === 'SNAPPY') {
+    page = new Uint8Array(uncompressed_page_size)
+    snappyUncompress(compressedBytes, page)
+  } else {
+    throw new Error(`parquet unsupported compression codec: ${codec}`)
+  }
+  if (page?.length !== uncompressed_page_size) {
+    throw new Error(`parquet decompressed page length ${page?.length} does not match header ${uncompressed_page_size}`)
+  }
+  return page
 }

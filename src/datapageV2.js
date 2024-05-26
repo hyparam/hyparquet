@@ -1,4 +1,4 @@
-import { decompressPage } from './column.js'
+import { decompressPage } from './datapage.js'
 import { deltaBinaryUnpack, deltaByteArray, deltaLengthByteArray } from './delta.js'
 import { bitWidth, byteStreamSplit, readRleBitPackedHybrid } from './encoding.js'
 import { readPlain } from './plain.js'
