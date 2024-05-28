@@ -33,6 +33,22 @@ describe('readRleBitPackedHybrid', () => {
     expect(values).toEqual([65535, 65535, 65535])
   })
 
+  it('reads RLE values with bitwidth=24', () => {
+    const buffer = new ArrayBuffer(4)
+    const view = new DataView(buffer)
+    // RLE 2x 16777215
+    view.setUint8(0, 0b00000100)
+    view.setUint8(1, 255)
+    view.setUint8(2, 255)
+    view.setUint8(3, 255)
+    const reader = { view, offset: 0 }
+
+    const values = new Array(2)
+    readRleBitPackedHybrid(reader, 24, 4, values)
+    expect(reader.offset).toBe(4)
+    expect(values).toEqual([16777215, 16777215])
+  })
+
   it('reads RLE values with bitwidth=32', () => {
     const buffer = new ArrayBuffer(5)
     const view = new DataView(buffer)
@@ -45,17 +61,6 @@ describe('readRleBitPackedHybrid', () => {
     readRleBitPackedHybrid(reader, 32, 5, values)
     expect(reader.offset).toBe(5)
     expect(values).toEqual([234000, 234000, 234000])
-  })
-
-  it('throws for invalid bitwidth', () => {
-    const buffer = new ArrayBuffer(1)
-    const view = new DataView(buffer)
-    view.setUint8(0, 0b00000110)
-    const reader = { view, offset: 0 }
-
-    const values = new Array(3)
-    expect(() => readRleBitPackedHybrid(reader, 24, 3, values))
-      .toThrow('parquet invalid rle width 3')
   })
 
   it('reads bit-packed values with implicit length', () => {
