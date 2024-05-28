@@ -115,10 +115,7 @@ function readElement(reader, type) {
 /**
  * Var int, also known as Unsigned LEB128.
  * Var ints take 1 to 5 bytes (int32) or 1 to 10 bytes (int64).
- * Takes a Big Endian unsigned integer, left-pads the bit-string to make it a
- * multiple of 7 bits, splits it into 7-bit groups, prefix the most-significant
- * 7-bit group with the 0 bit, prefixing the remaining 7-bit groups with the
- * 1 bit and encode the resulting bit-string as Little Endian.
+ * Reads groups of 7 low bits until high bit is 0.
  *
  * @param {DataReader} reader
  * @returns {number} value

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { deserializeTCompactProtocol, toVarInt } from '../src/thrift.js'
+import { deserializeTCompactProtocol, readVarInt, toVarInt } from '../src/thrift.js'
+import { reader } from './helpers.js'
 
 describe('deserializeTCompactProtocol function', () => {
 
@@ -78,4 +79,23 @@ describe('deserializeTCompactProtocol function', () => {
     expect(new TextDecoder().decode(value.field_8)).toBe('Hello, Thrift!') // STRING
   })
 
+})
+
+describe('readVarInt', () => {
+  it('read single-byte varint', () => {
+    expect(readVarInt(reader([0x01]))).toBe(1)
+    expect(readVarInt(reader([0x7f]))).toBe(127)
+  })
+
+  it('read multi-byte varint', () => {
+    // 129 as varint (0b10000001 00000001)
+    expect(readVarInt(reader([0x81, 0x01]))).toBe(129)
+    // 16515 as varint (0b10000011 10000010 00000001)
+    expect(readVarInt(reader([0x83, 0x82, 0x01]))).toBe(16643)
+  })
+
+  it('read maximum int32 varint', () => {
+    // 2147483647 as varint (0b11111111 11111111 11111111 11111111 00000111)
+    expect(readVarInt(reader([0xff, 0xff, 0xff, 0xff, 0x07]))).toBe(2147483647)
+  })
 })
