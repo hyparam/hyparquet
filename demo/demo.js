@@ -156,7 +156,7 @@ function renderSidebar(asyncBuffer, metadata, name) {
   const sidebar = /** @type {HTMLElement} */ (document.getElementById('sidebar'))
   sidebar.innerHTML = `<div id="filename">${name}</div>`
   sidebar.appendChild(fileMetadata(toJson(metadata)))
-  sidebar.appendChild(fileLayout(metadata, asyncBuffer.byteLength))
+  sidebar.appendChild(fileLayout(metadata, asyncBuffer))
 }
 
 welcome.addEventListener('click', () => {

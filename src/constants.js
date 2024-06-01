@@ -1,6 +1,4 @@
-/**
- * @type {import('./types.js').ParquetType[]}
- */
+/** @type {import('./types.js').ParquetType[]} */
 export const ParquetType = [
   'BOOLEAN',
   'INT32',
@@ -31,9 +29,7 @@ export const FieldRepetitionType = [
   'REPEATED',
 ]
 
-/**
- * @type {import('./types.js').ConvertedType[]}
- */
+/** @type {import('./types.js').ConvertedType[]} */
 export const ConvertedType = [
   'UTF8',
   'MAP',
@@ -59,9 +55,7 @@ export const ConvertedType = [
   'INTERVAL',
 ]
 
-/**
- * @type {import('./types.js').LogicalTypeType[]}
- */
+/** @type {import('./types.js').LogicalTypeType[]} */
 export const logicalTypeType = [
   'NULL',
   'STRING',
@@ -91,12 +85,17 @@ export const CompressionCodec = [
   'LZ4_RAW',
 ]
 
-/**
- * @type {import('./types.js').PageType[]}
- */
+/** @type {import('./types.js').PageType[]} */
 export const PageType = [
   'DATA_PAGE',
   'INDEX_PAGE',
   'DICTIONARY_PAGE',
   'DATA_PAGE_V2',
+]
+
+/** @type {import('./types.js').BoundaryOrder[]} */
+export const BoundaryOrder = [
+  'UNORDERED',
+  'ASCENDING',
+  'DESCENDING',
 ]
