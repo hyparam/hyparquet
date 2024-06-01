@@ -1,6 +1,6 @@
 
 import { assembleNested } from './assemble.js'
-import { getColumnOffset, readColumn } from './column.js'
+import { getColumnRange, readColumn } from './column.js'
 import { parquetMetadataAsync } from './metadata.js'
 import { getSchemaPath } from './schema.js'
 import { concat } from './utils.js'
@@ -91,10 +91,9 @@ async function readRowGroup(options, rowGroup, groupStart) {
     // skip columns that are not requested
     if (columns && !columns.includes(columnMetadata.path_in_schema[0])) return
 
-    const startByte = getColumnOffset(columnMetadata)
-    const endByte = startByte + Number(columnMetadata.total_compressed_size)
-    groupStartByte = Math.min(groupStartByte, startByte)
-    groupEndByte = Math.max(groupEndByte, endByte)
+    const [columnStartByte, columnEndByte] = getColumnRange(columnMetadata).map(Number)
+    groupStartByte = Math.min(groupStartByte, columnStartByte)
+    groupEndByte = Math.max(groupEndByte, columnEndByte)
   })
   if (groupStartByte >= groupEndByte && columns?.length) {
     // TODO: should throw if any column is missing
@@ -124,8 +123,7 @@ async function readRowGroup(options, rowGroup, groupStart) {
     const columnName = columnMetadata.path_in_schema[0]
     if (columns && !columns.includes(columnName)) continue
 
-    const columnStartByte = getColumnOffset(columnMetadata)
-    const columnEndByte = columnStartByte + Number(columnMetadata.total_compressed_size)
+    const [columnStartByte, columnEndByte] = getColumnRange(columnMetadata).map(Number)
     const columnBytes = columnEndByte - columnStartByte
 
     // skip columns larger than 1gb

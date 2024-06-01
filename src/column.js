@@ -110,12 +110,12 @@ export function readColumn(reader, rowGroup, columnMetadata, schemaPath, { compr
  * Find the start byte offset for a column chunk.
  *
  * @param {ColumnMetaData} columnMetadata
- * @returns {number} byte offset
+ * @returns {[bigint, bigint]} byte offset range
  */
-export function getColumnOffset({ dictionary_page_offset, data_page_offset }) {
+export function getColumnRange({ dictionary_page_offset, data_page_offset, total_compressed_size }) {
   let columnOffset = dictionary_page_offset
-  if (!dictionary_page_offset || data_page_offset < dictionary_page_offset) {
+  if (!columnOffset || data_page_offset < columnOffset) {
     columnOffset = data_page_offset
   }
-  return Number(columnOffset)
+  return [columnOffset, columnOffset + total_compressed_size]
 }

@@ -86,7 +86,7 @@ export function snappyUncompress(input: Uint8Array, output: Uint8Array): boolean
  * @param {any} obj object to convert
  * @returns {unknown} converted object
  */
-export function toJson(obj: any): unknown
+export function toJson(obj: any): any
 
 /**
  * Parquet query options for reading data

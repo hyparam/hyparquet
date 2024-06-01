@@ -136,16 +136,17 @@ th, td {
   font-size: 10pt;
   margin-top: 20px;
 }
-#layout {
+.sidebar {
   word-break: break-all;
 }
-.layout a {
+.sidebar a {
   color: #445;
   text-decoration: none;
 }
-.layout a:hover {
+.sidebar a:hover {
   text-decoration: underline;
 }
+.layout,
 .layout div {
   background-color: rgba(100, 80, 180, 0.05);
   border: 1px solid #ccc;
@@ -190,11 +191,11 @@ nav ul,
   margin: 0 4px;
   vertical-align: middle;
 }
-.layout .collapsed h2::before {
+.layout.collapsed h2::before {
   content: "▶";
 }
 
-#metadata pre {
+.layout pre {
   white-space: pre-wrap;
   word-break: break-all;
 }

@@ -1,18 +1,23 @@
-import { parquetMetadata, parquetMetadataAsync, parquetRead, parquetSchema, toJson } from './src/hyparquet.js'
+import {
+  parquetMetadata, parquetMetadataAsync, parquetRead, parquetSchema, toJson,
+} from '../src/hyparquet.js'
+import { fileLayout, fileMetadata } from './layout.js'
 
-const dropzone = document.getElementById('dropzone')
-const fileInput = document.getElementById('file-input')
-const content = document.getElementById('content')
-const welcome = document.getElementById('welcome')
-const label = document.getElementById('filename')
+/**
+ * @typedef {import('../src/types.js').AsyncBuffer} AsyncBuffer
+ * @typedef {import('../src/types.js').FileMetaData} FileMetaData
+ */
 
-const layout = document.getElementById('layout')
-const metadataDiv = document.getElementById('metadata')
+/* eslint-disable no-extra-parens */
+const dropzone = /** @type {HTMLElement} */ (document.getElementById('dropzone'))
+const fileInput = /** @type {HTMLInputElement} */ (document.getElementById('#file-input'))
+const content = document.querySelectorAll('#content')[0]
+const welcome = document.querySelectorAll('#welcome')[0]
 
 let enterCount = 0
 
 dropzone.addEventListener('dragenter', e => {
-  e.dataTransfer.dropEffect = 'copy'
+  if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy'
   dropzone.classList.add('over')
   enterCount++
 })
@@ -30,6 +35,7 @@ dropzone.addEventListener('drop', e => {
   e.preventDefault() // prevent dropped file from being "downloaded"
   dropzone.classList.remove('over')
 
+  if (!e.dataTransfer) throw new Error('Missing dataTransfer')
   const { files, items } = e.dataTransfer
   if (files.length > 0) {
     const file = files[0]
@@ -47,6 +53,9 @@ dropzone.addEventListener('drop', e => {
   }
 })
 
+/**
+ * @param {string} url
+ */
 async function processUrl(url) {
   content.innerHTML = ''
   try {
@@ -66,6 +75,11 @@ async function processUrl(url) {
     // Construct an AsyncBuffer that fetches file chunks
     const asyncBuffer = {
       byteLength: Number(size),
+      /**
+       * @param {number} start
+       * @param {number} end
+       * @returns {Promise<ArrayBuffer>}
+       */
       slice: async (start, end) => {
         const rangeEnd = end === undefined ? '' : end - 1
         console.log(`Fetch ${url} bytes=${start}-${rangeEnd}`)
@@ -84,12 +98,16 @@ async function processUrl(url) {
   }
 }
 
+/**
+ * @param {File} file
+ */
 function processFile(file) {
   content.innerHTML = ''
   const reader = new FileReader()
   reader.onload = async e => {
     try {
-      const arrayBuffer = e.target.result
+      const arrayBuffer = e.target?.result
+      if (!(arrayBuffer instanceof ArrayBuffer)) throw new Error('Missing arrayBuffer')
       const metadata = parquetMetadata(arrayBuffer)
       await render(arrayBuffer, metadata, file.name)
     } catch (e) {
@@ -101,11 +119,16 @@ function processFile(file) {
   reader.onerror = e => {
     console.error('Error reading file', e)
     content.innerHTML = `<strong>${file.name}</strong>`
-    content.innerHTML += `<div class="error">Error reading file\n${e.target.error}</div>`
+    content.innerHTML += `<div class="error">Error reading file\n${e.target?.error}</div>`
   }
   reader.readAsArrayBuffer(file)
 }
 
+/**
+ * @param {AsyncBuffer} asyncBuffer
+ * @param {FileMetaData} metadata
+ * @param {string} name
+ */
 async function render(asyncBuffer, metadata, name) {
   renderSidebar(asyncBuffer, metadata, name)
 
@@ -116,7 +139,7 @@ async function render(asyncBuffer, metadata, name) {
   await parquetRead({
     file: asyncBuffer,
     rowEnd: 1000,
-    onComplete(data) {
+    onComplete(/** @type {any[][]} */ data) {
       const ms = performance.now() - startTime
       console.log(`parsed ${name} in ${ms.toFixed(0)} ms`)
       content.appendChild(renderTable(header, data))
@@ -124,86 +147,33 @@ async function render(asyncBuffer, metadata, name) {
   })
 }
 
+/**
+ * @param {AsyncBuffer} asyncBuffer
+ * @param {FileMetaData} metadata
+ * @param {string} name
+ */
 function renderSidebar(asyncBuffer, metadata, name) {
-  label.innerText = name
-  // render file layout
-  layout.innerHTML = ''
-  layout.appendChild(fileLayout(metadata, asyncBuffer.byteLength))
-  // display metadata
-  metadataDiv.innerHTML = ''
-  metadataDiv.appendChild(fileMetadata(toJson(metadata)))
+  const sidebar = /** @type {HTMLElement} */ (document.getElementById('sidebar'))
+  sidebar.innerHTML = `<div id="filename">${name}</div>`
+  sidebar.appendChild(fileMetadata(toJson(metadata)))
+  sidebar.appendChild(fileLayout(metadata, asyncBuffer.byteLength))
 }
 
 welcome.addEventListener('click', () => {
-  fileInput.click()
+  fileInput?.click()
 })
 
-fileInput.addEventListener('change', () => {
-  if (fileInput.files.length > 0) {
+fileInput?.addEventListener('change', () => {
+  if (fileInput.files?.length) {
     processFile(fileInput.files[0])
   }
 })
 
-// Render file layout
-function fileLayout(metadata, byteLength) {
-  let html = '<h2>File layout</h2>'
-  html += cell('PAR1', 0, 4, 4) // magic number
-  for (const rowGroupIndex in metadata.row_groups) {
-    const rowGroup = metadata.row_groups[rowGroupIndex]
-    html += group(`Row group ${rowGroupIndex} (${rowGroup.total_byte_size.toLocaleString()} bytes)`)
-    for (const column of rowGroup.columns) {
-      const columnName = column.meta_data.path_in_schema.join('.')
-
-      let columnOffset = column.meta_data.dictionary_page_offset
-      if (!columnOffset || column.meta_data.data_page_offset < columnOffset) {
-        columnOffset = column.meta_data.data_page_offset
-      }
-      columnOffset = Number(columnOffset)
-      const bytes = Number(column.meta_data.total_compressed_size)
-      const end = columnOffset + bytes
-      html += cell(`Column ${columnName}`, columnOffset, bytes, end)
-    }
-    html += '</div>'
-  }
-  const metadataStart = byteLength - metadata.metadata_length - 4
-  html += cell('Metadata', metadataStart, metadata.metadata_length, byteLength - 4)
-  html += cell('PAR1', byteLength - 4, 4, byteLength) // magic number
-  const div = document.createElement('div')
-  div.innerHTML = html
-  div.classList.add('collapsed') // start collapsed
-  div.children[0].addEventListener('click', () => {
-    div.classList.toggle('collapsed')
-  })
-  return div
-}
-function group(name) {
-  return `<div>${name}`
-}
-function cell(name, start, bytes, end) {
-  return `
-    <div class="cell">
-      <label>${name}</label>
-      <ul>
-        <li>start ${start.toLocaleString()}</li>
-        <li>bytes ${bytes.toLocaleString()}</li>
-        <li>end ${end.toLocaleString()}</li>
-      </ul>
-    </div>`
-}
-
-// Render metadata
-function fileMetadata(metadata) {
-  let html = '<h2>Metadata</h2>'
-  html += `<pre>${JSON.stringify(metadata, null, 2)}</pre>`
-  const div = document.createElement('div')
-  div.innerHTML = html
-  div.classList.add('collapsed') // start collapsed
-  div.children[0].addEventListener('click', () => {
-    div.classList.toggle('collapsed')
-  })
-  return div
-}
-
+/**
+ * @param {string[]} header
+ * @param {any[][]} data
+ * @returns {HTMLTableElement}
+ */
 function renderTable(header, data) {
   const table = document.createElement('table')
   const thead = document.createElement('thead')
@@ -229,6 +199,11 @@ function renderTable(header, data) {
   return table
 }
 
+/**
+ * @param {any} value
+ * @param {number} depth
+ * @returns {string}
+ */
 function stringify(value, depth = 0) {
   if (value === null) return depth ? 'null' : ''
   if (value === undefined) return depth ? 'undefined' : ''
