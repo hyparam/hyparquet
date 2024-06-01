@@ -137,7 +137,7 @@ export function parquetMetadata(arrayBuffer) {
         data_page_offset: column.field_3.field_9,
         index_page_offset: column.field_3.field_10,
         dictionary_page_offset: column.field_3.field_11,
-        statistics: columnStats(column.field_3.field_12, columnSchema[columnIndex]),
+        statistics: convertStats(column.field_3.field_12, columnSchema[columnIndex]),
         encoding_stats: column.field_3.field_13?.map((/** @type {any} */ encodingStat) => ({
           page_type: PageType[encodingStat.field_1],
           encoding: Encoding[encodingStat.field_2],
@@ -252,33 +252,41 @@ function timeUnit(unit) {
  * @param {SchemaElement} schema
  * @returns {import("./types.d.ts").Statistics}
  */
-function columnStats(stats, schema) {
-  const { type, converted_type, logical_type } = schema
-  function convert(/** @type {Uint8Array} */ value) {
-    if (value === undefined) return value
-    if (type === 'BOOLEAN') return value[0] === 1
-    if (type === 'BYTE_ARRAY') return new TextDecoder().decode(value)
-    const view = new DataView(value.buffer, value.byteOffset, value.byteLength)
-    if (type === 'FLOAT') return view.getFloat32(0, true)
-    if (type === 'DOUBLE') return view.getFloat64(0, true)
-    if (type === 'INT32' && converted_type === 'DATE') return new Date(view.getInt32(0, true) * 86400000)
-    if (type === 'INT64' && converted_type === 'TIMESTAMP_MICROS') return new Date(Number(view.getBigInt64(0, true) / 1000n))
-    if (type === 'INT64' && converted_type === 'TIMESTAMP_MILLIS') return new Date(Number(view.getBigInt64(0, true)))
-    if (type === 'INT64' && logical_type?.type === 'TIMESTAMP') return new Date(Number(view.getBigInt64(0, true)))
-    if (type === 'INT32') return view.getInt32(0, true)
-    if (type === 'INT64') return view.getBigInt64(0, true)
-    if (converted_type === 'DECIMAL') return parseDecimal(value) * Math.pow(10, -(schema.scale || 0))
-    if (logical_type?.type === 'FLOAT16') return parseFloat16(value)
-    return value
-  }
+function convertStats(stats, schema) {
   return stats && {
-    max: convert(stats.field_1),
-    min: convert(stats.field_2),
+    max: convertMetadata(stats.field_1, schema),
+    min: convertMetadata(stats.field_2, schema),
     null_count: stats.field_3,
     distinct_count: stats.field_4,
-    max_value: convert(stats.field_5),
-    min_value: convert(stats.field_6),
+    max_value: convertMetadata(stats.field_5, schema),
+    min_value: convertMetadata(stats.field_6, schema),
     is_max_value_exact: stats.field_7,
     is_min_value_exact: stats.field_8,
   }
+}
+
+/**
+ * @param {Uint8Array | undefined} value
+ * @param {SchemaElement} schema
+ * @returns {import('./types.d.ts').MinMaxType | undefined}
+ */
+export function convertMetadata(value, schema) {
+  const { type, converted_type, logical_type } = schema
+  if (value === undefined) return value
+  if (type === 'BOOLEAN') return value[0] === 1
+  if (type === 'BYTE_ARRAY') return new TextDecoder().decode(value)
+  const view = new DataView(value.buffer, value.byteOffset, value.byteLength)
+  if (type === 'FLOAT') return view.getFloat32(0, true)
+  if (type === 'DOUBLE') return view.getFloat64(0, true)
+  if (type === 'INT32' && converted_type === 'DATE') return new Date(view.getInt32(0, true) * 86400000)
+  if (type === 'INT64' && converted_type === 'TIMESTAMP_MICROS') return new Date(Number(view.getBigInt64(0, true) / 1000n))
+  if (type === 'INT64' && converted_type === 'TIMESTAMP_MILLIS') return new Date(Number(view.getBigInt64(0, true)))
+  if (type === 'INT64' && logical_type?.type === 'TIMESTAMP') return new Date(Number(view.getBigInt64(0, true)))
+  if (type === 'INT32') return view.getInt32(0, true)
+  if (type === 'INT64') return view.getBigInt64(0, true)
+  if (converted_type === 'DECIMAL') return parseDecimal(value) * Math.pow(10, -(schema.scale || 0))
+  if (logical_type?.type === 'FLOAT16') return parseFloat16(value)
+  if (type === 'FIXED_LEN_BYTE_ARRAY') return value
+  // assert(false)
+  return value
 }

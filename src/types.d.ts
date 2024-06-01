@@ -211,7 +211,7 @@ interface KeyValue {
   value?: string
 }
 
-type MinMaxType = bigint | boolean | number | string
+type MinMaxType = bigint | boolean | number | string | Date | Uint8Array
 
 export interface Statistics {
   max?: MinMaxType
@@ -301,3 +301,26 @@ export type DecodedArray =
   Float32Array |
   Float64Array |
   any[]
+
+export interface OffsetIndex {
+  page_locations: PageLocation[]
+  unencoded_byte_array_data_bytes?: bigint[]
+}
+
+interface PageLocation {
+  offset: bigint
+  compressed_page_size: number
+  first_row_index: bigint
+}
+
+export interface ColumnIndex {
+  null_pages: boolean[]
+  min_values: MinMaxType[]
+  max_values: MinMaxType[]
+  boundary_order: BoundaryOrder
+  null_counts?: bigint[]
+  repetition_level_histograms?: bigint[]
+  definition_level_histograms?: bigint[]
+}
+
+export type BoundaryOrder = 'UNORDERED' | 'ASCENDING' | 'DESCENDING'

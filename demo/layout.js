@@ -24,12 +24,14 @@ export function fileMetadata(metadata) {
  * Render parquet file layout.
  *
  * @param {FileMetaData} metadata
- * @param {number} byteLength
+ * @param {import('../src/types.js').AsyncBuffer} asyncBuffer
  * @returns {HTMLDivElement}
  */
-export function fileLayout(metadata, byteLength) {
+export function fileLayout(metadata, asyncBuffer) {
   let html = '<h2>File layout</h2>'
   html += cell('PAR1', 0n, 4n) // magic number
+
+  // data pages by row group and column
   /** @type {[string, bigint, bigint][]} */
   const indexPages = []
   for (const rowGroupIndex in metadata.row_groups) {
@@ -67,13 +69,17 @@ export function fileLayout(metadata, byteLength) {
     }
     html += '</div>'
   }
-  for (const [name, start, length] of indexPages) {
+
+  // column and offset indexes
+  for (const [name, start, length] of indexPages.sort((a, b) => Number(a[1]) - Number(b[1]))) {
     html += cell(name, start, start + length)
   }
-  const metadataStart = BigInt(byteLength - metadata.metadata_length - 4)
-  const metadataEnd = BigInt(byteLength - 4)
+
+  // metadata footer
+  const metadataStart = BigInt(asyncBuffer.byteLength - metadata.metadata_length - 4)
+  const metadataEnd = BigInt(asyncBuffer.byteLength - 4)
   html += cell('Metadata', metadataStart, metadataEnd)
-  html += cell('PAR1', metadataEnd, BigInt(byteLength)) // magic number
+  html += cell('PAR1', metadataEnd, BigInt(asyncBuffer.byteLength)) // magic number
   const div = document.createElement('div')
   div.innerHTML = html
   div.classList.add('layout', 'collapsed') // start collapsed
