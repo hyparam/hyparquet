@@ -6,9 +6,7 @@
     "module": "nodenext",
     "noEmit": true,
     "resolveJsonModule": true,
-    "skipLibCheck": false,
-    "strict": true,
-    "target": "esnext",
+    "strict": true
   },
   "include": ["src", "test", "demo"]
 }

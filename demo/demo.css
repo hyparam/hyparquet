@@ -99,6 +99,24 @@ input[type="file"] {
 }
 
 /* table */
+.table-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  position: relative;
+}
+.table-scroll {
+  flex: 1;
+  overflow: auto;
+}
+.table-scroll > div {
+  position: relative;
+}
+.table-scroll .table {
+  position: absolute;
+}
+
 table {
   border-collapse: separate;
   border-spacing: 0;
@@ -132,6 +150,22 @@ th, td {
   overflow: hidden;
   white-space: pre-wrap;
 }
+
+/* column resize */
+.table thead span {
+  position: absolute;
+  border-right: 1px solid #ddd;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  transition: background-color 0.2s ease;
+}
+.table thead span:hover {
+  background-color: #aab;
+}
+
 /* row numbers */
 td:first-child {
   background-color: #eaeaeb;
@@ -146,6 +180,30 @@ td:first-child {
   min-width: 32px;
   max-width: none;
   width: 32px;
+}
+
+/* table corner */
+.table-corner {
+  background-color: #e4e4e6;
+  border-right: 1px solid #ccc;
+  position: absolute;
+  height: 44px;
+  width: 32px;
+  top: 0;
+  left: 0;
+  z-index: 15;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
+/* mock row numbers */
+.mock-row-label {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: #eaeaeb;
+  z-index: -10;
 }
 
 #filename {

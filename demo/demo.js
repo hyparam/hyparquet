@@ -1,8 +1,11 @@
+import HighTable from 'hightable'
+import { compressors } from 'hyparquet-compressors'
+import React from 'react'
+import ReactDOM from 'react-dom'
 import {
   parquetMetadata, parquetMetadataAsync, parquetRead, parquetSchema, toJson,
 } from '../src/hyparquet.js'
 import { asyncBufferFromUrl } from '../src/utils.js'
-import { compressors } from './hyparquet-compressors.min.js'
 import { fileLayout, fileMetadata } from './layout.js'
 
 /**
@@ -97,27 +100,32 @@ function processFile(file) {
 }
 
 /**
- * @param {AsyncBuffer} asyncBuffer
+ * @param {AsyncBuffer} file
  * @param {FileMetaData} metadata
  * @param {string} name
  */
-async function render(asyncBuffer, metadata, name) {
-  renderSidebar(asyncBuffer, metadata, name)
+function render(file, metadata, name) {
+  renderSidebar(file, metadata, name)
 
   const { children } = parquetSchema(metadata)
-  const header = children.map(child => child.element.name)
 
-  const startTime = performance.now()
-  await parquetRead({
-    compressors,
-    file: asyncBuffer,
-    rowEnd: 1000,
-    onComplete(/** @type {any[][]} */ data) {
-      const ms = performance.now() - startTime
-      console.log(`parsed ${name} in ${ms.toFixed(0)} ms`)
-      content.appendChild(renderTable(header, data))
+  const dataframe = {
+    header: children.map(child => child.element.name),
+    numRows: Number(metadata.num_rows),
+    /**
+     * @param {number} rowStart
+     * @param {number} rowEnd
+     * @returns {Promise<any[][]>}
+     */
+    rows(rowStart, rowEnd) {
+      console.log(`reading rows ${rowStart}-${rowEnd}`)
+      return new Promise((resolve, reject) => {
+        parquetRead({ file, compressors, rowStart, rowEnd, onComplete: resolve })
+          .catch(reject)
+      })
     },
-  })
+  }
+  renderTable(dataframe)
 }
 
 /**
@@ -143,51 +151,12 @@ fileInput?.addEventListener('change', () => {
 })
 
 /**
- * @param {string[]} header
- * @param {any[][] | Record<string, any>[]} data
- * @returns {HTMLTableElement}
+ * @param {import('hightable').DataFrame} data
  */
-function renderTable(header, data) {
-  const table = document.createElement('table')
-  const thead = document.createElement('thead')
-  const tbody = document.createElement('tbody')
-  const headerRow = document.createElement('tr')
-  headerRow.appendChild(document.createElement('th'))
-  for (const columnName of header) {
-    const th = document.createElement('th')
-    th.innerText = columnName
-    headerRow.appendChild(th)
-  }
-  thead.appendChild(headerRow)
-  table.appendChild(thead)
-  for (const row of data) {
-    const tr = document.createElement('tr')
-    const rowNumber = document.createElement('td')
-    rowNumber.innerText = String(tbody.children.length + 1)
-    tr.appendChild(rowNumber)
-    for (const value of Object.values(row)) {
-      const td = document.createElement('td')
-      td.innerText = stringify(value)
-      tr.appendChild(td)
-    }
-    tbody.appendChild(tr)
-  }
-  table.appendChild(tbody)
-  return table
-}
-
-/**
- * @param {any} value
- * @param {number} depth
- * @returns {string}
- */
-function stringify(value, depth = 0) {
-  if (value === null) return depth ? 'null' : ''
-  if (value === undefined) return depth ? 'undefined' : ''
-  if (typeof value === 'bigint') return value.toString()
-  if (typeof value === 'string') return value
-  if (Array.isArray(value)) return `[${value.map(v => stringify(v, depth + 1)).join(', ')}]`
-  if (value instanceof Date) return value.toISOString()
-  if (typeof value === 'object') return `{${Object.entries(value).map(([k, v]) => `${k}: ${stringify(v, depth + 1)}`).join(', ')}}`
-  return value
+function renderTable(data) {
+  // Load HighTable.tsx and render
+  const container = document.getElementById('content')
+  // @ts-expect-error ReactDOM type issue
+  const root = ReactDOM.createRoot(container)
+  root.render(React.createElement(HighTable, { data }))
 }

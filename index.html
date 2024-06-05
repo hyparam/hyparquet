@@ -2,13 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>hyparquet parquet file parser</title>
+    <title>hyparquet parquet file parser demo</title>
     <link rel="icon" href="favicon.png" />
     <link rel="stylesheet" href="demo/demo.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600&display=swap"/>
     <meta name="description" content="Online demo of hyparquet: a parser for apache parquet files. Drag and drop parquet files to view parquet data.">
     <meta name="author" content="Hyperparam">
-    <meta name="keywords" content="hyparquet, parquet, parquet file, parquet parser, parquet reader, parquet viewer, parquet data, apache parquet">
+    <meta name="keywords" content="hyparquet, parquet, parquet file, parquet parser, parquet reader, parquet viewer, parquet data, apache parquet, hightable">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body>
@@ -21,6 +21,7 @@
         <h2>parquet file reader</h2>
         <p>
           Online demo of <a href="https://github.com/hyparam/hyparquet">hyparquet</a>: a parser for apache parquet files.
+          Uses <a href="https://github.com/hyparam/hightable">hightable</a> for high performance windowed table viewing.
         </p>
         <p>
           Drag and drop a parquet file onto the dropzone to see parquet data.
@@ -39,6 +40,6 @@
     </div>
     <input id="file-input" type="file">
 
-    <script type="module" src="demo/demo.js"></script>
+    <script type="module" src="demo/bundle.min.js"></script>
   </body>
 </html>
