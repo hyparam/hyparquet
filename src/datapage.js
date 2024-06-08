@@ -25,7 +25,9 @@ export function readDataPage(bytes, daph, schemaPath, { type }) {
 
   // repetition and definition levels
   const repetitionLevels = readRepetitionLevels(reader, daph, schemaPath)
+  // assert(!repetitionLevels.length || repetitionLevels.length === daph.num_values)
   const { definitionLevels, numNulls } = readDefinitionLevels(reader, daph, schemaPath)
+  // assert(!definitionLevels.length || definitionLevels.length === daph.num_values)
 
   // read values based on encoding
   const nValues = daph.num_values - numNulls

@@ -51,7 +51,8 @@ export async function parquetRead(options) {
     // if row group overlaps with row range, read it
     if (groupStart + groupRows >= rowStart && (rowEnd === undefined || groupStart < rowEnd)) {
       // read row group
-      const groupData = await readRowGroup(options, rowGroup, groupStart)
+      const rowLimit = rowEnd && rowEnd - groupStart
+      const groupData = await readRowGroup(options, rowGroup, groupStart, rowLimit)
       if (onComplete) {
         // filter to rows in range
         const start = Math.max(rowStart - groupStart, 0)
@@ -78,11 +79,13 @@ export async function parquetRead(options) {
  * @param {Compressors} [options.compressors]
  * @param {RowGroup} rowGroup row group to read
  * @param {number} groupStart row index of the first row in the group
+ * @param {number} [rowLimit] max rows to read from this group
  * @returns {Promise<any[][]>} resolves to row data
  */
-async function readRowGroup(options, rowGroup, groupStart) {
+export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
   const { file, metadata, columns } = options
   if (!metadata) throw new Error('parquet metadata not found')
+  if (rowLimit === undefined || rowLimit > rowGroup.num_rows) rowLimit = Number(rowGroup.num_rows)
 
   // loop through metadata to find min/max bytes to read
   let [groupStartByte, groupEndByte] = [file.byteLength, 0]
@@ -151,7 +154,7 @@ async function readRowGroup(options, rowGroup, groupStart) {
       const schemaPath = getSchemaPath(metadata.schema, columnMetadata.path_in_schema)
       const reader = { view: new DataView(arrayBuffer), offset: bufferOffset }
       /** @type {any[] | undefined} */
-      let columnData = readColumn(reader, rowGroup, columnMetadata, schemaPath, options)
+      let columnData = readColumn(reader, rowLimit, columnMetadata, schemaPath, options)
       // assert(columnData.length === Number(rowGroup.num_rows)
 
       // TODO: fast path for non-nested columns

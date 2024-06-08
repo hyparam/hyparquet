@@ -21,9 +21,21 @@ describe('parquetRead', () => {
     const file = fileToAsyncBuffer('test/files/rowgroups.parquet')
     await parquetRead({
       file,
-      rowEnd: 2,
+      rowStart: 2,
+      rowEnd: 4,
       onComplete: rows => {
-        expect(toJson(rows)).toEqual([[1], [2]])
+        expect(toJson(rows)).toEqual([[3], [4]])
+      },
+    })
+  })
+
+  it('filter by row overestimate', async () => {
+    const file = fileToAsyncBuffer('test/files/rowgroups.parquet')
+    await parquetRead({
+      file,
+      rowEnd: 100,
+      onComplete: rows => {
+        expect(toJson(rows)).toEqual([[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15]])
       },
     })
   })

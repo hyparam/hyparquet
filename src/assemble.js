@@ -8,21 +8,19 @@ import { isListLike, isMapLike } from './schema.js'
  *
  * @typedef {import('./types.d.ts').DecodedArray} DecodedArray
  * @typedef {import('./types.d.ts').FieldRepetitionType} FieldRepetitionType
+ * @param {any[]} output
  * @param {number[] | undefined} definitionLevels
  * @param {number[]} repetitionLevels
  * @param {DecodedArray} values
  * @param {(FieldRepetitionType | undefined)[]} repetitionPath
  * @param {number} maxDefinitionLevel definition level that corresponds to non-null
- * @param {number} maxRepetitionLevel repetition level that corresponds to a new row
- * @returns {DecodedArray} array of values
+ * @returns {any[]}
  */
 export function assembleLists(
-  definitionLevels, repetitionLevels, values, repetitionPath, maxDefinitionLevel, maxRepetitionLevel
+  output, definitionLevels, repetitionLevels, values, repetitionPath, maxDefinitionLevel
 ) {
   const n = definitionLevels?.length || repetitionLevels.length
   let valueIndex = 0
-  /** @type {any[]} */
-  const output = []
 
   // Track state of nested structures
   const containerStack = [output]
@@ -30,6 +28,18 @@ export function assembleLists(
   let currentDepth = 0 // schema depth
   let currentDefLevel = 0 // list depth
   let currentRepLevel = 0
+
+  if (repetitionLevels[0]) {
+    // continue previous row
+    while (currentDepth < repetitionPath.length - 2 && currentRepLevel < repetitionLevels[0]) {
+      // go into last list
+      currentContainer = currentContainer.at(-1)
+      containerStack.push(currentContainer)
+      currentDepth++
+      if (repetitionPath[currentDepth] !== 'REQUIRED') currentDefLevel++
+      if (repetitionPath[currentDepth] === 'REPEATED') currentRepLevel++
+    }
+  }
 
   for (let i = 0; i < n; i++) {
     // assert(currentDefLevel === containerStack.length - 1)
@@ -77,10 +87,7 @@ export function assembleLists(
   }
 
   // Handle edge cases for empty inputs or single-level data
-  if (output.length === 0) {
-    if (values.length > 0 && maxRepetitionLevel === 0) {
-      return values // flat list
-    }
+  if (!output.length) {
     // return max definition level of nested lists
     for (let i = 0; i < maxDefinitionLevel; i++) {
       /** @type {any[]} */
