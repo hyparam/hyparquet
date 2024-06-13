@@ -97,7 +97,7 @@ function readBitPacked(reader, header, bitWidth, output, seen) {
     if (right > 8) {
       right -= 8
       left -= 8
-      data >>= 8
+      data >>>= 8
     } else if (left - right < bitWidth) {
       // if we don't have bitWidth number of bits to read, read next byte
       data |= reader.view.getUint8(reader.offset) << left
