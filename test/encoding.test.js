@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { bitWidth, readRleBitPackedHybrid } from '../src/encoding.js'
 
-describe('readRleBitPackedHybrid', () => {
+describe('readRle', () => {
   it('reads RLE values with explicit length', () => {
     const buffer = new ArrayBuffer(4)
     const view = new DataView(buffer)
@@ -62,7 +62,9 @@ describe('readRleBitPackedHybrid', () => {
     expect(reader.offset).toBe(5)
     expect(values).toEqual([234000, 234000, 234000])
   })
+})
 
+describe('readBitPacked', () => {
   it('reads bit-packed values with implicit length', () => {
     // Bit-packed values: false, false, true
     const buffer = new ArrayBuffer(8)
@@ -91,6 +93,36 @@ describe('readRleBitPackedHybrid', () => {
     readRleBitPackedHybrid(reader, 1, 3, values)
     expect(reader.offset).toBe(3)
     expect(values).toEqual([1, 1, 1, 1, 1, 1, 1, 1, 1])
+  })
+
+  it('handles bitpack unsigned shifting', () => {
+    // Bit-packed [131071, 0, ..., 0, 131071, 0, ...]
+    // Tests for issue #13 where leftmost bit is set to 1 and shifted
+    const buffer = new ArrayBuffer(154)
+    const view = new DataView(buffer)
+    view.setUint8(0, 0b00010011) // Bit-packed header for 72 values
+    view.setUint8(1, 0b11111111)
+    view.setUint8(2, 0b11111111)
+    view.setUint8(3, 0b00000001)
+    view.setUint8(139, 0b11111110)
+    view.setUint8(140, 0b11111111)
+    view.setUint8(141, 0b0000011)
+    const reader = { view, offset: 0 }
+
+    const values = new Array(72)
+    readRleBitPackedHybrid(reader, 17, 72, values)
+    expect(reader.offset).toBe(154)
+    expect(values).toEqual([
+      131071, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 131071, 0, 0, 0, 0, 0, 0,
+    ])
   })
 
   it('throws for invalid bit-packed offset', () => {
