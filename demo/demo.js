@@ -179,6 +179,7 @@ function renderTable(header, data) {
   const thead = document.createElement('thead')
   const tbody = document.createElement('tbody')
   const headerRow = document.createElement('tr')
+  headerRow.appendChild(document.createElement('th'))
   for (const columnName of header) {
     const th = document.createElement('th')
     th.innerText = columnName
@@ -188,6 +189,9 @@ function renderTable(header, data) {
   table.appendChild(thead)
   for (const row of data) {
     const tr = document.createElement('tr')
+    const rowNumber = document.createElement('td')
+    rowNumber.innerText = String(tbody.children.length + 1)
+    tr.appendChild(rowNumber)
     for (const value of Object.values(row)) {
       const td = document.createElement('td')
       td.innerText = stringify(value)

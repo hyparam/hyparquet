@@ -16,6 +16,8 @@ nav {
   overflow-x: hidden;
   overflow-y: auto;
   padding: 10px;
+  min-width: 0;
+  max-width: 40%;
   width: 320px;
 }
 h1 {
@@ -26,7 +28,6 @@ h2 {
 }
 p {
   margin: 10px 0;
-  width: 300px;
 }
 .error {
   color: #c11;
@@ -130,6 +131,21 @@ th, td {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: pre-wrap;
+}
+/* row numbers */
+td:first-child {
+  background-color: #eaeaeb;
+  border-right: 1px solid #ddd;
+  color: #888;
+  font-size: 10px;
+  padding: 0 2px;
+  position: sticky;
+  left: 0;
+  text-align: center;
+  user-select: none;
+  min-width: 32px;
+  max-width: none;
+  width: 32px;
 }
 
 #filename {
