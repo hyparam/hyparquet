@@ -1,0 +1,259 @@
+[
+  [
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        1
+      ],
+      "max_values": [
+        105
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        8817
+      ],
+      "max_values": [
+        1895444
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        37
+      ],
+      "max_values": [
+        7135
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        464
+      ],
+      "max_values": [
+        49388
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        2449130
+      ],
+      "max_values": [
+        2452641
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        2449100
+      ],
+      "max_values": [
+        2452611
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        1
+      ],
+      "max_values": [
+        30
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        1
+      ],
+      "max_values": [
+        12
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        1925
+      ],
+      "max_values": [
+        1991
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        "AAAAAAAAABAAAAAA"
+      ],
+      "max_values": [
+        "AAAAAAAAPFAAAAAA"
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        "Dr."
+      ],
+      "max_values": [
+        "Sir"
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        "Albert"
+      ],
+      "max_values": [
+        "William"
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        "Baker"
+      ],
+      "max_values": [
+        "Young"
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        "N"
+      ],
+      "max_values": [
+        "Y"
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        "AFGHANISTAN"
+      ],
+      "max_values": [
+        "WALLIS AND FUTUNA"
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        "Albert.Brunson@62.com"
+      ],
+      "max_values": [
+        "William.Warner@zegnrzurU.org"
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        "2452293"
+      ],
+      "max_values": [
+        "2452644"
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    }
+  ]
+]

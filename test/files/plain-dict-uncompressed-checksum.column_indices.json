@@ -1,0 +1,34 @@
+[
+  [
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        0
+      ],
+      "max_values": [
+        0
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        "a655fd0e-9949-4059-bcae-fd6a002a4652"
+      ],
+      "max_values": [
+        "a655fd0e-9949-4059-bcae-fd6a002a4652"
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ]
+    }
+  ]
+]
