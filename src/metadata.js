@@ -276,14 +276,14 @@ export function convertMetadata(value, schema) {
   if (type === 'BOOLEAN') return value[0] === 1
   if (type === 'BYTE_ARRAY') return new TextDecoder().decode(value)
   const view = new DataView(value.buffer, value.byteOffset, value.byteLength)
-  if (type === 'FLOAT') return view.getFloat32(0, true)
-  if (type === 'DOUBLE') return view.getFloat64(0, true)
+  if (type === 'FLOAT' && view.byteLength === 4) return view.getFloat32(0, true)
+  if (type === 'DOUBLE' && view.byteLength === 8) return view.getFloat64(0, true)
   if (type === 'INT32' && converted_type === 'DATE') return new Date(view.getInt32(0, true) * 86400000)
   if (type === 'INT64' && converted_type === 'TIMESTAMP_MICROS') return new Date(Number(view.getBigInt64(0, true) / 1000n))
   if (type === 'INT64' && converted_type === 'TIMESTAMP_MILLIS') return new Date(Number(view.getBigInt64(0, true)))
   if (type === 'INT64' && logical_type?.type === 'TIMESTAMP') return new Date(Number(view.getBigInt64(0, true)))
-  if (type === 'INT32') return view.getInt32(0, true)
-  if (type === 'INT64') return view.getBigInt64(0, true)
+  if (type === 'INT32' && view.byteLength === 4) return view.getInt32(0, true)
+  if (type === 'INT64' && view.byteLength === 8) return view.getBigInt64(0, true)
   if (converted_type === 'DECIMAL') return parseDecimal(value) * Math.pow(10, -(schema.scale || 0))
   if (logical_type?.type === 'FLOAT16') return parseFloat16(value)
   if (type === 'FIXED_LEN_BYTE_ARRAY') return value
