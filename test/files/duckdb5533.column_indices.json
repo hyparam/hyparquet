@@ -1,0 +1,83 @@
+[
+  [
+    {
+      "boundary_order": "UNORDERED",
+      "max_values": [
+        "2022-11-27T17:42:44.280Z"
+      ],
+      "min_values": [
+        "2022-11-27T17:42:43.514Z"
+      ],
+      "null_counts": [
+        0
+      ],
+      "null_pages": [
+        false
+      ]
+    },
+    {
+      "boundary_order": "UNORDERED",
+      "max_values": [
+        85016
+      ],
+      "min_values": [
+        1184
+      ],
+      "null_counts": [
+        0
+      ],
+      "null_pages": [
+        false
+      ]
+    },
+    {
+      "boundary_order": "UNORDERED",
+      "max_values": [
+        [
+          0
+        ]
+      ],
+      "min_values": [
+        [
+          0
+        ]
+      ],
+      "null_counts": [
+        4
+      ],
+      "null_pages": [
+        true
+      ]
+    },
+    {
+      "boundary_order": "UNORDERED",
+      "max_values": [
+        1
+      ],
+      "min_values": [
+        -1
+      ],
+      "null_counts": [
+        0
+      ],
+      "null_pages": [
+        false
+      ]
+    },
+    {
+      "boundary_order": "UNORDERED",
+      "max_values": [
+        343
+      ],
+      "min_values": [
+        343
+      ],
+      "null_counts": [
+        0
+      ],
+      "null_pages": [
+        false
+      ]
+    }
+  ]
+]
