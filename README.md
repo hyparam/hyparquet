@@ -223,3 +223,9 @@ await parquetRead({ file, compressors, onComplete: console.log })
  - https://github.com/google/snappy
  - https://github.com/ironSource/parquetjs
  - https://github.com/zhipeng-jia/snappyjs
+
+## Contributions
+
+Contributions are welcome!
+
+Hyparquet development is supported by an open-source grant from Hugging Face :hugs:
