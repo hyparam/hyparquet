@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { describe, expect, it } from 'vitest'
 import { parquetMetadata } from '../src/hyparquet.js'
-import { readColumnIndex, readOffsetIndex } from '../src/indicies.js'
+import { readColumnIndex, readOffsetIndex } from '../src/indexes.js'
 import { getSchemaPath } from '../src/schema.js'
 import { toJson } from '../src/utils.js'
 import { fileToJson, readFileToArrayBuffer } from './helpers.js'
