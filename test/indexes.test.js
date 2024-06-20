@@ -7,11 +7,11 @@ import { toJson } from '../src/utils.js'
 import { fileToJson, readFileToArrayBuffer } from './helpers.js'
 
 describe('readColumnIndex', () => {
-  const columnIndicesFiles = fs.readdirSync('test/files').filter(f => f.endsWith('.column_indices.json'))
-  const parquetFiles = columnIndicesFiles.map(f => f.replace(/.column_indices.json$/i, '.parquet'))
+  const columnIndexesFiles = fs.readdirSync('test/files').filter(f => f.endsWith('.column_indexes.json'))
+  const parquetFiles = columnIndexesFiles.map(f => f.replace(/.column_indexes.json$/i, '.parquet'))
 
   parquetFiles.forEach((file, i) => {
-    it(`parse column indices from ${file}`, async () => {
+    it(`parse column indexes from ${file}`, async () => {
       const arrayBuffer = await readFileToArrayBuffer(`test/files/${file}`)
       const metadata = parquetMetadata(arrayBuffer)
 
@@ -24,18 +24,18 @@ describe('readColumnIndex', () => {
         const schemaPath = getSchemaPath(metadata.schema, column.meta_data?.path_in_schema ?? [])
         return readColumnIndex(columnIndexReader, schemaPath.at(-1)?.element || { name: '' })
       }))
-      const expected = fileToJson(`test/files/${columnIndicesFiles[i]}`)
+      const expected = fileToJson(`test/files/${columnIndexesFiles[i]}`)
       expect(toJson(result)).toEqual(expected)
     })
   })
 })
 
 describe('readOffsetIndex', () => {
-  const offsetIndicesFiles = fs.readdirSync('test/files').filter(f => f.endsWith('.offset_indices.json'))
-  const parquetFiles = offsetIndicesFiles.map(f => f.replace(/.offset_indices.json$/i, '.parquet'))
+  const offsetIndexesFiles = fs.readdirSync('test/files').filter(f => f.endsWith('.offset_indexes.json'))
+  const parquetFiles = offsetIndexesFiles.map(f => f.replace(/.offset_indexes.json$/i, '.parquet'))
 
   parquetFiles.forEach((file, i) => {
-    it(`parse offset indices from ${file}`, async () => {
+    it(`parse offset indexes from ${file}`, async () => {
       const arrayBuffer = await readFileToArrayBuffer(`test/files/${file}`)
       const metadata = parquetMetadata(arrayBuffer)
 
@@ -47,7 +47,7 @@ describe('readOffsetIndex', () => {
         const offsetIndexReader = { view: new DataView(offsetIndexArrayBuffer), offset: 0 }
         return readOffsetIndex(offsetIndexReader)
       }))
-      const expected = fileToJson(`test/files/${offsetIndicesFiles[i]}`)
+      const expected = fileToJson(`test/files/${offsetIndexesFiles[i]}`)
       expect(toJson(result)).toEqual(expected)
     })
   })
