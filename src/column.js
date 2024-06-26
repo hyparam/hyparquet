@@ -98,6 +98,9 @@ export function readColumn(reader, rowLimit, columnMetadata, schemaPath, { compr
   if (rowData.length < rowLimit) {
     throw new Error(`parquet row data length ${rowData.length} does not match row group limit ${rowLimit}}`)
   }
+  if (rowData.length > rowLimit) {
+    rowData.length = rowLimit // truncate to row limit
+  }
   return rowData
 }
 
