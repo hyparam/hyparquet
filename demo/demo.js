@@ -1,6 +1,7 @@
 import {
   parquetMetadata, parquetMetadataAsync, parquetRead, parquetSchema, toJson,
 } from '../src/hyparquet.js'
+import { compressors } from './hyparquet-compressors.min.js'
 import { fileLayout, fileMetadata } from './layout.js'
 
 /**
@@ -137,6 +138,7 @@ async function render(asyncBuffer, metadata, name) {
 
   const startTime = performance.now()
   await parquetRead({
+    compressors,
     file: asyncBuffer,
     rowEnd: 1000,
     onComplete(/** @type {any[][]} */ data) {
