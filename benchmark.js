@@ -1,5 +1,5 @@
 import { createReadStream, createWriteStream, promises as fs } from 'fs'
-import { snappyUncompressor } from 'hysnappy'
+import { compressors } from 'hyparquet-compressors'
 import { parquetRead } from './src/hyparquet.js'
 
 const url = 'https://huggingface.co/datasets/wikimedia/wikipedia/resolve/main/20231101.en/train-00000-of-00041.parquet'
@@ -37,7 +37,7 @@ console.log('parsing example.parquet data...')
 // read parquet file
 await parquetRead({
   file,
-  compressors: { SNAPPY: snappyUncompressor() }, // hysnappy wasm
+  compressors,
 })
 const ms = performance.now() - startTime
 console.log(`parsed ${stat.size.toLocaleString()} bytes in ${ms.toFixed(0)} ms`)
