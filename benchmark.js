@@ -27,8 +27,7 @@ const file = {
   async slice(start, end) {
     // read file slice
     const readStream = createReadStream(filename, { start, end })
-    const buffer = await readStreamToArrayBuffer(readStream)
-    return new Uint8Array(buffer).buffer
+    return await readStreamToArrayBuffer(readStream)
   },
 }
 const startTime = performance.now()
@@ -52,7 +51,10 @@ function readStreamToArrayBuffer(input) {
   return new Promise((resolve, reject) => {
     const chunks = []
     input.on('data', chunk => chunks.push(chunk))
-    input.on('end', () => resolve(Buffer.concat(chunks).buffer))
+    input.on('end', () => {
+      const buffer = Buffer.concat(chunks)
+      resolve(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength))
+    })
     input.on('error', reject)
   })
 }
