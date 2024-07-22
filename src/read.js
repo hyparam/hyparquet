@@ -110,8 +110,6 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
     groupBuffer = await file.slice(groupStartByte, groupEndByte)
   }
 
-  /** @type {any[][]} */
-  const groupColumnData = []
   const promises = []
   // Top-level columns to assemble
   const { children } = getSchemaPath(metadata.schema, [])[0]
@@ -182,14 +180,20 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
         rowStart: groupStart,
         rowEnd: groupStart + columnData.length,
       })
-      // save column data only if onComplete is defined
-      if (options.onComplete) groupColumnData.push(columnData)
     }))
   }
   await Promise.all(promises)
   if (options.onComplete) {
     // transpose columns into rows
-    return groupColumnData[0].map((_, row) => groupColumnData.map(col => col[row]))
+    const groupData = new Array(rowLimit)
+    const includedColumns = children
+      .map(child => child.element.name)
+      .filter(name => !columns || columns.includes(name))
+      .map(name => subcolumnData.get(name))
+    for (let row = 0; row < rowLimit; row++) {
+      groupData[row] = includedColumns.map(column => column[row])
+    }
+    return groupData
   }
   return []
 }
