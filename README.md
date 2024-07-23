@@ -16,6 +16,12 @@ Hyparquet is a lightweight, pure JavaScript library for parsing [Apache Parquet]
 
 Hyparquet allows you to read and extract data from Parquet files directly in JavaScript environments, both in Node.js and in the browser. It is designed to be fast, memory-efficient, and easy to use.
 
+## Demo
+
+Online parquet file reader demo available at:
+
+https://hyparam.github.io/hyparquet/
+
 ## Why hyparquet?
 
 1. **Performant**: Designed to efficiently process large datasets by only loading the required data, making it suitable for big data and machine learning applications.
@@ -38,14 +44,6 @@ Why make a new parquet parser?
 First, existing libraries like [parquetjs](https://github.com/ironSource/parquetjs) are officially "inactive".
 Importantly, they do not support the kind of stream processing needed to make a really performant parser in the browser.
 And finally, no dependencies means that hyparquet is lean, and easy to package and deploy.
-
-## Demo
-
-Online parquet file reader demo available at:
-
-https://hyparam.github.io/hyparquet/
-
-Demo source: [index.html](index.html)
 
 ## Usage
 
