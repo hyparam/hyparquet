@@ -1,5 +1,6 @@
 import { createReadStream, createWriteStream, promises as fs } from 'fs'
 import { compressors } from 'hyparquet-compressors'
+import { pipeline } from 'stream/promises'
 import { parquetRead } from './src/hyparquet.js'
 
 const url = 'https://huggingface.co/datasets/wikimedia/wikipedia/resolve/main/20231101.en/train-00000-of-00041.parquet'
@@ -12,13 +13,9 @@ if (!stat) {
   const res = await fetch(url)
   if (!res.ok) throw new Error(res.statusText)
   // write to file async
-  const writeStream = createWriteStream(filename)
-  for await (const chunk of res.body) {
-    writeStream.write(chunk)
-  }
-  writeStream.end()
-  console.log('downloaded example.parquet')
+  await pipeline(res.body, createWriteStream(filename))
   stat = await fs.stat(filename).catch(() => undefined)
+  console.log('downloaded example.parquet', stat.size)
 }
 
 // asyncBuffer
