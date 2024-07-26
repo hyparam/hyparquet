@@ -1,15 +1,16 @@
 import fs from 'fs'
 import { describe, expect, it } from 'vitest'
 import { parquetMetadata, parquetMetadataAsync } from '../src/hyparquet.js'
-import { toJson } from '../src/utils.js'
-import { fileToAsyncBuffer, fileToJson, readFileToArrayBuffer } from './helpers.js'
+import { asyncBufferFromFile, toJson } from '../src/utils.js'
+import { fileToJson } from './helpers.js'
 
 const files = fs.readdirSync('test/files').filter(f => f.endsWith('.parquet'))
 
 describe('parquetMetadata', () => {
   files.forEach(file => {
     it(`parse metadata from ${file}`, async () => {
-      const arrayBuffer = await readFileToArrayBuffer(`test/files/${file}`)
+      const asyncBuffer = await asyncBufferFromFile(`test/files/${file}`)
+      const arrayBuffer = await asyncBuffer.slice(0)
       const result = toJson(parquetMetadata(arrayBuffer))
       const base = file.replace('.parquet', '')
       const expected = fileToJson(`test/files/${base}.metadata.json`)
@@ -53,7 +54,7 @@ describe('parquetMetadata', () => {
 describe('parquetMetadataAsync', () => {
   files.forEach(file => {
     it(`parse metadata async from ${file}`, async () => {
-      const asyncBuffer = fileToAsyncBuffer(`test/files/${file}`)
+      const asyncBuffer = await asyncBufferFromFile(`test/files/${file}`)
       const result = await parquetMetadataAsync(asyncBuffer)
       const base = file.replace('.parquet', '')
       const expected = fileToJson(`test/files/${base}.metadata.json`)

@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parquetRead } from '../src/hyparquet.js'
-import { toJson } from '../src/utils.js'
-import { fileToAsyncBuffer } from './helpers.js'
+import { asyncBufferFromFile, toJson } from '../src/utils.js'
 
 describe('parquetRead', () => {
   it('throws error for undefined file', async () => {
@@ -18,7 +17,7 @@ describe('parquetRead', () => {
   })
 
   it('filter by row', async () => {
-    const file = fileToAsyncBuffer('test/files/rowgroups.parquet')
+    const file = await asyncBufferFromFile('test/files/rowgroups.parquet')
     await parquetRead({
       file,
       rowStart: 2,
@@ -30,7 +29,7 @@ describe('parquetRead', () => {
   })
 
   it('filter by row overestimate', async () => {
-    const file = fileToAsyncBuffer('test/files/rowgroups.parquet')
+    const file = await asyncBufferFromFile('test/files/rowgroups.parquet')
     await parquetRead({
       file,
       rowEnd: 100,
@@ -41,7 +40,7 @@ describe('parquetRead', () => {
   })
 
   it('read a single column', async () => {
-    const file = fileToAsyncBuffer('test/files/datapage_v2.snappy.parquet')
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     await parquetRead({
       file,
       columns: ['c'],
@@ -66,7 +65,7 @@ describe('parquetRead', () => {
   })
 
   it('read a list-like column', async () => {
-    const file = fileToAsyncBuffer('test/files/datapage_v2.snappy.parquet')
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     await parquetRead({
       file,
       columns: ['e'],
@@ -91,7 +90,7 @@ describe('parquetRead', () => {
   })
 
   it('read a map-like column', async () => {
-    const file = fileToAsyncBuffer('test/files/nullable.impala.parquet')
+    const file = await asyncBufferFromFile('test/files/nullable.impala.parquet')
     await parquetRead({
       file,
       columns: ['int_map'],

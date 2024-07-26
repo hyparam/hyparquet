@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { parquetMetadata, parquetSchema } from '../src/hyparquet.js'
-import { readFileToArrayBuffer } from './helpers.js'
+import { parquetMetadataAsync, parquetSchema } from '../src/hyparquet.js'
+import { asyncBufferFromFile } from '../src/utils.js'
 
 describe('parquetSchema', () => {
   it('parse schema tree from rowgroups.parquet', async () => {
-    const arrayBuffer = await readFileToArrayBuffer('test/files/rowgroups.parquet')
-    const metadata = parquetMetadata(arrayBuffer)
+    const arrayBuffer = await asyncBufferFromFile('test/files/rowgroups.parquet')
+    const metadata = await parquetMetadataAsync(arrayBuffer)
     const result = parquetSchema(metadata)
     expect(result).toEqual(rowgroupsSchema)
   })
