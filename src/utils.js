@@ -35,3 +35,33 @@ export function concat(aaa, bbb) {
     aaa.push(...bbb.slice(i, i + chunk))
   }
 }
+
+/**
+ * Construct an AsyncBuffer for a URL.
+ *
+ * @typedef {import('./types.js').AsyncBuffer} AsyncBuffer
+ * @param {string} url
+ * @returns {Promise<AsyncBuffer>}
+ */
+export async function asyncBufferFromUrl(url) {
+  // byte length from HEAD request
+  const byteLength = await fetch(url, { method: 'HEAD' })
+    .then(res => {
+      if (!res.ok) throw new Error(`fetch head failed ${res.status}`)
+      const length = res.headers.get('Content-Length')
+      if (!length) throw new Error('missing content length')
+      return parseInt(length)
+    })
+  return {
+    byteLength,
+    async slice(start, end) {
+      // fetch byte range from url
+      const headers = new Headers()
+      const endStr = end === undefined ? '' : end - 1
+      headers.set('Range', `bytes=${start}-${endStr}`)
+      const res = await fetch(url, { headers })
+      if (!res.ok || !res.body) throw new Error(`fetch failed ${res.status}`)
+      return res.arrayBuffer()
+    },
+  }
+}

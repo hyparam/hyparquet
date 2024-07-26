@@ -1,6 +1,7 @@
 import {
   parquetMetadata, parquetMetadataAsync, parquetRead, parquetSchema, toJson,
 } from '../src/hyparquet.js'
+import { asyncBufferFromUrl } from '../src/utils.js'
 import { compressors } from './hyparquet-compressors.min.js'
 import { fileLayout, fileMetadata } from './layout.js'
 
@@ -60,42 +61,12 @@ dropzone.addEventListener('drop', e => {
 async function processUrl(url) {
   content.innerHTML = ''
   try {
-    // Check if file is accessible and get its size
-    const head = await fetch(url, { method: 'HEAD' })
-    if (!head.ok) {
-      content.innerHTML = `<strong>${url}</strong>`
-      content.innerHTML += `<div class="error">Error fetching file\n${head.status} ${head.statusText}</div>`
-      return
-    }
-    const size = head.headers.get('content-length')
-    if (!size) {
-      content.innerHTML = `<strong>${url}</strong>`
-      content.innerHTML += '<div class="error">Error fetching file\nNo content-length header</div>'
-      return
-    }
-    // Construct an AsyncBuffer that fetches file chunks
-    const asyncBuffer = {
-      byteLength: Number(size),
-      /**
-       * @param {number} start
-       * @param {number} end
-       * @returns {Promise<ArrayBuffer>}
-       */
-      slice: async (start, end) => {
-        const rangeEnd = end === undefined ? '' : end - 1
-        console.log(`Fetch ${url} bytes=${start}-${rangeEnd}`)
-        const res = await fetch(url, {
-          headers: { Range: `bytes=${start}-${rangeEnd}` },
-        })
-        return res.arrayBuffer()
-      },
-    }
+    const asyncBuffer = await asyncBufferFromUrl(url)
     const metadata = await parquetMetadataAsync(asyncBuffer)
     await render(asyncBuffer, metadata, `<a href="${url}">${url}</a>`)
   } catch (e) {
-    console.error('Error fetching file', e)
-    content.innerHTML = `<strong>${url}</strong>`
-    content.innerHTML += `<div class="error">Error fetching file\n${e}</div>`
+    console.error('Error fetching url', e)
+    content.innerHTML += `<div class="error">Error fetching url ${url}\n${e}</div>`
   }
 }
 
