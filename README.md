@@ -22,7 +22,7 @@ Online parquet file reader demo available at:
 
 https://hyparam.github.io/hyparquet/
 
-## Why hyparquet?
+## Features
 
 1. **Performant**: Designed to efficiently process large datasets by only loading the required data, making it suitable for big data and machine learning applications.
 2. **Browser-native**: Built to work seamlessly in the browser, opening up new possibilities for web-based data applications and visualizations.
@@ -30,15 +30,7 @@ https://hyparam.github.io/hyparquet/
 4. **TypeScript support**: The library is written in jsdoc-typed JavaScript and provides TypeScript definitions out of the box.
 5. **Flexible data access**: Hyparquet allows you to read specific subsets of data by specifying row and column ranges, giving fine-grained control over what data is fetched and loaded.
 
-## Features
-
-- Designed to work with huge ML datasets (like [starcoder](https://huggingface.co/datasets/bigcode/starcoderdata))
-- Can load metadata separately from data
-- Data can be filtered by row and column ranges
-- Only fetches the data needed
-- Written in JavaScript, checked with TypeScript
-- Fast data loading for large scale ML applications
-- Bring data visualization closer to the user, in the browser
+## Why hyparquet?
 
 Why make a new parquet parser?
 First, existing libraries like [parquetjs](https://github.com/ironSource/parquetjs) are officially "inactive".
@@ -53,7 +45,59 @@ Install the hyparquet package from npm:
 npm install hyparquet
 ```
 
-If you're in a node.js environment, you can load a parquet file with the following example:
+## Reading Data
+
+### Node.js
+
+To read the entire contents of a parquet file in a node.js environment:
+
+```js
+const { parquetRead } = await import('hyparquet')
+const { createReadStream } = await import('fs')
+const file = { // AsyncBuffer
+  byteLength: stat.size,
+  async slice(start, end) {
+    // read file slice
+    const readStream = createReadStream(filename, { start, end })
+    return await readStreamToArrayBuffer(readStream)
+  }
+}
+await parquetRead({
+  file,
+  onComplete: data => console.log(data)
+})
+```
+
+### Browser
+
+Hyparquet supports asynchronous fetching of parquet files over a network.
+You can provide an `AsyncBuffer` which is like a js `ArrayBuffer` but the `slice` method returns `Promise<ArrayBuffer>`.
+
+```js
+const { parquetRead } = await import('https://cdn.jsdelivr.net/npm/hyparquet/src/hyparquet.min.js')
+const file = { // AsyncBuffer
+  byteLength,
+  async slice(start, end) {
+    // fetch byte range from url
+    const headers = new Headers()
+    headers.set('Range', `bytes=${start}-${end - 1}`)
+    const res = await fetch(url, { headers })
+    if (!res.ok || !res.body) throw new Error('fetch failed')
+    return res.arrayBuffer()
+  },
+}
+await parquetRead({
+  file,
+  onComplete: data => console.log(data)
+})
+```
+
+In a node.js environment:
+
+
+## Metadata
+
+You can read just the metadata, including schema and data statistics using the `parquetMetadata` function:
 
 ```js
 const { parquetMetadata } = await import('hyparquet')
@@ -78,20 +122,6 @@ const metadata = parquetMetadata(arrayBuffer)
 
 To parse parquet files from a user drag-and-drop action, see example in [index.html](index.html).
 
-## Reading Data
-
-To read the entire contents of a parquet file in a browser environment:
-
-```js
-const { parquetRead } = await import("https://cdn.jsdelivr.net/npm/hyparquet/src/hyparquet.min.js")
-const res = await fetch(url)
-const arrayBuffer = await res.arrayBuffer()
-await parquetRead({
-  file: arrayBuffer,
-  onComplete: data => console.log(data)
-})
-```
-
 ## Filtering
 
 To read large parquet files, it is recommended that you filter by row and column.
@@ -110,7 +140,9 @@ await parquetRead({
 })
 ```
 
-## Async
+## Advanced Usage
+
+### AsyncBuffer
 
 Hyparquet supports asynchronous fetching of parquet files over a network.
 You can provide an `AsyncBuffer` which is like a js `ArrayBuffer` but the `slice` method returns `Promise<ArrayBuffer>`.
@@ -127,7 +159,8 @@ You can read parquet files asynchronously using HTTP Range requests so that only
 ```js
 import { parquetRead } from 'hyparquet'
 
-const url = 'https://...'
+const url = 'https://hyperparam-public.s3.amazonaws.com/wiki-en-00000-of-00041.parquet'
+const byteLength = 420296449
 await parquetRead({
   file: { // AsyncBuffer
     byteLength,
@@ -135,10 +168,9 @@ await parquetRead({
       const headers = new Headers()
       headers.set('Range', `bytes=${start}-${end - 1}`)
       const res = await fetch(url, { headers })
-      if (!res.ok || !res.body) throw new Error('fetch failed')
-      return readableStreamToArrayBuffer(res.body)
+      return res.arrayBuffer()
     },
-  }
+  },
   onComplete: data => console.log(data),
 })
 ```
