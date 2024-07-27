@@ -52,18 +52,9 @@ npm install hyparquet
 To read the entire contents of a parquet file in a node.js environment:
 
 ```js
-const { parquetRead } = await import('hyparquet')
-const { createReadStream } = await import('fs')
-const file = { // AsyncBuffer
-  byteLength: stat.size,
-  async slice(start, end) {
-    // read file slice
-    const readStream = createReadStream(filename, { start, end })
-    return await readStreamToArrayBuffer(readStream)
-  }
-}
+const { asyncBufferFromFile, parquetRead } = await import('hyparquet')
 await parquetRead({
-  file,
+  file: await asyncBufferFromFile(filename),
   onComplete: data => console.log(data)
 })
 ```
@@ -71,29 +62,15 @@ await parquetRead({
 ### Browser
 
 Hyparquet supports asynchronous fetching of parquet files over a network.
-You can provide an `AsyncBuffer` which is like a js `ArrayBuffer` but the `slice` method returns `Promise<ArrayBuffer>`.
 
 ```js
-const { parquetRead } = await import('https://cdn.jsdelivr.net/npm/hyparquet/src/hyparquet.min.js')
-const file = { // AsyncBuffer
-  byteLength,
-  async slice(start, end) {
-    // fetch byte range from url
-    const headers = new Headers()
-    headers.set('Range', `bytes=${start}-${end - 1}`)
-    const res = await fetch(url, { headers })
-    if (!res.ok || !res.body) throw new Error('fetch failed')
-    return res.arrayBuffer()
-  },
-}
+const { asyncBufferFromUrl, parquetRead } = await import('https://cdn.jsdelivr.net/npm/hyparquet/src/hyparquet.min.js')
+const url = 'https://hyperparam-public.s3.amazonaws.com/bunnies.parquet'
 await parquetRead({
-  file,
+  file: await asyncBufferFromUrl(url),
   onComplete: data => console.log(data)
 })
 ```
-
-In a node.js environment:
-
 
 ## Metadata
 
@@ -122,7 +99,7 @@ const metadata = parquetMetadata(arrayBuffer)
 
 To parse parquet files from a user drag-and-drop action, see example in [index.html](index.html).
 
-## Filtering
+## Filtering by Row and Column
 
 To read large parquet files, it is recommended that you filter by row and column.
 Hyparquet is designed to load only the minimal amount of data needed to fulfill a query.

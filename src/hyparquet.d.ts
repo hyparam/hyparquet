@@ -89,6 +89,22 @@ export function snappyUncompress(input: Uint8Array, output: Uint8Array): boolean
 export function toJson(obj: any): any
 
 /**
+ * Construct an AsyncBuffer for a URL.
+ *
+ * @param {string} url
+ * @returns {Promise<AsyncBuffer>}
+ */
+export function asyncBufferFromUrl(url: string): Promise<AsyncBuffer>
+
+/**
+ * Construct an AsyncBuffer for a local file using node fs package.
+ *
+ * @param {string} filename
+ * @returns {Promise<AsyncBuffer>}
+ */
+export function asyncBufferFromFile(filename: string): Promise<AsyncBuffer>
+
+/**
  * Parquet query options for reading data
  */
 export interface ParquetReadOptions {

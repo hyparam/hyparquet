@@ -7,5 +7,5 @@ export { parquetRead }
 import { snappyUncompress } from './snappy.js'
 export { snappyUncompress }
 
-import { toJson } from './utils.js'
-export { toJson }
+import { asyncBufferFromFile, asyncBufferFromUrl, toJson } from './utils.js'
+export { asyncBufferFromFile, asyncBufferFromUrl, toJson }
