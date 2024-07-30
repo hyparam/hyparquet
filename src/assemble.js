@@ -125,7 +125,7 @@ export function assembleNested(subcolumnData, schema, depth = 0) {
 
     const subcolumn = sublist.path.join('.')
     const values = subcolumnData.get(subcolumn)
-    if (!values) throw new Error('parquet list-like column missing values')
+    if (!values) throw new Error('parquet list column missing values')
     if (optional) flattenAtDepth(values, depth)
     subcolumnData.set(path, values)
     subcolumnData.delete(subcolumn)
@@ -142,10 +142,10 @@ export function assembleNested(subcolumnData, schema, depth = 0) {
     const keys = subcolumnData.get(`${path}.${mapName}.key`)
     const values = subcolumnData.get(`${path}.${mapName}.value`)
 
-    if (!keys) throw new Error('parquet map-like column missing keys')
-    if (!values) throw new Error('parquet map-like column missing values')
+    if (!keys) throw new Error('parquet map column missing keys')
+    if (!values) throw new Error('parquet map column missing values')
     if (keys.length !== values.length) {
-      throw new Error('parquet map-like column key/value length mismatch')
+      throw new Error('parquet map column key/value length mismatch')
     }
 
     const out = assembleMaps(keys, values, nextDepth)
@@ -160,12 +160,13 @@ export function assembleNested(subcolumnData, schema, depth = 0) {
   // Struct-like column
   if (schema.children.length) {
     // construct a meta struct and then invert
+    const invertDepth = schema.element.repetition_type === 'REQUIRED' ? depth : depth + 1
     /** @type {Record<string, any>} */
     const struct = {}
     for (const child of schema.children) {
-      assembleNested(subcolumnData, child, nextDepth)
+      assembleNested(subcolumnData, child, invertDepth)
       const childData = subcolumnData.get(child.path.join('.'))
-      if (!childData) throw new Error('parquet struct-like column missing child data')
+      if (!childData) throw new Error('parquet struct missing child data')
       struct[child.element.name] = childData
     }
     // remove children
@@ -173,12 +174,10 @@ export function assembleNested(subcolumnData, schema, depth = 0) {
       subcolumnData.delete(child.path.join('.'))
     }
     // invert struct by depth
-    const invertDepth = schema.element.repetition_type === 'REQUIRED' ? depth : depth + 1
     const inverted = invertStruct(struct, invertDepth)
     if (optional) flattenAtDepth(inverted, depth)
     subcolumnData.set(path, inverted)
   }
-  // assert(schema.element.repetition_type !== 'REPEATED')
 }
 
 /**
@@ -238,6 +237,7 @@ function invertStruct(struct, depth) {
     /** @type {Record<string, any>} */
     const obj = {}
     for (const key of keys) {
+      if (struct[key].length !== length) throw new Error('parquet struct parsing error')
       obj[key] = struct[key][i]
     }
     if (depth) {

@@ -1,0 +1,3198 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "name": "itasty.MenuStructure",
+      "num_children": 3
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "menu",
+      "num_children": 6,
+      "field_id": 1
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "key",
+      "converted_type": "UTF8",
+      "field_id": 1,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "name",
+      "num_children": 2,
+      "field_id": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "key",
+      "converted_type": "UTF8",
+      "field_id": 1,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value",
+      "converted_type": "UTF8",
+      "field_id": 2,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "categories",
+      "num_children": 3,
+      "field_id": 3
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "key",
+      "converted_type": "UTF8",
+      "field_id": 1,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "name",
+      "num_children": 2,
+      "field_id": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "key",
+      "converted_type": "UTF8",
+      "field_id": 1,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value",
+      "converted_type": "UTF8",
+      "field_id": 2,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "dishes",
+      "num_children": 11,
+      "field_id": 3
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "key",
+      "converted_type": "UTF8",
+      "field_id": 1,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "name",
+      "num_children": 2,
+      "field_id": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "key",
+      "converted_type": "UTF8",
+      "field_id": 1,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value",
+      "converted_type": "UTF8",
+      "field_id": 2,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "addons",
+      "num_children": 5,
+      "field_id": 3
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "key",
+      "converted_type": "UTF8",
+      "field_id": 1,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "name",
+      "num_children": 2,
+      "field_id": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "key",
+      "converted_type": "UTF8",
+      "field_id": 1,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value",
+      "converted_type": "UTF8",
+      "field_id": 2,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BOOLEAN",
+      "repetition_type": "OPTIONAL",
+      "name": "required",
+      "field_id": 3
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "maxSelected",
+      "field_id": 4
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "items",
+      "num_children": 5,
+      "field_id": 5
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "key",
+      "converted_type": "UTF8",
+      "field_id": 1,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "ingredient",
+      "num_children": 2,
+      "field_id": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "key",
+      "converted_type": "UTF8",
+      "field_id": 1,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "name",
+      "num_children": 2,
+      "field_id": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "key",
+      "converted_type": "UTF8",
+      "field_id": 1,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value",
+      "converted_type": "UTF8",
+      "field_id": 2,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "unitSize",
+      "converted_type": "ENUM",
+      "field_id": 3,
+      "logical_type": {
+        "type": "ENUM"
+      }
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "price",
+      "num_children": 2,
+      "field_id": 4
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "scale",
+      "field_id": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "int_val",
+      "num_children": 1,
+      "field_id": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value",
+      "field_id": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "volume",
+      "num_children": 2,
+      "field_id": 5
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "scale",
+      "field_id": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "int_val",
+      "num_children": 1,
+      "field_id": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value",
+      "field_id": 1
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "description",
+      "num_children": 2,
+      "field_id": 4
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "key",
+      "converted_type": "UTF8",
+      "field_id": 1,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value",
+      "converted_type": "UTF8",
+      "field_id": 2,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "components",
+      "num_children": 2,
+      "field_id": 5
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "key",
+      "converted_type": "UTF8",
+      "field_id": 1,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value",
+      "converted_type": "UTF8",
+      "field_id": 2,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "unitSize",
+      "converted_type": "ENUM",
+      "field_id": 6,
+      "logical_type": {
+        "type": "ENUM"
+      }
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "priceSizes",
+      "num_children": 2,
+      "field_id": 7
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "volume",
+      "num_children": 2,
+      "field_id": 1
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "scale",
+      "field_id": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "int_val",
+      "num_children": 1,
+      "field_id": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value",
+      "field_id": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "price",
+      "num_children": 2,
+      "field_id": 2
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "scale",
+      "field_id": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "int_val",
+      "num_children": 1,
+      "field_id": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value",
+      "field_id": 1
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "orderIndex",
+      "field_id": 8
+    },
+    {
+      "type": "BOOLEAN",
+      "repetition_type": "OPTIONAL",
+      "name": "popular",
+      "field_id": 9
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REPEATED",
+      "name": "tags",
+      "converted_type": "ENUM",
+      "field_id": 10,
+      "logical_type": {
+        "type": "ENUM"
+      }
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "images",
+      "num_children": 2,
+      "field_id": 11
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "url",
+      "converted_type": "UTF8",
+      "field_id": 1,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "transformations",
+      "num_children": 2,
+      "field_id": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "label",
+      "converted_type": "ENUM",
+      "field_id": 1,
+      "logical_type": {
+        "type": "ENUM"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "url",
+      "converted_type": "UTF8",
+      "field_id": 2,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "title",
+      "converted_type": "UTF8",
+      "field_id": 4,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "description",
+      "num_children": 2,
+      "field_id": 5
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "key",
+      "converted_type": "UTF8",
+      "field_id": 1,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value",
+      "converted_type": "UTF8",
+      "field_id": 2,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REPEATED",
+      "name": "languages",
+      "converted_type": "ENUM",
+      "field_id": 6,
+      "logical_type": {
+        "type": "ENUM"
+      }
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "socialLinks",
+      "num_children": 2,
+      "field_id": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "facebook",
+      "converted_type": "UTF8",
+      "field_id": 1,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "instagram",
+      "converted_type": "UTF8",
+      "field_id": 2,
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "currency",
+      "converted_type": "ENUM",
+      "field_id": 3,
+      "logical_type": {
+        "type": "ENUM"
+      }
+    }
+  ],
+  "num_rows": 1,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "BIT_PACKED",
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "key"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 42,
+            "total_compressed_size": 42,
+            "data_page_offset": 4,
+            "statistics": {
+              "max": "22425501",
+              "min": "22425501",
+              "null_count": 0,
+              "max_value": "22425501",
+              "min_value": "22425501"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 8,
+              "repetition_level_histogram": [
+                1
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                1
+              ]
+            }
+          },
+          "offset_index_offset": 5551,
+          "offset_index_length": 13,
+          "column_index_offset": 3575,
+          "column_index_length": 39,
+          "crypto_metadata": 39
+        },
+        {
+          "file_offset": 46,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "name",
+              "key"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 42,
+            "total_compressed_size": 42,
+            "data_page_offset": 46,
+            "statistics": {
+              "max": "PL",
+              "min": "PL",
+              "null_count": 0,
+              "max_value": "PL",
+              "min_value": "PL"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 2,
+              "repetition_level_histogram": [1, 0],
+              "definition_level_histogram": [0, 0, 0, 1]
+            }
+          },
+          "offset_index_offset": 5564,
+          "offset_index_length": 13,
+          "column_index_offset": 3614,
+          "column_index_length": 29,
+          "crypto_metadata": 29
+        },
+        {
+          "file_offset": 88,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "name",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 50,
+            "total_compressed_size": 50,
+            "data_page_offset": 88,
+            "statistics": {
+              "max": "Test Fable",
+              "min": "Test Fable",
+              "null_count": 0,
+              "max_value": "Test Fable",
+              "min_value": "Test Fable"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 10,
+              "repetition_level_histogram": [1, 0],
+              "definition_level_histogram": [0, 0, 0, 1]
+            }
+          },
+          "offset_index_offset": 5577,
+          "offset_index_length": 14,
+          "column_index_offset": 3643,
+          "column_index_length": 45,
+          "crypto_metadata": 45
+        },
+        {
+          "file_offset": 138,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "key"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 2,
+            "total_uncompressed_size": 60,
+            "total_compressed_size": 60,
+            "data_page_offset": 138,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "22428702",
+              "min_value": "22425554"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 16,
+              "repetition_level_histogram": [
+                1,
+                1
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                2
+              ]
+            }
+          },
+          "offset_index_offset": 5591,
+          "offset_index_length": 14,
+          "column_index_offset": 3688,
+          "column_index_length": 41,
+          "crypto_metadata": 41
+        },
+        {
+          "file_offset": 223,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "name",
+              "key"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 2,
+            "total_uncompressed_size": 64,
+            "total_compressed_size": 64,
+            "data_page_offset": 223,
+            "dictionary_page_offset": 198,
+            "statistics": {
+              "max": "PL",
+              "min": "PL",
+              "null_count": 0,
+              "max_value": "PL",
+              "min_value": "PL"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 4,
+              "repetition_level_histogram": [1, 1, 0],
+              "definition_level_histogram": [0, 0, 0, 0, 2]
+            }
+          },
+          "offset_index_offset": 5605,
+          "offset_index_length": 14,
+          "column_index_offset": 3729,
+          "column_index_length": 31,
+          "crypto_metadata": 31
+        },
+        {
+          "file_offset": 262,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "name",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 2,
+            "total_uncompressed_size": 76,
+            "total_compressed_size": 76,
+            "data_page_offset": 262,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "Test catergory",
+              "min_value": "Test category 23"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 30,
+              "repetition_level_histogram": [1, 1, 0],
+              "definition_level_histogram": [0, 0, 0, 0, 2]
+            }
+          },
+          "offset_index_offset": 5619,
+          "offset_index_length": 15,
+          "column_index_offset": 3760,
+          "column_index_length": 57,
+          "crypto_metadata": 57
+        },
+        {
+          "file_offset": 338,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "key"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 2,
+            "total_uncompressed_size": 62,
+            "total_compressed_size": 62,
+            "data_page_offset": 338,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "22428878",
+              "min_value": "22425677"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 16,
+              "repetition_level_histogram": [1, 1, 0],
+              "definition_level_histogram": [0, 0, 0, 0, 2]
+            }
+          },
+          "offset_index_offset": 5634,
+          "offset_index_length": 14,
+          "column_index_offset": 3817,
+          "column_index_length": 43,
+          "crypto_metadata": 43
+        },
+        {
+          "file_offset": 431,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "name",
+              "key"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 3,
+            "total_uncompressed_size": 71,
+            "total_compressed_size": 71,
+            "data_page_offset": 431,
+            "dictionary_page_offset": 400,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "UK",
+              "min_value": "PL"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 6,
+              "repetition_level_histogram": [1, 1, 0, 1],
+              "definition_level_histogram": [0, 0, 0, 0, 0, 3]
+            }
+          },
+          "offset_index_offset": 5648,
+          "offset_index_length": 14,
+          "column_index_offset": 3860,
+          "column_index_length": 33,
+          "crypto_metadata": 33
+        },
+        {
+          "file_offset": 536,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "name",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 3,
+            "total_uncompressed_size": 105,
+            "total_compressed_size": 105,
+            "data_page_offset": 536,
+            "dictionary_page_offset": 471,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "Test",
+              "min_value": "Duży​​ awokado tost z jajkiem"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 72,
+              "repetition_level_histogram": [1, 1, 0, 1],
+              "definition_level_histogram": [0, 0, 0, 0, 0, 3]
+            }
+          },
+          "offset_index_offset": 5662,
+          "offset_index_length": 15,
+          "column_index_offset": 3893,
+          "column_index_length": 67,
+          "crypto_metadata": 67
+        },
+        {
+          "file_offset": 576,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "addons",
+              "key"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 3,
+            "total_uncompressed_size": 62,
+            "total_compressed_size": 62,
+            "data_page_offset": 576,
+            "statistics": {
+              "null_count": 1,
+              "max_value": "22806893",
+              "min_value": "22806869"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 16,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                2
+              ]
+            }
+          },
+          "offset_index_offset": 5677,
+          "offset_index_length": 14,
+          "column_index_offset": 3960,
+          "column_index_length": 45,
+          "crypto_metadata": 45
+        },
+        {
+          "file_offset": 663,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "addons",
+              "name",
+              "key"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 3,
+            "total_uncompressed_size": 66,
+            "total_compressed_size": 66,
+            "data_page_offset": 663,
+            "dictionary_page_offset": 638,
+            "statistics": {
+              "max": "PL",
+              "min": "PL",
+              "null_count": 1,
+              "max_value": "PL",
+              "min_value": "PL"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 4,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1,
+                0
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                2
+              ]
+            }
+          },
+          "offset_index_offset": 5691,
+          "offset_index_length": 14,
+          "column_index_offset": 4005,
+          "column_index_length": 35,
+          "crypto_metadata": 35
+        },
+        {
+          "file_offset": 704,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "addons",
+              "name",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 3,
+            "total_uncompressed_size": 80,
+            "total_compressed_size": 80,
+            "data_page_offset": 704,
+            "statistics": {
+              "null_count": 1,
+              "max_value": "Dodatki do śniadania",
+              "min_value": "Dish extra 1"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 33,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1,
+                0
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                2
+              ]
+            }
+          },
+          "offset_index_offset": 5705,
+          "offset_index_length": 15,
+          "column_index_offset": 4040,
+          "column_index_length": 64,
+          "crypto_metadata": 64
+        },
+        {
+          "file_offset": 784,
+          "meta_data": {
+            "type": "BOOLEAN",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "addons",
+              "required"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 3,
+            "total_uncompressed_size": 39,
+            "total_compressed_size": 39,
+            "data_page_offset": 784,
+            "statistics": {
+              "max": false,
+              "min": false,
+              "null_count": 1,
+              "max_value": false,
+              "min_value": false
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                2
+              ]
+            }
+          },
+          "offset_index_offset": 5720,
+          "offset_index_length": 11,
+          "column_index_offset": 4104,
+          "column_index_length": 31,
+          "crypto_metadata": 31
+        },
+        {
+          "file_offset": 842,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "addons",
+              "maxSelected"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 3,
+            "total_uncompressed_size": 59,
+            "total_compressed_size": 59,
+            "data_page_offset": 842,
+            "dictionary_page_offset": 823,
+            "statistics": {
+              "max": -1,
+              "min": -1,
+              "null_count": 1,
+              "max_value": -1,
+              "min_value": -1
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                2
+              ]
+            }
+          },
+          "offset_index_offset": 5731,
+          "offset_index_length": 11,
+          "column_index_offset": 4135,
+          "column_index_length": 37,
+          "crypto_metadata": 37
+        },
+        {
+          "file_offset": 882,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "addons",
+              "items",
+              "key"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6,
+            "total_uncompressed_size": 101,
+            "total_compressed_size": 101,
+            "data_page_offset": 882,
+            "statistics": {
+              "null_count": 1,
+              "max_value": "22861716",
+              "min_value": "21985948"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 40,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1,
+                3
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                5
+              ]
+            }
+          },
+          "offset_index_offset": 5742,
+          "offset_index_length": 15,
+          "column_index_offset": 4172,
+          "column_index_length": 47,
+          "crypto_metadata": 47
+        },
+        {
+          "file_offset": 1046,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "addons",
+              "items",
+              "ingredient",
+              "key"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6,
+            "total_uncompressed_size": 106,
+            "total_compressed_size": 106,
+            "data_page_offset": 1046,
+            "dictionary_page_offset": 983,
+            "statistics": {
+              "null_count": 1,
+              "max_value": "895653",
+              "min_value": "11742617"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 34,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1,
+                3
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                5
+              ]
+            }
+          },
+          "offset_index_offset": 5757,
+          "offset_index_length": 14,
+          "column_index_offset": 4219,
+          "column_index_length": 46,
+          "crypto_metadata": 46
+        },
+        {
+          "file_offset": 1126,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "addons",
+              "items",
+              "ingredient",
+              "name",
+              "key"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 12,
+            "total_uncompressed_size": 88,
+            "total_compressed_size": 88,
+            "data_page_offset": 1126,
+            "dictionary_page_offset": 1089,
+            "statistics": {
+              "null_count": 1,
+              "max_value": "UK",
+              "min_value": "EN"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 22,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1,
+                3,
+                6
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                11
+              ]
+            }
+          },
+          "offset_index_offset": 5771,
+          "offset_index_length": 14,
+          "column_index_offset": 4265,
+          "column_index_length": 38,
+          "crypto_metadata": 38
+        },
+        {
+          "file_offset": 1299,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "addons",
+              "items",
+              "ingredient",
+              "name",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 12,
+            "total_uncompressed_size": 175,
+            "total_compressed_size": 175,
+            "data_page_offset": 1299,
+            "dictionary_page_offset": 1177,
+            "statistics": {
+              "null_count": 1,
+              "max_value": "Цебуля",
+              "min_value": "Cebula"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 92,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1,
+                3,
+                6
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                11
+              ]
+            }
+          },
+          "offset_index_offset": 5785,
+          "offset_index_length": 15,
+          "column_index_offset": 4303,
+          "column_index_length": 52,
+          "crypto_metadata": 52
+        },
+        {
+          "file_offset": 1376,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "addons",
+              "items",
+              "unitSize"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6,
+            "total_uncompressed_size": 65,
+            "total_compressed_size": 65,
+            "data_page_offset": 1376,
+            "dictionary_page_offset": 1352,
+            "statistics": {
+              "max": "KG",
+              "min": "KG",
+              "null_count": 1,
+              "max_value": "KG",
+              "min_value": "KG"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 10,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1,
+                3
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                5
+              ]
+            }
+          },
+          "offset_index_offset": 5800,
+          "offset_index_length": 14,
+          "column_index_offset": 4355,
+          "column_index_length": 35,
+          "crypto_metadata": 35
+        },
+        {
+          "file_offset": 1444,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "addons",
+              "items",
+              "price",
+              "scale"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6,
+            "total_uncompressed_size": 69,
+            "total_compressed_size": 69,
+            "data_page_offset": 1444,
+            "dictionary_page_offset": 1417,
+            "statistics": {
+              "max": 1,
+              "min": 0,
+              "null_count": 1,
+              "max_value": 1,
+              "min_value": 0
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1,
+                3
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                5
+              ]
+            }
+          },
+          "offset_index_offset": 5814,
+          "offset_index_length": 11,
+          "column_index_offset": 4390,
+          "column_index_length": 40,
+          "crypto_metadata": 40
+        },
+        {
+          "file_offset": 1486,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "addons",
+              "items",
+              "price",
+              "int_val",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6,
+            "total_uncompressed_size": 60,
+            "total_compressed_size": 60,
+            "data_page_offset": 1486,
+            "statistics": {
+              "null_count": 2,
+              "max_value": "o",
+              "min_value": "\u0001"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 4,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1,
+                3
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0,
+                4
+              ]
+            }
+          },
+          "offset_index_offset": 5825,
+          "offset_index_length": 14,
+          "column_index_offset": 4430,
+          "column_index_length": 35,
+          "crypto_metadata": 35
+        },
+        {
+          "file_offset": 1569,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "addons",
+              "items",
+              "volume",
+              "scale"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6,
+            "total_uncompressed_size": 64,
+            "total_compressed_size": 64,
+            "data_page_offset": 1569,
+            "dictionary_page_offset": 1546,
+            "statistics": {
+              "max": 0,
+              "min": 0,
+              "null_count": 1,
+              "max_value": 0,
+              "min_value": 0
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1,
+                3
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                5
+              ]
+            }
+          },
+          "offset_index_offset": 5839,
+          "offset_index_length": 11,
+          "column_index_offset": 4465,
+          "column_index_length": 40,
+          "crypto_metadata": 40
+        },
+        {
+          "file_offset": 1610,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "addons",
+              "items",
+              "volume",
+              "int_val",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6,
+            "total_uncompressed_size": 40,
+            "total_compressed_size": 40,
+            "data_page_offset": 1610,
+            "statistics": {
+              "null_count": 6
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 0,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1,
+                3
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                5,
+                0,
+                0
+              ]
+            }
+          },
+          "offset_index_offset": 5850,
+          "offset_index_length": 14,
+          "column_index_offset": 4505,
+          "column_index_length": 33,
+          "crypto_metadata": 33
+        },
+        {
+          "file_offset": 1681,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "description",
+              "key"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 3,
+            "total_uncompressed_size": 71,
+            "total_compressed_size": 71,
+            "data_page_offset": 1681,
+            "dictionary_page_offset": 1650,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "UK",
+              "min_value": "PL"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 6,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                3
+              ]
+            }
+          },
+          "offset_index_offset": 5864,
+          "offset_index_length": 14,
+          "column_index_offset": 4538,
+          "column_index_length": 33,
+          "crypto_metadata": 33
+        },
+        {
+          "file_offset": 1721,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "description",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 3,
+            "total_uncompressed_size": 194,
+            "total_compressed_size": 194,
+            "data_page_offset": 1721,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "asd",
+              "min_value": "Duży​​ awokado tost z jajkiem"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 142,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                3
+              ]
+            }
+          },
+          "offset_index_offset": 5878,
+          "offset_index_length": 16,
+          "column_index_offset": 4571,
+          "column_index_length": 66,
+          "crypto_metadata": 66
+        },
+        {
+          "file_offset": 1946,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "components",
+              "key"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 3,
+            "total_uncompressed_size": 71,
+            "total_compressed_size": 71,
+            "data_page_offset": 1946,
+            "dictionary_page_offset": 1915,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "UK",
+              "min_value": "PL"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 6,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                3
+              ]
+            }
+          },
+          "offset_index_offset": 5894,
+          "offset_index_length": 14,
+          "column_index_offset": 4637,
+          "column_index_length": 33,
+          "crypto_metadata": 33
+        },
+        {
+          "file_offset": 2009,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "components",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 3,
+            "total_uncompressed_size": 61,
+            "total_compressed_size": 61,
+            "data_page_offset": 2009,
+            "dictionary_page_offset": 1986,
+            "statistics": {
+              "max": "",
+              "min": "",
+              "null_count": 0,
+              "max_value": "",
+              "min_value": ""
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 0,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                1
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                3
+              ]
+            }
+          },
+          "offset_index_offset": 5908,
+          "offset_index_length": 14,
+          "column_index_offset": 4670,
+          "column_index_length": 29,
+          "crypto_metadata": 29
+        },
+        {
+          "file_offset": 2071,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "unitSize"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 2,
+            "total_uncompressed_size": 63,
+            "total_compressed_size": 63,
+            "data_page_offset": 2071,
+            "dictionary_page_offset": 2047,
+            "statistics": {
+              "max": "KG",
+              "min": "KG",
+              "null_count": 0,
+              "max_value": "KG",
+              "min_value": "KG"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 4,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                0,
+                2
+              ]
+            }
+          },
+          "offset_index_offset": 5922,
+          "offset_index_length": 14,
+          "column_index_offset": 4699,
+          "column_index_length": 31,
+          "crypto_metadata": 31
+        },
+        {
+          "file_offset": 2133,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "priceSizes",
+              "volume",
+              "scale"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 2,
+            "total_uncompressed_size": 63,
+            "total_compressed_size": 63,
+            "data_page_offset": 2133,
+            "dictionary_page_offset": 2110,
+            "statistics": {
+              "max": 0,
+              "min": 0,
+              "null_count": 0,
+              "max_value": 0,
+              "min_value": 0
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                0
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                2
+              ]
+            }
+          },
+          "offset_index_offset": 5936,
+          "offset_index_length": 11,
+          "column_index_offset": 4730,
+          "column_index_length": 38,
+          "crypto_metadata": 38
+        },
+        {
+          "file_offset": 2173,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "priceSizes",
+              "volume",
+              "int_val",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 2,
+            "total_uncompressed_size": 48,
+            "total_compressed_size": 48,
+            "data_page_offset": 2173,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "d",
+              "min_value": "\u0001"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 2,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                0
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                2
+              ]
+            }
+          },
+          "offset_index_offset": 5947,
+          "offset_index_length": 14,
+          "column_index_offset": 4768,
+          "column_index_length": 33,
+          "crypto_metadata": 33
+        },
+        {
+          "file_offset": 2244,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "priceSizes",
+              "price",
+              "scale"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 2,
+            "total_uncompressed_size": 63,
+            "total_compressed_size": 63,
+            "data_page_offset": 2244,
+            "dictionary_page_offset": 2221,
+            "statistics": {
+              "max": 0,
+              "min": 0,
+              "null_count": 0,
+              "max_value": 0,
+              "min_value": 0
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                0
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                2
+              ]
+            }
+          },
+          "offset_index_offset": 5961,
+          "offset_index_length": 11,
+          "column_index_offset": 4801,
+          "column_index_length": 38,
+          "crypto_metadata": 38
+        },
+        {
+          "file_offset": 2308,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "priceSizes",
+              "price",
+              "int_val",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 2,
+            "total_uncompressed_size": 64,
+            "total_compressed_size": 64,
+            "data_page_offset": 2308,
+            "dictionary_page_offset": 2284,
+            "statistics": {
+              "max": "\n",
+              "min": "\n",
+              "null_count": 0,
+              "max_value": "\n",
+              "min_value": "\n"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 2,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                0
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                2
+              ]
+            }
+          },
+          "offset_index_offset": 5972,
+          "offset_index_length": 14,
+          "column_index_offset": 4839,
+          "column_index_length": 33,
+          "crypto_metadata": 33
+        },
+        {
+          "file_offset": 2371,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "orderIndex"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 2,
+            "total_uncompressed_size": 62,
+            "total_compressed_size": 62,
+            "data_page_offset": 2371,
+            "dictionary_page_offset": 2348,
+            "statistics": {
+              "max": 0,
+              "min": 0,
+              "null_count": 0,
+              "max_value": 0,
+              "min_value": 0
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [
+                1,
+                1,
+                0
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                0,
+                2
+              ]
+            }
+          },
+          "offset_index_offset": 5986,
+          "offset_index_length": 11,
+          "column_index_offset": 4872,
+          "column_index_length": 35,
+          "crypto_metadata": 35
+        },
+        {
+          "file_offset": 2410,
+          "meta_data": {
+            "type": "BOOLEAN",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "popular"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 2,
+            "total_uncompressed_size": 39,
+            "total_compressed_size": 39,
+            "data_page_offset": 2410,
+            "statistics": {
+              "max": false,
+              "min": false,
+              "null_count": 0,
+              "max_value": false,
+              "min_value": false
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [
+                1,
+                1,
+                0
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                0,
+                2
+              ]
+            }
+          },
+          "offset_index_offset": 5997,
+          "offset_index_length": 11,
+          "column_index_offset": 4907,
+          "column_index_length": 29,
+          "crypto_metadata": 29
+        },
+        {
+          "file_offset": 2554,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "PLAIN_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "tags"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 8,
+            "total_uncompressed_size": 146,
+            "total_compressed_size": 146,
+            "data_page_offset": 2554,
+            "dictionary_page_offset": 2449,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "VEGETARIAN",
+              "min_value": "GLUTEN_FREE"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 66,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                6
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                0,
+                8
+              ]
+            }
+          },
+          "offset_index_offset": 6008,
+          "offset_index_length": 15,
+          "column_index_offset": 4936,
+          "column_index_length": 49,
+          "crypto_metadata": 49
+        },
+        {
+          "file_offset": 2595,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "images",
+              "url"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 2,
+            "total_uncompressed_size": 164,
+            "total_compressed_size": 164,
+            "data_page_offset": 2595,
+            "statistics": {
+              "max": "https://file-storage.itasty.eu/image/dish/d92c8ad1-1679-41e4-8596-4652c0ec9131/d92c8ad1-1679-41e4-8596-4652c0ec9131.jpeg",
+              "min": "https://file-storage.itasty.eu/image/dish/d92c8ad1-1679-41e4-8596-4652c0ec9131/d92c8ad1-1679-41e4-8596-4652c0ec9131.jpeg",
+              "null_count": 1,
+              "max_value": "https://file-storage.itasty.eu/image/dish/d92c8ad1-1679-41e4-8596-4652c0ec9131/d92c8ad1-1679-41e4-8596-4652c0ec9131.jpeg",
+              "min_value": "https://file-storage.itasty.eu/image/dish/d92c8ad1-1679-41e4-8596-4652c0ec9131/d92c8ad1-1679-41e4-8596-4652c0ec9131.jpeg"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 120,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                0
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                1
+              ]
+            }
+          },
+          "offset_index_offset": 6023,
+          "offset_index_length": 16,
+          "column_index_offset": 4985,
+          "column_index_length": 157,
+          "crypto_metadata": 157
+        },
+        {
+          "file_offset": 2759,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "images",
+              "transformations",
+              "label"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 4,
+            "total_uncompressed_size": 80,
+            "total_compressed_size": 80,
+            "data_page_offset": 2759,
+            "statistics": {
+              "null_count": 1,
+              "max_value": "THUMBNAIL_SMALL",
+              "min_value": "LARGE"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 29,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                0,
+                2
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                3
+              ]
+            }
+          },
+          "offset_index_offset": 6039,
+          "offset_index_length": 15,
+          "column_index_offset": 5142,
+          "column_index_length": 51,
+          "crypto_metadata": 51
+        },
+        {
+          "file_offset": 2839,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "categories",
+              "dishes",
+              "images",
+              "transformations",
+              "url"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 4,
+            "total_uncompressed_size": 460,
+            "total_compressed_size": 460,
+            "data_page_offset": 2839,
+            "statistics": {
+              "null_count": 1,
+              "max_value": "https://file-storage.itasty.eu/image/dish/d92c8ad1-1679-41e4-8596-4652c0ec9131/d92c8ad1-1679-41e4-8596-4652c0ec9131_thumbnail_w400.jpeg",
+              "min_value": "https://file-storage.itasty.eu/image/dish/d92c8ad1-1679-41e4-8596-4652c0ec9131/d92c8ad1-1679-41e4-8596-4652c0ec9131_large_w800.jpeg"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 407,
+              "repetition_level_histogram": [
+                1,
+                1,
+                0,
+                0,
+                2
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                3
+              ]
+            }
+          },
+          "offset_index_offset": 6054,
+          "offset_index_length": 16,
+          "column_index_offset": 5193,
+          "column_index_length": 159,
+          "crypto_metadata": 159
+        },
+        {
+          "file_offset": 3299,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "BIT_PACKED",
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "title"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 34,
+            "total_compressed_size": 34,
+            "data_page_offset": 3299,
+            "statistics": {
+              "max": "",
+              "min": "",
+              "null_count": 0,
+              "max_value": "",
+              "min_value": ""
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 0,
+              "repetition_level_histogram": [
+                1
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                1
+              ]
+            }
+          },
+          "offset_index_offset": 6070,
+          "offset_index_length": 14,
+          "column_index_offset": 5352,
+          "column_index_length": 23,
+          "crypto_metadata": 23
+        },
+        {
+          "file_offset": 3333,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "description",
+              "key"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 42,
+            "total_compressed_size": 42,
+            "data_page_offset": 3333,
+            "statistics": {
+              "max": "PL",
+              "min": "PL",
+              "null_count": 0,
+              "max_value": "PL",
+              "min_value": "PL"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 2,
+              "repetition_level_histogram": [
+                1,
+                0
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1
+              ]
+            }
+          },
+          "offset_index_offset": 6084,
+          "offset_index_length": 14,
+          "column_index_offset": 5375,
+          "column_index_length": 29,
+          "crypto_metadata": 29
+        },
+        {
+          "file_offset": 3375,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "description",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 50,
+            "total_compressed_size": 50,
+            "data_page_offset": 3375,
+            "statistics": {
+              "max": "Test Fable",
+              "min": "Test Fable",
+              "null_count": 0,
+              "max_value": "Test Fable",
+              "min_value": "Test Fable"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 10,
+              "repetition_level_histogram": [
+                1,
+                0
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1
+              ]
+            }
+          },
+          "offset_index_offset": 6098,
+          "offset_index_length": 14,
+          "column_index_offset": 5404,
+          "column_index_length": 45,
+          "crypto_metadata": 45
+        },
+        {
+          "file_offset": 3425,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "menu",
+              "languages"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 3,
+            "total_uncompressed_size": 54,
+            "total_compressed_size": 54,
+            "data_page_offset": 3425,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "UK",
+              "min_value": "EN"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 6,
+              "repetition_level_histogram": [
+                1,
+                2
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                3
+              ]
+            }
+          },
+          "offset_index_offset": 6112,
+          "offset_index_length": 14,
+          "column_index_offset": 5449,
+          "column_index_length": 28,
+          "crypto_metadata": 28
+        },
+        {
+          "file_offset": 3479,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "BIT_PACKED",
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "socialLinks",
+              "facebook"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 30,
+            "total_compressed_size": 30,
+            "data_page_offset": 3479,
+            "statistics": {
+              "null_count": 1
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 0,
+              "repetition_level_histogram": [
+                1
+              ],
+              "definition_level_histogram": [
+                1,
+                0,
+                0
+              ]
+            }
+          },
+          "offset_index_offset": 6126,
+          "offset_index_length": 14,
+          "column_index_offset": 5477,
+          "column_index_length": 23,
+          "crypto_metadata": 23
+        },
+        {
+          "file_offset": 3509,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "BIT_PACKED",
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "socialLinks",
+              "instagram"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 30,
+            "total_compressed_size": 30,
+            "data_page_offset": 3509,
+            "statistics": {
+              "null_count": 1
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 0,
+              "repetition_level_histogram": [
+                1
+              ],
+              "definition_level_histogram": [
+                1,
+                0,
+                0
+              ]
+            }
+          },
+          "offset_index_offset": 6140,
+          "offset_index_length": 14,
+          "column_index_offset": 5500,
+          "column_index_length": 23,
+          "crypto_metadata": 23
+        },
+        {
+          "file_offset": 3539,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "BIT_PACKED",
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "currency"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 36,
+            "total_compressed_size": 36,
+            "data_page_offset": 3539,
+            "statistics": {
+              "max": "PLN",
+              "min": "PLN",
+              "null_count": 0,
+              "max_value": "PLN",
+              "min_value": "PLN"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 3,
+              "repetition_level_histogram": [
+                1
+              ],
+              "definition_level_histogram": [
+                0,
+                1
+              ]
+            }
+          },
+          "offset_index_offset": 6154,
+          "offset_index_length": 14,
+          "column_index_offset": 5523,
+          "column_index_length": 28,
+          "crypto_metadata": 28
+        }
+      ],
+      "total_byte_size": 3571,
+      "num_rows": 1,
+      "file_offset": 4,
+      "total_compressed_size": 3571,
+      "ordinal": 0
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "parquet.proto.descriptor",
+      "value": "name: \"MenuStructure\"\nfield {\n  name: \"menu\"\n  number: 1\n  label: LABEL_OPTIONAL\n  type: TYPE_MESSAGE\n  type_name: \".itasty.Menu\"\n}\nfield {\n  name: \"socialLinks\"\n  number: 2\n  label: LABEL_OPTIONAL\n  type: TYPE_MESSAGE\n  type_name: \".itasty.SocialLinks\"\n}\nfield {\n  name: \"currency\"\n  number: 3\n  label: LABEL_OPTIONAL\n  type: TYPE_ENUM\n  type_name: \".itasty.Currency\"\n}\n"
+    },
+    {
+      "key": "parquet.proto.class",
+      "value": "pl.itaste.app.common.core.components.menu.parquet.proto3.Schema$MenuStructure"
+    },
+    {
+      "key": "parquet.proto.enum.itasty.Language",
+      "value": "UK:2,EN:0,PL:1"
+    },
+    {
+      "key": "parquet.proto.unwrapProtoWrappers",
+      "value": "false"
+    },
+    {
+      "key": "parquet.proto.enum.itasty.RecipeTag",
+      "value": "GLUTEN_FREE:5,LACTOSE_FREE:4,VEGAN:1,HALAL:2,ORGANIC:6,KOSHER:3,VEGETARIAN:0"
+    },
+    {
+      "key": "parquet.proto.writeSpecsCompliant",
+      "value": "false"
+    },
+    {
+      "key": "writer.model.name",
+      "value": "protobuf"
+    },
+    {
+      "key": "parquet.proto.enum.itasty.ImageLabel",
+      "value": "THUMBNAIL_SMALL:0,LARGE:3,THUMBNAIL:1"
+    },
+    {
+      "key": "parquet.proto.enum.itasty.UnitSize",
+      "value": "KG:0"
+    },
+    {
+      "key": "parquet.proto.enum.itasty.Currency",
+      "value": "PLN:0"
+    }
+  ],
+  "created_by": "parquet-mr version 1.14.1 (build 97ede968377400d1d79e3196636ba3de392196ba)",
+  "metadata_length": 8838
+}

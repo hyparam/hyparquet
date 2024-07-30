@@ -1,0 +1,335 @@
+[
+  [
+    {
+      "categories": [
+        {
+          "key": "22428702",
+          "name": [
+            {
+              "key": "PL",
+              "value": "Test category 23"
+            }
+          ],
+          "dishes": [
+            {
+              "key": "22428878",
+              "name": [
+                {
+                  "key": "PL",
+                  "value": "Test"
+                }
+              ],
+              "addons": [
+                {
+                  "key": "22806893",
+                  "name": [
+                    {
+                      "key": "PL",
+                      "value": "Dish extra 1"
+                    }
+                  ],
+                  "required": false,
+                  "maxSelected": -1,
+                  "items": [
+                    {
+                      "key": "21985972",
+                      "ingredient": {
+                        "key": "861005",
+                        "name": [
+                          {
+                            "key": "UK",
+                            "value": "Цебуля"
+                          },
+                          {
+                            "key": "EN",
+                            "value": "Onion"
+                          },
+                          {
+                            "key": "PL",
+                            "value": "Cebula"
+                          }
+                        ]
+                      },
+                      "unitSize": "KG",
+                      "price": {
+                        "scale": 1,
+                        "int_val": {
+                          "value": "7"
+                        }
+                      },
+                      "volume": {
+                        "scale": 0
+                      }
+                    },
+                    {
+                      "key": "21985948",
+                      "ingredient": {
+                        "key": "20997760",
+                        "name": [
+                          {
+                            "key": "PL",
+                            "value": "asd"
+                          }
+                        ]
+                      },
+                      "unitSize": "KG",
+                      "price": {
+                        "scale": 1,
+                        "int_val": {
+                          "value": "\u000d"
+                        }
+                      },
+                      "volume": {
+                        "scale": 0
+                      }
+                    }
+                  ]
+                },
+                {
+                  "key": "22806869",
+                  "name": [
+                    {
+                      "key": "PL",
+                      "value": "Dodatki do śniadania"
+                    }
+                  ],
+                  "required": false,
+                  "maxSelected": -1,
+                  "items": [
+                    {
+                      "key": "22861716",
+                      "ingredient": {
+                        "key": "11742617",
+                        "name": [
+                          {
+                            "key": "PL",
+                            "value": "Śmietana 12%"
+                          }
+                        ]
+                      },
+                      "unitSize": "KG",
+                      "price": {
+                        "scale": 0,
+                        "int_val": {
+                          "value": "\u0001"
+                        }
+                      },
+                      "volume": {
+                        "scale": 0
+                      }
+                    },
+                    {
+                      "key": "22673128",
+                      "ingredient": {
+                        "key": "895653",
+                        "name": [
+                          {
+                            "key": "UK",
+                            "value": "Картопля"
+                          },
+                          {
+                            "key": "EN",
+                            "value": "Potato"
+                          },
+                          {
+                            "key": "PL",
+                            "value": "Ziemnaik"
+                          }
+                        ]
+                      },
+                      "unitSize": "KG",
+                      "price": {
+                        "scale": 0,
+                        "int_val": {
+                          "value": "o"
+                        }
+                      },
+                      "volume": {
+                        "scale": 0
+                      }
+                    },
+                    {
+                      "key": "22672907",
+                      "ingredient": {
+                        "key": "861005",
+                        "name": [
+                          {
+                            "key": "UK",
+                            "value": "Цебуля"
+                          },
+                          {
+                            "key": "EN",
+                            "value": "Onion"
+                          },
+                          {
+                            "key": "PL",
+                            "value": "Cebula"
+                          }
+                        ]
+                      },
+                      "unitSize": "KG",
+                      "price": {
+                        "scale": 0
+                      },
+                      "volume": {
+                        "scale": 0
+                      }
+                    }
+                  ]
+                }
+              ],
+              "description": [
+                {
+                  "key": "PL",
+                  "value": "asd"
+                }
+              ],
+              "components": [
+                {
+                  "key": "PL",
+                  "value": ""
+                }
+              ],
+              "unitSize": "KG",
+              "priceSizes": [
+                {
+                  "volume": {
+                    "scale": 0,
+                    "int_val": {
+                      "value": "d"
+                    }
+                  },
+                  "price": {
+                    "scale": 0,
+                    "int_val": {
+                      "value": "\u000a"
+                    }
+                  }
+                }
+              ],
+              "orderIndex": 0,
+              "popular": false,
+              "tags": [
+                "VEGETARIAN",
+                "VEGAN",
+                "HALAL",
+                "KOSHER",
+                "LACTOSE_FREE",
+                "GLUTEN_FREE",
+                "ORGANIC"
+              ],
+              "images": [
+                {
+                  "url": "https://file-storage.itasty.eu/image/dish/d92c8ad1-1679-41e4-8596-4652c0ec9131/d92c8ad1-1679-41e4-8596-4652c0ec9131.jpeg",
+                  "transformations": [
+                    {
+                      "label": "THUMBNAIL_SMALL",
+                      "url": "https://file-storage.itasty.eu/image/dish/d92c8ad1-1679-41e4-8596-4652c0ec9131/d92c8ad1-1679-41e4-8596-4652c0ec9131_thumbnail_small_w285.jpeg"
+                    },
+                    {
+                      "label": "THUMBNAIL",
+                      "url": "https://file-storage.itasty.eu/image/dish/d92c8ad1-1679-41e4-8596-4652c0ec9131/d92c8ad1-1679-41e4-8596-4652c0ec9131_thumbnail_w400.jpeg"
+                    },
+                    {
+                      "label": "LARGE",
+                      "url": "https://file-storage.itasty.eu/image/dish/d92c8ad1-1679-41e4-8596-4652c0ec9131/d92c8ad1-1679-41e4-8596-4652c0ec9131_large_w800.jpeg"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "22425554",
+          "name": [
+            {
+              "key": "PL",
+              "value": "Test catergory"
+            }
+          ],
+          "dishes": [
+            {
+              "key": "22425677",
+              "name": [
+                {
+                  "key": "UK",
+                  "value": "Duży​​ awokado tost z jajkiem"
+                },
+                {
+                  "key": "PL",
+                  "value": "Duży​​ awokado tost z jajkiem"
+                }
+              ],
+              "addons": [],
+              "description": [
+                {
+                  "key": "UK",
+                  "value": "Duży​​ awokado tost z jajkiem"
+                },
+                {
+                  "key": "PL",
+                  "value": "Rzemieślnicze pieczywo, dwa jajka sadzone lub jajecznica, guacamole, serek kremowy, podawane z sałatką"
+                }
+              ],
+              "components": [
+                {
+                  "key": "UK",
+                  "value": ""
+                },
+                {
+                  "key": "PL",
+                  "value": ""
+                }
+              ],
+              "unitSize": "KG",
+              "priceSizes": [
+                {
+                  "volume": {
+                    "scale": 0,
+                    "int_val": {
+                      "value": "\u0001"
+                    }
+                  },
+                  "price": {
+                    "scale": 0,
+                    "int_val": {
+                      "value": "\u000a"
+                    }
+                  }
+                }
+              ],
+              "orderIndex": 0,
+              "popular": false,
+              "tags": [
+                "VEGETARIAN"
+              ],
+              "images": []
+            }
+          ]
+        }
+      ],
+      "description": [
+        {
+          "key": "PL",
+          "value": "Test Fable"
+        }
+      ],
+      "key": "22425501",
+      "languages": [
+        "PL",
+        "EN",
+        "UK"
+      ],
+      "name": [
+        {
+          "key": "PL",
+          "value": "Test Fable"
+        }
+      ],
+      "title": ""
+    },
+    null,
+    "PLN"
+  ]
+]
