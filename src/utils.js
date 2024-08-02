@@ -73,7 +73,8 @@ export async function asyncBufferFromUrl(url) {
  * @returns {Promise<AsyncBuffer>}
  */
 export async function asyncBufferFromFile(filename) {
-  const fs = await import('fs')
+  const fsPackage = 'fs' // webpack no include
+  const fs = await import(fsPackage)
   const stat = await fs.promises.stat(filename)
   return {
     byteLength: stat.size,
