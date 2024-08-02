@@ -179,7 +179,7 @@ export interface ColumnMetaData {
   size_statistics?: SizeStatistics
 }
 
-interface ColumnCryptoMetaData {}
+type ColumnCryptoMetaData = Record<string, never>
 
 export type Encoding =
   'PLAIN' |
@@ -268,7 +268,7 @@ export interface DataPageHeader {
   statistics?: Statistics
 }
 
-interface IndexPageHeader {}
+type IndexPageHeader = Record<string, never>
 
 export interface DictionaryPageHeader {
   num_values: number
