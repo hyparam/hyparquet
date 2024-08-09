@@ -119,14 +119,15 @@ await parquetRead({
 
 ## Column names
 
-By default, data returned in the `onComplete` function will be one array of columns per row. If you would like each row to be an object with each key the name of the column, set the option `rowObjects` to `true`.
+By default, data returned in the `onComplete` function will be one array of columns per row.
+If you would like each row to be an object with each key the name of the column, set the option `rowFormat` to `object`.
 
 ```js
 import { parquetRead } from 'hyparquet'
 
 await parquetRead({
   file,
-  rowObjects: true,
+  rowFormat: 'object',
   onComplete: data => console.log(data),
 })
 ```
