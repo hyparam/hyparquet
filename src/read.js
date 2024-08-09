@@ -1,4 +1,3 @@
-
 import { assembleNested } from './assemble.js'
 import { getColumnRange, readColumn } from './column.js'
 import { parquetMetadataAsync } from './metadata.js'
@@ -24,10 +23,11 @@ import { concat } from './utils.js'
  * @param {AsyncBuffer} options.file file-like object containing parquet data
  * @param {FileMetaData} [options.metadata] parquet file metadata
  * @param {string[]} [options.columns] columns to read, all columns if undefined
+ * @param {string} [options.rowFormat] format of each row passed to the onComplete function
  * @param {number} [options.rowStart] first requested row index (inclusive)
  * @param {number} [options.rowEnd] last requested row index (exclusive)
  * @param {(chunk: ColumnData) => void} [options.onChunk] called when a column chunk is parsed. chunks may include row data outside the requested range.
- * @param {(rows: any[][]) => void} [options.onComplete] called when all requested rows and columns are parsed
+ * @param {(rows: any[][] | Record<string, any>[]) => void} [options.onComplete] called when all requested rows and columns are parsed
  * @param {Compressors} [options.compressors] custom decompressors
  * @returns {Promise<void>} resolves when all requested rows and columns are parsed
  */
@@ -74,8 +74,9 @@ export async function parquetRead(options) {
  * @param {AsyncBuffer} options.file file-like object containing parquet data
  * @param {FileMetaData} [options.metadata] parquet file metadata
  * @param {string[]} [options.columns] columns to read, all columns if undefined
+ * @param {string} [options.rowFormat] format of each row passed to the onComplete function
  * @param {(chunk: ColumnData) => void} [options.onChunk] called when a column chunk is parsed. chunks may include row data outside the requested range.
- * @param {(rows: any[][]) => void} [options.onComplete] called when all requested rows and columns are parsed
+ * @param {(rows: any[][] | Record<string, any>[]) => void} [options.onComplete] called when all requested rows and columns are parsed
  * @param {Compressors} [options.compressors]
  * @param {RowGroup} rowGroup row group to read
  * @param {number} groupStart row index of the first row in the group
@@ -186,12 +187,25 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
   if (options.onComplete) {
     // transpose columns into rows
     const groupData = new Array(rowLimit)
-    const includedColumns = children
+    const includedColumnNames = children
       .map(child => child.element.name)
       .filter(name => !columns || columns.includes(name))
+    const includedColumns = includedColumnNames
       .map(name => subcolumnData.get(name))
+
     for (let row = 0; row < rowLimit; row++) {
-      groupData[row] = includedColumns.map(column => column[row])
+      if (options.rowFormat === 'object') {
+        // return each row as an object
+        /** @type {Record<string, any>} */
+        const rowData = {}
+        includedColumnNames.forEach((name, index) => {
+          rowData[name] = includedColumns[index][row]
+        })
+        groupData[row] = rowData
+      } else {
+        // return each row as an array
+        groupData[row] = includedColumns.map(column => column[row])
+      }
     }
     return groupData
   }

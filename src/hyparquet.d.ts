@@ -17,6 +17,7 @@ export type { AsyncBuffer, Compressors, FileMetaData, SchemaTree }
  * @param {AsyncBuffer} options.file file-like object containing parquet data
  * @param {FileMetaData} [options.metadata] parquet file metadata
  * @param {string[]} [options.columns] columns to read, all columns if undefined
+ * @param {string} [options.rowFormat] desired format of each row passed to the onComplete function
  * @param {number} [options.rowStart] first requested row index (inclusive)
  * @param {number} [options.rowEnd] last requested row index (exclusive)
  * @param {Function} [options.onChunk] called when a column chunk is parsed. chunks may include row data outside the requested range.
@@ -111,10 +112,11 @@ export interface ParquetReadOptions {
   file: AsyncBuffer // file-like object containing parquet data
   metadata?: FileMetaData // parquet metadata, will be parsed if not provided
   columns?: string[] // columns to read, all columns if undefined
+  rowFormat?: string // format of each row passed to the onComplete function
   rowStart?: number // inclusive
   rowEnd?: number // exclusive
   onChunk?: (chunk: ColumnData) => void // called when a column chunk is parsed. chunks may be outside the requested range.
-  onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
+  onComplete?: (rows: any[][] | Record<string, any>[]) => void // called when all requested rows and columns are parsed
   compressors?: Compressors // custom decompressors
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
 }

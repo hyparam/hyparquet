@@ -123,4 +123,30 @@ describe('parquetRead', () => {
       },
     })
   })
+
+  it('format row as object', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    await parquetRead({
+      file,
+      columns: ['c'],
+      rowFormat: 'object',
+      onChunk: chunk => {
+        expect(toJson(chunk)).toEqual({
+          columnName: 'c',
+          columnData: [2, 3, 4, 5, 2],
+          rowStart: 0,
+          rowEnd: 5,
+        })
+      },
+      onComplete: (rows) => {
+        expect(toJson(rows)).toEqual([
+          { c: 2 },
+          { c: 3 },
+          { c: 4 },
+          { c: 5 },
+          { c: 2 },
+        ])
+      },
+    })
+  })
 })
