@@ -190,8 +190,8 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
     const includedColumnNames = children
       .map(child => child.element.name)
       .filter(name => !columns || columns.includes(name))
-    const includedColumns = includedColumnNames
-      .map(name => subcolumnData.get(name))
+    const includedColumns = (columns || includedColumnNames)
+      .map(name => includedColumnNames.includes(name) ? subcolumnData.get(name) : undefined)
 
     for (let row = 0; row < rowLimit; row++) {
       if (options.rowFormat === 'object') {
@@ -199,12 +199,12 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
         /** @type {Record<string, any>} */
         const rowData = {}
         includedColumnNames.forEach((name, index) => {
-          rowData[name] = includedColumns[index][row]
+          rowData[name] = includedColumns[index]?.[row]
         })
         groupData[row] = rowData
       } else {
         // return each row as an array
-        groupData[row] = includedColumns.map(column => column[row])
+        groupData[row] = includedColumns.map(column => column?.[row])
       }
     }
     return groupData

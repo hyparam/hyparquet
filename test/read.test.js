@@ -149,4 +149,38 @@ describe('parquetRead', () => {
       },
     })
   })
+
+  it('read columns out of order', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    await parquetRead({
+      file,
+      columns: ['c', 'missing', 'b', 'c'],
+      onChunk: chunk => {
+        if (chunk.columnName === 'b') {
+          expect(toJson(chunk)).toEqual({
+            columnName: 'b',
+            columnData: [1, 2, 3, 4, 5],
+            rowStart: 0,
+            rowEnd: 5,
+          })
+        } else {
+          expect(toJson(chunk)).toEqual({
+            columnName: 'c',
+            columnData: [2, 3, 4, 5, 2],
+            rowStart: 0,
+            rowEnd: 5,
+          })
+        }
+      },
+      onComplete: (rows) => {
+        expect(toJson(rows)).toEqual([
+          [2, null, 1, 2],
+          [3, null, 2, 3],
+          [4, null, 3, 4],
+          [5, null, 4, 5],
+          [2, null, 5, 2],
+        ])
+      },
+    })
+  })
 })
