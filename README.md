@@ -103,14 +103,15 @@ To parse parquet files from a user drag-and-drop action, see example in [index.h
 
 To read large parquet files, it is recommended that you filter by row and column.
 Hyparquet is designed to load only the minimal amount of data needed to fulfill a query.
-You can filter rows by number, or columns by name:
+You can filter rows by number, or columns by name,
+and columns will be returned in the same order they were requested:
 
 ```js
 import { parquetRead } from 'hyparquet'
 
 await parquetRead({
   file,
-  columns: ['colA', 'colB'], // include columns colA and colB
+  columns: ['colB', 'colA'], // include columns colB and colA
   rowStart: 100,
   rowEnd: 200,
   onComplete: data => console.log(data),
