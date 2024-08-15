@@ -112,7 +112,7 @@ async function render(asyncBuffer, metadata, name) {
     compressors,
     file: asyncBuffer,
     rowEnd: 1000,
-    onComplete(/** @type {any[][] | Record<string, any>[]} */ data) {
+    onComplete(/** @type {any[][]} */ data) {
       const ms = performance.now() - startTime
       console.log(`parsed ${name} in ${ms.toFixed(0)} ms`)
       content.appendChild(renderTable(header, data))
