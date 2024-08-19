@@ -78,9 +78,10 @@ function readElement(reader, type) {
   }
   case CompactType.LIST: {
     const [elemType, listSize] = readCollectionBegin(reader)
+    const boolType = elemType === CompactType.TRUE || elemType === CompactType.FALSE
     const values = new Array(listSize)
     for (let i = 0; i < listSize; i++) {
-      values[i] = readElement(reader, elemType)
+      values[i] = boolType ? readElement(reader, CompactType.BYTE) === 1 : readElement(reader, elemType)
     }
     return values
   }
@@ -203,12 +204,11 @@ function readFieldBegin(reader, lastFid) {
   }
   const delta = type >> 4
   let fid // field id
-  if (delta === 0) {
-    // not a delta, read zigzag varint field id
-    fid = readZigZag(reader)
-  } else {
+  if (delta) {
     // add delta to last field id
     fid = lastFid + delta
+  } else {
+    throw new Error('non-delta field id not supported')
   }
   return [getCompactType(type), fid, fid]
 }

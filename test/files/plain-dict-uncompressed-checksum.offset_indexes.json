@@ -1,0 +1,22 @@
+[
+  [
+    {
+      "page_locations": [
+        {
+          "offset": 31,
+          "compressed_page_size": 27,
+          "first_row_index": 0
+        }
+      ]
+    },
+    {
+      "page_locations": [
+        {
+          "offset": 117,
+          "compressed_page_size": 27,
+          "first_row_index": 0
+        }
+      ]
+    }
+  ]
+]

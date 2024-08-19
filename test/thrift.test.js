@@ -5,7 +5,6 @@ import { reader } from './helpers.js'
 describe('deserializeTCompactProtocol function', () => {
 
   it('parses basic types correctly', () => {
-    // Setup a buffer with thrift encoded data for basic types
     const buffer = new ArrayBuffer(128)
     const view = new DataView(buffer)
     let index = 0
@@ -77,6 +76,21 @@ describe('deserializeTCompactProtocol function', () => {
     expect(value.field_6).toBe(BigInt('0x7fffffffffffffff')) // I64
     expect(value.field_7).toBeCloseTo(123.456) // DOUBLE
     expect(new TextDecoder().decode(value.field_8)).toBe('Hello, Thrift!') // STRING
+  })
+
+  it('parses rle-dict column index correctly', () => {
+    const buffer = new Uint8Array([25, 17, 2, 25, 24, 8, 0, 0, 0, 0, 0, 0, 0, 0, 25, 24, 8, 0, 0, 0, 0, 0, 0, 0, 0, 21, 2, 25, 22, 0, 0])
+    const view = new DataView(buffer.buffer)
+    const reader = { view, offset: 0 }
+    const value = deserializeTCompactProtocol(reader)
+    expect(value.field_1).toEqual([false])
+    expect(value.field_2).toEqual([new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0])])
+    expect(value.field_3).toEqual([new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0])])
+    expect(value.field_4).toEqual(1)
+    expect(value.field_5).toEqual([0n])
+    expect(value.field_6).toBeUndefined()
+    expect(value.field_7).toBeUndefined()
+    expect(value.field_8).toBeUndefined()
   })
 
 })
