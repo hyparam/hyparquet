@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parquetRead } from '../src/hyparquet.js'
+import { parquetRead, parquetReadObjects } from '../src/hyparquet.js'
 import { asyncBufferFromFile, toJson } from '../src/utils.js'
 
 describe('parquetRead', () => {
@@ -130,14 +130,6 @@ describe('parquetRead', () => {
       file,
       columns: ['c'],
       rowFormat: 'object',
-      onChunk: chunk => {
-        expect(toJson(chunk)).toEqual({
-          columnName: 'c',
-          columnData: [2, 3, 4, 5, 2],
-          rowStart: 0,
-          rowEnd: 5,
-        })
-      },
       onComplete: (rows) => {
         expect(toJson(rows)).toEqual([
           { c: 2 },
@@ -155,23 +147,6 @@ describe('parquetRead', () => {
     await parquetRead({
       file,
       columns: ['c', 'missing', 'b', 'c'],
-      onChunk: chunk => {
-        if (chunk.columnName === 'b') {
-          expect(toJson(chunk)).toEqual({
-            columnName: 'b',
-            columnData: [1, 2, 3, 4, 5],
-            rowStart: 0,
-            rowEnd: 5,
-          })
-        } else {
-          expect(toJson(chunk)).toEqual({
-            columnName: 'c',
-            columnData: [2, 3, 4, 5, 2],
-            rowStart: 0,
-            rowEnd: 5,
-          })
-        }
-      },
       onComplete: (rows) => {
         expect(toJson(rows)).toEqual([
           [2, null, 1, 2],
@@ -182,5 +157,17 @@ describe('parquetRead', () => {
         ])
       },
     })
+  })
+
+  it('read objects and return a promise', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    const rows = await parquetReadObjects({ file })
+    expect(toJson(rows)).toEqual([
+      { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
+      { a: 'abc', b: 2, c: 3, d: true },
+      { a: 'abc', b: 3, c: 4, d: true },
+      { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
+      { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
+    ])
   })
 })

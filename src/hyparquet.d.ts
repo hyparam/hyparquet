@@ -28,6 +28,20 @@ export type { AsyncBuffer, Compressors, FileMetaData, SchemaTree }
 export function parquetRead(options: ParquetReadOptions): Promise<void>
 
 /**
+ * Read parquet data and return a Promise of object-oriented row data.
+ *
+ * @param {object} options read options
+ * @param {AsyncBuffer} options.file file-like object containing parquet data
+ * @param {FileMetaData} [options.metadata] parquet file metadata
+ * @param {string[]} [options.columns] columns to read, all columns if undefined
+ * @param {number} [options.rowStart] first requested row index (inclusive)
+ * @param {number} [options.rowEnd] last requested row index (exclusive)
+ * @param {Compressors} [options.compressor] custom decompressors
+ * @returns {Promise<void>} resolves when all requested rows and columns are parsed
+ */
+export function parquetReadObjects(options: ParquetReadOptions): Promise<Array<Record<string, any>>>
+
+/**
  * Read parquet metadata from an async buffer.
  *
  * An AsyncBuffer is like an ArrayBuffer, but the slices are loaded
