@@ -22,6 +22,8 @@ Online parquet file reader demo available at:
 
 https://hyparam.github.io/hyparquet/
 
+[![demo](demo.png)](https://hyparam.github.io/hyparquet/)
+
 ## Features
 
 1. **Performant**: Designed to efficiently process large datasets by only loading the required data, making it suitable for big data and machine learning applications.
