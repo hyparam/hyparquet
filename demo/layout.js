@@ -36,10 +36,10 @@ export function fileLayout(metadata, asyncBuffer) {
   const indexPages = []
   for (const rowGroupIndex in metadata.row_groups) {
     const rowGroup = metadata.row_groups[rowGroupIndex]
-    html += group(`RowGroup ${rowGroupIndex} (${rowGroup.total_byte_size.toLocaleString()} bytes)`)
+    html += group(`RowGroup ${rowGroupIndex}`, rowGroup.total_byte_size)
     for (const column of rowGroup.columns) {
       const columnName = column.meta_data?.path_in_schema.join('.')
-      html += group(`Column ${columnName}`)
+      html += group(`Column ${columnName}`, column.meta_data?.total_compressed_size)
       if (column.meta_data) {
         const end = getColumnRange(column.meta_data)[1]
         /* eslint-disable no-extra-parens */
@@ -91,10 +91,15 @@ export function fileLayout(metadata, asyncBuffer) {
 
 /**
  * @param {string} name
+ * @param {bigint} [bytes]
  * @returns {string}
  */
-function group(name) {
-  return `<div>${name}`
+function group(name, bytes) {
+  return `<div class="group">
+    <div class="group-header">
+      <label>${name}</label>
+      <span>${bytes === undefined ? '' : `bytes ${bytes.toLocaleString()}`}</span>
+    </div>`
 }
 
 /**

@@ -220,8 +220,11 @@ td:first-child {
 .sidebar a:hover {
   text-decoration: underline;
 }
+
+/* layout */
 .layout,
-.layout div {
+.layout .group,
+.layout .cell {
   background-color: rgba(100, 80, 180, 0.05);
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -230,14 +233,20 @@ td:first-child {
   padding: 4px;
   word-break: break-all;
 }
-.cell {
+.cell,
+.group-header {
   display: flex;
 }
-.cell label {
+.group-header > label,
+.cell > label {
+  display: flex;
   flex: 1;
   font-size: 12px;
   font-weight: normal;
   justify-content: flex-start;
+}
+.group-header > span {
+  font-size: 10px;
 }
 
 nav ul,
