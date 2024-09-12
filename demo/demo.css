@@ -10,32 +10,40 @@ body {
   height: 100vh;
   width: 100vw;
 }
-nav {
-  border-right: 1px solid #ddd;
-  min-width: 320px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding: 10px;
-  min-width: 0;
-  max-width: 40%;
-  width: 320px;
-}
+
 h1 {
-  font-size: 20pt;
+  font-size: 22pt;
 }
 h2 {
+  margin-top: 10px;
   font-size: 12pt;
 }
 p {
-  margin: 10px 0;
+  margin: 15px 0;
 }
+code {
+  font-family: monospace;
+  padding: 10px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 .error {
   color: #c11;
   font-family: monospace;
   white-space: pre-wrap;
 }
 
-#overlay {
+/* dropzone */
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.dropzone.hover .overlay {
+  display: flex;
+}
+.overlay {
   align-items: center;
   font-size: 125%;
   position: absolute;
@@ -50,37 +58,157 @@ p {
   z-index: 40;
 }
 
-#dropzone {
-  display: flex;
-  flex: 1;
-  max-width: 100vw;
+/* sidebar */
+nav {
+  height: 100vh;
+  min-width: 48px;
+  background-image: linear-gradient(to bottom, #667, #585669);
+  box-shadow: 0 0 4px rgba(10, 10, 10, 0.5);
+  height: 100vh;
 }
 
+/* brand logo */
+.brand {
+  color: #fff;
+  display: flex;
+  align-items: center;
+  filter: drop-shadow(0 0 2px #444);
+  font-family: 'Century Gothic', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-orientation: mixed;
+  opacity: 0.85;
+  padding: 10px 12px;
+  user-select: none;
+  writing-mode: vertical-rl;
+  text-decoration: none;
+}
+.brand:hover {
+  color: #fff;
+  filter: drop-shadow(0 0 2px #333);
+  opacity: 0.9;
+  text-decoration: none;
+}
+.brand::before {
+  content: '';
+  background: url(logo.svg) no-repeat 0 center;
+  background-size: 26px;
+  height: 26px;
+  width: 26px;
+  margin-bottom: 10px;
+}
+
+/* content area */
+main,
 #content {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-width: 0;
-  overflow: auto;
 }
 
+#content {
+  position: relative;
+}
+
+#app {
+  flex: 1;
+}
+
+/* content area */
+.content-container {
+  min-width: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100vh;
+  padding: 0;
+  /* no outer scrollbars */
+  overflow: hidden;
+}
+
+.top-header {
+  align-items: center;
+  background: linear-gradient(to right, #353540, #24202b);
+  color: #dde4ea;
+  display: flex;
+  height: 32px;
+  justify-content: space-between;
+  min-height: 32px;
+  padding-left: 8px;
+}
+.top-header {
+  color: #f0f8ff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration-thickness: 1px;
+}
+
+.view-header {
+  align-items: center;
+  background-color: #ccc;
+  color: #444;
+  display: flex;
+  gap: 16px;
+  height: 24px;
+  padding: 0 8px;
+  /* all one line */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.viewer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  white-space: pre-wrap;
+  overflow-y: auto;
+}
+
+#table {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* welcome */
 #welcome {
-  border: 2px dashed #08e;
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  right: 0;
+  left: 0;
+  border: 2px #777;
   border-radius: 10px;
   color: #444;
   margin: 10px;
   padding: 10px;
-  align-items: center;
   cursor: pointer;
   display: flex;
+  flex-direction: column;
   flex: 1;
   font-size: 20px;
   justify-content: center;
+  max-width: 640px;
+  margin: 0 auto;
 }
+#welcome ul {
+  margin-top: 10px;
+  margin-left: 30px;
+}
+
+/* file upload */
 input[type="file"] {
   display: none;
 }
-#overlay {
+.overlay {
   font-size: 125%;
   justify-content: center;
   position: absolute;
@@ -94,7 +222,7 @@ input[type="file"] {
   padding: 12px;
   z-index: 40;
 }
-.over #overlay {
+.over .overlay {
   display: flex;
 }
 
@@ -222,6 +350,10 @@ td:first-child {
 }
 
 /* layout */
+.layout {
+  margin: 10px;
+  max-width: 480px;
+}
 .layout,
 .layout .group,
 .layout .cell {
@@ -249,7 +381,6 @@ td:first-child {
   font-size: 10px;
 }
 
-nav ul,
 .layout div ul {
   list-style: none;
 }
@@ -257,28 +388,4 @@ nav ul,
   font-size: 10px;
   padding: 2px 4px;
   text-align: right;
-}
-
-.collapsed > :not(:first-child) {
-  display: none;
-}
-
-.layout h2 {
-  cursor: pointer;
-  user-select: none;
-}
-.layout h2::before {
-  content: "▼";
-  display: inline-block;
-  font-size: 10px;
-  margin: 0 4px;
-  vertical-align: middle;
-}
-.layout.collapsed h2::before {
-  content: "▶";
-}
-
-.layout pre {
-  white-space: pre-wrap;
-  word-break: break-all;
 }
