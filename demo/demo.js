@@ -6,6 +6,7 @@ import {
   parquetMetadata, parquetMetadataAsync, parquetRead, parquetSchema, toJson,
 } from '../src/hyparquet.js'
 import { asyncBufferFromUrl } from '../src/utils.js'
+import { initDropzone } from './dropzone.js'
 import { fileLayout, fileMetadata } from './layout.js'
 
 /**
@@ -13,55 +14,15 @@ import { fileLayout, fileMetadata } from './layout.js'
  * @typedef {import('../src/types.js').FileMetaData} FileMetaData
  */
 
-/* eslint-disable no-extra-parens */
-const dropzone = /** @type {HTMLElement} */ (document.getElementById('dropzone'))
-const fileInput = /** @type {HTMLInputElement} */ (document.getElementById('#file-input'))
 const content = document.querySelectorAll('#content')[0]
-const welcome = document.querySelectorAll('#welcome')[0]
 
-let enterCount = 0
-
-dropzone.addEventListener('dragenter', e => {
-  if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy'
-  dropzone.classList.add('over')
-  enterCount++
-})
-
-dropzone.addEventListener('dragover', e => {
-  e.preventDefault()
-})
-
-dropzone.addEventListener('dragleave', () => {
-  enterCount--
-  if (!enterCount) dropzone.classList.remove('over')
-})
-
-dropzone.addEventListener('drop', e => {
-  e.preventDefault() // prevent dropped file from being "downloaded"
-  dropzone.classList.remove('over')
-
-  if (!e.dataTransfer) throw new Error('Missing dataTransfer')
-  const { files, items } = e.dataTransfer
-  if (files.length > 0) {
-    const file = files[0]
-    processFile(file)
-  }
-  if (items.length > 0) {
-    const item = items[0]
-    if (item.kind === 'string') {
-      item.getAsString(str => {
-        if (str.startsWith('http')) {
-          processUrl(str)
-        }
-      })
-    }
-  }
-})
+// Initialize drag-and-drop
+initDropzone(handleFileDrop, handleUrlDrop)
 
 /**
  * @param {string} url
  */
-async function processUrl(url) {
+async function handleUrlDrop(url) {
   content.innerHTML = ''
   try {
     const asyncBuffer = await asyncBufferFromUrl(url)
@@ -76,7 +37,7 @@ async function processUrl(url) {
 /**
  * @param {File} file
  */
-function processFile(file) {
+function handleFileDrop(file) {
   content.innerHTML = ''
   const reader = new FileReader()
   reader.onload = async e => {
@@ -139,16 +100,6 @@ function renderSidebar(asyncBuffer, metadata, name) {
   sidebar.appendChild(fileMetadata(toJson(metadata)))
   sidebar.appendChild(fileLayout(metadata, asyncBuffer))
 }
-
-welcome.addEventListener('click', () => {
-  fileInput?.click()
-})
-
-fileInput?.addEventListener('change', () => {
-  if (fileInput.files?.length) {
-    processFile(fileInput.files[0])
-  }
-})
 
 /**
  * @param {import('hightable').DataFrame} data
