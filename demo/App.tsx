@@ -5,8 +5,13 @@ import { FileMetaData, parquetMetadata, parquetMetadataAsync, parquetSchema } fr
 import { parquetRead } from '../src/read.js'
 import type { AsyncBuffer } from '../src/types.js'
 import { asyncBufferFromUrl } from '../src/utils.js'
+import Dropdown from './Dropdown.js'
 import Dropzone from './Dropzone.js'
 import Layout from './Layout.js'
+import ParquetLayout from './ParquetLayout.js'
+import ParquetMetadata from './ParquetMetadata.js'
+
+type Lens = 'table' | 'metadata' | 'layout'
 
 /**
  * Hyparquet demo viewer page
@@ -17,11 +22,14 @@ export default function App() {
   const [error, setError] = useState<Error>()
   const [df, setDf] = useState<DataFrame>()
   const [name, setName] = useState<string>()
+  const [lens, setLens] = useState<Lens>('table')
+  const [metadata, setMetadata] = useState<FileMetaData>()
   const [byteLength, setByteLength] = useState<number>()
 
   async function onFileDrop(file: File) {
     const arrayBuffer = await file.arrayBuffer()
     const metadata = parquetMetadata(arrayBuffer)
+    setMetadata(metadata)
     setName(file.name)
     setByteLength(file.size)
     setDf(parquetDataFrame(arrayBuffer, metadata))
@@ -30,6 +38,7 @@ export default function App() {
   async function onUrlDrop(url: string) {
     const asyncBuffer = await asyncBufferFromUrl(url)
     const metadata = await parquetMetadataAsync(asyncBuffer)
+    setMetadata(metadata)
     setName(url)
     setByteLength(asyncBuffer.byteLength)
     setDf(parquetDataFrame(asyncBuffer, metadata))
@@ -41,13 +50,20 @@ export default function App() {
       onError={(e) => setError(e)}
       onFileDrop={onFileDrop}
       onUrlDrop={onUrlDrop}>
-      {df && <>
+      {metadata && df && <>
         <div className='top-header'>{name}</div>
         <div className='view-header'>
           {byteLength !== undefined && <span title={byteLength.toLocaleString() + ' bytes'}>{formatFileSize(byteLength)}</span>}
           <span>{df.numRows.toLocaleString()} rows</span>
+          <Dropdown label={lens}>
+            <button onClick={() => setLens('table')}>Table</button>
+            <button onClick={() => setLens('metadata')}>Metadata</button>
+            <button onClick={() => setLens('layout')}>Layout</button>
+          </Dropdown>
         </div>
-        <HighTable data={df} />
+        {lens === 'table' && <HighTable data={df} />}
+        {lens === 'metadata' && <ParquetMetadata metadata={metadata} />}
+        {lens === 'layout' && <ParquetLayout byteLength={byteLength!} metadata={metadata} />}
       </>}
     </Dropzone>
   </Layout>
@@ -79,7 +95,6 @@ function parquetDataFrame(file: AsyncBuffer, metadata: FileMetaData): DataFrame 
     },
   }
 }
-
 
 /**
  * Returns the file size in human readable format.
