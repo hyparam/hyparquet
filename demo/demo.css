@@ -314,22 +314,49 @@ table {
 table:focus-visible {
   outline: none;
 }
-th {
-  background-color: #f8f8f8;
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
+
+/* header */
+.table thead th {
   background-color: #eaeaeb;
   border: none;
   border-top: 4px solid #706fb1;
   border-bottom: 2px solid #c9c9c9;
   box-sizing: content-box;
   color: #444;
+  height: 20px;
+  padding-top: 4px;
   position: sticky;
   top: -1px; /* fix 1px gap above thead */
   user-select: none;
+  z-index: 10;
 }
-th, td {
+.table thead th:first-child {
+  border: none;
+}
+.table thead th:first-child span {
+  cursor: default;
+  width: 0;
+}
+.table tbody tr:first-child td {
+  border-top: 1px solid transparent;
+}
+
+/* sortable */
+.table.sortable thead th {
+  cursor: pointer;
+}
+.table thead th.orderby ::after {
+  position: absolute;
+  right: 8px;
+  top: 4px;
+  padding-left: 2px;
+  background-color: #eaeaeb;
+  content: "▾";
+}
+
+/* cells */
+.table th,
+.table td {
   border-bottom: 1px solid #ddd;
   border-right: 1px solid #ddd;
   height: 32px;
@@ -377,7 +404,7 @@ td:first-child {
   background-color: #e4e4e6;
   border-right: 1px solid #ccc;
   position: absolute;
-  height: 44px;
+  height: 34px;
   width: 32px;
   top: 0;
   left: 0;

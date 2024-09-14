@@ -1,8 +1,8 @@
-import HighTable, { DataFrame } from 'hightable'
+import HighTable, { DataFrame, sortableDataFrame } from 'hightable'
 import { compressors } from 'hyparquet-compressors'
 import React, { useState } from 'react'
-import { FileMetaData, parquetMetadata, parquetMetadataAsync, parquetSchema } from '../src/metadata.js'
-import { parquetRead } from '../src/read.js'
+import { parquetReadObjects } from '../src/hyparquet.js'
+import { FileMetaData, parquetMetadataAsync, parquetSchema } from '../src/metadata.js'
 import type { AsyncBuffer } from '../src/types.js'
 import { asyncBufferFromUrl } from '../src/utils.js'
 import Dropdown from './Dropdown.js'
@@ -27,21 +27,21 @@ export default function App() {
   const [byteLength, setByteLength] = useState<number>()
 
   async function onFileDrop(file: File) {
-    const arrayBuffer = await file.arrayBuffer()
-    const metadata = parquetMetadata(arrayBuffer)
-    setMetadata(metadata)
-    setName(file.name)
-    setByteLength(file.size)
-    setDf(parquetDataFrame(arrayBuffer, metadata))
-    document.getElementById('welcome')?.remove()
+    setAsyncBuffer(file.name, await file.arrayBuffer())
   }
   async function onUrlDrop(url: string) {
-    const asyncBuffer = await asyncBufferFromUrl(url)
+    setAsyncBuffer(url, await asyncBufferFromUrl(url))
+  }
+  async function setAsyncBuffer(name: string, asyncBuffer: AsyncBuffer) {
     const metadata = await parquetMetadataAsync(asyncBuffer)
     setMetadata(metadata)
-    setName(url)
+    setName(name)
     setByteLength(asyncBuffer.byteLength)
-    setDf(parquetDataFrame(asyncBuffer, metadata))
+    let df = parquetDataFrame(asyncBuffer, metadata)
+    if (df.numRows <= 10000) {
+      df = sortableDataFrame(df)
+    }
+    setDf(df)
     document.getElementById('welcome')?.remove()
   }
 
@@ -88,10 +88,7 @@ function parquetDataFrame(file: AsyncBuffer, metadata: FileMetaData): DataFrame 
      */
     rows(rowStart, rowEnd) {
       console.log(`reading rows ${rowStart}-${rowEnd}`)
-      return new Promise((resolve, reject) => {
-        parquetRead({ file, compressors, rowStart, rowEnd, onComplete: resolve })
-          .catch(reject)
-      })
+      return parquetReadObjects({ file, compressors, rowStart, rowEnd })
     },
   }
 }
