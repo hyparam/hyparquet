@@ -1,8 +1,8 @@
-import HighTable, { DataFrame, sortableDataFrame } from 'hightable'
+import HighTable, { DataFrame } from 'hightable'
 import { compressors } from 'hyparquet-compressors'
 import React, { useEffect, useState } from 'react'
-import { parquetReadObjects } from '../src/hyparquet.js'
 import { FileMetaData, parquetMetadataAsync, parquetSchema } from '../src/metadata.js'
+import { parquetQuery } from '../src/query.js'
 import type { AsyncBuffer } from '../src/types.js'
 import { asyncBufferFromUrl } from '../src/utils.js'
 import Dropdown from './Dropdown.js'
@@ -52,10 +52,7 @@ export default function App({ url }: { url?: string }) {
     setMetadata(metadata)
     setName(name)
     setByteLength(asyncBuffer.byteLength)
-    let df = parquetDataFrame(asyncBuffer, metadata)
-    if (df.numRows <= 10000) {
-      df = sortableDataFrame(df)
-    }
+    const df = parquetDataFrame(asyncBuffer, metadata)
     setDf(df)
     document.getElementById('welcome')?.remove()
   }
@@ -99,12 +96,14 @@ function parquetDataFrame(file: AsyncBuffer, metadata: FileMetaData): DataFrame 
     /**
      * @param {number} rowStart
      * @param {number} rowEnd
+     * @param {string} orderBy
      * @returns {Promise<any[][]>}
      */
-    rows(rowStart, rowEnd) {
-      console.log(`reading rows ${rowStart}-${rowEnd}`)
-      return parquetReadObjects({ file, compressors, rowStart, rowEnd })
+    rows(rowStart, rowEnd, orderBy) {
+      console.log(`reading rows ${rowStart}-${rowEnd}`, orderBy)
+      return parquetQuery({ file, compressors, rowStart, rowEnd, orderBy })
     },
+    sortable: true,
   }
 }
 

@@ -42,6 +42,17 @@ export function parquetRead(options: ParquetReadOptions): Promise<void>
 export function parquetReadObjects(options: ParquetReadOptions): Promise<Array<Record<string, any>>>
 
 /**
+ * Wraps parquetRead with orderBy support.
+ * This is a parquet-aware query engine that can read a subset of rows and columns.
+ * Accepts an optional orderBy column name to sort the results.
+ * Note that using orderBy may SIGNIFICANTLY increase the query time.
+ *
+ * @param {ParquetReadOptions & { orderBy?: string }} options
+ * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
+ */
+export function parquetQuery(options: ParquetReadOptions & { orderBy?: string }): Promise<Array<Record<string, any>>>
+
+/**
  * Read parquet metadata from an async buffer.
  *
  * An AsyncBuffer is like an ArrayBuffer, but the slices are loaded

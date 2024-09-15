@@ -3,6 +3,8 @@ export { parquetMetadata, parquetMetadataAsync, parquetSchema } from './metadata
 import { parquetRead } from './read.js'
 export { parquetRead }
 
+export { parquetQuery } from './query.js'
+
 export { snappyUncompress } from './snappy.js'
 
 export { asyncBufferFromFile, asyncBufferFromUrl, toJson } from './utils.js'
