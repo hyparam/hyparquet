@@ -27,6 +27,14 @@ code {
   white-space: pre-wrap;
   word-break: break-all;
 }
+sub {
+  align-items: center;
+  display: flex;
+  gap: 5px;
+}
+sub img {
+  cursor: pointer;
+}
 
 .error {
   color: #c11;
@@ -252,7 +260,6 @@ main,
   color: #444;
   margin: 10px;
   padding: 10px;
-  cursor: pointer;
   display: flex;
   flex-direction: column;
   flex: 1;

@@ -8,6 +8,5 @@ if (!app) throw new Error('missing app element')
 const params = new URLSearchParams(location.search)
 const url = params.get('key') || undefined
 
-// @ts-expect-error TODO: fix react createRoot type
-const root = ReactDOM.createRoot(document.getElementById('app'))
+const root = ReactDOM.createRoot(app)
 root.render(React.createElement(App, { url }))
