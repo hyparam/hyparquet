@@ -1,6 +1,6 @@
 import HighTable, { DataFrame, sortableDataFrame } from 'hightable'
 import { compressors } from 'hyparquet-compressors'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { parquetReadObjects } from '../src/hyparquet.js'
 import { FileMetaData, parquetMetadataAsync, parquetSchema } from '../src/metadata.js'
 import type { AsyncBuffer } from '../src/types.js'
@@ -15,9 +15,11 @@ type Lens = 'table' | 'metadata' | 'layout'
 
 /**
  * Hyparquet demo viewer page
+ * @param {Object} props
+ * @param {string} [props.url]
  * @returns {ReactNode}
  */
-export default function App() {
+export default function App({ url }: { url?: string }) {
   const [progress, setProgress] = useState<number>()
   const [error, setError] = useState<Error>()
   const [df, setDf] = useState<DataFrame>()
@@ -26,13 +28,26 @@ export default function App() {
   const [metadata, setMetadata] = useState<FileMetaData>()
   const [byteLength, setByteLength] = useState<number>()
 
+  useEffect(() => {
+    if (!df && url) {
+      asyncBufferFromUrl(url).then(asyncBuffer => setAsyncBuffer(url, asyncBuffer))
+    }
+  }, [ url ])
+
   async function onFileDrop(file: File) {
+    // Clear query string
+    history.pushState({}, '', location.pathname)
     setAsyncBuffer(file.name, await file.arrayBuffer())
   }
   async function onUrlDrop(url: string) {
+    // Add key=url to query string
+    const params = new URLSearchParams(location.search)
+    params.set('key', url)
+    history.pushState({}, '', `${location.pathname}?${params}`)
     setAsyncBuffer(url, await asyncBufferFromUrl(url))
   }
   async function setAsyncBuffer(name: string, asyncBuffer: AsyncBuffer) {
+    // TODO: Replace welcome with spinner
     const metadata = await parquetMetadataAsync(asyncBuffer)
     setMetadata(metadata)
     setName(name)
