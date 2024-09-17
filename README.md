@@ -22,7 +22,7 @@ Online parquet file reader demo available at:
 
 https://hyparam.github.io/hyparquet/
 
-[![demo](demo.png)](https://hyparam.github.io/hyparquet/)
+[![hyparquet demo](demo/assets/demo.png)](https://hyparam.github.io/hyparquet/)
 
 ## Features
 

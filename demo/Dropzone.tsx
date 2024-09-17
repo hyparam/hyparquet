@@ -34,8 +34,8 @@ export default function Dropzone({ children, onFileDrop, onUrlDrop, onError }: D
    * @param {MouseEvent} e - click
    */
   function triggerFileSelect(e: React.MouseEvent<HTMLDivElement>) {
-    // If click inside '.dropzone-select', activate file input dialog
-    if ((e.target as Element).closest('.dropzone-select')) {
+    // If click inside '.dropzone', activate file input dialog
+    if ((e.target as Element).classList.contains('dropzone')) {
       fileInputRef.current?.click()
     }
   }
@@ -48,11 +48,8 @@ export default function Dropzone({ children, onFileDrop, onUrlDrop, onError }: D
    */
   function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const { files } = e.target
-    if (!files) return
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i]
-      // TODO: Load file view
-    }
+    if (!files || files.length !== 1) return
+    onFileDrop(files[0])
   }
 
   useEffect(() => {
@@ -95,16 +92,16 @@ export default function Dropzone({ children, onFileDrop, onUrlDrop, onError }: D
       }
     }
 
-    dropzone.addEventListener('dragenter', onDragEnter)
-    dropzone.addEventListener('dragover', onDragOver)
-    dropzone.addEventListener('dragleave', onDragLeave)
+    window.addEventListener('dragenter', onDragEnter)
+    window.addEventListener('dragover', onDragOver)
+    window.addEventListener('dragleave', onDragLeave)
     dropzone.addEventListener('drop', handleFileDrop)
 
     // Cleanup event listeners when component is unmounted
     return () => {
-      dropzone.removeEventListener('dragenter', onDragEnter)
-      dropzone.removeEventListener('dragover', onDragOver)
-      dropzone.removeEventListener('dragleave', onDragLeave)
+      window.removeEventListener('dragenter', onDragEnter)
+      window.removeEventListener('dragover', onDragOver)
+      window.removeEventListener('dragleave', onDragLeave)
       dropzone.removeEventListener('drop', handleFileDrop)
     }
   })
@@ -121,7 +118,6 @@ export default function Dropzone({ children, onFileDrop, onUrlDrop, onError }: D
         </div>
       </div>
       <input
-        multiple
         onChange={handleFileSelect}
         ref={fileInputRef}
         style={{ display: 'none' }}

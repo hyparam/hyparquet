@@ -407,7 +407,7 @@ table:focus-visible {
   text-align: left;
   text-overflow: ellipsis;
   overflow: hidden;
-  white-space: pre-wrap;
+  white-space: nowrap;
 }
 
 /* pending state */
