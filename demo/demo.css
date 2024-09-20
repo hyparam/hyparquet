@@ -141,6 +141,21 @@ main,
   overflow: hidden;
 }
 
+/* error bar */
+.error-bar {
+  max-height: 0;
+  padding: 0;
+  background-color: #dd111199;
+  font-family: monospace;
+  overflow-y: auto;
+  transition: max-height 0.3s;
+  white-space: pre-wrap;
+}
+.show-error {
+  max-height: 30%;
+  padding: 10px;
+}
+
 .top-header {
   align-items: center;
   background: linear-gradient(to right, #353540, #24202b);
