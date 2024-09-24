@@ -8,6 +8,13 @@ interface LayoutProps {
   metadata: FileMetaData
 }
 
+/**
+ * Renders the file layout of a parquet file as nested rowgroups and columns.
+ * @param {Object} props
+ * @param {number} props.byteLength
+ * @param {FileMetaData} props.metadata
+ * @returns {ReactNode}
+ */
 export default function ParquetLayout({ byteLength, metadata }: LayoutProps) {
   const metadataStart = byteLength - metadata.metadata_length - 4
   const metadataEnd = byteLength - 4

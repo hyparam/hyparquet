@@ -14,7 +14,7 @@ Dependency free since 2023!
 
 Hyparquet is a lightweight, pure JavaScript library for parsing [Apache Parquet](https://parquet.apache.org) files. Apache Parquet is a popular columnar storage format that is widely used in data engineering, data science, and machine learning applications for efficiently storing and processing large datasets.
 
-Hyparquet allows you to read and extract data from Parquet files directly in JavaScript environments, both in Node.js and in the browser. It is designed to be fast, memory-efficient, and easy to use.
+Hyparquet allows you to read and extract data from Parquet files directly in JavaScript environments, both in Node.js and in the browser, without any dependencies. Designed for performance and ease of use, hyparquet is ideal for data engineering, data science, and machine learning applications that require efficient data processing.
 
 ## Demo
 
@@ -53,7 +53,7 @@ npm install hyparquet
 
 To read the entire contents of a parquet file in a node.js environment:
 
-```js
+```javascript
 const { asyncBufferFromFile, parquetRead } = await import('hyparquet')
 await parquetRead({
   file: await asyncBufferFromFile(filename),
@@ -78,7 +78,7 @@ await parquetRead({
 
 You can read just the metadata, including schema and data statistics using the `parquetMetadata` function:
 
-```js
+```javascript
 const { parquetMetadata } = await import('hyparquet')
 const fs = await import('fs')
 
@@ -91,7 +91,7 @@ If you're in a browser environment, you'll probably get parquet file data from e
 
 To load parquet data in the browser from a remote server using `fetch`:
 
-```js
+```javascript
 import { parquetMetadata } from 'hyparquet'
 
 const res = await fetch(url)
@@ -108,7 +108,7 @@ Hyparquet is designed to load only the minimal amount of data needed to fulfill 
 You can filter rows by number, or columns by name,
 and columns will be returned in the same order they were requested:
 
-```js
+```javascript
 import { parquetRead } from 'hyparquet'
 
 await parquetRead({
@@ -125,7 +125,7 @@ await parquetRead({
 By default, data returned in the `onComplete` function will be one array of columns per row.
 If you would like each row to be an object with each key the name of the column, set the option `rowFormat` to `object`.
 
-```js
+```javascript
 import { parquetRead } from 'hyparquet'
 
 await parquetRead({
@@ -151,7 +151,7 @@ interface AsyncBuffer {
 
 You can read parquet files asynchronously using HTTP Range requests so that only the necessary byte ranges from a `url` will be fetched:
 
-```js
+```javascript
 import { parquetRead } from 'hyparquet'
 
 const url = 'https://hyperparam-public.s3.amazonaws.com/wiki-en-00000-of-00041.parquet'
