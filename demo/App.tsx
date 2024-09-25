@@ -1,15 +1,13 @@
 import HighTable, { DataFrame } from 'hightable'
-import { compressors } from 'hyparquet-compressors'
 import React, { useEffect, useState } from 'react'
 import { FileMetaData, parquetMetadataAsync, parquetSchema } from '../src/metadata.js'
-import { parquetQuery } from '../src/query.js'
-import type { AsyncBuffer } from '../src/types.js'
-import { asyncBufferFromUrl } from '../src/utils.js'
+import { byteLengthFromUrl } from '../src/utils.js'
 import Dropdown from './Dropdown.js'
 import Dropzone from './Dropzone.js'
 import Layout from './Layout.js'
 import ParquetLayout from './ParquetLayout.js'
 import ParquetMetadata from './ParquetMetadata.js'
+import { AsyncBufferFrom, asyncBufferFrom, parquetQueryWorker } from './workers/parquetWorkerClient.js'
 
 type Lens = 'table' | 'metadata' | 'layout'
 
@@ -30,29 +28,35 @@ export default function App({ url }: { url?: string }) {
 
   useEffect(() => {
     if (!df && url) {
-      asyncBufferFromUrl(url).then(asyncBuffer => setAsyncBuffer(url, asyncBuffer))
+      onUrlDrop(url)
     }
   }, [ url ])
 
   async function onFileDrop(file: File) {
     // Clear query string
     history.pushState({}, '', location.pathname)
-    setAsyncBuffer(file.name, await file.arrayBuffer())
+    setAsyncBuffer(file.name, { file, byteLength: file.size })
   }
   async function onUrlDrop(url: string) {
     // Add key=url to query string
     const params = new URLSearchParams(location.search)
     params.set('key', url)
     history.pushState({}, '', `${location.pathname}?${params}`)
-    setAsyncBuffer(url, await asyncBufferFromUrl(url))
+    try {
+      const byteLength = await byteLengthFromUrl(url)
+      setAsyncBuffer(url, { url, byteLength })
+    } catch (e) {
+      setError(e as Error)
+    }
   }
-  async function setAsyncBuffer(name: string, asyncBuffer: AsyncBuffer) {
+  async function setAsyncBuffer(name: string, from: AsyncBufferFrom) {
     // TODO: Replace welcome with spinner
+    const asyncBuffer = await asyncBufferFrom(from)
     const metadata = await parquetMetadataAsync(asyncBuffer)
     setMetadata(metadata)
     setName(name)
-    setByteLength(asyncBuffer.byteLength)
-    const df = parquetDataFrame(asyncBuffer, metadata)
+    setByteLength(from.byteLength)
+    const df = parquetDataFrame(from, metadata)
     setDf(df)
     document.getElementById('welcome')?.remove()
   }
@@ -83,12 +87,8 @@ export default function App({ url }: { url?: string }) {
 
 /**
  * Convert a parquet file into a dataframe.
- *
- * @param {AsyncBuffer} file - parquet file asyncbuffer
- * @param {FileMetaData} metadata - parquet file metadata
- * @returns {DataFrame} dataframe
  */
-function parquetDataFrame(file: AsyncBuffer, metadata: FileMetaData): DataFrame {
+function parquetDataFrame(from: AsyncBufferFrom, metadata: FileMetaData): DataFrame {
   const { children } = parquetSchema(metadata)
   return {
     header: children.map(child => child.element.name),
@@ -101,7 +101,7 @@ function parquetDataFrame(file: AsyncBuffer, metadata: FileMetaData): DataFrame 
      */
     rows(rowStart, rowEnd, orderBy) {
       console.log(`reading rows ${rowStart}-${rowEnd}`, orderBy)
-      return parquetQuery({ file, compressors, rowStart, rowEnd, orderBy })
+      return parquetQueryWorker({ asyncBuffer: from, rowStart, rowEnd, orderBy })
     },
     sortable: true,
   }

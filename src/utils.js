@@ -37,21 +37,32 @@ export function concat(aaa, bbb) {
 }
 
 /**
- * Construct an AsyncBuffer for a URL.
+ * Get the byte length of a URL using a HEAD request.
  *
- * @typedef {import('./types.js').AsyncBuffer} AsyncBuffer
  * @param {string} url
- * @returns {Promise<AsyncBuffer>}
+ * @returns {Promise<number>}
  */
-export async function asyncBufferFromUrl(url) {
-  // byte length from HEAD request
-  const byteLength = await fetch(url, { method: 'HEAD' })
+export async function byteLengthFromUrl(url) {
+  return await fetch(url, { method: 'HEAD' })
     .then(res => {
       if (!res.ok) throw new Error(`fetch head failed ${res.status}`)
       const length = res.headers.get('Content-Length')
       if (!length) throw new Error('missing content length')
       return parseInt(length)
     })
+}
+
+/**
+ * Construct an AsyncBuffer for a URL.
+ *
+ * @typedef {import('./types.js').AsyncBuffer} AsyncBuffer
+ * @param {string} url
+ * @param {number} [byteLength]
+ * @returns {Promise<AsyncBuffer>}
+ */
+export async function asyncBufferFromUrl(url, byteLength) {
+  // byte length from HEAD request
+  byteLength ||= await byteLengthFromUrl(url)
   return {
     byteLength,
     async slice(start, end) {
