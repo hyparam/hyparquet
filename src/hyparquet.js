@@ -7,7 +7,7 @@ export { parquetQuery } from './query.js'
 
 export { snappyUncompress } from './snappy.js'
 
-export { asyncBufferFromFile, asyncBufferFromUrl, toJson } from './utils.js'
+export { asyncBufferFromFile, asyncBufferFromUrl, byteLengthFromUrl, toJson } from './utils.js'
 
 /**
  * @param {import('./hyparquet.js').ParquetReadOptions} options

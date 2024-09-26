@@ -116,19 +116,19 @@ export function toJson(obj: any): any
 
 /**
  * Construct an AsyncBuffer for a URL.
- *
- * @param {string} url
- * @returns {Promise<AsyncBuffer>}
+ * If byteLength is not provided, will make a HEAD request to get the file size.
  */
-export function asyncBufferFromUrl(url: string): Promise<AsyncBuffer>
+export function asyncBufferFromUrl(url: string, byteLength?: number): Promise<AsyncBuffer>
 
 /**
  * Construct an AsyncBuffer for a local file using node fs package.
- *
- * @param {string} filename
- * @returns {Promise<AsyncBuffer>}
  */
 export function asyncBufferFromFile(filename: string): Promise<AsyncBuffer>
+
+/**
+ * Get the byte length of a URL using a HEAD request.
+ */
+export function byteLengthFromUrl(url: string): Promise<number>
 
 /**
  * Parquet query options for reading data
