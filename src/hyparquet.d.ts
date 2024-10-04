@@ -1,6 +1,6 @@
-import type { AsyncBuffer, Compressors, FileMetaData, SchemaTree } from './types.d.ts'
+import type { AsyncBuffer, CompressionCodec, Compressors, ConvertedType, FileMetaData, LogicalType, ParquetType, SchemaTree } from './types.d.ts'
 
-export type { AsyncBuffer, Compressors, FileMetaData, SchemaTree }
+export type { AsyncBuffer, CompressionCodec, Compressors, ConvertedType, FileMetaData, LogicalType, ParquetType, SchemaTree }
 
 /**
  * Read parquet data rows from a file-like object.
