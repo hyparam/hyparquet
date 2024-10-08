@@ -1,5 +1,6 @@
 import type { AsyncBuffer, FileMetaData } from '../../src/hyparquet.js'
 import { asyncBufferFromUrl } from '../../src/utils.js'
+import { cachedAsyncBuffer } from '../asyncBuffer.js'
 
 // Serializable constructors for AsyncBuffers
 interface AsyncBufferFromFile {
@@ -56,9 +57,11 @@ export function parquetQueryWorker({
  * Convert AsyncBufferFrom to AsyncBuffer.
  */
 export async function asyncBufferFrom(from: AsyncBufferFrom): Promise<AsyncBuffer> {
-  if ('url' in from) {
-    return asyncBufferFromUrl(from.url)
-  } else {
-    return from.file.arrayBuffer()
-  }
+  const key = JSON.stringify(from)
+  const cached = cache.get(key)
+  if (cached) return cached
+  const asyncBuffer = 'url' in from ? asyncBufferFromUrl(from.url) : from.file.arrayBuffer()
+  cache.set(key, asyncBuffer.then(cachedAsyncBuffer))
+  return asyncBuffer
 }
+const cache = new Map<string, Promise<AsyncBuffer>>()

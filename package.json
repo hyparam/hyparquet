@@ -32,20 +32,20 @@
     "@rollup/plugin-replace": "6.0.1",
     "@rollup/plugin-terser": "0.4.4",
     "@rollup/plugin-typescript": "12.1.0",
-    "@types/node": "22.7.4",
+    "@types/node": "22.7.5",
     "@types/react": "18.3.11",
     "@types/react-dom": "18.3.0",
     "@vitest/coverage-v8": "2.1.2",
     "eslint": "9.12.0",
     "eslint-plugin-jsdoc": "50.3.1",
-    "hightable": "0.4.4",
+    "hightable": "0.5.2",
     "http-server": "14.1.1",
     "hyparquet-compressors": "0.1.4",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "rollup": "4.24.0",
     "typescript": "5.6.2",
-    "typescript-eslint": "8.8.0",
+    "typescript-eslint": "8.8.1",
     "vitest": "2.1.2"
   }
 }
