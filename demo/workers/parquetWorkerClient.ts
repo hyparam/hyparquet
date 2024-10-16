@@ -57,11 +57,16 @@ export function parquetQueryWorker({
  * Convert AsyncBufferFrom to AsyncBuffer.
  */
 export async function asyncBufferFrom(from: AsyncBufferFrom): Promise<AsyncBuffer> {
-  const key = JSON.stringify(from)
-  const cached = cache.get(key)
-  if (cached) return cached
-  const asyncBuffer = 'url' in from ? asyncBufferFromUrl(from.url, from.byteLength) : from.file.arrayBuffer()
-  cache.set(key, asyncBuffer.then(cachedAsyncBuffer))
-  return asyncBuffer
+  if ('url' in from) {
+    // Cached asyncBuffer for urls only
+    const key = JSON.stringify(from)
+    const cached = cache.get(key)
+    if (cached) return cached
+    const asyncBuffer = asyncBufferFromUrl(from.url, from.byteLength).then(cachedAsyncBuffer)
+    cache.set(key, asyncBuffer)
+    return asyncBuffer
+  } else {
+    return from.file.arrayBuffer()
+  }
 }
 const cache = new Map<string, Promise<AsyncBuffer>>()
