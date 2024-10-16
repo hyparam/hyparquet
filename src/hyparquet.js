@@ -9,6 +9,8 @@ export { snappyUncompress } from './snappy.js'
 
 export { asyncBufferFromFile, asyncBufferFromUrl, byteLengthFromUrl, toJson } from './utils.js'
 
+export { cachedAsyncBuffer } from './asyncBuffer.js'
+
 /**
  * @param {import('./hyparquet.js').ParquetReadOptions} options
  * @returns {Promise<Array<Record<string, any>>>}

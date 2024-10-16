@@ -1,6 +1,6 @@
+import { cachedAsyncBuffer } from '../../src/asyncBuffer.js'
 import type { AsyncBuffer, FileMetaData } from '../../src/hyparquet.js'
 import { asyncBufferFromUrl } from '../../src/utils.js'
-import { cachedAsyncBuffer } from '../asyncBuffer.js'
 
 // Serializable constructors for AsyncBuffers
 interface AsyncBufferFromFile {

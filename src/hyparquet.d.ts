@@ -131,6 +131,11 @@ export function asyncBufferFromFile(filename: string): Promise<AsyncBuffer>
 export function byteLengthFromUrl(url: string): Promise<number>
 
 /**
+ * Returns a cached layer on top of an AsyncBuffer.
+ */
+export function cachedAsyncBuffer(asyncBuffer: AsyncBuffer): AsyncBuffer
+
+/**
  * Parquet query options for reading data
  */
 export interface ParquetReadOptions {
