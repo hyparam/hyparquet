@@ -425,7 +425,43 @@ table:focus-visible {
   white-space: nowrap;
 }
 
-/* pending state */
+/* pending cell state */
+.table td.pending {
+  position: relative;
+}
+.table td.pending::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border-radius: 4px;
+  background: linear-gradient(
+    60deg,
+    rgba(0, 0, 0, 0.05) 25%,
+    rgba(0, 0, 0, 0.08) 50%,
+    rgba(0, 0, 0, 0.05) 75%
+  );
+  background-size: 120px 100%;
+  animation: textshimmer 3s infinite linear;
+}
+/* stagger row shimmering */
+.table tr:nth-child(2n) td.pending::after { animation-delay: -1s; }
+.table tr:nth-child(2n+1) td.pending::after { animation-delay: -3s; }
+.table tr:nth-child(3n) td.pending::after { animation-delay: -2s; }
+.table tr:nth-child(5n) td.pending::after { animation-delay: -4s; }
+.table tr:nth-child(7n) td.pending::after { animation-delay: -1.5s; }
+@keyframes textshimmer {
+  0% {
+    background-position: -120px 0;
+  }
+  100% {
+    background-position: 120px 0;
+  }
+}
+
+/* pending table state */
 .table th::before {
   content: '';
   position: absolute;

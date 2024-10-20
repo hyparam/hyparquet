@@ -1,4 +1,4 @@
-import HighTable, { DataFrame } from 'hightable'
+import HighTable, { DataFrame, rowCache } from 'hightable'
 import React, { useEffect, useState } from 'react'
 import { FileMetaData, parquetMetadataAsync, parquetSchema } from '../src/metadata.js'
 import { byteLengthFromUrl } from '../src/utils.js'
@@ -56,7 +56,8 @@ export default function App({ url }: { url?: string }) {
     setMetadata(metadata)
     setName(name)
     setByteLength(from.byteLength)
-    const df = parquetDataFrame(from, metadata)
+    let df = parquetDataFrame(from, metadata)
+    df = rowCache(df)
     setDf(df)
     document.getElementById('welcome')?.remove()
   }
