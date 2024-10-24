@@ -78,7 +78,7 @@ export default function App({ url }: { url?: string }) {
             <button onClick={() => setLens('layout')}>Layout</button>
           </Dropdown>
         </div>
-        {lens === 'table' && <HighTable data={df} onError={setError} />}
+        {lens === 'table' && <HighTable cacheKey={name} data={df} onError={setError} />}
         {lens === 'metadata' && <ParquetMetadata metadata={metadata} />}
         {lens === 'layout' && <ParquetLayout byteLength={byteLength!} metadata={metadata} />}
       </>}
