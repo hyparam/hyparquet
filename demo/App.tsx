@@ -102,7 +102,7 @@ function parquetDataFrame(from: AsyncBufferFrom, metadata: FileMetaData): DataFr
      */
     rows(rowStart, rowEnd, orderBy) {
       console.log(`reading rows ${rowStart}-${rowEnd}`, orderBy)
-      return parquetQueryWorker({ asyncBuffer: from, metadata, rowStart, rowEnd, orderBy })
+      return parquetQueryWorker({ from, metadata, rowStart, rowEnd, orderBy })
     },
     sortable: true,
   }
