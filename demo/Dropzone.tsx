@@ -67,7 +67,10 @@ export default function Dropzone({ children, onFileDrop, onUrlDrop, onError }: D
     function onDragOver(e: DragEvent) {
       e.preventDefault()
     }
-    function onDragLeave() {
+    function onDragLeave(e: DragEvent) {
+      const items = e.dataTransfer?.items
+      if (!items) return
+      if (!Array.from(items).some(item => item.kind === 'file')) return
       setEnters(enters => enters - 1)
     }
     function handleFileDrop(e: DragEvent) {
