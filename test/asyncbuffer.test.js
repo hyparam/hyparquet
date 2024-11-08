@@ -5,6 +5,7 @@ describe('cachedAsyncBuffer', () => {
   it('caches slices of a file to avoid multiple reads', async () => {
     const slice = vi.fn(async (start, end) => {
       // Simulate an async slice operation
+      await new Promise(resolve => setTimeout(resolve, 10))
       if (end === undefined) end = 1000
       if (start < 0) start = Math.max(0, 1000 + start)
       const buffer = new ArrayBuffer(end - start)
