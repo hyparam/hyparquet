@@ -67,6 +67,28 @@ describe('byteLengthFromUrl', () => {
 
     await expect(byteLengthFromUrl('https://example.com')).rejects.toThrow('missing content length')
   })
+
+
+  it ('passes authentication headers', async () => {
+    global.fetch = vi.fn().mockImplementation((url, options) => {
+      if (new Headers(options.headers).get('Authorization') !== 'Bearer token') {
+        return Promise.resolve({
+          ok: false,
+          status: 401,
+        })}
+      return Promise.resolve({
+        ok: true,
+        headers: new Map([['Content-Length', '1024']]),
+      })
+
+    })
+
+    const result = await byteLengthFromUrl('https://example.com', { headers: { Authorization: 'Bearer token' } } )
+    expect(result).toBe(1024)
+    expect(fetch).toHaveBeenCalledWith('https://example.com', { method: 'HEAD', headers: { Authorization: 'Bearer token' } })
+
+    await expect(byteLengthFromUrl('https://example.com')).rejects.toThrow('fetch head failed 401')
+  })
 })
 
 describe('asyncBufferFromUrl', () => {
@@ -77,12 +99,12 @@ describe('asyncBufferFromUrl', () => {
         headers: new Map([['Content-Length', '1024']]),
       })
 
-    const buffer = await asyncBufferFromUrl('https://example.com')
+    const buffer = await asyncBufferFromUrl({ url: 'https://example.com' })
     expect(buffer.byteLength).toBe(1024)
   })
 
   it('uses provided byte length if given', async () => {
-    const buffer = await asyncBufferFromUrl('https://example.com', 2048)
+    const buffer = await asyncBufferFromUrl({ url: 'https://example.com', byteLength: 2048 })
     expect(buffer.byteLength).toBe(2048)
     expect(fetch).toHaveBeenCalledOnce()
   })
@@ -95,7 +117,7 @@ describe('asyncBufferFromUrl', () => {
       arrayBuffer: () => Promise.resolve(mockArrayBuffer),
     })
 
-    const buffer = await asyncBufferFromUrl('https://example.com', 1024)
+    const buffer = await asyncBufferFromUrl({ url: 'https://example.com', byteLength: 1024 })
     const result = await buffer.slice(0, 100)
 
     expect(result).toBe(mockArrayBuffer)
@@ -112,7 +134,7 @@ describe('asyncBufferFromUrl', () => {
       arrayBuffer: () => Promise.resolve(mockArrayBuffer),
     })
 
-    const buffer = await asyncBufferFromUrl('https://example.com', 1024)
+    const buffer = await asyncBufferFromUrl({ url: 'https://example.com', byteLength: 1024 })
     await buffer.slice(100)
 
     expect(fetch).toHaveBeenCalledWith('https://example.com', {
@@ -126,7 +148,58 @@ describe('asyncBufferFromUrl', () => {
       status: 404,
     })
 
-    const buffer = await asyncBufferFromUrl('https://example.com', 1024)
+    const buffer = await asyncBufferFromUrl({ url: 'https://example.com', byteLength: 1024 })
     await expect(buffer.slice(0, 100)).rejects.toThrow('fetch failed 404')
+  })
+
+  it('passes authentication headers to get the byteLength', async () => {
+    global.fetch = vi.fn().mockImplementation((url, options) => {
+      if (new Headers(options.headers).get('Authorization') !== 'Bearer token') {
+        return Promise.resolve({
+          ok: false,
+          status: 401,
+        })
+      }
+      return Promise.resolve({
+        ok: true,
+        headers: new Map([['Content-Length', '1024']]),
+      })
+    })
+
+    expect(asyncBufferFromUrl({ url: 'https://example.com' })).rejects.toThrow('fetch head failed 401')
+
+    const buffer = await asyncBufferFromUrl({ url: 'https://example.com', requestInit: { headers: { Authorization: 'Bearer token' } } } )
+    expect(buffer.byteLength).toBe(1024)
+  })
+
+  it ('passes authentication headers to fetch byte range', async () => {
+    const mockArrayBuffer = new ArrayBuffer(100)
+    global.fetch = vi.fn().mockImplementation((url, options) => {
+      if (new Headers(options.headers).get('Authorization') !== 'Bearer token') {
+        return Promise.resolve({
+          ok: false,
+          status: 401,
+        })
+      }
+      if (options.headers.get('Range') !== 'bytes=0-99') {
+        return Promise.resolve({
+          ok: false,
+          status: 404,
+        })
+      }
+      return Promise.resolve({
+        ok: true,
+        body: {},
+        arrayBuffer: () => Promise.resolve(mockArrayBuffer),
+      })
+    })
+
+    const noHeaders = await asyncBufferFromUrl({ url: 'https://example.com', byteLength: 1024 })
+    expect(noHeaders.slice(0, 100)).rejects.toThrow('fetch failed 401')
+
+    const withHeaders = await asyncBufferFromUrl({ url: 'https://example.com', byteLength: 1024, requestInit: { headers: { Authorization: 'Bearer token' } } } )
+    expect (await withHeaders.slice(0, 100)).toBe(mockArrayBuffer)
+
+    expect (withHeaders.slice(0, 10)).rejects.toThrow('fetch failed 404')
   })
 })

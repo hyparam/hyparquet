@@ -40,10 +40,11 @@ export function concat(aaa, bbb) {
  * Get the byte length of a URL using a HEAD request.
  *
  * @param {string} url
+ * @param {RequestInit} [requestInit] fetch options
  * @returns {Promise<number>}
  */
-export async function byteLengthFromUrl(url) {
-  return await fetch(url, { method: 'HEAD' })
+export async function byteLengthFromUrl(url, requestInit) {
+  return await fetch(url, { ...requestInit, method: 'HEAD' })
     .then(res => {
       if (!res.ok) throw new Error(`fetch head failed ${res.status}`)
       const length = res.headers.get('Content-Length')
@@ -56,21 +57,24 @@ export async function byteLengthFromUrl(url) {
  * Construct an AsyncBuffer for a URL.
  *
  * @typedef {import('./types.js').AsyncBuffer} AsyncBuffer
- * @param {string} url
- * @param {number} [byteLength]
+ * @param {object} options
+ * @param {string} options.url
+ * @param {number} [options.byteLength]
+ * @param {RequestInit} [options.requestInit]
  * @returns {Promise<AsyncBuffer>}
  */
-export async function asyncBufferFromUrl(url, byteLength) {
+export async function asyncBufferFromUrl({ url, byteLength, requestInit }) {
   // byte length from HEAD request
-  byteLength ||= await byteLengthFromUrl(url)
+  byteLength ||= await byteLengthFromUrl(url, requestInit)
+  const init = requestInit || {}
   return {
     byteLength,
     async slice(start, end) {
       // fetch byte range from url
-      const headers = new Headers()
+      const headers = new Headers(init.headers)
       const endStr = end === undefined ? '' : end - 1
       headers.set('Range', `bytes=${start}-${endStr}`)
-      const res = await fetch(url, { headers })
+      const res = await fetch(url, { ...init, headers })
       if (!res.ok || !res.body) throw new Error(`fetch failed ${res.status}`)
       return res.arrayBuffer()
     },
