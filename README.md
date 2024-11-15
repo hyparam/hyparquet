@@ -24,6 +24,8 @@ https://hyparam.github.io/hyparquet/
 
 [![hyparquet demo](demo/assets/demo.png)](https://hyparam.github.io/hyparquet/)
 
+See the [source code](https://github.com/hyparam/hyperparam-cli/tree/master/apps/hyparquet-demo).
+
 ## Features
 
 1. **Performant**: Designed to efficiently process large datasets by only loading the required data, making it suitable for big data and machine learning applications.
