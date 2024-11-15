@@ -61,6 +61,8 @@ await parquetRead({
 })
 ```
 
+The `hyparquet` package is an ES module and is not packaged as a CommonJS module. That's why you need to use a dynamic import to load the module in Node.js.
+
 ### Browser
 
 Hyparquet supports asynchronous fetching of parquet files over a network.
