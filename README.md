@@ -20,7 +20,7 @@ Hyparquet allows you to read and extract data from Parquet files directly in Jav
 
 Online parquet file reader demo available at:
 
-https://hyparam.github.io/hyperparam-cli/apps/hyparquet-demo/
+[https://hyparam.github.io/hyperparam-cli/apps/hyparquet-demo/](https://hyparam.github.io/hyperparam-cli/apps/hyparquet-demo/)
 
 [![hyparquet demo](./demo.png)](https://hyparam.github.io/hyperparam-cli/apps/hyparquet-demo/)
 
