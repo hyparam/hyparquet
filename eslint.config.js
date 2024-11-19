@@ -10,8 +10,6 @@ export default [
       typescript,
     },
 
-    ignores: ['demo/**/*.min.js'],
-
     languageOptions: {
       globals: {
         ...globals.browser,

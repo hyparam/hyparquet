@@ -9,5 +9,5 @@
     "resolveJsonModule": true,
     "strict": true
   },
-  "include": ["src", "test", "demo"]
+  "include": ["src", "test"]
 }
