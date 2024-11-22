@@ -73,7 +73,16 @@ Hyparquet supports asynchronous fetching of parquet files over a network.
 const { asyncBufferFromUrl, parquetRead } = await import('https://cdn.jsdelivr.net/npm/hyparquet/src/hyparquet.min.js')
 const url = 'https://hyperparam-public.s3.amazonaws.com/bunnies.parquet'
 await parquetRead({
-  file: await asyncBufferFromUrl(url),
+  file: await asyncBufferFromUrl({url}),
+  onComplete: data => console.log(data)
+})
+```
+
+Pass the `requestInit` option to authenticate, for example:
+
+```js
+await parquetRead({
+  file: await asyncBufferFromUrl({url, requestInit: {headers: {Authorization: 'Bearer my_token'}}}),
   onComplete: data => console.log(data)
 })
 ```

@@ -117,8 +117,9 @@ export function toJson(obj: any): any
 /**
  * Construct an AsyncBuffer for a URL.
  * If byteLength is not provided, will make a HEAD request to get the file size.
+ * If requestInit is provided, it will be passed to fetch.
  */
-export function asyncBufferFromUrl(url: string, byteLength?: number): Promise<AsyncBuffer>
+export function asyncBufferFromUrl({url, byteLength, requestInit}: {url: string, byteLength?: number, requestInit?: RequestInit}): Promise<AsyncBuffer>
 
 /**
  * Construct an AsyncBuffer for a local file using node fs package.
@@ -127,8 +128,9 @@ export function asyncBufferFromFile(filename: string): Promise<AsyncBuffer>
 
 /**
  * Get the byte length of a URL using a HEAD request.
+ * If requestInit is provided, it will be passed to fetch.
  */
-export function byteLengthFromUrl(url: string): Promise<number>
+export function byteLengthFromUrl(url: string, requestInit?: RequestInit): Promise<number>
 
 /**
  * Returns a cached layer on top of an AsyncBuffer.
