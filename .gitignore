@@ -5,3 +5,4 @@ coverage
 .vscode
 .DS_Store
 /*.parquet
+types
