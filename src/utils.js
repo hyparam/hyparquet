@@ -1,5 +1,7 @@
 /**
  * Replace bigint, date, etc with legal JSON types.
+ * When parsing parquet files, bigints are used to represent 64-bit integers.
+ * However, JSON does not support bigints, so it's helpful to convert to numbers.
  *
  * @param {any} obj object to convert
  * @returns {unknown} converted object
@@ -38,6 +40,7 @@ export function concat(aaa, bbb) {
 
 /**
  * Get the byte length of a URL using a HEAD request.
+ * If requestInit is provided, it will be passed to fetch.
  *
  * @param {string} url
  * @param {RequestInit} [requestInit] fetch options
@@ -55,6 +58,8 @@ export async function byteLengthFromUrl(url, requestInit) {
 
 /**
  * Construct an AsyncBuffer for a URL.
+ * If byteLength is not provided, will make a HEAD request to get the file size.
+ * If requestInit is provided, it will be passed to fetch.
  *
  * @typedef {import('../src/types.d.ts').AsyncBuffer} AsyncBuffer
  * @param {object} options

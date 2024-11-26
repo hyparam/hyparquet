@@ -23,7 +23,7 @@ import { concat } from './utils.js'
  * @param {AsyncBuffer} options.file file-like object containing parquet data
  * @param {FileMetaData} [options.metadata] parquet file metadata
  * @param {string[]} [options.columns] columns to read, all columns if undefined
- * @param {string} [options.rowFormat] format of each row passed to the onComplete function
+ * @param {string} [options.rowFormat] desired format of each row passed to the onComplete function
  * @param {number} [options.rowStart] first requested row index (inclusive)
  * @param {number} [options.rowEnd] last requested row index (exclusive)
  * @param {(chunk: ColumnData) => void} [options.onChunk] called when a column chunk is parsed. chunks may include row data outside the requested range.

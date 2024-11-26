@@ -343,8 +343,8 @@ export interface ParquetReadOptions {
   metadata?: FileMetaData // parquet metadata, will be parsed if not provided
   columns?: string[] // columns to read, all columns if undefined
   rowFormat?: string // format of each row passed to the onComplete function
-  rowStart?: number // inclusive
-  rowEnd?: number // exclusive
+  rowStart?: number // first requested row index (inclusive)
+  rowEnd?: number // last requested row index (exclusive)
   onChunk?: (chunk: ColumnData) => void // called when a column chunk is parsed. chunks may be outside the requested range.
   onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
   compressors?: Compressors // custom decompressors

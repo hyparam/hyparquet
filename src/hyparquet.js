@@ -13,8 +13,8 @@ export { cachedAsyncBuffer } from './asyncBuffer.js'
 
 /**
  * @param {import('../src/types.d.ts').ParquetReadOptions} options
- * @returns {Promise<Array<Record<string, any>>>}
- */
+ * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
+*/
 export function parquetReadObjects(options) {
   return new Promise((onComplete, reject) => {
     parquetRead({

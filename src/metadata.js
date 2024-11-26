@@ -27,7 +27,7 @@ import { deserializeTCompactProtocol } from './thrift.js'
  * @typedef {import("../src/types.d.ts").FileMetaData} FileMetaData
  * @typedef {import("../src/types.d.ts").SchemaElement} SchemaElement
  * @param {AsyncBuffer} asyncBuffer parquet file contents
- * @param {number} initialFetchSize initial fetch size in bytes
+ * @param {number} initialFetchSize initial fetch size in bytes (default 512kb)
  * @returns {Promise<FileMetaData>} parquet metadata object
  */
 export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = 1 << 19 /* 512kb */) {
