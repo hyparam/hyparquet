@@ -1,6 +1,6 @@
-import type { AsyncBuffer, CompressionCodec, Compressors, ConvertedType, FileMetaData, LogicalType, ParquetType, SchemaTree } from './types.d.ts'
+import type { AsyncBuffer, CompressionCodec, Compressors, ConvertedType, FileMetaData, LogicalType, ParquetReadOptions, ParquetType, SchemaTree } from './types.d.ts'
 
-export type { AsyncBuffer, CompressionCodec, Compressors, ConvertedType, FileMetaData, LogicalType, ParquetType, SchemaTree }
+export type { AsyncBuffer, CompressionCodec, Compressors, ConvertedType, FileMetaData, LogicalType, ParquetReadOptions, ParquetType, SchemaTree }
 
 /**
  * Read parquet data rows from a file-like object.
@@ -136,29 +136,3 @@ export function byteLengthFromUrl(url: string, requestInit?: RequestInit): Promi
  * Returns a cached layer on top of an AsyncBuffer.
  */
 export function cachedAsyncBuffer(asyncBuffer: AsyncBuffer): AsyncBuffer
-
-/**
- * Parquet query options for reading data
- */
-export interface ParquetReadOptions {
-  file: AsyncBuffer // file-like object containing parquet data
-  metadata?: FileMetaData // parquet metadata, will be parsed if not provided
-  columns?: string[] // columns to read, all columns if undefined
-  rowFormat?: string // format of each row passed to the onComplete function
-  rowStart?: number // inclusive
-  rowEnd?: number // exclusive
-  onChunk?: (chunk: ColumnData) => void // called when a column chunk is parsed. chunks may be outside the requested range.
-  onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
-  compressors?: Compressors // custom decompressors
-  utf8?: boolean // decode byte arrays as utf8 strings (default true)
-}
-
-/**
- * A run of column data
- */
-export interface ColumnData {
-  columnName: string
-  columnData: ArrayLike<any>
-  rowStart: number
-  rowEnd: number
-}

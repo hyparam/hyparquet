@@ -324,3 +324,29 @@ export interface ColumnIndex {
 }
 
 export type BoundaryOrder = 'UNORDERED' | 'ASCENDING' | 'DESCENDING'
+
+/**
+ * A run of column data
+ */
+export interface ColumnData {
+  columnName: string
+  columnData: ArrayLike<any>
+  rowStart: number
+  rowEnd: number
+}
+
+/**
+ * Parquet query options for reading data
+ */
+export interface ParquetReadOptions {
+  file: AsyncBuffer // file-like object containing parquet data
+  metadata?: FileMetaData // parquet metadata, will be parsed if not provided
+  columns?: string[] // columns to read, all columns if undefined
+  rowFormat?: string // format of each row passed to the onComplete function
+  rowStart?: number // inclusive
+  rowEnd?: number // exclusive
+  onChunk?: (chunk: ColumnData) => void // called when a column chunk is parsed. chunks may be outside the requested range.
+  onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
+  compressors?: Compressors // custom decompressors
+  utf8?: boolean // decode byte arrays as utf8 strings (default true)
+}

@@ -25,7 +25,7 @@ export function toJson(obj) {
 /**
  * Concatenate two arrays fast.
  *
- * @typedef {import('./types.js').DecodedArray} DecodedArray
+ * @typedef {import('../src/types.d.ts').DecodedArray} DecodedArray
  * @param {any[]} aaa first array
  * @param {DecodedArray} bbb second array
  */
@@ -56,7 +56,7 @@ export async function byteLengthFromUrl(url, requestInit) {
 /**
  * Construct an AsyncBuffer for a URL.
  *
- * @typedef {import('./types.js').AsyncBuffer} AsyncBuffer
+ * @typedef {import('../src/types.d.ts').AsyncBuffer} AsyncBuffer
  * @param {object} options
  * @param {string} options.url
  * @param {number} [options.byteLength]

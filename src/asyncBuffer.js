@@ -3,7 +3,7 @@
  * Returns a cached layer on top of an AsyncBuffer. For caching slices of a file
  * that are read multiple times, possibly over a network.
  *
- * @typedef {import('./types.js').AsyncBuffer} AsyncBuffer
+ * @typedef {import('../src/types.d.ts').AsyncBuffer} AsyncBuffer
  * @param {AsyncBuffer} file file-like object to cache
  * @returns {AsyncBuffer} cached file-like object
  */
@@ -14,7 +14,7 @@ export function cachedAsyncBuffer({ byteLength, slice }) {
     /**
      * @param {number} start
      * @param {number} [end]
-     * @returns {import('./types.js').Awaitable<ArrayBuffer>}
+     * @returns {import('../src/types.d.ts').Awaitable<ArrayBuffer>}
      */
     slice(start, end) {
       const key = cacheKey(start, end, byteLength)

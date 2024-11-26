@@ -6,8 +6,8 @@ import { isListLike, isMapLike } from './schema.js'
  * Reconstructs a complex nested structure from flat arrays of definition and repetition levels,
  * according to Dremel encoding.
  *
- * @typedef {import('./types.d.ts').DecodedArray} DecodedArray
- * @typedef {import('./types.d.ts').FieldRepetitionType} FieldRepetitionType
+ * @typedef {import('../src/types.d.ts').DecodedArray} DecodedArray
+ * @typedef {import('../src/types.d.ts').FieldRepetitionType} FieldRepetitionType
  * @param {any[]} output
  * @param {number[] | undefined} definitionLevels
  * @param {number[]} repetitionLevels
@@ -104,7 +104,7 @@ export function assembleLists(
  * Assemble a nested structure from subcolumn data.
  * https://github.com/apache/parquet-format/blob/apache-parquet-format-2.10.0/LogicalTypes.md#nested-types
  *
- * @typedef {import('./types.d.ts').SchemaTree} SchemaTree
+ * @typedef {import('../src/types.d.ts').SchemaTree} SchemaTree
  * @param {Map<string, any[]>} subcolumnData
  * @param {SchemaTree} schema top-level schema element
  * @param {number} [depth] depth of nested structure

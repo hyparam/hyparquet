@@ -6,11 +6,11 @@ import { snappyUncompress } from './snappy.js'
 /**
  * Read a data page from uncompressed reader.
  *
- * @typedef {import("./types.d.ts").DataPage} DataPage
- * @typedef {import("./types.d.ts").ColumnMetaData} ColumnMetaData
- * @typedef {import("./types.d.ts").DataPageHeader} DataPageHeader
- * @typedef {import("./types.d.ts").SchemaTree} SchemaTree
- * @typedef {import("./types.d.ts").DecodedArray} DecodedArray
+ * @typedef {import("../src/types.d.ts").DataPage} DataPage
+ * @typedef {import("../src/types.d.ts").ColumnMetaData} ColumnMetaData
+ * @typedef {import("../src/types.d.ts").DataPageHeader} DataPageHeader
+ * @typedef {import("../src/types.d.ts").SchemaTree} SchemaTree
+ * @typedef {import("../src/types.d.ts").DecodedArray} DecodedArray
  * @param {Uint8Array} bytes raw page data (should already be decompressed)
  * @param {DataPageHeader} daph data page header
  * @param {SchemaTree[]} schemaPath
@@ -58,7 +58,7 @@ export function readDataPage(bytes, daph, schemaPath, { type }) {
 
 /**
  * @param {Uint8Array} bytes raw page data
- * @param {import("./types.d.ts").DictionaryPageHeader} diph dictionary page header
+ * @param {import("../src/types.d.ts").DictionaryPageHeader} diph dictionary page header
  * @param {ColumnMetaData} columnMetadata
  * @param {number | undefined} typeLength - type_length from schema
  * @returns {DecodedArray}
@@ -70,7 +70,7 @@ export function readDictionaryPage(bytes, diph, columnMetadata, typeLength) {
 }
 
 /**
- * @typedef {import("./types.d.ts").DataReader} DataReader
+ * @typedef {import("../src/types.d.ts").DataReader} DataReader
  * @param {DataReader} reader data view for the page
  * @param {DataPageHeader} daph data page header
  * @param {SchemaTree[]} schemaPath
@@ -114,8 +114,8 @@ function readDefinitionLevels(reader, daph, schemaPath) {
 /**
  * @param {Uint8Array} compressedBytes
  * @param {number} uncompressed_page_size
- * @param {import('./types.js').CompressionCodec} codec
- * @param {import('./types.js').Compressors | undefined} compressors
+ * @param {import('../src/types.d.ts').CompressionCodec} codec
+ * @param {import('../src/types.d.ts').Compressors | undefined} compressors
  * @returns {Uint8Array}
  */
 export function decompressPage(compressedBytes, uncompressed_page_size, codec, compressors) {

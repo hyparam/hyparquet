@@ -12,7 +12,7 @@ export { asyncBufferFromFile, asyncBufferFromUrl, byteLengthFromUrl, toJson } fr
 export { cachedAsyncBuffer } from './asyncBuffer.js'
 
 /**
- * @param {import('./hyparquet.js').ParquetReadOptions} options
+ * @param {import('../src/types.d.ts').ParquetReadOptions} options
  * @returns {Promise<Array<Record<string, any>>>}
  */
 export function parquetReadObjects(options) {

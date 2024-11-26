@@ -6,7 +6,7 @@ import { parquetMetadataAsync } from './metadata.js'
  * This is a parquet-aware query engine that can read a subset of rows,
  * with an optional orderBy clause.
  *
- * @typedef {import('./hyparquet.js').ParquetReadOptions} ParquetReadOptions
+ * @typedef {import('../src/types.d.ts').ParquetReadOptions} ParquetReadOptions
  * @param {ParquetReadOptions & { orderBy?: string }} options
  * @returns {Promise<Record<string, any>[]>}
  */
