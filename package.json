@@ -21,10 +21,10 @@
   "type": "module",
   "types": "types/hyparquet.d.ts",
   "scripts": {
-    "build": "tsc -p ./tsconfig.build.json",
+    "build:types": "tsc -p ./tsconfig.build.json",
     "coverage": "vitest run --coverage --coverage.include=src",
     "lint": "eslint .",
-    "prepublishOnly": "npm run build",
+    "prepare": "npm run build:types",
     "test": "vitest run"
   },
   "devDependencies": {
