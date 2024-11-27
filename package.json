@@ -24,7 +24,7 @@
     "build:types": "tsc -p ./tsconfig.build.json",
     "coverage": "vitest run --coverage --coverage.include=src",
     "lint": "eslint .",
-    "prepare": "npm run build:types",
+    "prepublishOnly": "npm run build:types",
     "test": "vitest run"
   },
   "devDependencies": {
