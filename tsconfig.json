@@ -2,7 +2,6 @@
   "compilerOptions": {
     "allowJs": true,
     "checkJs": true,
-    "jsx": "react",
     "lib": ["esnext", "dom"],
     "module": "nodenext",
     "noEmit": true,

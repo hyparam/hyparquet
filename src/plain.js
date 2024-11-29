@@ -170,7 +170,7 @@ function readPlainByteArrayFixed(reader, count, fixedLength) {
 /**
  * Create a new buffer with the offset and size.
  *
- * @param {ArrayBuffer} buffer
+ * @param {ArrayBufferLike} buffer
  * @param {number} offset
  * @param {number} size
  * @returns {ArrayBuffer}
