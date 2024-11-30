@@ -3,7 +3,6 @@ import { convertMetadata } from './metadata.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
 /**
- * @import {ColumnIndex, DataReader, OffsetIndex, PageLocation, SchemaElement} from '../src/types.d.ts'
  * @param {DataReader} reader
  * @param {SchemaElement} schema
  * @returns {ColumnIndex}
@@ -34,6 +33,7 @@ export function readOffsetIndex(reader) {
 }
 
 /**
+ * @import {ColumnIndex, DataReader, OffsetIndex, PageLocation, SchemaElement} from '../src/types.d.ts'
  * @param {any} loc
  * @returns {PageLocation}
  */

@@ -15,7 +15,6 @@ import { concat } from './utils.js'
  * wants to cache the full chunks, and make their own view of the data from
  * the chunks.
  *
- * @import {AsyncBuffer, ColumnData, Compressors, FileMetaData, RowGroup, SchemaTree} from '../src/types.d.ts'
  * @param {object} options read options
  * @param {AsyncBuffer} options.file file-like object containing parquet data
  * @param {FileMetaData} [options.metadata] parquet file metadata
@@ -213,6 +212,7 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
 /**
  * Return a list of sub-columns needed to construct a top-level column.
  *
+ * @import {AsyncBuffer, ColumnData, Compressors, FileMetaData, RowGroup, SchemaTree} from '../src/types.d.ts'
  * @param {SchemaTree} schema
  * @param {string[]} output
  * @returns {string[]}
