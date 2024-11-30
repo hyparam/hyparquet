@@ -4,8 +4,7 @@ import { deserializeTCompactProtocol } from './thrift.js'
 /**
  * Read parquet header from a buffer.
  *
- * @typedef {import("../src/types.d.ts").DataReader} DataReader
- * @typedef {import("../src/types.d.ts").PageHeader} PageHeader
+ * @import {DataReader, PageHeader} from '../src/types.d.ts'
  * @param {DataReader} reader - parquet file reader
  * @returns {PageHeader} metadata object and bytes read
  */

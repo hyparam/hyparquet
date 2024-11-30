@@ -1,9 +1,7 @@
 /**
  * Read `count` values of the given type from the reader.view.
  *
- * @typedef {import("../src/types.d.ts").DataReader} DataReader
- * @typedef {import("../src/types.d.ts").DecodedArray} DecodedArray
- * @typedef {import("../src/types.d.ts").ParquetType} ParquetType
+ * @import {DataReader, DecodedArray, ParquetType} from '../src/types.d.ts'
  * @param {DataReader} reader - buffer to read data from
  * @param {ParquetType} type - parquet type of the data
  * @param {number} count - number of values to read
@@ -170,7 +168,7 @@ function readPlainByteArrayFixed(reader, count, fixedLength) {
 /**
  * Create a new buffer with the offset and size.
  *
- * @param {ArrayBuffer} buffer
+ * @param {ArrayBufferLike} buffer
  * @param {number} offset
  * @param {number} size
  * @returns {ArrayBuffer}

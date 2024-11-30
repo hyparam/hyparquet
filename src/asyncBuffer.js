@@ -3,7 +3,6 @@
  * Returns a cached layer on top of an AsyncBuffer. For caching slices of a file
  * that are read multiple times, possibly over a network.
  *
- * @typedef {import('../src/types.d.ts').AsyncBuffer} AsyncBuffer
  * @param {AsyncBuffer} file file-like object to cache
  * @returns {AsyncBuffer} cached file-like object
  */
@@ -14,7 +13,7 @@ export function cachedAsyncBuffer({ byteLength, slice }) {
     /**
      * @param {number} start
      * @param {number} [end]
-     * @returns {import('../src/types.d.ts').Awaitable<ArrayBuffer>}
+     * @returns {Awaitable<ArrayBuffer>}
      */
     slice(start, end) {
       const key = cacheKey(start, end, byteLength)
@@ -33,6 +32,7 @@ export function cachedAsyncBuffer({ byteLength, slice }) {
  * Returns canonical cache key for a byte range 'start,end'.
  * Normalize int-range and suffix-range requests to the same key.
  *
+ * @import {AsyncBuffer, Awaitable} from '../src/types.d.ts'
  * @param {number} start start byte of range
  * @param {number} [end] end byte of range, or undefined for suffix range
  * @param {number} [size] size of file, or undefined for suffix range

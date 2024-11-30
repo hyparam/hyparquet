@@ -7,13 +7,8 @@ import { getMaxDefinitionLevel, getMaxRepetitionLevel } from './schema.js'
 /**
  * Read a data page from the given Uint8Array.
  *
- * @typedef {import("../src/types.d.ts").DataPage} DataPage
- * @typedef {import("../src/types.d.ts").ColumnMetaData} ColumnMetaData
- * @typedef {import("../src/types.d.ts").Compressors} Compressors
- * @typedef {import("../src/types.d.ts").DataPageHeaderV2} DataPageHeaderV2
- * @typedef {import("../src/types.d.ts").SchemaTree} SchemaTree
  * @param {Uint8Array} compressedBytes raw page data
- * @param {import("../src/types.d.ts").PageHeader} ph page header
+ * @param {PageHeader} ph page header
  * @param {SchemaTree[]} schemaPath
  * @param {ColumnMetaData} columnMetadata
  * @param {Compressors | undefined} compressors
@@ -44,7 +39,7 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
   const pageReader = { view: pageView, offset: 0 }
 
   // read values based on encoding
-  /** @type {import('../src/types.d.ts').DecodedArray} */
+  /** @type {DecodedArray} */
   let dataPage
   const nValues = daph2.num_values - daph2.num_nulls
   if (daph2.encoding === 'PLAIN') {
@@ -83,7 +78,6 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
 }
 
 /**
- * @typedef {import("../src/types.d.ts").DataReader} DataReader
  * @param {DataReader} reader
  * @param {DataPageHeaderV2} daph2 data page header v2
  * @param {SchemaTree[]} schemaPath
@@ -101,6 +95,7 @@ export function readRepetitionLevelsV2(reader, daph2, schemaPath) {
 }
 
 /**
+ * @import {ColumnMetaData, Compressors, DataPage, DataPageHeaderV2, DataReader, DecodedArray, PageHeader, SchemaTree} from '../src/types.js'
  * @param {DataReader} reader
  * @param {DataPageHeaderV2} daph2 data page header v2
  * @param {SchemaTree[]} schemaPath

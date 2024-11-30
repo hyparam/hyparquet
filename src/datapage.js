@@ -6,11 +6,7 @@ import { snappyUncompress } from './snappy.js'
 /**
  * Read a data page from uncompressed reader.
  *
- * @typedef {import("../src/types.d.ts").DataPage} DataPage
- * @typedef {import("../src/types.d.ts").ColumnMetaData} ColumnMetaData
- * @typedef {import("../src/types.d.ts").DataPageHeader} DataPageHeader
- * @typedef {import("../src/types.d.ts").SchemaTree} SchemaTree
- * @typedef {import("../src/types.d.ts").DecodedArray} DecodedArray
+ * @import {ColumnMetaData, CompressionCodec, Compressors, DataPage, DataPageHeader, DataReader, DecodedArray, DictionaryPageHeader, SchemaTree} from '../src/types.js'
  * @param {Uint8Array} bytes raw page data (should already be decompressed)
  * @param {DataPageHeader} daph data page header
  * @param {SchemaTree[]} schemaPath
@@ -58,7 +54,7 @@ export function readDataPage(bytes, daph, schemaPath, { type }) {
 
 /**
  * @param {Uint8Array} bytes raw page data
- * @param {import("../src/types.d.ts").DictionaryPageHeader} diph dictionary page header
+ * @param {DictionaryPageHeader} diph dictionary page header
  * @param {ColumnMetaData} columnMetadata
  * @param {number | undefined} typeLength - type_length from schema
  * @returns {DecodedArray}
@@ -70,7 +66,6 @@ export function readDictionaryPage(bytes, diph, columnMetadata, typeLength) {
 }
 
 /**
- * @typedef {import("../src/types.d.ts").DataReader} DataReader
  * @param {DataReader} reader data view for the page
  * @param {DataPageHeader} daph data page header
  * @param {SchemaTree[]} schemaPath
@@ -114,8 +109,8 @@ function readDefinitionLevels(reader, daph, schemaPath) {
 /**
  * @param {Uint8Array} compressedBytes
  * @param {number} uncompressed_page_size
- * @param {import('../src/types.d.ts').CompressionCodec} codec
- * @param {import('../src/types.d.ts').Compressors | undefined} compressors
+ * @param {CompressionCodec} codec
+ * @param {Compressors | undefined} compressors
  * @returns {Uint8Array}
  */
 export function decompressPage(compressedBytes, uncompressed_page_size, codec, compressors) {

@@ -27,7 +27,6 @@ export function toJson(obj) {
 /**
  * Concatenate two arrays fast.
  *
- * @typedef {import('../src/types.d.ts').DecodedArray} DecodedArray
  * @param {any[]} aaa first array
  * @param {DecodedArray} bbb second array
  */
@@ -61,7 +60,7 @@ export async function byteLengthFromUrl(url, requestInit) {
  * If byteLength is not provided, will make a HEAD request to get the file size.
  * If requestInit is provided, it will be passed to fetch.
  *
- * @typedef {import('../src/types.d.ts').AsyncBuffer} AsyncBuffer
+ * @import {AsyncBuffer, DecodedArray} from '../src/types.d.ts'
  * @param {object} options
  * @param {string} options.url
  * @param {number} [options.byteLength]

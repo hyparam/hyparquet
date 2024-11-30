@@ -9,13 +9,12 @@ import { concat } from './utils.js'
 /**
  * Parse column data from a buffer.
  *
- * @typedef {import('../src/types.d.ts').ColumnMetaData} ColumnMetaData
- * @typedef {import('../src/types.d.ts').DecodedArray} DecodedArray
- * @param {import('../src/types.d.ts').DataReader} reader
+ * @import {ColumnMetaData, DecodedArray, DataReader, SchemaTree, ParquetReadOptions} from '../src/types.d.ts'
+ * @param {DataReader} reader
  * @param {number} rowLimit maximum number of rows to read
  * @param {ColumnMetaData} columnMetadata column metadata
- * @param {import('../src/types.d.ts').SchemaTree[]} schemaPath schema path for the column
- * @param {import('../src/types.d.ts').ParquetReadOptions} options read options
+ * @param {SchemaTree[]} schemaPath schema path for the column
+ * @param {ParquetReadOptions} options read options
  * @returns {any[]} array of values
  */
 export function readColumn(reader, rowLimit, columnMetadata, schemaPath, { compressors, utf8 }) {

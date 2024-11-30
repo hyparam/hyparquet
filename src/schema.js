@@ -1,8 +1,7 @@
 /**
  * Build a tree from the schema elements.
  *
- * @typedef {import('../src/types.d.ts').SchemaElement} SchemaElement
- * @typedef {import('../src/types.d.ts').SchemaTree} SchemaTree
+ * @import {SchemaElement, SchemaTree} from '../src/types.d.ts'
  * @param {SchemaElement[]} schema
  * @param {number} rootIndex index of the root element
  * @param {string[]} path path to the element
