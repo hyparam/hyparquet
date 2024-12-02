@@ -15,8 +15,6 @@ export function bitWidth(value) {
  *
  * If length is zero, then read int32 length at the start.
  *
- * @typedef {import("./types.d.ts").DataReader} DataReader
- * @typedef {import("./types.d.ts").DecodedArray} DecodedArray
  * @param {DataReader} reader
  * @param {number} width - width of each bit-packed group
  * @param {number} length - length of the encoded data
@@ -117,7 +115,6 @@ function readBitPacked(reader, header, bitWidth, output, seen) {
 }
 
 /**
- * @typedef {import("./types.d.ts").ParquetType} ParquetType
  * @param {DataReader} reader
  * @param {number} count
  * @param {ParquetType} type
@@ -149,6 +146,7 @@ export function byteStreamSplit(reader, count, type, typeLength) {
 }
 
 /**
+ * @import {DataReader, DecodedArray, ParquetType} from '../src/types.d.ts'
  * @param {ParquetType} type
  * @param {number | undefined} typeLength
  * @returns {number}

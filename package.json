@@ -15,13 +15,16 @@
   },
   "main": "src/hyparquet.js",
   "files": [
+    "types",
     "src"
   ],
   "type": "module",
-  "types": "src/hyparquet.d.ts",
+  "types": "types/hyparquet.d.ts",
   "scripts": {
+    "build:types": "tsc -p ./tsconfig.build.json",
     "coverage": "vitest run --coverage --coverage.include=src",
     "lint": "eslint .",
+    "prepare": "npm run build:types",
     "test": "vitest run"
   },
   "devDependencies": {

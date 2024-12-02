@@ -9,7 +9,7 @@ import {
 
 describe('Parquet schema utils', () => {
   /**
-   * @typedef {import('../src/types.js').SchemaElement} SchemaElement
+   * @import {SchemaElement} from '../src/types.js'
    * @type {SchemaElement[]}
    */
   const schema = [

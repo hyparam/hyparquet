@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { cachedAsyncBuffer } from '../src/asyncBuffer.js'
+import { cachedAsyncBuffer } from '../src/utils.js'
 
 describe('cachedAsyncBuffer', () => {
   it('caches slices of a file to avoid multiple reads', async () => {

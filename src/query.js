@@ -3,12 +3,12 @@ import { parquetMetadataAsync } from './metadata.js'
 
 /**
  * Wraps parquetRead with orderBy support.
- * This is a parquet-aware query engine that can read a subset of rows,
- * with an optional orderBy clause.
+ * This is a parquet-aware query engine that can read a subset of rows and columns.
+ * Accepts an optional orderBy column name to sort the results.
+ * Note that using orderBy may SIGNIFICANTLY increase the query time.
  *
- * @typedef {import('./hyparquet.js').ParquetReadOptions} ParquetReadOptions
  * @param {ParquetReadOptions & { orderBy?: string }} options
- * @returns {Promise<Record<string, any>[]>}
+ * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
  */
 export async function parquetQuery(options) {
   const { file, rowStart, rowEnd, orderBy } = options
@@ -36,6 +36,7 @@ export async function parquetQuery(options) {
 /**
  * Reads a list rows from a parquet file, reading only the row groups that contain the rows.
  * Returns a sparse array of rows.
+ * @import {ParquetReadOptions} from '../src/types.d.ts'
  * @param {ParquetReadOptions & { rows: number[] }} options
  * @returns {Promise<Record<string, any>[]>}
  */

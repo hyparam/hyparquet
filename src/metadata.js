@@ -23,11 +23,8 @@ import { deserializeTCompactProtocol } from './thrift.js'
  * This ensures that we either make one 512kb initial request for the metadata,
  * or a second request for up to the metadata size.
  *
- * @typedef {import("./types.d.ts").AsyncBuffer} AsyncBuffer
- * @typedef {import("./types.d.ts").FileMetaData} FileMetaData
- * @typedef {import("./types.d.ts").SchemaElement} SchemaElement
  * @param {AsyncBuffer} asyncBuffer parquet file contents
- * @param {number} initialFetchSize initial fetch size in bytes
+ * @param {number} initialFetchSize initial fetch size in bytes (default 512kb)
  * @returns {Promise<FileMetaData>} parquet metadata object
  */
 export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = 1 << 19 /* 512kb */) {
@@ -190,7 +187,7 @@ export function parquetMetadata(arrayBuffer) {
  * Return a tree of schema elements from parquet metadata.
  *
  * @param {FileMetaData} metadata parquet metadata object
- * @returns {import("./types.d.ts").SchemaTree} tree of schema elements
+ * @returns {SchemaTree} tree of schema elements
  */
 export function parquetSchema(metadata) {
   return getSchemaPath(metadata.schema, [])[0]
@@ -198,7 +195,7 @@ export function parquetSchema(metadata) {
 
 /**
  * @param {any} logicalType
- * @returns {import("./types.d.ts").LogicalType | undefined}
+ * @returns {LogicalType | undefined}
  */
 function logicalType(logicalType) {
   if (logicalType?.field_1) return { type: 'STRING' }
@@ -236,7 +233,7 @@ function logicalType(logicalType) {
 
 /**
  * @param {any} unit
- * @returns {import("./types.d.ts").TimeUnit}
+ * @returns {TimeUnit}
  */
 function timeUnit(unit) {
   if (unit.field_1) return 'MILLIS'
@@ -248,9 +245,10 @@ function timeUnit(unit) {
 /**
  * Convert column statistics based on column type.
  *
+ * @import {AsyncBuffer, FileMetaData, LogicalType, MinMaxType, SchemaElement, SchemaTree, Statistics, TimeUnit} from '../src/types.d.ts'
  * @param {any} stats
  * @param {SchemaElement} schema
- * @returns {import("./types.d.ts").Statistics}
+ * @returns {Statistics}
  */
 function convertStats(stats, schema) {
   return stats && {
@@ -268,7 +266,7 @@ function convertStats(stats, schema) {
 /**
  * @param {Uint8Array | undefined} value
  * @param {SchemaElement} schema
- * @returns {import('./types.d.ts').MinMaxType | undefined}
+ * @returns {MinMaxType | undefined}
  */
 export function convertMetadata(value, schema) {
   const { type, converted_type, logical_type } = schema

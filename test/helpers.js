@@ -14,8 +14,9 @@ export function fileToJson(filePath) {
 /**
  * Make a DataReader from bytes
  *
+ * @import {DataReader} from '../src/types.d.ts'
  * @param {number[]} bytes
- * @returns {import('../src/types.js').DataReader}
+ * @returns {DataReader}
  */
 export function reader(bytes) {
   return { view: new DataView(new Uint8Array(bytes).buffer), offset: 0 }

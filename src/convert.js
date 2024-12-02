@@ -3,12 +3,11 @@ const dayMillis = 86400000 // 1 day in milliseconds
 /**
  * Convert known types from primitive to rich, and dereference dictionary.
  *
- * @typedef {import('./types.js').DecodedArray} DecodedArray
- * @typedef {import('./types.js').SchemaElement} SchemaElement
+ * @import {DecodedArray, Encoding, SchemaElement} from '../src/types.d.ts'
  * @param {DecodedArray} data series of primitive types
  * @param {DecodedArray | undefined} dictionary
  * @param {SchemaElement} schemaElement
- * @param {import('./types.js').Encoding} encoding
+ * @param {Encoding} encoding
  * @param {boolean | undefined} utf8 decode bytes as utf8?
  * @returns {DecodedArray} series of rich types
  */

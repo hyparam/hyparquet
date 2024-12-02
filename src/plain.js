@@ -1,9 +1,7 @@
 /**
  * Read `count` values of the given type from the reader.view.
  *
- * @typedef {import("./types.d.ts").DataReader} DataReader
- * @typedef {import("./types.d.ts").DecodedArray} DecodedArray
- * @typedef {import("./types.d.ts").ParquetType} ParquetType
+ * @import {DataReader, DecodedArray, ParquetType} from '../src/types.d.ts'
  * @param {DataReader} reader - buffer to read data from
  * @param {ParquetType} type - parquet type of the data
  * @param {number} count - number of values to read

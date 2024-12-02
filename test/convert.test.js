@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { convert, parseFloat16 } from '../src/convert.js'
 
 /**
- * @typedef {import('../src/types.js').SchemaElement} SchemaElement
+ * @import {SchemaElement} from '../src/types.js'
  */
 
 describe('convert function', () => {
