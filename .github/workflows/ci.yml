@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: npm i
-      - run: npm run build:types # it uses tsc to check types and build d.ts files
+      - run: npx tsc
 
   test:
     runs-on: ubuntu-latest
