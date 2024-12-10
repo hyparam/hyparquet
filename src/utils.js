@@ -87,21 +87,34 @@ export async function asyncBufferFromUrl({ url, byteLength, requestInit }) {
 /**
  * Construct an AsyncBuffer for a local file using node fs package.
  *
+ * The function is not supported in the browser.
+ *
  * @param {string} filename
  * @returns {Promise<AsyncBuffer>}
  */
 export async function asyncBufferFromFile(filename) {
-  const fsPackage = 'fs' // webpack no include
-  const fs = await import(fsPackage)
-  const stat = await fs.promises.stat(filename)
-  return {
-    byteLength: stat.size,
-    async slice(start, end) {
+  try {
+    const fs = await import('fs')
+    const stat = await fs.promises.stat(filename)
+    return {
+      byteLength: stat.size,
+      async slice(start, end) {
       // read file slice
-      const readStream = fs.createReadStream(filename, { start, end })
-      return await readStreamToArrayBuffer(readStream)
-    },
+        const readStream = fs.createReadStream(filename, { start, end })
+        return await readStreamToArrayBuffer(readStream)
+      },
+    }
+  } catch (e) {
+    if (e instanceof TypeError) {
+      /// In the browser, the following error is thrown:
+      ///   TypeError: The specifier “fs” was a bare specifier, but was not remapped to anything.
+      ///   Relative module specifiers must start with “./”, “../” or “/”.
+      throw new Error('asyncBufferFromFile is not supported in browser')
+    } else {
+      throw e // re-throw the error unchanged
+    }
   }
+
 }
 
 /**
