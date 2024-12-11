@@ -15,16 +15,7 @@ import { concat } from './utils.js'
  * wants to cache the full chunks, and make their own view of the data from
  * the chunks.
  *
- * @param {object} options read options
- * @param {AsyncBuffer} options.file file-like object containing parquet data
- * @param {FileMetaData} [options.metadata] parquet file metadata
- * @param {string[]} [options.columns] columns to read, all columns if undefined
- * @param {string} [options.rowFormat] desired format of each row passed to the onComplete function
- * @param {number} [options.rowStart] first requested row index (inclusive)
- * @param {number} [options.rowEnd] last requested row index (exclusive)
- * @param {(chunk: ColumnData) => void} [options.onChunk] called when a column chunk is parsed. chunks may include row data outside the requested range.
- * @param {(rows: any[][]) => void} [options.onComplete] called when all requested rows and columns are parsed
- * @param {Compressors} [options.compressors] custom decompressors
+ * @param {ParquetReadOptions} options read options
  * @returns {Promise<void>} resolves when all requested rows and columns are parsed
  */
 export async function parquetRead(options) {
@@ -65,14 +56,7 @@ export async function parquetRead(options) {
 /**
  * Read a row group from a file-like object.
  *
- * @param {object} options read options
- * @param {AsyncBuffer} options.file file-like object containing parquet data
- * @param {FileMetaData} [options.metadata] parquet file metadata
- * @param {string[]} [options.columns] columns to read, all columns if undefined
- * @param {string} [options.rowFormat] format of each row passed to the onComplete function
- * @param {(chunk: ColumnData) => void} [options.onChunk] called when a column chunk is parsed. chunks may include row data outside the requested range.
- * @param {(rows: any[][]) => void} [options.onComplete] called when all requested rows and columns are parsed
- * @param {Compressors} [options.compressors]
+ * @param {ParquetReadOptions} options read options
  * @param {RowGroup} rowGroup row group to read
  * @param {number} groupStart row index of the first row in the group
  * @param {number} [rowLimit] max rows to read from this group
@@ -212,7 +196,7 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
 /**
  * Return a list of sub-columns needed to construct a top-level column.
  *
- * @import {AsyncBuffer, ColumnData, Compressors, FileMetaData, RowGroup, SchemaTree} from '../src/types.d.ts'
+ * @import {ParquetReadOptions, RowGroup, SchemaTree} from '../src/types.d.ts'
  * @param {SchemaTree} schema
  * @param {string[]} output
  * @returns {string[]}
