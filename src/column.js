@@ -22,7 +22,7 @@ export function readColumn(reader, rowLimit, columnMetadata, schemaPath, { compr
   let dictionary = undefined
   /** @type {any[]} */
   const rowData = []
-  const hasRowLimit = rowLimit > 0 && isFinite(rowLimit)
+  const hasRowLimit = isFinite(rowLimit) && rowLimit >= 0
 
   while (rowData.length < rowLimit || !hasRowLimit) {
     if (reader.offset >= reader.view.byteLength - 1) break // end of reader
