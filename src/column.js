@@ -22,8 +22,9 @@ export function readColumn(reader, rowLimit, columnMetadata, schemaPath, { compr
   let dictionary = undefined
   /** @type {any[]} */
   const rowData = []
+  const hasRowLimit = rowLimit ?? isFinite(rowLimit)
 
-  while (rowData.length < rowLimit) {
+  while (rowData.length < rowLimit || !hasRowLimit) {
     if (reader.offset >= reader.view.byteLength - 1) break // end of reader
     // parse column header
     const header = parquetHeader(reader)
@@ -94,7 +95,7 @@ export function readColumn(reader, rowLimit, columnMetadata, schemaPath, { compr
     }
     reader.offset += header.compressed_page_size
   }
-  if (rowLimit !== Infinity) {
+  if (hasRowLimit) {
     if (rowData.length < rowLimit) {
       throw new Error(`parquet row data length ${rowData.length} does not match row group limit ${rowLimit}}`)
     }
