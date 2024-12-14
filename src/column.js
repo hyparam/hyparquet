@@ -10,7 +10,7 @@ import { concat } from './utils.js'
  * Parse column data from a buffer.
  *
  * @param {DataReader} reader
- * @param {number} rowLimit maximum number of rows to read
+ * @param {number} rowLimit maximum number of rows to read (Infinity reads all rows)
  * @param {ColumnMetaData} columnMetadata column metadata
  * @param {SchemaTree[]} schemaPath schema path for the column
  * @param {ParquetReadOptions} options read options
@@ -24,6 +24,7 @@ export function readColumn(reader, rowLimit, columnMetadata, schemaPath, { compr
   const rowData = []
 
   while (rowData.length < rowLimit) {
+    if (reader.offset >= reader.view.byteLength - 1) break // end of reader
     // parse column header
     const header = parquetHeader(reader)
     // assert(header.compressed_page_size !== undefined)
@@ -93,11 +94,13 @@ export function readColumn(reader, rowLimit, columnMetadata, schemaPath, { compr
     }
     reader.offset += header.compressed_page_size
   }
-  if (rowData.length < rowLimit) {
-    throw new Error(`parquet row data length ${rowData.length} does not match row group limit ${rowLimit}}`)
-  }
-  if (rowData.length > rowLimit) {
-    rowData.length = rowLimit // truncate to row limit
+  if (rowLimit !== Infinity) {
+    if (rowData.length < rowLimit) {
+      throw new Error(`parquet row data length ${rowData.length} does not match row group limit ${rowLimit}}`)
+    }
+    if (rowData.length > rowLimit) {
+      rowData.length = rowLimit // truncate to row limit
+    }
   }
   return rowData
 }
