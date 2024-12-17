@@ -2,8 +2,12 @@
   "name": "hyparquet",
   "version": "1.6.4",
   "description": "parquet file parser for javascript",
+  "author": "Hyperparam",
+  "homepage": "https://hyperparam.app",
   "keywords": [
+    "hyparquet",
     "parquet",
+    "parquetjs",
     "parser",
     "snappy",
     "thrift"
@@ -23,18 +27,18 @@
   "scripts": {
     "build:types": "tsc -p ./tsconfig.build.json",
     "coverage": "vitest run --coverage --coverage.include=src",
-    "lint": "eslint .",
+    "lint": "eslint",
     "prepare": "npm run build:types",
     "test": "vitest run"
   },
   "devDependencies": {
-    "@types/node": "22.10.1",
+    "@types/node": "22.10.2",
     "@vitest/coverage-v8": "2.1.8",
-    "eslint": "9.16.0",
-    "eslint-plugin-jsdoc": "50.6.0",
+    "eslint": "9.17.0",
+    "eslint-plugin-jsdoc": "50.6.1",
     "hyparquet-compressors": "1.0.0",
     "typescript": "5.7.2",
-    "typescript-eslint": "8.18.0",
+    "typescript-eslint": "8.18.1",
     "vitest": "2.1.8"
   }
 }
