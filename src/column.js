@@ -24,7 +24,7 @@ export function readColumn(reader, rowLimit, columnMetadata, schemaPath, { compr
   const rowData = []
   const hasRowLimit = rowLimit !== undefined && isFinite(rowLimit)
 
-  while (!hasRowLimit || rowData.length) {
+  while (!hasRowLimit || rowData.length < rowLimit) {
     if (reader.offset >= reader.view.byteLength - 1) break // end of reader
     // parse column header
     const header = parquetHeader(reader)
