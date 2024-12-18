@@ -10,7 +10,7 @@ import { concat } from './utils.js'
  * Parse column data from a buffer.
  *
  * @param {DataReader} reader
- * @param {number} rowLimit maximum number of rows to read (Infinity reads all rows)
+ * @param {number | undefined} rowLimit maximum number of rows to read (Infinity reads all rows)
  * @param {ColumnMetaData} columnMetadata column metadata
  * @param {SchemaTree[]} schemaPath schema path for the column
  * @param {ParquetReadOptions} options read options
@@ -22,9 +22,9 @@ export function readColumn(reader, rowLimit, columnMetadata, schemaPath, { compr
   let dictionary = undefined
   /** @type {any[]} */
   const rowData = []
-  const hasRowLimit = isFinite(rowLimit) && rowLimit >= 0
+  const hasRowLimit = rowLimit !== undefined && isFinite(rowLimit)
 
-  while (rowData.length < rowLimit || !hasRowLimit) {
+  while (!hasRowLimit || rowData.length) {
     if (reader.offset >= reader.view.byteLength - 1) break // end of reader
     // parse column header
     const header = parquetHeader(reader)

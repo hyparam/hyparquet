@@ -11,7 +11,8 @@ describe('readColumn', () => {
   const parquetFiles = fs.readdirSync('test/files').filter(f => f.endsWith('.parquet'))
   parquetFiles.forEach((file) => {
     it(`read columns from ${file} when rowLimit is undefined`, async () => {
-      const arrayBuffer = await asyncBufferFromFile(`test/files/${file}`).then(e => e.slice(0))
+      const asyncBuffer = await asyncBufferFromFile(`test/files/${file}`)
+      const arrayBuffer = await asyncBuffer.slice(0)
       const metadata = parquetMetadata(arrayBuffer)
 
       const result = metadata.row_groups.map((rowGroup) => rowGroup.columns.map((column) => {
@@ -20,7 +21,7 @@ describe('readColumn', () => {
         const columnArrayBuffer = arrayBuffer.slice(columnStartByte, columnEndByte)
         const schemaPath = getSchemaPath(metadata.schema, column.meta_data?.path_in_schema ?? [])
         const reader = { view: new DataView(columnArrayBuffer), offset: 0 }
-        return readColumn(reader, undefined, column.meta_data, schemaPath, { compressors })
+        return readColumn(reader, undefined, column.meta_data, schemaPath, { file: asyncBuffer, compressors })
       }))
 
       const base = file.replace('.parquet', '')
