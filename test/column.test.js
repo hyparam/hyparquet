@@ -15,6 +15,7 @@ describe('readColumn', () => {
       const metadata = parquetMetadata(arrayBuffer)
 
       const result = metadata.row_groups.map((rowGroup) => rowGroup.columns.map((column) => {
+        if (!column.meta_data) return []
         const [columnStartByte, columnEndByte] = getColumnRange(column.meta_data).map(Number)
         const columnArrayBuffer = arrayBuffer.slice(columnStartByte, columnEndByte)
         const schemaPath = getSchemaPath(metadata.schema, column.meta_data?.path_in_schema ?? [])
