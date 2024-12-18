@@ -9,7 +9,7 @@ import { fileToJson } from './helpers.js'
 
 describe('readColumn', () => {
   const parquetFiles = fs.readdirSync('test/files').filter(f => f.endsWith('.parquet'))
-  parquetFiles.forEach((file, i) => {
+  parquetFiles.forEach((file) => {
     it(`read columns from ${file} when rowLimit is undefined`, async () => {
       const arrayBuffer = await asyncBufferFromFile(`test/files/${file}`).then(e => e.slice(0))
       const metadata = parquetMetadata(arrayBuffer)
