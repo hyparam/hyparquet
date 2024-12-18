@@ -1,7 +1,7 @@
 import fs from 'fs'
 
 /**
- * Read .parquet file into JSON
+ * Read file and parse as JSON
  *
  * @param {string} filePath
  * @returns {any}

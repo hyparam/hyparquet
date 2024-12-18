@@ -67,6 +67,7 @@ export async function byteLengthFromUrl(url, requestInit) {
  * @returns {Promise<AsyncBuffer>}
  */
 export async function asyncBufferFromUrl({ url, byteLength, requestInit }) {
+  if (!url) throw new Error('missing url')
   // byte length from HEAD request
   byteLength ||= await byteLengthFromUrl(url, requestInit)
   const init = requestInit || {}

@@ -3,10 +3,11 @@
 ![hyparquet parakeet](hyparquet.jpg)
 
 [![npm](https://img.shields.io/npm/v/hyparquet)](https://www.npmjs.com/package/hyparquet)
+[![minzipped](https://img.shields.io/bundlephobia/minzip/hyparquet)](https://www.npmjs.com/package/hyparquet)
 [![workflow status](https://github.com/hyparam/hyparquet/actions/workflows/ci.yml/badge.svg)](https://github.com/hyparam/hyparquet/actions)
-[![mit license](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![dependencies](https://img.shields.io/badge/Dependencies-0-blueviolet)](https://www.npmjs.com/package/hyparquet?activeTab=dependencies)
+[![mit license](https://img.shields.io/badge/License-MIT-orange.svg)](https://opensource.org/licenses/MIT)
 ![coverage](https://img.shields.io/badge/Coverage-96-darkred)
+[![dependencies](https://img.shields.io/badge/Dependencies-0-blueviolet)](https://www.npmjs.com/package/hyparquet?activeTab=dependencies)
 
 Dependency free since 2023!
 
@@ -64,7 +65,7 @@ Note: Hyparquet is published as an ES module, so dynamic `import()` may be requi
 In the browser use `asyncBufferFromUrl` to wrap a url for reading asyncronously over the network.
 It is recommended that you filter by row and column to limit fetch size:
 
-```js
+```javascript
 const { asyncBufferFromUrl, parquetRead } = await import('https://cdn.jsdelivr.net/npm/hyparquet/src/hyparquet.min.js')
 
 const url = 'https://hyperparam-public.s3.amazonaws.com/bunnies.parquet'
@@ -109,7 +110,7 @@ You can define your own `AsyncBuffer` to create a virtual file that can be read 
 
 Pass the `requestInit` option to `asyncBufferFromUrl` to provide authentication information to a remote web server. For example:
 
-```js
+```javascript
 await parquetRead({
   file: await asyncBufferFromUrl({url, requestInit: {headers: {Authorization: 'Bearer my_token'}}}),
   onComplete: data => console.log(data)
@@ -163,7 +164,7 @@ For faster snappy decompression, try [hysnappy](https://github.com/hyparam/hysna
 You can include support for ALL parquet `compressors` plus hysnappy using the [hyparquet-compressors](https://github.com/hyparam/hyparquet-compressors) package.
 
 
-```js
+```javascript
 import { parquetRead } from 'hyparquet'
 import { compressors } from 'hyparquet-compressors'
 
