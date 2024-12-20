@@ -1,6 +1,6 @@
 {
   "name": "hyparquet",
-  "version": "1.6.4",
+  "version": "1.7.0",
   "description": "parquet file parser for javascript",
   "author": "Hyperparam",
   "homepage": "https://hyperparam.app",
