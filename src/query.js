@@ -133,8 +133,8 @@ export function matchQuery(record, query = {}) {
   return Object.entries(query).every(([field, condition]) => {
     const value = record[field]
 
-    if (condition !== null && (Array.isArray(condition) || typeof condition !== "object")) {
-      return equals(value, condition);
+    if (condition !== null && (Array.isArray(condition) || typeof condition !== 'object')) {
+      return equals(value, condition)
     }
 
     return Object.entries(condition || {}).every(([operator, target]) => {
@@ -148,11 +148,13 @@ export function matchQuery(record, query = {}) {
       case '$lte':
         return value <= target
       case '$ne':
-        return value !== target
+        return !equals(value, target)
       case '$in':
         return Array.isArray(target) && target.includes(value)
       case '$nin':
         return Array.isArray(target) && !target.includes(value)
+      case '$not':
+        return !matchQuery({ [field]: value }, { [field]: target })
       default:
         return true
       }
