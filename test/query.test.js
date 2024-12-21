@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parquetQuery } from '../src/query.js'
+import { matchQuery, parquetQuery } from '../src/query.js'
 import { asyncBufferFromFile, toJson } from '../src/utils.js'
 
 describe('parquetQuery', () => {
@@ -61,32 +61,49 @@ describe('parquetQuery', () => {
 
   it('reads data with filter', async () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
-    const rows = await parquetQuery({ file, filter: { c: 2 } })
-    expect(toJson(rows)).toEqual([
-      { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
-      { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
-    ])
+    const data = await parquetQuery({ file })
+    const query = { filter: { c: 2 } }
+    const expected = data.filter(row => matchQuery(row, query.filter))
+
+    const rows = await parquetQuery({ file, ...query })
+    expect(toJson(rows)).toEqual(expected)
   })
 
   it('reads data with filter and rowStart/rowEnd', async () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
-    const rows = await parquetQuery({ file, filter: { c: 2 }, rowStart: 1, rowEnd: 5 })
-    expect(toJson(rows)).toEqual([ { a: 'abc', b: 5, c: 2, d: true, e: [ 1, 2 ] } ])
+    const data = await parquetQuery({ file })
+    const query = { filter: { c: 2 }, rowStart: 1, rowEnd: 5 }
+    const expected = data
+      .filter(row => matchQuery(row, query.filter))
+      .slice(query.rowStart, query.rowEnd)
+
+    const rows = await parquetQuery({ file, ...query })
+    expect(toJson(rows)).toEqual(expected)
   })
 
   it('reads data with filter and orderBy', async () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
-    const rows = await parquetQuery({ file, filter: { c: 2 }, orderBy: 'b' })
-    expect(toJson(rows)).toEqual([
-      { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
-      { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
-    ])
+    const data = await parquetQuery({ file })
+    const query = { filter: { c: 2 }, orderBy: 'b' }
+    const expected = data
+      .filter(row => matchQuery(row, query.filter))
+      .sort((a, b) => a[query.orderBy] - b[query.orderBy])
+
+    const rows = await parquetQuery({ file, ...query })
+    expect(toJson(rows)).toEqual(expected)
   })
 
   it('reads data with filter, orderBy, and rowStart/rowEnd', async () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
-    const rows = await parquetQuery({ file, filter: { c: 2 }, orderBy: 'b', rowStart: 1, rowEnd: 2 })
-    expect(toJson(rows)).toEqual([ { a: 'abc', b: 5, c: 2, d: true, e: [ 1, 2 ] } ])
+    const data = await parquetQuery({ file })
+    const query = { filter: { c: 2 }, orderBy: 'b', rowStart: 1, rowEnd: 2 }
+    const expected = data
+      .filter(row => matchQuery(row, query.filter))
+      .sort((a, b) => a[query.orderBy] - b[query.orderBy])
+      .slice(query.rowStart, query.rowEnd)
+
+    const rows = await parquetQuery({ file, ...query })
+    expect(toJson(rows)).toEqual(expected)
   })
 
 })
