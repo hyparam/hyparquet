@@ -39,17 +39,17 @@ export function concat(aaa, bbb) {
 
 /**
  * Deep equality comparison
- * 
- * @param {any} a 
- * @param {any} b 
- * @returns {boolean}
+ *
+ * @param {any} a First object to compare
+ * @param {any} b Second object to compare
+ * @returns {boolean} true if objects are equal
  */
 export function equals(a, b) {
-  if (a === b) return true;
-  if (!a || !b || typeof a !== typeof b) return false;
-  return Array.isArray(a) 
+  if (a === b) return true
+  if (!a || !b || typeof a !== typeof b) return false
+  return Array.isArray(a)
     ? a.length === b.length && a.every((v, i) => equals(v, b[i]))
-    : Object.keys(a).length === Object.keys(b).length && Object.keys(a).every(k => equals(a[k], b[k]));
+    : Object.keys(a).length === Object.keys(b).length && Object.keys(a).every(k => equals(a[k], b[k]))
 }
 
 /**
