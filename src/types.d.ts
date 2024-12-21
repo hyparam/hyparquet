@@ -350,3 +350,22 @@ export interface ParquetReadOptions {
   compressors?: Compressors // custom decompressors
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
 }
+
+export type ParquetQueryValue = string | number | boolean | object | null | undefined
+
+export type ParquetQueryOperator = {
+  $gt?: ParquetQueryValue
+  $gte?: ParquetQueryValue
+  $lt?: ParquetQueryValue
+  $lte?: ParquetQueryValue
+  $ne?: ParquetQueryValue
+  $in?: ParquetQueryValue[]
+  $nin?: ParquetQueryValue[]
+}
+
+export interface ParquetQueryFilter {
+  [key: string]: ParquetQueryValue | ParquetQueryOperator | ParquetQueryFilter[] | undefined
+  $and?: ParquetQueryFilter[]
+  $or?: ParquetQueryFilter[]
+  $not?: ParquetQueryFilter
+}
