@@ -2,17 +2,19 @@ import { parquetReadObjects } from './hyparquet.js'
 import { parquetMetadataAsync } from './metadata.js'
 
 /**
- * Wraps parquetRead with orderBy support.
+ * Wraps parquetRead with filter and orderBy support.
  * This is a parquet-aware query engine that can read a subset of rows and columns.
- * Accepts an optional orderBy column name to sort the results.
+ * Accepts optional filter object to filter the results and orderBy column name to sort the results.
  * Note that using orderBy may SIGNIFICANTLY increase the query time.
  *
- * @param {ParquetReadOptions & { orderBy?: string }} options
+ * @import {ParquetQueryFilter} from '../src/types.d.ts'
+ * @param {ParquetReadOptions & { filter?: ParquetQueryFilter, orderBy?: string }} options
  * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
  */
 export async function parquetQuery(options) {
-  const { file, rowStart, rowEnd, orderBy } = options
+  const { file, rowStart, rowEnd, orderBy, filter } = options
   options.metadata ||= await parquetMetadataAsync(file)
+  let results
 
   // TODO: Faster path for: no orderBy, no rowStart/rowEnd, one row group
 
@@ -26,11 +28,15 @@ export async function parquetQuery(options) {
       .slice(rowStart, rowEnd)
 
     const sparseData = await parquetReadRows({ ...options, rows: sortedIndices })
-    const data = sortedIndices.map(index => sparseData[index])
-    return data
+    results = sortedIndices.map(index => sparseData[index])
   } else {
-    return await parquetReadObjects(options)
+    results = await parquetReadObjects(options)
   }
+
+  // TODO: Move filter to parquetRead for performance
+  return filter
+    ? results.filter(row => matchQuery(row, filter))
+    : results
 }
 
 /**
@@ -97,4 +103,53 @@ function compare(a, b) {
   if (a < b) return -1
   if (a > b) return 1
   return 1 // TODO: how to handle nulls?
+}
+
+/**
+ * Match a record against a query filter
+ *
+ * @param {any} record
+ * @param {ParquetQueryFilter} query
+ * @returns {boolean}
+ * @example matchQuery({ id: 1 }, { id: {$gte: 1} }) // true
+ */
+export function matchQuery(record, query = {}) {
+  if (query.$and) {
+    return query.$and.every(subQuery => matchQuery(record, subQuery))
+  }
+
+  if (query.$or) {
+    return query.$or.some(subQuery => matchQuery(record, subQuery))
+  }
+
+  return Object.entries(query).every(([field, condition]) => {
+    const value = record[field]
+
+    if (condition !== null && typeof condition !== 'object') {
+      return value === condition
+    }
+
+    return Object.entries(condition || {}).every(([operator, target]) => {
+      switch (operator) {
+      case '$gt':
+        return value > target
+      case '$gte':
+        return value >= target
+      case '$lt':
+        return value < target
+      case '$lte':
+        return value <= target
+      case '$ne':
+        return value !== target
+      case '$in':
+        return Array.isArray(target) && target.includes(value)
+      case '$nin':
+        return Array.isArray(target) && !target.includes(value)
+      case '$not':
+        return !matchQuery({ [field]: value }, { [field]: target })
+      default:
+        return true
+      }
+    })
+  })
 }
