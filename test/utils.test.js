@@ -166,7 +166,8 @@ describe('asyncBufferFromUrl', () => {
       })
     })
 
-    expect(asyncBufferFromUrl({ url: 'https://example.com' })).rejects.toThrow('fetch head failed 401')
+    await expect(asyncBufferFromUrl({ url: 'https://example.com' }))
+      .rejects.toThrow('fetch head failed 401')
 
     const buffer = await asyncBufferFromUrl({ url: 'https://example.com', requestInit: { headers: { Authorization: 'Bearer token' } } } )
     expect(buffer.byteLength).toBe(1024)
@@ -195,11 +196,11 @@ describe('asyncBufferFromUrl', () => {
     })
 
     const noHeaders = await asyncBufferFromUrl({ url: 'https://example.com', byteLength: 1024 })
-    expect(noHeaders.slice(0, 100)).rejects.toThrow('fetch failed 401')
+    await expect(noHeaders.slice(0, 100)).rejects.toThrow('fetch failed 401')
 
     const withHeaders = await asyncBufferFromUrl({ url: 'https://example.com', byteLength: 1024, requestInit: { headers: { Authorization: 'Bearer token' } } } )
-    expect (await withHeaders.slice(0, 100)).toBe(mockArrayBuffer)
+    await expect(withHeaders.slice(0, 100)).resolves.toBe(mockArrayBuffer)
 
-    expect (withHeaders.slice(0, 10)).rejects.toThrow('fetch failed 404')
+    await expect(withHeaders.slice(0, 10)).rejects.toThrow('fetch failed 404')
   })
 })

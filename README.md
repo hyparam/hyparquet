@@ -95,12 +95,14 @@ const metadata = parquetMetadata(arrayBuffer)
 
 ### AsyncBuffer
 
-Hyparquet accepts argument `file` of type `AsyncBuffer` which is like a js `ArrayBuffer` but the `slice` method returns `Promise<ArrayBuffer>`.
+Hyparquet accepts argument `file` of type `AsyncBuffer` which is like a js `ArrayBuffer` but the `slice` method can return `Promise<ArrayBuffer>`.
+You can pass an `ArrayBuffer` anywhere that an `AsyncBuffer` is expected, if you have the entire file in memory.
 
 ```typescript
+type Awaitable<T> = T | Promise<T>
 interface AsyncBuffer {
   byteLength: number
-  slice(start: number, end?: number): Promise<ArrayBuffer>
+  slice(start: number, end?: number): Awaitable<ArrayBuffer>
 }
 ```
 
