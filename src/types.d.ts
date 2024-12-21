@@ -361,11 +361,11 @@ export type ParquetQueryOperator = {
   $ne?: ParquetQueryValue
   $in?: ParquetQueryValue[]
   $nin?: ParquetQueryValue[]
-  $not?: ParquetQueryOperator
 }
 
 export interface ParquetQueryFilter {
   [key: string]: ParquetQueryValue | ParquetQueryOperator | ParquetQueryFilter[] | undefined
   $and?: ParquetQueryFilter[]
   $or?: ParquetQueryFilter[]
+  $not?: ParquetQueryFilter
 }
