@@ -46,10 +46,11 @@ export function concat(aaa, bbb) {
  */
 export function equals(a, b) {
   if (a === b) return true
+  if (a instanceof Uint8Array && b instanceof Uint8Array) return equals(Array.from(a), Array.from(b))
   if (!a || !b || typeof a !== typeof b) return false
-  return Array.isArray(a)
+  return Array.isArray(a) && Array.isArray(b)
     ? a.length === b.length && a.every((v, i) => equals(v, b[i]))
-    : Object.keys(a).length === Object.keys(b).length && Object.keys(a).every(k => equals(a[k], b[k]))
+    : typeof a === 'object' && Object.keys(a).length === Object.keys(b).length && Object.keys(a).every(k => equals(a[k], b[k]))
 }
 
 /**
