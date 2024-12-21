@@ -351,21 +351,21 @@ export interface ParquetReadOptions {
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
 }
 
-type ParquetQueryValue = string | number | boolean | object | null;
+export type ParquetQueryValue = string | number | boolean | object | null | undefined
 
 export type ParquetQueryOperator = {
-  $gt?: ParquetQueryValue;
-  $gte?: ParquetQueryValue;
-  $lt?: ParquetQueryValue;
-  $lte?: ParquetQueryValue;
-  $ne?: ParquetQueryValue;
-  $in?: ParquetQueryValue[];
-  $nin?: ParquetQueryValue[];
-  $not?: ParquetQueryOperator;
+  $gt?: ParquetQueryValue
+  $gte?: ParquetQueryValue
+  $lt?: ParquetQueryValue
+  $lte?: ParquetQueryValue
+  $ne?: ParquetQueryValue
+  $in?: ParquetQueryValue[]
+  $nin?: ParquetQueryValue[]
+  $not?: ParquetQueryOperator
 }
 
 export interface ParquetQueryFilter {
-  [key: string]: ParquetQueryValue | ParquetQueryOperator | ParquetQueryFilter[] | undefined;
-  $and?: ParquetQueryFilter[];
-  $or?: ParquetQueryFilter[];
+  [key: string]: ParquetQueryValue | ParquetQueryOperator | ParquetQueryFilter[] | undefined
+  $and?: ParquetQueryFilter[]
+  $or?: ParquetQueryFilter[]
 }
