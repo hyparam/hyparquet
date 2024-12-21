@@ -117,4 +117,82 @@ describe('parquetQuery', () => {
     ])
   })
 
+  it('reads data with $not value filter', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    const rows = await parquetQuery({ file, filter: { c: { $not: 2 } } })
+    expect(toJson(rows)).toEqual([
+      { a: 'abc', b: 2, c: 3, d: true },
+      { a: 'abc', b: 3, c: 4, d: true },
+      { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
+    ])
+  })
+
+  it('reads data with $gt filter', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    const rows = await parquetQuery({ file, filter: { b: { $gt: 3 } } })
+    expect(toJson(rows)).toEqual([
+      { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
+      { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
+    ])
+  })
+
+
+  it('reads data with $gte filter', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    const rows = await parquetQuery({ file, filter: { b: { $gte: 3 } } })
+    expect(toJson(rows)).toEqual([
+      { a: 'abc', b: 3, c: 4, d: true },
+      { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
+      { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
+    ])
+  })
+
+  it('reads data with $lt filter', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    const rows = await parquetQuery({ file, filter: { b: { $lt: 3 } } })
+    expect(toJson(rows)).toEqual([
+      { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
+      { a: 'abc', b: 2, c: 3, d: true },
+    ])
+  })
+
+  it('reads data with $lte filter', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    const rows = await parquetQuery({ file, filter: { b: { $lte: 3 } } })
+    expect(toJson(rows)).toEqual([
+      { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
+      { a: 'abc', b: 2, c: 3, d: true },
+      { a: 'abc', b: 3, c: 4, d: true },
+    ])
+  })
+
+  it('reads data with $ne filter', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    const rows = await parquetQuery({ file, filter: { b: { $ne: 3 } } })
+    expect(toJson(rows)).toEqual([
+      { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
+      { a: 'abc', b: 2, c: 3, d: true },
+      { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
+      { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
+    ])
+  })
+
+  it('reads data with $in filter', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    const rows = await parquetQuery({ file, filter: { b: { $in: [2, 4] } } })
+    expect(toJson(rows)).toEqual([
+      { a: 'abc', b: 2, c: 3, d: true },
+      { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
+    ])
+  })
+
+  it('reads data with $nin filter', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    const rows = await parquetQuery({ file, filter: { b: { $nin: [2, 4] } } })
+    expect(toJson(rows)).toEqual([
+      { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
+      { a: 'abc', b: 3, c: 4, d: true },
+      { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
+    ])
+  })
 })
