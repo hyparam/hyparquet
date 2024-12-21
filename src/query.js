@@ -1,5 +1,6 @@
 import { parquetReadObjects } from './hyparquet.js'
 import { parquetMetadataAsync } from './metadata.js'
+import { equals } from './utils.js'
 
 /**
  * Wraps parquetRead with filter and orderBy support.
@@ -128,7 +129,7 @@ export function matchQuery(record, query = {}) {
     const value = record[field]
 
     if (condition !== null && typeof condition !== 'object') {
-      return value === condition
+      return equals(value, condition)
     }
 
     return Object.entries(condition || {}).every(([operator, target]) => {
