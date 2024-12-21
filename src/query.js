@@ -17,22 +17,27 @@ export async function parquetQuery(options) {
 
   // TODO: Faster path for: no orderBy, no rowStart/rowEnd, one row group
 
-  if (typeof orderBy === 'string') {
+  if (filter) {
+    // TODO: Move filter to parquetRead for performance
+    const results = await parquetReadObjects({ ...options, rowStart: undefined, rowEnd: undefined })
+    return results
+      .filter(row => matchQuery(row, filter))
+      .sort((a, b) => orderBy ? compare(a[orderBy], b[orderBy]) : 0)
+      .slice(rowStart, rowEnd)
+  } else if (typeof orderBy === 'string') {
     // Fetch orderBy column first
     const orderColumn = await parquetReadObjects({ ...options, rowStart: undefined, rowEnd: undefined, columns: [orderBy] })
 
     // Compute row groups to fetch
     const sortedIndices = Array.from(orderColumn, (_, index) => index)
       .sort((a, b) => compare(orderColumn[a][orderBy], orderColumn[b][orderBy]))
+      .slice(rowStart, rowEnd)
 
     const sparseData = await parquetReadRows({ ...options, rows: sortedIndices })
-    return sortedIndices.map(index => sparseData[index])
-      .filter((doc) => !filter || matchQuery(doc, filter))
-      .slice(rowStart, rowEnd)
+    const data = sortedIndices.map(index => sparseData[index])
+    return data
   } else {
-    // TODO: Move filter to parquetRead for performance
-    const results = await parquetReadObjects(options)
-    return filter ? results.filter(row => matchQuery(row, filter)) : results
+    return await parquetReadObjects(options)
   }
 }
 

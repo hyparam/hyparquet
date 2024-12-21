@@ -78,15 +78,15 @@ describe('parquetQuery', () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     const rows = await parquetQuery({ file, filter: { c: 2 }, orderBy: 'b' })
     expect(toJson(rows)).toEqual([
-      { __index__: 0, a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
-      { __index__: 4, a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
+      { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
+      { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
     ])
   })
 
   it('reads data with filter, orderBy, and rowStart/rowEnd', async () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     const rows = await parquetQuery({ file, filter: { c: 2 }, orderBy: 'b', rowStart: 1, rowEnd: 2 })
-    expect(toJson(rows)).toEqual([ { __index__: 4, a: 'abc', b: 5, c: 2, d: true, e: [ 1, 2 ] } ])
+    expect(toJson(rows)).toEqual([ { a: 'abc', b: 5, c: 2, d: true, e: [ 1, 2 ] } ])
   })
 
 })
