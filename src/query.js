@@ -117,6 +117,11 @@ function compare(a, b) {
  * @example matchQuery({ id: 1 }, { id: {$gte: 1} }) // true
  */
 export function matchQuery(record, query = {}) {
+
+  if (query.$not) {
+    return !matchQuery(record, query.$not)
+  }
+
   if (query.$and) {
     return query.$and.every(subQuery => matchQuery(record, subQuery))
   }
@@ -128,8 +133,8 @@ export function matchQuery(record, query = {}) {
   return Object.entries(query).every(([field, condition]) => {
     const value = record[field]
 
-    if (condition !== null && typeof condition !== 'object') {
-      return equals(value, condition)
+    if (condition !== null && (Array.isArray(condition) || typeof condition !== "object")) {
+      return equals(value, condition);
     }
 
     return Object.entries(condition || {}).every(([operator, target]) => {
@@ -148,8 +153,6 @@ export function matchQuery(record, query = {}) {
         return Array.isArray(target) && target.includes(value)
       case '$nin':
         return Array.isArray(target) && !target.includes(value)
-      case '$not':
-        return !matchQuery({ [field]: value }, { [field]: target })
       default:
         return true
       }
