@@ -14,7 +14,6 @@ import { parquetMetadataAsync } from './metadata.js'
 export async function parquetQuery(options) {
   const { file, rowStart, rowEnd, orderBy, filter } = options
   options.metadata ||= await parquetMetadataAsync(file)
-  let results
 
   // TODO: Faster path for: no orderBy, no rowStart/rowEnd, one row group
 
@@ -25,18 +24,16 @@ export async function parquetQuery(options) {
     // Compute row groups to fetch
     const sortedIndices = Array.from(orderColumn, (_, index) => index)
       .sort((a, b) => compare(orderColumn[a][orderBy], orderColumn[b][orderBy]))
-      .slice(rowStart, rowEnd)
 
     const sparseData = await parquetReadRows({ ...options, rows: sortedIndices })
-    results = sortedIndices.map(index => sparseData[index])
+    return sortedIndices.map(index => sparseData[index])
+      .filter((doc) => !filter || matchQuery(doc, filter))
+      .slice(rowStart, rowEnd)
   } else {
-    results = await parquetReadObjects(options)
+    // TODO: Move filter to parquetRead for performance
+    const results = await parquetReadObjects(options)
+    return filter ? results.filter(row => matchQuery(row, filter)) : results
   }
-
-  // TODO: Move filter to parquetRead for performance
-  return filter
-    ? results.filter(row => matchQuery(row, filter))
-    : results
 }
 
 /**
