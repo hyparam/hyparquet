@@ -108,17 +108,14 @@ export async function asyncBufferFromUrl({ url, byteLength, requestInit }) {
       const res = await fetch(url, { ...init, headers })
       if (!res.ok || !res.body) throw new Error(`fetch failed ${res.status}`)
 
-      switch (res.status) {
-      // Endpoint does not support range requests and returned the whole object
-      case 200:
+      if (res.status === 200) {
+        // Endpoint does not support range requests and returned the whole object
         buffer = res.arrayBuffer()
         return buffer.then(buffer => buffer.slice(start, end))
-
+      } else if (res.status === 206) {
         // The endpoint supports range requests and sent us the requested range
-      case 206:
         return res.arrayBuffer()
-
-      default:
+      } else {
         throw new Error(`fetch received unexpected status code ${res.status}`)
       }
     },
