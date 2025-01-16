@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
 import { asyncBufferFromUrl, byteLengthFromUrl, toJson } from '../src/utils.js'
-import { arrayBuffer } from 'stream/consumers'
 
 describe('toJson', () => {
   it('convert undefined to null', () => {
@@ -208,7 +207,7 @@ describe('asyncBufferFromUrl', () => {
     await expect(withHeaders.slice(0, 10)).rejects.toThrow('fetch failed 404')
   })
 
-  describe("when range requests are unsupported", () => {
+  describe('when range requests are unsupported', () => {
     it('creates an AsyncBuffer with the correct byte length', async () => {
       const mockArrayBuffer = new ArrayBuffer(1024)
       global.fetch = vi.fn().mockResolvedValue({
@@ -216,16 +215,16 @@ describe('asyncBufferFromUrl', () => {
         status: 200,
         body: {},
         arrayBuffer: () => Promise.resolve(mockArrayBuffer),
-      });
-  
+      })
+
       const buffer = await asyncBufferFromUrl({ url: 'https://example.com', byteLength: 1024 })
-      const chunk = await buffer.slice(0, 100);
-  
+      const chunk = await buffer.slice(0, 100)
+
       expect(fetch).toHaveBeenCalledWith('https://example.com', {
-        headers: new Headers({ Range: 'bytes=0-99' })
-      });
-  
-      expect(chunk.byteLength).toBe(100);
+        headers: new Headers({ Range: 'bytes=0-99' }),
+      })
+
+      expect(chunk.byteLength).toBe(100)
     })
 
     it('does not make multiple requests for multiple slices', async () => {
@@ -234,8 +233,8 @@ describe('asyncBufferFromUrl', () => {
         ok: true,
         status: 200,
         body: {},
-        arrayBuffer: () => Promise.resolve(mockArrayBuffer)
-      });
+        arrayBuffer: () => Promise.resolve(mockArrayBuffer),
+      })
 
       const buffer = await asyncBufferFromUrl({ url: 'https://example.com', byteLength: 1024 })
 
