@@ -86,17 +86,38 @@ export async function asyncBufferFromUrl({ url, byteLength, requestInit }) {
   if (!url) throw new Error('missing url')
   // byte length from HEAD request
   byteLength ||= await byteLengthFromUrl(url, requestInit)
+
+  /**
+   * A promise for the whole buffer, if range requests are not supported.
+   * @type {Promise<ArrayBuffer>|undefined}
+   */
+  let buffer = undefined
   const init = requestInit || {}
+
   return {
     byteLength,
     async slice(start, end) {
-      // fetch byte range from url
+      if (buffer) {
+        return buffer.then(buffer => buffer.slice(start, end))
+      }
+
       const headers = new Headers(init.headers)
       const endStr = end === undefined ? '' : end - 1
       headers.set('Range', `bytes=${start}-${endStr}`)
+
       const res = await fetch(url, { ...init, headers })
       if (!res.ok || !res.body) throw new Error(`fetch failed ${res.status}`)
-      return res.arrayBuffer()
+
+      if (res.status === 200) {
+        // Endpoint does not support range requests and returned the whole object
+        buffer = res.arrayBuffer()
+        return buffer.then(buffer => buffer.slice(start, end))
+      } else if (res.status === 206) {
+        // The endpoint supports range requests and sent us the requested range
+        return res.arrayBuffer()
+      } else {
+        throw new Error(`fetch received unexpected status code ${res.status}`)
+      }
     },
   }
 }
