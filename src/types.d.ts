@@ -338,17 +338,23 @@ export interface ColumnData {
 /**
  * Parquet query options for reading data
  */
-export interface ParquetReadOptions {
+export type ParquetReadOptions =  ParquetBaseReadOptions | ParquetObjectRowReadOptions
+
+interface ParquetBaseReadOptions {
   file: AsyncBuffer // file-like object containing parquet data
   metadata?: FileMetaData // parquet metadata, will be parsed if not provided
   columns?: string[] // columns to read, all columns if undefined
-  rowFormat?: string // format of each row passed to the onComplete function
   rowStart?: number // first requested row index (inclusive)
   rowEnd?: number // last requested row index (exclusive)
   onChunk?: (chunk: ColumnData) => void // called when a column chunk is parsed. chunks may be outside the requested range.
   onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
   compressors?: Compressors // custom decompressors
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
+}
+
+interface ParquetObjectRowReadOptions extends ParquetBaseReadOptions {
+  rowFormat: "object" // format of each row passed to the onComplete function
+  onComplete?: (rows: any[]) => void // called when all requested rows and columns are parsed
 }
 
 export type ParquetQueryValue = string | number | boolean | object | null | undefined
