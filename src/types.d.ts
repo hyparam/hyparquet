@@ -339,7 +339,7 @@ export interface ColumnData {
  * Parquet query options for reading data
  */
 
-export type ParquetReadObjectsOptions = ParquetBaseReadOptions & {rowFormat?: 'object'}
+export type ParquetReadObjectsOptions = Omit<ParquetBaseReadOptions, 'rowFormat'>
 export type ParquetReadOptions = ParquetBaseReadOptions & ParquetRowReadCallbacks
 
 type ParquetRowReadCallbacks = 
