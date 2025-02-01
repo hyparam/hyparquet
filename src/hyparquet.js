@@ -16,8 +16,8 @@ export { asyncBufferFromFile, asyncBufferFromUrl, byteLengthFromUrl, cachedAsync
 export function parquetReadObjects(options) {
   return new Promise((onComplete, reject) => {
     parquetRead({
-      rowFormat: 'object',
       ...options,
+      rowFormat: 'object',
       onComplete,
     }).catch(reject)
   })

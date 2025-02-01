@@ -338,7 +338,11 @@ export interface ColumnData {
 /**
  * Parquet query options for reading data
  */
-export type ParquetReadOptions =  ParquetArrayRowReadOptions | ParquetObjectRowReadOptions
+export type ParquetReadOptions = ParquetBaseReadOptions & ParquetRowReadCallbacks
+
+type ParquetRowReadCallbacks = 
+  | ParquetRowReadOnCompleteArray
+  | ParquetRowReadOnCompleteObject
 
 interface ParquetBaseReadOptions {
   file: AsyncBuffer // file-like object containing parquet data
@@ -351,14 +355,14 @@ interface ParquetBaseReadOptions {
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
 }
 
-interface ParquetArrayRowReadOptions extends ParquetBaseReadOptions {
-  rowFormat?: "array" // format of each row passed to the onComplete function
+interface ParquetRowReadOnCompleteArray {
+  rowFormat?: 'array' // format of each row passed to the onComplete function
   onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
 }
 
-interface ParquetObjectRowReadOptions extends ParquetBaseReadOptions {
-  rowFormat: "object" // format of each row passed to the onComplete function
-  onComplete?: (rows: any[]) => void // called when all requested rows and columns are parsed
+interface ParquetRowReadOnCompleteObject {
+  rowFormat: 'object' // format of each row passed to the onComplete function
+  onComplete?: (rows: Record<string, any>[]) => void // called when all requested rows and columns are parsed 
 }
 
 export type ParquetQueryValue = string | number | boolean | object | null | undefined
