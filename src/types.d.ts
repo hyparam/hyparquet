@@ -338,6 +338,8 @@ export interface ColumnData {
 /**
  * Parquet query options for reading data
  */
+
+export type ParquetReadObjectsOptions = ParquetBaseReadOptions & {rowFormat?: 'object'}
 export type ParquetReadOptions = ParquetBaseReadOptions & ParquetRowReadCallbacks
 
 type ParquetRowReadCallbacks = 
@@ -353,6 +355,7 @@ interface ParquetBaseReadOptions {
   onChunk?: (chunk: ColumnData) => void // called when a column chunk is parsed. chunks may be outside the requested range.
   compressors?: Compressors // custom decompressors
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
+  rowFormat? : 'array' | 'object' // format of each row passed to the onComplete function
 }
 
 interface ParquetRowReadOnCompleteArray {

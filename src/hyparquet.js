@@ -10,7 +10,7 @@ export { snappyUncompress } from './snappy.js'
 export { asyncBufferFromFile, asyncBufferFromUrl, byteLengthFromUrl, cachedAsyncBuffer, toJson } from './utils.js'
 
 /**
- * @param {ParquetReadOptions} options
+ * @param {ParquetReadObjectsOptions} options
  * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
 */
 export function parquetReadObjects(options) {
@@ -59,4 +59,5 @@ export function parquetReadObjects(options) {
  * @typedef {import('../src/types.d.ts').BoundaryOrder} BoundaryOrder
  * @typedef {import('../src/types.d.ts').ColumnData} ColumnData
  * @typedef {import('../src/types.d.ts').ParquetReadOptions} ParquetReadOptions
+ * @typedef {import('../src/types.d.ts').ParquetReadObjectsOptions} ParquetReadObjectsOptions
  */
