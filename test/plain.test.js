@@ -39,7 +39,7 @@ describe('readPlain', () => {
 
   it('reads INT64 values', () => {
     const view = new DataView(new ArrayBuffer(8))
-    view.setBigInt64(0, BigInt('1234567890123456789'), true)
+    view.setBigInt64(0, 1234567890123456789n, true)
     const reader = { view, offset: 0 }
     const result = readPlain(reader, 'INT64', 1, undefined)
     expect(result).toEqual(new BigInt64Array([1234567890123456789n]))
@@ -48,7 +48,7 @@ describe('readPlain', () => {
 
   it('reads unaligned INT64 values', () => {
     const view = new DataView(new ArrayBuffer(9))
-    view.setBigInt64(1, BigInt('1234567890123456789'), true)
+    view.setBigInt64(1, 1234567890123456789n, true)
     const reader = { view, offset: 1 }
     const result = readPlain(reader, 'INT64', 1, undefined)
     expect(result).toEqual(new BigInt64Array([1234567890123456789n]))

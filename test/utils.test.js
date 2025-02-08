@@ -8,9 +8,9 @@ describe('toJson', () => {
   })
 
   it('convert bigint to number', () => {
-    expect(toJson(BigInt(123))).toBe(123)
-    expect(toJson([BigInt(123), BigInt(456)])).toEqual([123, 456])
-    expect(toJson({ a: BigInt(123), b: { c: BigInt(456) } })).toEqual({ a: 123, b: { c: 456 } })
+    expect(toJson(123n)).toBe(123)
+    expect(toJson([123n, 456n])).toEqual([123, 456])
+    expect(toJson({ a: 123n, b: { c: 456n } })).toEqual({ a: 123, b: { c: 456 } })
   })
 
   it('convert Uint8Array to array of numbers', () => {
@@ -23,7 +23,7 @@ describe('toJson', () => {
   })
 
   it('ignore undefined properties in objects', () => {
-    expect(toJson({ a: undefined, b: BigInt(123) })).toEqual({ b: 123 })
+    expect(toJson({ a: undefined, b: 123n })).toEqual({ b: 123 })
   })
 
   it('return null in objects unchanged', () => {

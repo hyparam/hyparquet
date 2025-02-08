@@ -51,14 +51,14 @@ describe('convert function', () => {
   })
 
   it('converts bigint to DECIMAL', () => {
-    const data = [BigInt(1000), BigInt(2000)]
+    const data = [1000n, 2000n]
     /** @type {SchemaElement} */
     const schemaElement = { name, converted_type: 'DECIMAL' }
     expect(convert(data, schemaElement)).toEqual([1000, 2000])
   })
 
   it('converts bigint to DECIMAL with scale', () => {
-    const data = [BigInt(10), BigInt(20)]
+    const data = [10n, 20n]
     /** @type {SchemaElement} */
     const schemaElement = { name, converted_type: 'DECIMAL', scale: 2 }
     expect(convert(data, schemaElement)).toEqual([0.1, 0.2])
@@ -114,7 +114,7 @@ describe('convert function', () => {
   })
 
   it('converts uint64', () => {
-    const data = [BigInt(100), BigInt(-100)]
+    const data = [100n, -100n]
     /** @type {SchemaElement} */
     const schemaElement = { name, converted_type: 'UINT_64' }
     expect(convert(data, schemaElement)).toEqual(new BigUint64Array([100n, 18446744073709551516n]))
