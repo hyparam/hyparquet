@@ -284,7 +284,7 @@ export function convertMetadata(value, schema) {
   if (type === 'INT64' && logical_type?.type === 'TIMESTAMP') return new Date(Number(view.getBigInt64(0, true)))
   if (type === 'INT32' && view.byteLength === 4) return view.getInt32(0, true)
   if (type === 'INT64' && view.byteLength === 8) return view.getBigInt64(0, true)
-  if (converted_type === 'DECIMAL') return parseDecimal(value) * Math.pow(10, -(schema.scale || 0))
+  if (converted_type === 'DECIMAL') return parseDecimal(value) * 10 ** -(schema.scale || 0)
   if (logical_type?.type === 'FLOAT16') return parseFloat16(value)
   if (type === 'FIXED_LEN_BYTE_ARRAY') return value
   // assert(false)
