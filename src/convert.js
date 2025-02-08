@@ -41,7 +41,7 @@ export function convert(data, schemaElement, utf8 = true) {
   const ctype = schemaElement.converted_type
   if (ctype === 'DECIMAL') {
     const scale = schemaElement.scale || 0
-    const factor = Math.pow(10, -scale)
+    const factor = 10 ** -scale
     const arr = new Array(data.length)
     for (let i = 0; i < arr.length; i++) {
       if (data[0] instanceof Uint8Array) {
@@ -123,11 +123,17 @@ export function convert(data, schemaElement, utf8 = true) {
  * @returns {number}
  */
 export function parseDecimal(bytes) {
-  // TODO: handle signed
   let value = 0
   for (const byte of bytes) {
-    value = value << 8 | byte
+    value = value * 256 + byte
   }
+
+  // handle signed
+  const bits = bytes.length * 8
+  if (value >= 2 ** (bits - 1)) {
+    value -= 2 ** bits
+  }
+
   return value
 }
 
@@ -152,7 +158,7 @@ export function parseFloat16(bytes) {
   const sign = int16 >> 15 ? -1 : 1
   const exp = int16 >> 10 & 0x1f
   const frac = int16 & 0x3ff
-  if (exp === 0) return sign * Math.pow(2, -14) * (frac / 1024) // subnormals
+  if (exp === 0) return sign * 2 ** -14 * (frac / 1024) // subnormals
   if (exp === 0x1f) return frac ? NaN : sign * Infinity
-  return sign * Math.pow(2, exp - 15) * (1 + frac / 1024)
+  return sign * 2 ** (exp - 15) * (1 + frac / 1024)
 }

@@ -58,6 +58,7 @@ export default [
         object: true,
         array: false,
       }],
+      'prefer-exponentiation-operator': 'error',
       'prefer-promise-reject-errors': 'error',
       quotes: ['error', 'single'],
       'require-await': 'warn',

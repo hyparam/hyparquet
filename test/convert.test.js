@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { convert, parseFloat16 } from '../src/convert.js'
+import { convert, parseDecimal, parseFloat16 } from '../src/convert.js'
 
 /**
  * @import {SchemaElement} from '../src/types.js'
@@ -69,6 +69,13 @@ describe('convert function', () => {
     /** @type {SchemaElement} */
     const schemaElement = { name, converted_type: 'DECIMAL', scale: 0 }
     expect(convert(data, schemaElement)).toEqual([100, 200])
+  })
+
+  it('converts byte array from issue #59 to DECIMAL', () => {
+    const data = [new Uint8Array([18, 83, 137, 151, 156, 0])]
+    /** @type {SchemaElement} */
+    const schemaElement = { name, converted_type: 'DECIMAL', scale: 10, precision: 14 }
+    expect(convert(data, schemaElement)).toEqual([2015])
   })
 
   it('converts epoch time to DATE', () => {
@@ -180,6 +187,33 @@ describe('parseFloat16', () => {
 
   it('convert float16 subnormal number', () => {
     expect(parseFloat16(new Uint8Array([0xff, 0x03])))
-      .toBeCloseTo(Math.pow(2, -14) * (1023 / 1024), 5)
+      .toBeCloseTo(2 ** -14 * (1023 / 1024), 5)
+  })
+})
+
+describe('parseDecimal', () => {
+  it('should return 0 for an empty Uint8Array', () => {
+    const result = parseDecimal(new Uint8Array())
+    expect(result).toBe(0)
+  })
+
+  it('should parse a single byte', () => {
+    const result = parseDecimal(new Uint8Array([42]))
+    expect(result).toBe(42)
+  })
+
+  it('should parse two bytes in big-endian order', () => {
+    const result = parseDecimal(new Uint8Array([1, 0]))
+    expect(result).toBe(256)
+  })
+
+  it('should parse three bytes', () => {
+    const result = parseDecimal(new Uint8Array([1, 2, 3]))
+    expect(result).toBe(66051)
+  })
+
+  it('should parse -1 as a 32-bit number', () => {
+    const result = parseDecimal(new Uint8Array([255, 255, 255, 255]))
+    expect(result).toBe(-1)
   })
 })
