@@ -1,0 +1,61 @@
+{
+  "created_by": "Polars",
+  "key_value_metadata": [
+    {
+      "key": "ARROW:schema",
+      "value": "/////3YAAAAEAAAA8v///xQAAAAEAAEAAAAKAAsACAAKAAQA+P///wwAAAAIAAgAAAAEAAEAAAAEAAAA7P///ywAAAAgAAAAGAAAAAEGAAAQABIABAAQABEACAAAAAwAAAAAAPz///8EAAQADQAAAEJvb2xlYW5Db2x1bW4A"
+    }
+  ],
+  "metadata_length": 308,
+  "num_rows": 15,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "column_index_length": 17,
+          "column_index_offset": 89,
+          "crypto_metadata": 17,
+          "file_offset": 47,
+          "meta_data": {
+            "codec": "SNAPPY",
+            "data_page_offset": 4,
+            "encodings": [
+              "RLE"
+            ],
+            "num_values": 15,
+            "path_in_schema": [
+              "BooleanColumn"
+            ],
+            "statistics": {
+              "max_value": true,
+              "min_value": false,
+              "null_count": 5
+            },
+            "total_compressed_size": 43,
+            "total_uncompressed_size": 41,
+            "type": "BOOLEAN"
+          },
+          "offset_index_length": 10,
+          "offset_index_offset": 106
+        }
+      ],
+      "file_offset": 4,
+      "num_rows": 15,
+      "ordinal": 0,
+      "total_byte_size": 41,
+      "total_compressed_size": 43
+    }
+  ],
+  "schema": [
+    {
+      "name": "root",
+      "num_children": 1
+    },
+    {
+      "name": "BooleanColumn",
+      "repetition_type": "OPTIONAL",
+      "type": "BOOLEAN"
+    }
+  ],
+  "version": 1
+}
