@@ -22,7 +22,7 @@ export function bitWidth(value) {
  */
 export function readRleBitPackedHybrid(reader, width, length, output) {
   if (!length) {
-    // length = reader.view.getUint32(reader.offset, true)
+    length = reader.view.getUint32(reader.offset, true)
     reader.offset += 4
   }
   let seen = 0
