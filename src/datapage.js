@@ -38,8 +38,12 @@ export function readDataPage(bytes, daph, schemaPath, { type }) {
     const bitWidth = type === 'BOOLEAN' ? 1 : view.getUint8(reader.offset++)
     if (bitWidth) {
       dataPage = new Array(nValues)
-      const encodedLength = type === 'BOOLEAN' ? 0 : view.byteLength - reader.offset
-      readRleBitPackedHybrid(reader, bitWidth, encodedLength, dataPage)
+      if (type === 'BOOLEAN') {
+        readRleBitPackedHybrid(reader, bitWidth, 0, dataPage)
+        dataPage = dataPage.map(x => !!x) // convert to boolean
+      } else {
+        readRleBitPackedHybrid(reader, bitWidth, view.byteLength - reader.offset, dataPage)
+      }
     } else {
       dataPage = new Uint8Array(nValues) // nValue zeroes
     }
