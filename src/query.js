@@ -21,11 +21,12 @@ export async function parquetQuery(options) {
   if (filter) {
     // TODO: Move filter to parquetRead for performance
     const results = await parquetReadObjects({ ...options, rowStart: undefined, rowEnd: undefined })
-    return results
-      .filter(row => matchQuery(row, filter))
-      .sort((a, b) => orderBy ? compare(a[orderBy], b[orderBy]) : 0)
-      .slice(rowStart, rowEnd)
-  } else if (typeof orderBy === 'string') {
+    const filteredResults = results.filter(row => matchQuery(row, filter))
+    if (orderBy) {
+      filteredResults.sort((a, b) => compare(a[orderBy], b[orderBy]))
+    }
+    return filteredResults.slice(rowStart, rowEnd)
+  } else if (orderBy) {
     // Fetch orderBy column first
     const orderColumn = await parquetReadObjects({ ...options, rowStart: undefined, rowEnd: undefined, columns: [orderBy] })
 
@@ -34,9 +35,8 @@ export async function parquetQuery(options) {
       .sort((a, b) => compare(orderColumn[a][orderBy], orderColumn[b][orderBy]))
       .slice(rowStart, rowEnd)
 
-    const sparseData = await parquetReadRows({ ...options, rows: sortedIndices })
-    const data = sortedIndices.map(index => sparseData[index])
-    return data
+      const sparseData = await parquetReadRows({ ...options, rows: sortedIndices })
+      return sortedIndices.map(index => sparseData[index])
   } else {
     return await parquetReadObjects(options)
   }
@@ -86,14 +86,28 @@ async function parquetReadRows(options) {
 
   // Fetch by row group and map to rows
   const sparseData = new Array(Number(options.metadata.num_rows))
-  for (const [rangeStart, rangeEnd] of rowRanges) {
-    // TODO: fetch in parallel
-    const groupData = await parquetReadObjects({ ...options, rowStart: rangeStart, rowEnd: rangeEnd })
-    for (let i = rangeStart; i < rangeEnd; i++) {
-      sparseData[i] = groupData[i - rangeStart]
-      sparseData[i].__index__ = i
+
+  const groupReads = rowRanges.map(([rangeStart, rangeEnd]) =>
+    parquetReadObjects({
+      ...options,
+      rowStart: rangeStart,
+      rowEnd: rangeEnd,
+      filter: options.filter,
+      orderBy: options.orderBy
+    })
+  )
+  
+  // secure call
+  const groupData = await Promise.all(groupReads)
+
+  for (let i = 0; i < rowRanges.length; i++) {
+    const [rangeStart, rangeEnd] = rowRanges[i]
+    for (let j = rangeStart; j < rangeEnd; j++) {
+      sparseData[j] = groupData[i][j - rangeStart]
+      sparseData[j].__index__ = j
     }
   }
+  
   return sparseData
 }
 
@@ -116,48 +130,42 @@ function compare(a, b) {
  * @returns {boolean}
  * @example matchQuery({ id: 1 }, { id: {$gte: 1} }) // true
  */
-export function matchQuery(record, query = {}) {
+function matchQuery(record, query = {}) {
 
-  if (query.$not) {
-    return !matchQuery(record, query.$not)
+  // LO - Logical Operator
+  const handleLO = (operator, record, query) => {
+    if (operator === '$not') return !matchQuery(record, query.$not);
+    if (operator === '$and') return query.$and.every(subQuery => matchQuery(record, subQuery));
+    if (operator === '$or') return query.$or.some(subQuery => matchQuery(record, subQuery));
+    return true;
+  };
+
+  if (query.$not || query.$and || query.$or) {
+    return handleLO(query.$not ? '$not' : query.$and ? '$and' : '$or', record, query);
   }
 
-  if (query.$and) {
-    return query.$and.every(subQuery => matchQuery(record, subQuery))
-  }
+  for (const [field, condition] of Object.entries(query)) {
+    const value = record[field];
 
-  if (query.$or) {
-    return query.$or.some(subQuery => matchQuery(record, subQuery))
-  }
-
-  return Object.entries(query).every(([field, condition]) => {
-    const value = record[field]
-
-    if (condition !== null && (Array.isArray(condition) || typeof condition !== 'object')) {
-      return equals(value, condition)
+    if (condition === null || typeof condition !== 'object' || Array.isArray(condition)) {
+      if (!equals(value, condition)) return false;
+      continue;
     }
 
-    return Object.entries(condition || {}).every(([operator, target]) => {
+    for (const [operator, target] of Object.entries(condition)) {
       switch (operator) {
-      case '$gt':
-        return value > target
-      case '$gte':
-        return value >= target
-      case '$lt':
-        return value < target
-      case '$lte':
-        return value <= target
-      case '$ne':
-        return !equals(value, target)
-      case '$in':
-        return Array.isArray(target) && target.includes(value)
-      case '$nin':
-        return Array.isArray(target) && !target.includes(value)
-      case '$not':
-        return !matchQuery({ [field]: value }, { [field]: target })
-      default:
-        return true
+        case '$gt':  if (!(value > target)) return false; break;
+        case '$gte': if (!(value >= target)) return false; break;
+        case '$lt':  if (!(value < target)) return false; break;
+        case '$lte': if (!(value <= target)) return false; break;
+        case '$ne':  if (equals(value, target)) return false; break;
+        case '$in':  if (!Array.isArray(target) || !target.includes(value)) return false; break;
+        case '$nin': if (Array.isArray(target) && target.includes(value)) return false; break;
+        case '$not': if (matchQuery({ [field]: value }, { [field]: target })) return false; break;
       }
-    })
-  })
+    }
+  }
+  return true;
 }
+
+
