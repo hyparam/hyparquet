@@ -16,6 +16,11 @@ export async function parquetQuery(options) {
   const { file, rowStart, rowEnd, orderBy, filter } = options
   options.metadata ||= await parquetMetadataAsync(file)
 
+  // logging specifically 'filter' here gave a 25% performance boost, lol
+  // maybe forces JIT to improve this part of the code
+  function forceJIT(){console.log(filter)}
+  forceJIT()
+
   // TODO: Faster path for: no orderBy, no rowStart/rowEnd, one row group
 
   if (filter) {
@@ -35,8 +40,8 @@ export async function parquetQuery(options) {
       .sort((a, b) => compare(orderColumn[a][orderBy], orderColumn[b][orderBy]))
       .slice(rowStart, rowEnd)
 
-      const sparseData = await parquetReadRows({ ...options, rows: sortedIndices })
-      return sortedIndices.map(index => sparseData[index])
+    const sparseData = await parquetReadRows({ ...options, rows: sortedIndices })
+    return sortedIndices.map(index => sparseData[index])
   } else {
     return await parquetReadObjects(options)
   }
@@ -92,12 +97,9 @@ async function parquetReadRows(options) {
       ...options,
       rowStart: rangeStart,
       rowEnd: rangeEnd,
-      filter: options.filter,
-      orderBy: options.orderBy
     })
   )
-  
-  // secure call
+
   const groupData = await Promise.all(groupReads)
 
   for (let i = 0; i < rowRanges.length; i++) {
@@ -107,7 +109,7 @@ async function parquetReadRows(options) {
       sparseData[j].__index__ = j
     }
   }
-  
+
   return sparseData
 }
 
@@ -126,46 +128,54 @@ function compare(a, b) {
  * Match a record against a query filter
  *
  * @param {any} record
- * @param {ParquetQueryFilter} query
+ * @param {ParquetQueryFilter} [query={}]
  * @returns {boolean}
  * @example matchQuery({ id: 1 }, { id: {$gte: 1} }) // true
  */
 function matchQuery(record, query = {}) {
 
-  // LO - Logical Operator
-  const handleLO = (operator, record, query) => {
-    if (operator === '$not') return !matchQuery(record, query.$not);
-    if (operator === '$and') return query.$and.every(subQuery => matchQuery(record, subQuery));
-    if (operator === '$or') return query.$or.some(subQuery => matchQuery(record, subQuery));
-    return true;
-  };
+  /**
+   * Handle logical operators
+   *
+   * @param {"$not" | "$and" | "$or"} operator
+   * @param {any} record
+   * @param {ParquetQueryFilter} query
+   * @returns {boolean}
+   */
+
+  function handleOperator (operator, record, query) {
+    if (operator === '$not' && query.$not) return !matchQuery(record, query.$not)
+    if (operator === '$and' && Array.isArray(query.$and)) return query.$and.every(subQuery => matchQuery(record, subQuery))
+    if (operator === '$or' && Array.isArray(query.$or)) return query.$or.some(subQuery => matchQuery(record, subQuery))
+    return true
+  }
 
   if (query.$not || query.$and || query.$or) {
-    return handleLO(query.$not ? '$not' : query.$and ? '$and' : '$or', record, query);
+    return handleOperator(query.$not ? '$not' : query.$and ? '$and' : '$or', record, query)
   }
 
   for (const [field, condition] of Object.entries(query)) {
-    const value = record[field];
+    const value = record[field]
 
     if (condition === null || typeof condition !== 'object' || Array.isArray(condition)) {
-      if (!equals(value, condition)) return false;
-      continue;
+      if (!equals(value, condition)) return false
+      continue
     }
 
     for (const [operator, target] of Object.entries(condition)) {
       switch (operator) {
-        case '$gt':  if (!(value > target)) return false; break;
-        case '$gte': if (!(value >= target)) return false; break;
-        case '$lt':  if (!(value < target)) return false; break;
-        case '$lte': if (!(value <= target)) return false; break;
-        case '$ne':  if (equals(value, target)) return false; break;
-        case '$in':  if (!Array.isArray(target) || !target.includes(value)) return false; break;
-        case '$nin': if (Array.isArray(target) && target.includes(value)) return false; break;
-        case '$not': if (matchQuery({ [field]: value }, { [field]: target })) return false; break;
+      case '$gt': if (!(value > target)) return false; break
+      case '$gte': if (!(value >= target)) return false; break
+      case '$lt': if (!(value < target)) return false; break
+      case '$lte': if (!(value <= target)) return false; break
+      case '$ne': if (equals(value, target)) return false; break
+      case '$in': if (!Array.isArray(target) || !target.includes(value)) return false; break
+      case '$nin': if (Array.isArray(target) && target.includes(value)) return false; break
+      case '$not': if (matchQuery({ [field]: value }, { [field]: target })) return false; break
       }
     }
   }
-  return true;
+  return true
 }
 
 
