@@ -28,17 +28,18 @@
     "build:types": "tsc -p ./tsconfig.build.json",
     "coverage": "vitest run --coverage --coverage.include=src",
     "lint": "eslint",
+    "lint:fix": "eslint --fix",
     "prepare": "npm run build:types",
     "test": "vitest run"
   },
   "devDependencies": {
-    "@types/node": "22.13.5",
-    "@vitest/coverage-v8": "3.0.6",
+    "@types/node": "22.13.9",
+    "@vitest/coverage-v8": "3.0.7",
     "eslint": "9.21.0",
     "eslint-plugin-jsdoc": "50.6.3",
     "hyparquet-compressors": "1.0.0",
     "typescript": "5.7.3",
-    "typescript-eslint": "8.24.1",
-    "vitest": "3.0.6"
+    "typescript-eslint": "8.26.0",
+    "vitest": "3.0.7"
   }
 }

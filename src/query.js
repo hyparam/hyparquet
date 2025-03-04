@@ -14,6 +14,9 @@ import { equals } from './utils.js'
  */
 export async function parquetQuery(options) {
   const { file, rowStart, rowEnd, orderBy, filter } = options
+  if (!file || !(file.byteLength >= 0)) {
+    throw new Error('parquetQuery expected file AsyncBuffer')
+  }
   options.metadata ||= await parquetMetadataAsync(file)
 
   // TODO: Faster path for: no orderBy, no rowStart/rowEnd, one row group

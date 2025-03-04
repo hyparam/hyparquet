@@ -33,6 +33,8 @@ Hyparquet aims to be the world's most compliant parquet parser. And it runs in t
 
 ## Why hyparquet?
 
+Parquet is widely used in data engineering and data science for its efficient storage and processing of large datasets. What if you could use parquet files directly in the browser, without needing a server or backend infrastructure? That's what hyparquet enables.
+
 Existing JavaScript-based parquet readers (like [parquetjs](https://github.com/ironSource/parquetjs)) are no longer actively maintained, may not support streaming or in-browser processing efficiently, and often rely on dependencies that can inflate your bundle size.
 Hyparquet is actively maintained and designed with modern web usage in mind.
 
@@ -40,8 +42,8 @@ Hyparquet is actively maintained and designed with modern web usage in mind.
 
 Check out a minimal parquet viewer demo that shows how to integrate hyparquet into a react web application using [HighTable](https://github.com/hyparam/hightable).
 
- - **Live Demo**: [https://hyparam.github.io/hyperparam-cli/apps/hyparquet-demo/](https://hyparam.github.io/hyperparam-cli/apps/hyparquet-demo/)
- - **Source Code**: [https://github.com/hyparam/hyperparam-cli/tree/master/apps/hyparquet-demo](https://github.com/hyparam/hyperparam-cli/tree/master/apps/hyparquet-demo)
+ - **Live Demo**: [https://hyparam.github.io/demos/hyparquet/](https://hyparam.github.io/demos/hyparquet/)
+ - **Demo Source Code**: [https://github.com/hyparam/demos/tree/master/hyparquet](https://github.com/hyparam/demos/tree/master/hyparquet)
 
 ## Quick Start
 
@@ -86,11 +88,17 @@ You can read just the metadata, including schema and data statistics using the `
 To load parquet data in the browser from a remote server using `fetch`:
 
 ```javascript
-import { parquetMetadata } from 'hyparquet'
+import { parquetMetadata, parquetSchema } from 'hyparquet'
 
 const res = await fetch(url)
 const arrayBuffer = await res.arrayBuffer()
 const metadata = parquetMetadata(arrayBuffer)
+// Get total number of rows (convert bigint to number)
+const numRows = Number(metadata.num_rows)
+// Get nested table schema
+const schema = parquetSchema(metadata)
+// Get top-level column header names
+const columnNames = schema.children.map(e => e.element.name)
 ```
 
 ### AsyncBuffer

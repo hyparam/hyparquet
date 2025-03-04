@@ -16,10 +16,12 @@ import { concat } from './utils.js'
  * the chunks.
  *
  * @param {ParquetReadOptions} options read options
- * @returns {Promise<void>} resolves when all requested rows and columns are parsed
+ * @returns {Promise<void>} resolves when all requested rows and columns are parsed, all errors are thrown here
  */
 export async function parquetRead(options) {
-  if (!options.file) throw new Error('parquet file is required')
+  if (!options.file || !(options.file.byteLength >= 0)) {
+    throw new Error('parquetRead expected file AsyncBuffer')
+  }
 
   // load metadata if not provided
   options.metadata ||= await parquetMetadataAsync(options.file)

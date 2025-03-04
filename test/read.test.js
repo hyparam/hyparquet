@@ -6,14 +6,14 @@ describe('parquetRead', () => {
   it('throws error for undefined file', async () => {
     // @ts-expect-error testing invalid input
     await expect(parquetRead({ file: undefined }))
-      .rejects.toThrow('parquet file is required')
+      .rejects.toThrow('parquetRead expected file AsyncBuffer')
   })
 
   it('throws error for undefined byteLength', async () => {
     const file = { byteLength: undefined, slice: () => new ArrayBuffer(0) }
     // @ts-expect-error testing invalid input
     await expect(parquetRead({ file }))
-      .rejects.toThrow('parquet file byteLength is required')
+      .rejects.toThrow('parquetRead expected file AsyncBuffer')
   })
 
   it('filter by row', async () => {
