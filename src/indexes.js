@@ -33,7 +33,7 @@ export function readOffsetIndex(reader) {
 }
 
 /**
- * @import {ColumnIndex, DataReader, OffsetIndex, PageLocation, SchemaElement} from '../src/types.d.ts'
+ * @import {ColumnIndex, DataReader, OffsetIndex, PageLocation, SchemaElement} from './types.d.ts'
  * @param {any} loc
  * @returns {PageLocation}
  */

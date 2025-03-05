@@ -40,7 +40,7 @@ describe('toJson', () => {
 
 describe('byteLengthFromUrl', () => {
   it('returns the byte length from Content-Length header', async () => {
-    global.fetch = vi.fn().mockResolvedValue({
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       headers: new Map([['Content-Length', '1024']]),
     })
@@ -51,16 +51,13 @@ describe('byteLengthFromUrl', () => {
   })
 
   it('throws an error if the response is not ok', async () => {
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: false,
-      status: 404,
-    })
+    global.fetch = vi.fn().mockResolvedValueOnce({ ok: false, status: 404 })
 
     await expect(byteLengthFromUrl('https://example.com')).rejects.toThrow('fetch head failed 404')
   })
 
   it('throws an error if Content-Length header is missing', async () => {
-    global.fetch = vi.fn().mockResolvedValue({
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       headers: new Map(),
     })
@@ -70,12 +67,9 @@ describe('byteLengthFromUrl', () => {
 
 
   it ('passes authentication headers', async () => {
-    global.fetch = vi.fn().mockImplementation((url, options) => {
+    global.fetch = vi.fn().mockImplementation((_url, options) => {
       if (new Headers(options.headers).get('Authorization') !== 'Bearer token') {
-        return Promise.resolve({
-          ok: false,
-          status: 401,
-        })}
+        return Promise.resolve({ ok: false, status: 401 })}
       return Promise.resolve({
         ok: true,
         headers: new Map([['Content-Length', '1024']]),
@@ -111,7 +105,7 @@ describe('asyncBufferFromUrl', () => {
 
   it('slice method fetches correct byte range', async () => {
     const mockArrayBuffer = new ArrayBuffer(100)
-    global.fetch = vi.fn().mockResolvedValue({
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       body: {},
       status: 206,
@@ -129,7 +123,7 @@ describe('asyncBufferFromUrl', () => {
 
   it('slice method handles undefined end parameter', async () => {
     const mockArrayBuffer = new ArrayBuffer(100)
-    global.fetch = vi.fn().mockResolvedValue({
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       body: {},
       status: 206,
@@ -145,22 +139,16 @@ describe('asyncBufferFromUrl', () => {
   })
 
   it('slice method throws an error if fetch fails', async () => {
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: false,
-      status: 404,
-    })
+    global.fetch = vi.fn().mockResolvedValueOnce({ ok: false, status: 404 })
 
     const buffer = await asyncBufferFromUrl({ url: 'https://example.com', byteLength: 1024 })
     await expect(buffer.slice(0, 100)).rejects.toThrow('fetch failed 404')
   })
 
   it('passes authentication headers to get the byteLength', async () => {
-    global.fetch = vi.fn().mockImplementation((url, options) => {
+    global.fetch = vi.fn().mockImplementation((_url, options) => {
       if (new Headers(options.headers).get('Authorization') !== 'Bearer token') {
-        return Promise.resolve({
-          ok: false,
-          status: 401,
-        })
+        return Promise.resolve({ ok: false, status: 401 })
       }
       return Promise.resolve({
         ok: true,
@@ -177,18 +165,12 @@ describe('asyncBufferFromUrl', () => {
 
   it ('passes authentication headers to fetch byte range', async () => {
     const mockArrayBuffer = new ArrayBuffer(100)
-    global.fetch = vi.fn().mockImplementation((url, options) => {
+    global.fetch = vi.fn().mockImplementation((_url, options) => {
       if (new Headers(options.headers).get('Authorization') !== 'Bearer token') {
-        return Promise.resolve({
-          ok: false,
-          status: 401,
-        })
+        return Promise.resolve({ ok: false, status: 401 })
       }
       if (options.headers.get('Range') !== 'bytes=0-99') {
-        return Promise.resolve({
-          ok: false,
-          status: 404,
-        })
+        return Promise.resolve({ ok: false, status: 404 })
       }
       return Promise.resolve({
         ok: true,
@@ -210,7 +192,7 @@ describe('asyncBufferFromUrl', () => {
   describe('when range requests are unsupported', () => {
     it('creates an AsyncBuffer with the correct byte length', async () => {
       const mockArrayBuffer = new ArrayBuffer(1024)
-      global.fetch = vi.fn().mockResolvedValue({
+      global.fetch = vi.fn().mockResolvedValueOnce({
         ok: true,
         status: 200,
         body: {},
@@ -229,7 +211,7 @@ describe('asyncBufferFromUrl', () => {
 
     it('does not make multiple requests for multiple slices', async () => {
       const mockArrayBuffer = new ArrayBuffer(1024)
-      global.fetch = vi.fn().mockResolvedValue({
+      global.fetch = vi.fn().mockResolvedValueOnce({
         ok: true,
         status: 200,
         body: {},

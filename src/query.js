@@ -8,7 +8,7 @@ import { equals } from './utils.js'
  * Accepts optional filter object to filter the results and orderBy column name to sort the results.
  * Note that using orderBy may SIGNIFICANTLY increase the query time.
  *
- * @import {ParquetQueryFilter} from '../src/types.d.ts'
+ * @import {ParquetQueryFilter} from './types.d.ts'
  * @param {ParquetReadOptions & { filter?: ParquetQueryFilter, orderBy?: string }} options
  * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
  */
@@ -48,7 +48,7 @@ export async function parquetQuery(options) {
 /**
  * Reads a list rows from a parquet file, reading only the row groups that contain the rows.
  * Returns a sparse array of rows.
- * @import {ParquetReadOptions} from '../src/types.d.ts'
+ * @import {ParquetReadOptions} from './types.d.ts'
  * @param {ParquetReadOptions & { rows: number[] }} options
  * @returns {Promise<Record<string, any>[]>}
  */

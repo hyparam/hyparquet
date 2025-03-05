@@ -244,7 +244,7 @@ function timeUnit(unit) {
 /**
  * Convert column statistics based on column type.
  *
- * @import {AsyncBuffer, FileMetaData, LogicalType, MinMaxType, SchemaElement, SchemaTree, Statistics, TimeUnit} from '../src/types.d.ts'
+ * @import {AsyncBuffer, FileMetaData, LogicalType, MinMaxType, SchemaElement, SchemaTree, Statistics, TimeUnit} from './types.d.ts'
  * @param {any} stats
  * @param {SchemaElement} schema
  * @returns {Statistics}

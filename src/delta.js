@@ -1,7 +1,7 @@
 import { readVarInt, readZigZagBigInt } from './thrift.js'
 
 /**
- * @import {DataReader} from '../src/types.d.ts'
+ * @import {DataReader} from './types.d.ts'
  * @param {DataReader} reader
  * @param {number} count number of values to read
  * @param {Int32Array | BigInt64Array} output

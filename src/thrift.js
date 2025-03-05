@@ -19,7 +19,7 @@ const CompactType = {
 /**
  * Parse TCompactProtocol
  *
- * @import {DataReader} from '../src/types.d.ts'
+ * @import {DataReader} from './types.d.ts'
  * @param {DataReader} reader
  * @returns {Record<string, any>}
  */

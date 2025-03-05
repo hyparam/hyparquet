@@ -123,7 +123,7 @@ export function getColumnRange({ dictionary_page_offset, data_page_offset, total
 /**
  * Read parquet header from a buffer.
  *
- * @import {ColumnMetaData, DecodedArray, DataReader, PageHeader, ParquetReadOptions, SchemaTree} from '../src/types.d.ts'
+ * @import {ColumnMetaData, DecodedArray, DataReader, PageHeader, ParquetReadOptions, SchemaTree} from './types.d.ts'
  * @param {DataReader} reader - parquet file reader
  * @returns {PageHeader} metadata object and bytes read
  */

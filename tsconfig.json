@@ -5,6 +5,7 @@
     "lib": ["esnext", "dom"],
     "module": "nodenext",
     "noEmit": true,
+    "noUnusedParameters": true,
     "resolveJsonModule": true,
     "strict": true
   },
