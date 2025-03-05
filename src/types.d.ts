@@ -338,17 +338,34 @@ export interface ColumnData {
 /**
  * Parquet query options for reading data
  */
-export interface ParquetReadOptions {
+
+export type ParquetReadObjectsOptions = Omit<ParquetBaseReadOptions, 'rowFormat'>
+export type ParquetReadOptions = ParquetBaseReadOptions & ParquetRowReadCallbacks
+
+type ParquetRowReadCallbacks = 
+  | ParquetRowReadOnCompleteArray
+  | ParquetRowReadOnCompleteObject
+
+interface ParquetBaseReadOptions {
   file: AsyncBuffer // file-like object containing parquet data
   metadata?: FileMetaData // parquet metadata, will be parsed if not provided
   columns?: string[] // columns to read, all columns if undefined
-  rowFormat?: string // format of each row passed to the onComplete function
   rowStart?: number // first requested row index (inclusive)
   rowEnd?: number // last requested row index (exclusive)
   onChunk?: (chunk: ColumnData) => void // called when a column chunk is parsed. chunks may be outside the requested range.
-  onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
   compressors?: Compressors // custom decompressors
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
+  rowFormat? : 'array' | 'object' // format of each row passed to the onComplete function
+}
+
+interface ParquetRowReadOnCompleteArray {
+  rowFormat?: 'array' // format of each row passed to the onComplete function
+  onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
+}
+
+interface ParquetRowReadOnCompleteObject {
+  rowFormat: 'object' // format of each row passed to the onComplete function
+  onComplete?: (rows: Record<string, any>[]) => void // called when all requested rows and columns are parsed 
 }
 
 export type ParquetQueryValue = string | number | boolean | object | null | undefined
