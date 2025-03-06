@@ -198,7 +198,7 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
 /**
  * Return a list of sub-columns needed to construct a top-level column.
  *
- * @import {ParquetReadOptions, RowGroup, SchemaTree} from './types.d.ts'
+ * @import {ParquetReadOptions, RowGroup, SchemaTree} from '../src/types.d.ts'
  * @param {SchemaTree} schema
  * @param {string[]} output
  * @returns {string[]}

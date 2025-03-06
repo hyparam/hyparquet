@@ -146,7 +146,7 @@ export function byteStreamSplit(reader, count, type, typeLength) {
 }
 
 /**
- * @import {DataReader, DecodedArray, ParquetType} from './types.d.ts'
+ * @import {DataReader, DecodedArray, ParquetType} from '../src/types.d.ts'
  * @param {ParquetType} type
  * @param {number | undefined} typeLength
  * @returns {number}

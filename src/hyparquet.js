@@ -27,36 +27,36 @@ export function parquetReadObjects(options) {
  * `import { ParquetReadOptions } from 'hyparquet'` for example.
  *
  * @template {any} T
- * @typedef {import('./types.d.ts').Awaitable<T>} Awaitable<T>
+ * @typedef {import('../src/types.d.ts').Awaitable<T>} Awaitable<T>
  */
 
 /**
- * @typedef {import('./types.d.ts').AsyncBuffer} AsyncBuffer
- * @typedef {import('./types.d.ts').DataReader} DataReader
- * @typedef {import('./types.d.ts').FileMetaData} FileMetaData
- * @typedef {import('./types.d.ts').SchemaTree} SchemaTree
- * @typedef {import('./types.d.ts').SchemaElement} SchemaElement
- * @typedef {import('./types.d.ts').ParquetType} ParquetType
- * @typedef {import('./types.d.ts').FieldRepetitionType} FieldRepetitionType
- * @typedef {import('./types.d.ts').ConvertedType} ConvertedType
- * @typedef {import('./types.d.ts').TimeUnit} TimeUnit
- * @typedef {import('./types.d.ts').LogicalType} LogicalType
- * @typedef {import('./types.d.ts').LogicalTypeType} LogicalTypeType
- * @typedef {import('./types.d.ts').RowGroup} RowGroup
- * @typedef {import('./types.d.ts').ColumnChunk} ColumnChunk
- * @typedef {import('./types.d.ts').ColumnMetaData} ColumnMetaData
- * @typedef {import('./types.d.ts').Encoding} Encoding
- * @typedef {import('./types.d.ts').CompressionCodec} CompressionCodec
- * @typedef {import('./types.d.ts').Compressors} Compressors
- * @typedef {import('./types.d.ts').Statistics} Statistics
- * @typedef {import('./types.d.ts').PageType} PageType
- * @typedef {import('./types.d.ts').PageHeader} PageHeader
- * @typedef {import('./types.d.ts').DataPageHeader} DataPageHeader
- * @typedef {import('./types.d.ts').DictionaryPageHeader} DictionaryPageHeader
- * @typedef {import('./types.d.ts').DecodedArray} DecodedArray
- * @typedef {import('./types.d.ts').OffsetIndex} OffsetIndex
- * @typedef {import('./types.d.ts').ColumnIndex} ColumnIndex
- * @typedef {import('./types.d.ts').BoundaryOrder} BoundaryOrder
- * @typedef {import('./types.d.ts').ColumnData} ColumnData
- * @typedef {import('./types.d.ts').ParquetReadOptions} ParquetReadOptions
+ * @typedef {import('../src/types.d.ts').AsyncBuffer} AsyncBuffer
+ * @typedef {import('../src/types.d.ts').DataReader} DataReader
+ * @typedef {import('../src/types.d.ts').FileMetaData} FileMetaData
+ * @typedef {import('../src/types.d.ts').SchemaTree} SchemaTree
+ * @typedef {import('../src/types.d.ts').SchemaElement} SchemaElement
+ * @typedef {import('../src/types.d.ts').ParquetType} ParquetType
+ * @typedef {import('../src/types.d.ts').FieldRepetitionType} FieldRepetitionType
+ * @typedef {import('../src/types.d.ts').ConvertedType} ConvertedType
+ * @typedef {import('../src/types.d.ts').TimeUnit} TimeUnit
+ * @typedef {import('../src/types.d.ts').LogicalType} LogicalType
+ * @typedef {import('../src/types.d.ts').LogicalTypeType} LogicalTypeType
+ * @typedef {import('../src/types.d.ts').RowGroup} RowGroup
+ * @typedef {import('../src/types.d.ts').ColumnChunk} ColumnChunk
+ * @typedef {import('../src/types.d.ts').ColumnMetaData} ColumnMetaData
+ * @typedef {import('../src/types.d.ts').Encoding} Encoding
+ * @typedef {import('../src/types.d.ts').CompressionCodec} CompressionCodec
+ * @typedef {import('../src/types.d.ts').Compressors} Compressors
+ * @typedef {import('../src/types.d.ts').Statistics} Statistics
+ * @typedef {import('../src/types.d.ts').PageType} PageType
+ * @typedef {import('../src/types.d.ts').PageHeader} PageHeader
+ * @typedef {import('../src/types.d.ts').DataPageHeader} DataPageHeader
+ * @typedef {import('../src/types.d.ts').DictionaryPageHeader} DictionaryPageHeader
+ * @typedef {import('../src/types.d.ts').DecodedArray} DecodedArray
+ * @typedef {import('../src/types.d.ts').OffsetIndex} OffsetIndex
+ * @typedef {import('../src/types.d.ts').ColumnIndex} ColumnIndex
+ * @typedef {import('../src/types.d.ts').BoundaryOrder} BoundaryOrder
+ * @typedef {import('../src/types.d.ts').ColumnData} ColumnData
+ * @typedef {import('../src/types.d.ts').ParquetReadOptions} ParquetReadOptions
  */

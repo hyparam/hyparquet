@@ -194,7 +194,7 @@ export function cachedAsyncBuffer({ byteLength, slice }) {
  * Returns canonical cache key for a byte range 'start,end'.
  * Normalize int-range and suffix-range requests to the same key.
  *
- * @import {AsyncBuffer, Awaitable, DecodedArray} from './types.d.ts'
+ * @import {AsyncBuffer, Awaitable, DecodedArray} from '../src/types.d.ts'
  * @param {number} start start byte of range
  * @param {number} [end] end byte of range, or undefined for suffix range
  * @param {number} [size] size of file, or undefined for suffix range
