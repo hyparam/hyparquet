@@ -42,6 +42,7 @@ export function readDataPage(bytes, daph, schemaPath, { type }) {
         readRleBitPackedHybrid(reader, bitWidth, 0, dataPage)
         dataPage = dataPage.map(x => !!x) // convert to boolean
       } else {
+        // assert(daph.encoding.endsWith('_DICTIONARY'))
         readRleBitPackedHybrid(reader, bitWidth, view.byteLength - reader.offset, dataPage)
       }
     } else {
