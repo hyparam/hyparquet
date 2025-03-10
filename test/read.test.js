@@ -41,7 +41,7 @@ describe('parquetRead', () => {
     })
   })
 
-  it('read a single column', async () => {
+  it('read a single column as typed array', async () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     await parquetRead({
       file,
@@ -49,11 +49,11 @@ describe('parquetRead', () => {
       onChunk(chunk) {
         expect(chunk).toEqual({
           columnName: 'b',
-          columnData: [1, 2, 3, 4, 5],
+          columnData: new Int32Array([1, 2, 3, 4, 5]),
           rowStart: 0,
           rowEnd: 5,
         })
-        expect(chunk.columnData).toBeInstanceOf(Array)
+        expect(chunk.columnData).toBeInstanceOf(Int32Array)
       },
     })
   })

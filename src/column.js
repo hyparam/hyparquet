@@ -4,7 +4,6 @@ import { convertWithDictionary } from './convert.js'
 import { decompressPage, readDataPage, readDataPageV2, readDictionaryPage } from './datapage.js'
 import { getMaxDefinitionLevel } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
-import { concat } from './utils.js'
 
 /**
  * Parse column data from a buffer.
@@ -14,21 +13,20 @@ import { concat } from './utils.js'
  * @param {ColumnMetaData} columnMetadata column metadata
  * @param {SchemaTree[]} schemaPath schema path for the column
  * @param {ParquetReadOptions} options read options
- * @returns {any[]} array of values
+ * @returns {DecodedArray[]}
  */
 export function readColumn(reader, rowLimit, columnMetadata, schemaPath, { compressors, utf8 }) {
   const { element } = schemaPath[schemaPath.length - 1]
+  /** @type {DecodedArray[]} */
+  const chunks = []
   /** @type {DecodedArray | undefined} */
   let dictionary = undefined
-  /** @type {any[]} */
-  const rowData = []
   const hasRowLimit = rowLimit !== undefined && rowLimit >= 0 && isFinite(rowLimit)
+  let rowCount = 0
 
-  while (!hasRowLimit || rowData.length < rowLimit) {
+  while (!hasRowLimit || rowCount < rowLimit) {
     if (reader.offset >= reader.view.byteLength - 1) break // end of reader
-    // parse column header
-    const header = parquetHeader(reader)
-    // assert(header.compressed_page_size !== undefined)
+    const header = parquetHeader(reader) // column header
 
     // read compressed_page_size bytes starting at offset
     const compressedBytes = new Uint8Array(
@@ -36,8 +34,6 @@ export function readColumn(reader, rowLimit, columnMetadata, schemaPath, { compr
     )
 
     // parse page data by type
-    /** @type {DecodedArray} */
-    let values
     if (header.type === 'DATA_PAGE') {
       const daph = header.data_page_header
       if (!daph) throw new Error('parquet data page header is undefined')
@@ -47,13 +43,15 @@ export function readColumn(reader, rowLimit, columnMetadata, schemaPath, { compr
       // assert(!daph.statistics?.null_count || daph.statistics.null_count === BigInt(daph.num_values - dataPage.length))
 
       // convert types, dereference dictionary, and assemble lists
-      values = convertWithDictionary(dataPage, dictionary, element, daph.encoding, utf8)
+      let values = convertWithDictionary(dataPage, dictionary, element, daph.encoding, utf8)
       if (repetitionLevels.length || definitionLevels?.length) {
         const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
         const repetitionPath = schemaPath.map(({ element }) => element.repetition_type)
-        assembleLists(
-          rowData, definitionLevels, repetitionLevels, values, repetitionPath, maxDefinitionLevel
+        const chunk = assembleLists(
+          [], definitionLevels, repetitionLevels, values, repetitionPath, maxDefinitionLevel
         )
+        chunks.push(chunk)
+        rowCount += chunk.length
       } else {
         // wrap nested flat data by depth
         for (let i = 2; i < schemaPath.length; i++) {
@@ -61,7 +59,8 @@ export function readColumn(reader, rowLimit, columnMetadata, schemaPath, { compr
             values = Array.from(values, e => [e])
           }
         }
-        concat(rowData, values)
+        chunks.push(values)
+        rowCount += values.length
       }
     } else if (header.type === 'DATA_PAGE_V2') {
       const daph2 = header.data_page_header_v2
@@ -72,15 +71,18 @@ export function readColumn(reader, rowLimit, columnMetadata, schemaPath, { compr
       )
 
       // convert types, dereference dictionary, and assemble lists
-      values = convertWithDictionary(dataPage, dictionary, element, daph2.encoding, utf8)
+      const values = convertWithDictionary(dataPage, dictionary, element, daph2.encoding, utf8)
       if (repetitionLevels.length || definitionLevels?.length) {
         const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
         const repetitionPath = schemaPath.map(({ element }) => element.repetition_type)
-        assembleLists(
-          rowData, definitionLevels, repetitionLevels, values, repetitionPath, maxDefinitionLevel
+        const chunk = assembleLists(
+          [], definitionLevels, repetitionLevels, values, repetitionPath, maxDefinitionLevel
         )
+        chunks.push(chunk)
+        rowCount += chunk.length
       } else {
-        concat(rowData, values)
+        chunks.push(values)
+        rowCount += values.length
       }
     } else if (header.type === 'DICTIONARY_PAGE') {
       const diph = header.dictionary_page_header
@@ -96,14 +98,16 @@ export function readColumn(reader, rowLimit, columnMetadata, schemaPath, { compr
     reader.offset += header.compressed_page_size
   }
   if (hasRowLimit) {
-    if (rowData.length < rowLimit) {
-      throw new Error(`parquet row data length ${rowData.length} does not match row group limit ${rowLimit}}`)
+    if (rowCount < rowLimit) {
+      throw new Error(`parquet row data length ${rowCount} does not match row group limit ${rowLimit}}`)
     }
-    if (rowData.length > rowLimit) {
-      rowData.length = rowLimit // truncate to row limit
+    if (rowCount > rowLimit) {
+      // truncate last chunk to row limit
+      const lastChunk = chunks[chunks.length - 1]
+      chunks[chunks.length - 1] = lastChunk.slice(0, rowLimit - (rowCount - lastChunk.length))
     }
   }
-  return rowData
+  return chunks
 }
 
 /**

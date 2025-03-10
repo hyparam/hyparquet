@@ -96,10 +96,11 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
   // Top-level columns to assemble
   const { children } = getSchemaPath(metadata.schema, [])[0]
   const subcolumnNames = new Map(children.map(child => [child.element.name, getSubcolumns(child)]))
+  /** @type {Map<string, DecodedArray[]>} */
   const subcolumnData = new Map() // columns to assemble as maps
   // read column data
-  for (let columnIndex = 0; columnIndex < rowGroup.columns.length; columnIndex++) {
-    const columnMetadata = rowGroup.columns[columnIndex].meta_data
+  for (let i = 0; i < rowGroup.columns.length; i++) {
+    const columnMetadata = rowGroup.columns[i].meta_data
     if (!columnMetadata) throw new Error('parquet column metadata is undefined')
 
     // skip columns that are not requested
@@ -133,35 +134,43 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
     promises.push(buffer.then(arrayBuffer => {
       const schemaPath = getSchemaPath(metadata.schema, columnMetadata.path_in_schema)
       const reader = { view: new DataView(arrayBuffer), offset: bufferOffset }
-      /** @type {any[] | undefined} */
-      let columnData = readColumn(reader, rowLimit, columnMetadata, schemaPath, options)
-      // assert(columnData.length === Number(rowGroup.num_rows)
+      const columnData = readColumn(reader, rowLimit, columnMetadata, schemaPath, options)
+      /** @type {DecodedArray[] | undefined} */
+      let chunks = columnData
 
       // TODO: fast path for non-nested columns
       // Save column data for assembly
       const subcolumn = columnMetadata.path_in_schema.join('.')
-      subcolumnData.set(subcolumn, columnData)
-      columnData = undefined
+      subcolumnData.set(subcolumn, chunks)
+      chunks = undefined
 
       const subcolumns = subcolumnNames.get(columnName)
       if (subcolumns?.every(name => subcolumnData.has(name))) {
+        // For every subcolumn, flatten and assemble the column
+        const flatData = new Map(subcolumns.map(name => [name, flatten(subcolumnData.get(name))]))
         // We have all data needed to assemble a top level column
-        assembleNested(subcolumnData, schemaPath[1])
-        columnData = subcolumnData.get(columnName)
-        if (!columnData) {
+        assembleNested(flatData, schemaPath[1])
+        const flatColumn = flatData.get(columnName)
+        if (flatColumn) {
+          chunks = [flatColumn]
+          subcolumns.forEach(name => subcolumnData.delete(name))
+          subcolumnData.set(columnName, chunks)
+        } else {
           throw new Error(`parquet column data not assembled: ${columnName}`)
         }
       }
 
       // do not emit column data until structs are fully parsed
-      if (!columnData) return
+      if (!chunks) return
       // notify caller of column data
-      options.onChunk?.({
-        columnName,
-        columnData,
-        rowStart: groupStart,
-        rowEnd: groupStart + columnData.length,
-      })
+      for (const chunk of chunks) {
+        options.onChunk?.({
+          columnName,
+          columnData: chunk,
+          rowStart: groupStart,
+          rowEnd: groupStart + rowLimit,
+        })
+      }
     }))
   }
   await Promise.all(promises)
@@ -173,7 +182,7 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
       .filter(name => !columns || columns.includes(name))
     const columnOrder = columns || includedColumnNames
     const includedColumns = columnOrder
-      .map(name => includedColumnNames.includes(name) ? subcolumnData.get(name) : undefined)
+      .map(name => includedColumnNames.includes(name) ? flatten(subcolumnData.get(name)) : undefined)
 
     for (let row = 0; row < rowLimit; row++) {
       if (options.rowFormat === 'object') {
@@ -194,11 +203,27 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
   return []
 }
 
+/**
+ * Flatten a list of lists into a single list.
+ *
+ * @param {DecodedArray[] | undefined} chunks
+ * @returns {DecodedArray}
+ */
+function flatten(chunks) {
+  if (!chunks) return []
+  if (chunks.length === 1) return chunks[0]
+  /** @type {any[]} */
+  const output = []
+  for (const chunk of chunks) {
+    concat(output, chunk)
+  }
+  return output
+}
 
 /**
  * Return a list of sub-columns needed to construct a top-level column.
  *
- * @import {ParquetReadOptions, RowGroup, SchemaTree} from '../src/types.d.ts'
+ * @import {DecodedArray, ParquetReadOptions, RowGroup, SchemaTree} from '../src/types.d.ts'
  * @param {SchemaTree} schema
  * @param {string[]} output
  * @returns {string[]}
