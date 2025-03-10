@@ -52,31 +52,29 @@ Check out a minimal parquet viewer demo that shows how to integrate hyparquet in
 To read the contents of a parquet file in a node.js environment use `asyncBufferFromFile`:
 
 ```javascript
-const { asyncBufferFromFile, parquetRead } = await import('hyparquet')
+const { asyncBufferFromFile, parquetReadObjects } = await import('hyparquet')
 
-await parquetRead({
-  file: await asyncBufferFromFile(filename),
-  onComplete: data => console.log(data)
-})
+const file = await asyncBufferFromFile(filename)
+const data = await parquetReadObjects({ file })
 ```
 
 Note: Hyparquet is published as an ES module, so dynamic `import()` may be required on the command line.
 
 ### Browser Example
 
-In the browser use `asyncBufferFromUrl` to wrap a url for reading asyncronously over the network.
+In the browser use `asyncBufferFromUrl` to wrap a url for reading asynchronously over the network.
 It is recommended that you filter by row and column to limit fetch size:
 
 ```javascript
-const { asyncBufferFromUrl, parquetRead } = await import('https://cdn.jsdelivr.net/npm/hyparquet/src/hyparquet.min.js')
+const { asyncBufferFromUrl, parquetReadObjects } = await import('https://cdn.jsdelivr.net/npm/hyparquet/src/hyparquet.min.js')
 
 const url = 'https://hyperparam-public.s3.amazonaws.com/bunnies.parquet'
-await parquetRead({
-  file: await asyncBufferFromUrl({url}),
+const file = await asyncBufferFromUrl({ url }) // wrap url for async fetching
+const data = await parquetReadObjects({
+  file,
   columns: ['Breed Name', 'Lifespan'],
   rowStart: 10,
   rowEnd: 20,
-  onComplete: data => console.log(data)
 })
 ```
 
@@ -84,21 +82,28 @@ await parquetRead({
 
 ### Reading Metadata
 
-You can read just the metadata, including schema and data statistics using the `parquetMetadata` function.
-To load parquet data in the browser from a remote server using `fetch`:
+You can read just the metadata, including schema and data statistics using the `parquetMetadataAsync` function.
+To load parquet metadata in the browser from a remote server:
 
 ```javascript
-import { parquetMetadata, parquetSchema } from 'hyparquet'
+import { parquetMetadataAsync, parquetSchema } from 'hyparquet'
 
-const res = await fetch(url)
-const arrayBuffer = await res.arrayBuffer()
-const metadata = parquetMetadata(arrayBuffer)
+const file = await asyncBufferFromUrl({ url })
+const metadata = await parquetMetadataAsync(file)
 // Get total number of rows (convert bigint to number)
 const numRows = Number(metadata.num_rows)
 // Get nested table schema
 const schema = parquetSchema(metadata)
 // Get top-level column header names
 const columnNames = schema.children.map(e => e.element.name)
+```
+
+You can also read the metadata synchronously using `parquetMetadata` if you have an array buffer with the parquet footer:
+
+```javascript
+import { parquetMetadata } from 'hyparquet'
+
+const metadata = parquetMetadata(arrayBuffer)
 ```
 
 ### AsyncBuffer
@@ -116,15 +121,46 @@ interface AsyncBuffer {
 
 You can define your own `AsyncBuffer` to create a virtual file that can be read asynchronously. In most cases, you should probably use `asyncBufferFromUrl` or `asyncBufferFromFile`.
 
+### parquetRead vs parquetReadObjects
+
+#### parquetReadObjects
+
+`parquetReadObjects` is a convenience wrapper around `parquetRead` that returns the complete rows as `Promise<Record<string, any>[]>`. This is the simplest way to read parquet files.
+
+```typescript
+parquetReadObjects({ file }): Promise<Record<string, any>[]>
+```
+
+#### parquetRead
+
+`parquetRead` is the "base" function for reading parquet files.
+It returns a `Promise<void>` that resolves when the file has been read or rejected if an error occurs.
+Data is returned via `onComplete` or `onChunk` callbacks passed as arguments.
+
+The reason for this design is that parquet is a column-oriented format, and returning data in row-oriented format requires transposing the column data. This is an expensive operation in javascript. If you don't pass in an `onComplete` argument to `parquetRead`, hyparquet will skip this transpose step and save memory.
+
+The `onChunk` callback allows column-oriented data to be streamed back as it is read.
+
+```typescript
+interface ColumnData {
+  columnName: string
+  columnData: ArrayLike<any>
+  rowStart: number
+  rowEnd: number
+}
+function onChunk(chunk: ColumnData): void {
+  console.log(chunk)
+}
+await parquetRead({ file, onChunk })
+```
+
 ### Authorization
 
 Pass the `requestInit` option to `asyncBufferFromUrl` to provide authentication information to a remote web server. For example:
 
 ```javascript
-await parquetRead({
-  file: await asyncBufferFromUrl({url, requestInit: {headers: {Authorization: 'Bearer my_token'}}}),
-  onComplete: data => console.log(data)
-})
+const requestInit = { headers: { Authorization: 'Bearer my_token' } }
+const file = await asyncBufferFromUrl({ url, requestInit })
 ```
 
 ### Returned row format
@@ -175,10 +211,11 @@ You can include support for ALL parquet `compressors` plus hysnappy using the [h
 
 
 ```javascript
-import { parquetRead } from 'hyparquet'
+import { parquetReadObjects } from 'hyparquet'
 import { compressors } from 'hyparquet-compressors'
 
-await parquetRead({ file, compressors, onComplete: console.log })
+const file = await asyncBufferFromFile(filename)
+const data = await parquetReadObjects({ file, compressors })
 ```
 
 ## References
