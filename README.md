@@ -28,7 +28,7 @@ Hyparquet aims to be the world's most compliant parquet parser. And it runs in t
 1. **Browser-native**: Built to work seamlessly in the browser, opening up new possibilities for web-based data applications and visualizations.
 2. **Performant**: Designed to efficiently process large datasets by only loading the required data, making it suitable for big data and machine learning applications.
 3. **TypeScript**: Includes TypeScript definitions.
-4. **Dependency-free**: Hyparquet has zero dependencies, making it lightweight and easy to use in any JavaScript project. Only 9.2kb min.gz!
+4. **Dependency-free**: Hyparquet has zero dependencies, making it lightweight and easy to use in any JavaScript project. Only 9.7kb min.gz!
 5. **Highly Compliant:** Supports all parquet encodings, compression codecs, and can open more parquet files than any other library.
 
 ## Why hyparquet?

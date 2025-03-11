@@ -14,7 +14,7 @@ describe('parquetRead test files', () => {
       await parquetRead({
         file,
         compressors,
-        onComplete: (rows) => {
+        onComplete(rows) {
           const base = filename.replace('.parquet', '')
           const expected = fileToJson(`test/files/${base}.json`)
           // stringify and parse to make legal json

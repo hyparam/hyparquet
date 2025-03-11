@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parquetRead, parquetReadObjects } from '../src/hyparquet.js'
-import { asyncBufferFromFile, toJson } from '../src/utils.js'
+import { asyncBufferFromFile } from '../src/utils.js'
 
 describe('parquetRead', () => {
   it('throws error for undefined file', async () => {
@@ -22,8 +22,8 @@ describe('parquetRead', () => {
       file,
       rowStart: 2,
       rowEnd: 4,
-      onComplete: rows => {
-        expect(toJson(rows)).toEqual([[3], [4]])
+      onComplete(rows) {
+        expect(rows).toEqual([[3n], [4n]])
       },
     })
   })
@@ -33,8 +33,10 @@ describe('parquetRead', () => {
     await parquetRead({
       file,
       rowEnd: 100,
-      onComplete: rows => {
-        expect(toJson(rows)).toEqual([[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15]])
+      onComplete(rows) {
+        expect(rows).toEqual([
+          [1n], [2n], [3n], [4n], [5n], [6n], [7n], [8n], [9n], [10n], [11n], [12n], [13n], [14n], [15n],
+        ])
       },
     })
   })
@@ -43,23 +45,15 @@ describe('parquetRead', () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     await parquetRead({
       file,
-      columns: ['c'],
-      onChunk: chunk => {
-        expect(toJson(chunk)).toEqual({
-          columnName: 'c',
-          columnData: [2, 3, 4, 5, 2],
+      columns: ['b'],
+      onChunk(chunk) {
+        expect(chunk).toEqual({
+          columnName: 'b',
+          columnData: [1, 2, 3, 4, 5],
           rowStart: 0,
           rowEnd: 5,
         })
-      },
-      onComplete: (rows) => {
-        expect(toJson(rows)).toEqual([
-          [2],
-          [3],
-          [4],
-          [5],
-          [2],
-        ])
+        expect(chunk.columnData).toBeInstanceOf(Array)
       },
     })
   })
@@ -69,19 +63,19 @@ describe('parquetRead', () => {
     await parquetRead({
       file,
       columns: ['e'],
-      onChunk: chunk => {
-        expect(toJson(chunk)).toEqual({
+      onChunk(chunk) {
+        expect(chunk).toEqual({
           columnName: 'e',
-          columnData: [[1, 2, 3], null, null, [1, 2, 3], [1, 2]],
+          columnData: [[1, 2, 3], undefined, undefined, [1, 2, 3], [1, 2]],
           rowStart: 0,
           rowEnd: 5,
         })
       },
-      onComplete: rows => {
-        expect(toJson(rows)).toEqual([
+      onComplete(rows) {
+        expect(rows).toEqual([
           [[1, 2, 3]],
-          [null],
-          [null],
+          [undefined],
+          [undefined],
           [[1, 2, 3]],
           [[1, 2]],
         ])
@@ -94,8 +88,8 @@ describe('parquetRead', () => {
     await parquetRead({
       file,
       columns: ['int_map'],
-      onChunk: chunk => {
-        expect(toJson(chunk)).toEqual({
+      onChunk(chunk) {
+        expect(chunk).toEqual({
           columnName: 'int_map',
           columnData: [
             { k1: 1, k2: 100 },
@@ -103,21 +97,21 @@ describe('parquetRead', () => {
             { },
             { },
             { },
-            null,
+            undefined,
             { k1: null, k3: null },
           ],
           rowStart: 0,
           rowEnd: 7,
         })
       },
-      onComplete: rows => {
-        expect(toJson(rows)).toEqual([
+      onComplete(rows) {
+        expect(rows).toEqual([
           [{ k1: 1, k2: 100 }],
           [{ k1: 2, k2: null }],
           [{ }],
           [{ }],
           [{ }],
-          [null],
+          [undefined],
           [{ k1: null, k3: null }],
         ])
       },
@@ -130,8 +124,8 @@ describe('parquetRead', () => {
       file,
       columns: ['c'],
       rowFormat: 'object',
-      onComplete: (rows) => {
-        expect(toJson(rows)).toEqual([
+      onComplete(rows) {
+        expect(rows).toEqual([
           { c: 2 },
           { c: 3 },
           { c: 4 },
@@ -147,13 +141,13 @@ describe('parquetRead', () => {
     await parquetRead({
       file,
       columns: ['c', 'missing', 'b', 'c'],
-      onComplete: (rows) => {
-        expect(toJson(rows)).toEqual([
-          [2, null, 1, 2],
-          [3, null, 2, 3],
-          [4, null, 3, 4],
-          [5, null, 4, 5],
-          [2, null, 5, 2],
+      onComplete(rows) {
+        expect(rows).toEqual([
+          [2, undefined, 1, 2],
+          [3, undefined, 2, 3],
+          [4, undefined, 3, 4],
+          [5, undefined, 4, 5],
+          [2, undefined, 5, 2],
         ])
       },
     })
@@ -162,7 +156,7 @@ describe('parquetRead', () => {
   it('read objects and return a promise', async () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     const rows = await parquetReadObjects({ file })
-    expect(toJson(rows)).toEqual([
+    expect(rows).toEqual([
       { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
       { a: 'abc', b: 2, c: 3, d: true },
       { a: 'abc', b: 3, c: 4, d: true },
