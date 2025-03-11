@@ -104,7 +104,7 @@ export function assembleLists(
  * https://github.com/apache/parquet-format/blob/apache-parquet-format-2.10.0/LogicalTypes.md#nested-types
  *
  * @import {SchemaTree} from '../src/types.d.ts'
- * @param {Map<string, any[]>} subcolumnData
+ * @param {Map<string, DecodedArray>} subcolumnData
  * @param {SchemaTree} schema top-level schema element
  * @param {number} [depth] depth of nested structure
  */
@@ -180,7 +180,7 @@ export function assembleNested(subcolumnData, schema, depth = 0) {
 }
 
 /**
- * @param {any[]} arr
+ * @param {DecodedArray} arr
  * @param {number} depth
  */
 function flattenAtDepth(arr, depth) {
@@ -194,8 +194,8 @@ function flattenAtDepth(arr, depth) {
 }
 
 /**
- * @param {any[]} keys
- * @param {any[]} values
+ * @param {DecodedArray} keys
+ * @param {DecodedArray} values
  * @param {number} depth
  * @returns {any[]}
  */
