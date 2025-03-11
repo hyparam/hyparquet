@@ -23,21 +23,6 @@ function copyBytes(fromArray, fromPos, toArray, toPos, length) {
 }
 
 /**
- * Copy bytes within an array
- *
- * @param {Uint8Array} array source and destination array
- * @param {number} pos source position
- * @param {number} offset offset back from current position to read
- * @param {number} length number of bytes to copy
- * @returns {void}
- */
-function selfCopyBytes(array, pos, offset, length) {
-  for (let i = 0; i < length; i++) {
-    array[pos + i] = array[pos - offset + i]
-  }
-}
-
-/**
  * Decompress snappy data.
  * Accepts an output buffer to avoid allocating a new buffer for each call.
  *
@@ -135,7 +120,7 @@ export function snappyUncompress(input, output) {
       if (offset > outPos) {
         throw new Error('cannot copy from before start of buffer')
       }
-      selfCopyBytes(output, outPos, offset, len)
+      copyBytes(output, outPos - offset, output, outPos, len)
       outPos += len
     }
   }
