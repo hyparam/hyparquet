@@ -165,8 +165,8 @@ const file = await asyncBufferFromUrl({ url, requestInit })
 
 ### Returned row format
 
-By default, data returned in the `onComplete` function will be one array of columns per row.
-If you would like each row to be an object with each key the name of the column, set the option `rowFormat` to `object`.
+By default, data returned by `parquetRead` in the `onComplete` function will be one **array** of columns per row.
+If you would like each row to be an **object** with each key the name of the column, set the option `rowFormat` to `object`.
 
 ```javascript
 import { parquetRead } from 'hyparquet'
@@ -177,6 +177,8 @@ await parquetRead({
   onComplete: data => console.log(data),
 })
 ```
+
+The `parquetReadObjects` function defaults to returning an array of objects.
 
 ## Supported Parquet Files
 

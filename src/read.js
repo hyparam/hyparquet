@@ -71,17 +71,16 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
 
   // loop through metadata to find min/max bytes to read
   let [groupStartByte, groupEndByte] = [file.byteLength, 0]
-  rowGroup.columns.forEach(({ meta_data: columnMetadata }) => {
-    if (!columnMetadata) throw new Error('parquet column metadata is undefined')
+  for (const { meta_data } of rowGroup.columns) {
+    if (!meta_data) throw new Error('parquet column metadata is undefined')
     // skip columns that are not requested
-    if (columns && !columns.includes(columnMetadata.path_in_schema[0])) return
+    if (columns && !columns.includes(meta_data.path_in_schema[0])) continue
 
-    const [columnStartByte, columnEndByte] = getColumnRange(columnMetadata).map(Number)
+    const [columnStartByte, columnEndByte] = getColumnRange(meta_data).map(Number)
     groupStartByte = Math.min(groupStartByte, columnStartByte)
     groupEndByte = Math.max(groupEndByte, columnEndByte)
-  })
+  }
   if (groupStartByte >= groupEndByte && columns?.length) {
-    // TODO: should throw if any column is missing
     throw new Error(`parquet columns not found: ${columns.join(', ')}`)
   }
   // if row group size is less than 32mb, pre-load in one read
@@ -148,16 +147,12 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
       if (subcolumns?.every(name => subcolumnData.has(name))) {
         // For every subcolumn, flatten and assemble the column
         const flatData = new Map(subcolumns.map(name => [name, flatten(subcolumnData.get(name))]))
-        // We have all data needed to assemble a top level column
         assembleNested(flatData, schemaPath[1])
         const flatColumn = flatData.get(columnName)
-        if (flatColumn) {
-          chunks = [flatColumn]
-          subcolumns.forEach(name => subcolumnData.delete(name))
-          subcolumnData.set(columnName, chunks)
-        } else {
-          throw new Error(`parquet column data not assembled: ${columnName}`)
-        }
+        if (!flatColumn) throw new Error(`parquet column data not assembled: ${columnName}`)
+        chunks = [flatColumn]
+        subcolumns.forEach(name => subcolumnData.delete(name))
+        subcolumnData.set(columnName, chunks)
       }
 
       // do not emit column data until structs are fully parsed
@@ -175,8 +170,6 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
   }
   await Promise.all(promises)
   if (options.onComplete) {
-    // transpose columns into rows
-    const groupData = new Array(rowLimit)
     const includedColumnNames = children
       .map(child => child.element.name)
       .filter(name => !columns || columns.includes(name))
@@ -184,14 +177,16 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
     const includedColumns = columnOrder
       .map(name => includedColumnNames.includes(name) ? flatten(subcolumnData.get(name)) : undefined)
 
+    // transpose columns into rows
+    const groupData = new Array(rowLimit)
     for (let row = 0; row < rowLimit; row++) {
       if (options.rowFormat === 'object') {
         // return each row as an object
         /** @type {Record<string, any>} */
         const rowData = {}
-        columnOrder.forEach((name, index) => {
-          rowData[name] = includedColumns[index]?.[row]
-        })
+        for (let i = 0; i < columnOrder.length; i++) {
+          rowData[columnOrder[i]] = includedColumns[i]?.[row]
+        }
         groupData[row] = rowData
       } else {
         // return each row as an array

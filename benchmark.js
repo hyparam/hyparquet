@@ -1,7 +1,7 @@
 import { createWriteStream, promises as fs } from 'fs'
 import { compressors } from 'hyparquet-compressors'
 import { pipeline } from 'stream/promises'
-import { parquetRead } from './src/hyparquet.js'
+import { parquetReadObjects } from './src/hyparquet.js'
 import { asyncBufferFromFile } from './src/utils.js'
 
 const url = 'https://huggingface.co/datasets/wikimedia/wikipedia/resolve/main/20231101.en/train-00000-of-00041.parquet'
@@ -25,7 +25,7 @@ const startTime = performance.now()
 console.log('parsing example.parquet data...')
 
 // read parquet file
-await parquetRead({
+await parquetReadObjects({
   file,
   compressors,
 })

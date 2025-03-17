@@ -160,7 +160,7 @@ function readVarBigInt(reader) {
  * @param {DataReader} reader
  * @returns {number} value
  */
-function readZigZag(reader) {
+export function readZigZag(reader) {
   const zigzag = readVarInt(reader)
   // convert zigzag to int
   return zigzag >>> 1 ^ -(zigzag & 1)
@@ -176,7 +176,7 @@ function readZigZag(reader) {
 export function readZigZagBigInt(reader) {
   const zigzag = readVarBigInt(reader)
   // convert zigzag to int
-  return zigzag >> BigInt(1) ^ -(zigzag & BigInt(1))
+  return zigzag >> 1n ^ -(zigzag & 1n)
 }
 
 /**
