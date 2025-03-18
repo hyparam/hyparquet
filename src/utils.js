@@ -166,9 +166,20 @@ function readStreamToArrayBuffer(input) {
  * that are read multiple times, possibly over a network.
  *
  * @param {AsyncBuffer} file file-like object to cache
+ * @param {{ minSize?: number }} [options]
  * @returns {AsyncBuffer} cached file-like object
  */
-export function cachedAsyncBuffer({ byteLength, slice }) {
+export function cachedAsyncBuffer({ byteLength, slice }, { minSize = 50000 } = {}) {
+  if (byteLength < minSize) {
+    // Cache whole file if it's small
+    const buffer = slice(0, byteLength)
+    return {
+      byteLength,
+      async slice(start, end) {
+        return (await buffer).slice(start, end)
+      },
+    }
+  }
   const cache = new Map()
   return {
     byteLength,
