@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { deserializeTCompactProtocol, readVarInt, toVarInt } from '../src/thrift.js'
+import { deserializeTCompactProtocol, readVarInt } from '../src/thrift.js'
 import { reader } from './helpers.js'
 
 describe('deserializeTCompactProtocol function', () => {
@@ -113,3 +113,24 @@ describe('readVarInt', () => {
     expect(readVarInt(reader([0xff, 0xff, 0xff, 0xff, 0x07]))).toBe(2147483647)
   })
 })
+
+/**
+ * Convert int to varint. Outputs 1-5 bytes for int32.
+ *
+ * @param {number} n
+ * @returns {number[]}
+ */
+function toVarInt(n) {
+  let idx = 0
+  const varInt = []
+  while (true) {
+    if ((n & ~0x7f) === 0) {
+      varInt[idx++] = n
+      break
+    } else {
+      varInt[idx++] = n & 0x7f | 0x80
+      n >>>= 7
+    }
+  }
+  return varInt
+}

@@ -229,24 +229,3 @@ function readCollectionBegin(reader) {
   }
   return [type, size]
 }
-
-/**
- * Convert int to varint. Outputs 1-5 bytes for int32.
- *
- * @param {number} n
- * @returns {number[]}
- */
-export function toVarInt(n) {
-  let idx = 0
-  const varInt = []
-  while (true) {
-    if ((n & ~0x7f) === 0) {
-      varInt[idx++] = n
-      break
-    } else {
-      varInt[idx++] = n & 0x7f | 0x80
-      n >>>= 7
-    }
-  }
-  return varInt
-}
