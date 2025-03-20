@@ -3,6 +3,8 @@ import { parseDecimal, parseFloat16 } from './convert.js'
 import { getSchemaPath } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
+export const defaultInitialFetchSize = 1 << 19 // 512kb
+
 /**
  * Read parquet metadata from an async buffer.
  *
@@ -27,7 +29,7 @@ import { deserializeTCompactProtocol } from './thrift.js'
  * @param {number} initialFetchSize initial fetch size in bytes (default 512kb)
  * @returns {Promise<FileMetaData>} parquet metadata object
  */
-export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = 1 << 19 /* 512kb */) {
+export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = defaultInitialFetchSize) {
   if (!asyncBuffer || !(asyncBuffer.byteLength >= 0)) throw new Error('parquetMetadataAsync expected AsyncBuffer')
 
   // fetch last bytes (footer) of the file

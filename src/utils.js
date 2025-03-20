@@ -1,3 +1,5 @@
+import { defaultInitialFetchSize } from './metadata.js'
+
 /**
  * Replace bigint, date, etc with legal JSON types.
  * When parsing parquet files, bigints are used to represent 64-bit integers.
@@ -169,7 +171,7 @@ function readStreamToArrayBuffer(input) {
  * @param {{ minSize?: number }} [options]
  * @returns {AsyncBuffer} cached file-like object
  */
-export function cachedAsyncBuffer({ byteLength, slice }, { minSize = 50000 } = {}) {
+export function cachedAsyncBuffer({ byteLength, slice }, { minSize = defaultInitialFetchSize } = {}) {
   if (byteLength < minSize) {
     // Cache whole file if it's small
     const buffer = slice(0, byteLength)
