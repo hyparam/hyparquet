@@ -24,6 +24,16 @@
   ],
   "type": "module",
   "types": "types/hyparquet.d.ts",
+  "exports": {
+    ".": {
+      "import": "./src/hyparquet.js",
+      "types": "./types/hyparquet.d.ts"
+    },
+    "./src/*.js": {
+      "import": "./src/*.js",
+      "types": "./types/*.d.ts"
+    }
+  },
   "scripts": {
     "build:types": "tsc -p ./tsconfig.build.json",
     "coverage": "vitest run --coverage --coverage.include=src",
