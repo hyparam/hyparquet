@@ -131,7 +131,10 @@ type LogicalTypeSimple =
   'JSON' |
   'BSON' |
   'UUID' |
-  'FLOAT16'
+  'FLOAT16' |
+  'VARIANT' |
+  'GEOMETRY' |
+  'GEOGRAPHY'
 
 export type LogicalTypeType = LogicalTypeSimple |
   'TIME' | // convertedType TIME_MILLIS or TIME_MICROS
@@ -276,7 +279,7 @@ export interface DictionaryPageHeader {
   is_sorted?: boolean
 }
 
-interface DataPageHeaderV2 {
+export interface DataPageHeaderV2 {
   num_values: number
   num_nulls: number
   num_rows: number

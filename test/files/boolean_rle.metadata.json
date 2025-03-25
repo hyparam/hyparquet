@@ -14,7 +14,6 @@
         {
           "column_index_length": 17,
           "column_index_offset": 89,
-          "crypto_metadata": 17,
           "file_offset": 47,
           "meta_data": {
             "codec": "SNAPPY",

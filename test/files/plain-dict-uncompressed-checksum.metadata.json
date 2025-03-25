@@ -60,8 +60,7 @@
           "offset_index_offset": 262,
           "offset_index_length": 10,
           "column_index_offset": 144,
-          "column_index_length": 31,
-          "crypto_metadata": 31
+          "column_index_length": 31
         },
         {
           "file_offset": 117,
@@ -103,8 +102,7 @@
           "offset_index_offset": 272,
           "offset_index_length": 11,
           "column_index_offset": 175,
-          "column_index_length": 87,
-          "crypto_metadata": 87
+          "column_index_length": 87
         }
       ],
       "total_byte_size": 140,

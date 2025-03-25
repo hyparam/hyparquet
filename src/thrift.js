@@ -1,5 +1,5 @@
 // TCompactProtocol types
-const CompactType = {
+export const CompactType = {
   STOP: 0,
   TRUE: 1,
   FALSE: 2,

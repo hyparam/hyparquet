@@ -67,8 +67,7 @@
           "offset_index_offset": 67,
           "offset_index_length": 10,
           "column_index_offset": 44,
-          "column_index_length": 23,
-          "crypto_metadata": 23
+          "column_index_length": 23
         }
       ],
       "total_byte_size": 180,

@@ -795,8 +795,7 @@
          "offset_index_offset": 6051,
          "offset_index_length": 10,
          "column_index_offset": 4672,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 54,
@@ -830,8 +829,7 @@
          "offset_index_offset": 6061,
          "offset_index_length": 10,
          "column_index_offset": 4687,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 104,
@@ -865,8 +863,7 @@
          "offset_index_offset": 6071,
          "offset_index_length": 11,
          "column_index_offset": 4702,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 154,
@@ -904,8 +901,7 @@
          "offset_index_offset": 6082,
          "offset_index_length": 11,
          "column_index_offset": 4717,
-         "column_index_length": 23,
-         "crypto_metadata": 23
+         "column_index_length": 23
        },
        {
          "file_offset": 213,
@@ -943,8 +939,7 @@
          "offset_index_offset": 6093,
          "offset_index_length": 11,
          "column_index_offset": 4740,
-         "column_index_length": 17,
-         "crypto_metadata": 17
+         "column_index_length": 17
        },
        {
          "file_offset": 264,
@@ -978,8 +973,7 @@
          "offset_index_offset": 6104,
          "offset_index_length": 11,
          "column_index_offset": 4757,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 314,
@@ -1013,8 +1007,7 @@
          "offset_index_offset": 6115,
          "offset_index_length": 11,
          "column_index_offset": 4772,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 364,
@@ -1048,8 +1041,7 @@
          "offset_index_offset": 6126,
          "offset_index_length": 11,
          "column_index_offset": 4787,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 414,
@@ -1083,8 +1075,7 @@
          "offset_index_offset": 6137,
          "offset_index_length": 11,
          "column_index_offset": 4802,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 464,
@@ -1118,8 +1109,7 @@
          "offset_index_offset": 6148,
          "offset_index_length": 11,
          "column_index_offset": 4817,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 514,
@@ -1153,8 +1143,7 @@
          "offset_index_offset": 6159,
          "offset_index_length": 11,
          "column_index_offset": 4832,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 567,
@@ -1189,8 +1178,7 @@
          "offset_index_offset": 6170,
          "offset_index_length": 11,
          "column_index_offset": 4847,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 617,
@@ -1225,8 +1213,7 @@
          "offset_index_offset": 6181,
          "offset_index_length": 11,
          "column_index_offset": 4862,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 667,
@@ -1261,8 +1248,7 @@
          "offset_index_offset": 6192,
          "offset_index_length": 11,
          "column_index_offset": 4877,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 717,
@@ -1297,8 +1283,7 @@
          "offset_index_offset": 6203,
          "offset_index_length": 11,
          "column_index_offset": 4892,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 767,
@@ -1333,8 +1318,7 @@
          "offset_index_offset": 6214,
          "offset_index_length": 11,
          "column_index_offset": 4907,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 817,
@@ -1369,8 +1353,7 @@
          "offset_index_offset": 6225,
          "offset_index_length": 11,
          "column_index_offset": 4922,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 867,
@@ -1405,8 +1388,7 @@
          "offset_index_offset": 6236,
          "offset_index_length": 11,
          "column_index_offset": 4937,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 917,
@@ -1441,8 +1423,7 @@
          "offset_index_offset": 6247,
          "offset_index_length": 11,
          "column_index_offset": 4952,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 967,
@@ -1477,8 +1458,7 @@
          "offset_index_offset": 6258,
          "offset_index_length": 11,
          "column_index_offset": 4967,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1017,
@@ -1513,8 +1493,7 @@
          "offset_index_offset": 6269,
          "offset_index_length": 11,
          "column_index_offset": 4982,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1067,
@@ -1549,8 +1528,7 @@
          "offset_index_offset": 6280,
          "offset_index_length": 11,
          "column_index_offset": 4997,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1117,
@@ -1585,8 +1563,7 @@
          "offset_index_offset": 6291,
          "offset_index_length": 11,
          "column_index_offset": 5012,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1167,
@@ -1621,8 +1598,7 @@
          "offset_index_offset": 6302,
          "offset_index_length": 11,
          "column_index_offset": 5027,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1217,
@@ -1657,8 +1633,7 @@
          "offset_index_offset": 6313,
          "offset_index_length": 11,
          "column_index_offset": 5042,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1267,
@@ -1693,8 +1668,7 @@
          "offset_index_offset": 6324,
          "offset_index_length": 11,
          "column_index_offset": 5057,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1317,
@@ -1729,8 +1703,7 @@
          "offset_index_offset": 6335,
          "offset_index_length": 11,
          "column_index_offset": 5072,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1367,
@@ -1766,8 +1739,7 @@
          "offset_index_offset": 6346,
          "offset_index_length": 11,
          "column_index_offset": 5087,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1421,
@@ -1804,8 +1776,7 @@
          "offset_index_offset": 6357,
          "offset_index_length": 11,
          "column_index_offset": 5102,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1476,
@@ -1841,8 +1812,7 @@
          "offset_index_offset": 6368,
          "offset_index_length": 11,
          "column_index_offset": 5117,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1530,
@@ -1878,8 +1848,7 @@
          "offset_index_offset": 6379,
          "offset_index_length": 11,
          "column_index_offset": 5132,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1584,
@@ -1915,8 +1884,7 @@
          "offset_index_offset": 6390,
          "offset_index_length": 11,
          "column_index_offset": 5147,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1638,
@@ -1952,8 +1920,7 @@
          "offset_index_offset": 6401,
          "offset_index_length": 11,
          "column_index_offset": 5162,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1692,
@@ -1989,8 +1956,7 @@
          "offset_index_offset": 6412,
          "offset_index_length": 11,
          "column_index_offset": 5177,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1746,
@@ -2026,8 +1992,7 @@
          "offset_index_offset": 6423,
          "offset_index_length": 11,
          "column_index_offset": 5192,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1800,
@@ -2063,8 +2028,7 @@
          "offset_index_offset": 6434,
          "offset_index_length": 11,
          "column_index_offset": 5207,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1854,
@@ -2100,8 +2064,7 @@
          "offset_index_offset": 6445,
          "offset_index_length": 11,
          "column_index_offset": 5222,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1908,
@@ -2137,8 +2100,7 @@
          "offset_index_offset": 6456,
          "offset_index_length": 11,
          "column_index_offset": 5237,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 1962,
@@ -2174,8 +2136,7 @@
          "offset_index_offset": 6467,
          "offset_index_length": 11,
          "column_index_offset": 5252,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2016,
@@ -2211,8 +2172,7 @@
          "offset_index_offset": 6478,
          "offset_index_length": 11,
          "column_index_offset": 5267,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2070,
@@ -2248,8 +2208,7 @@
          "offset_index_offset": 6489,
          "offset_index_length": 11,
          "column_index_offset": 5282,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2124,
@@ -2285,8 +2244,7 @@
          "offset_index_offset": 6500,
          "offset_index_length": 11,
          "column_index_offset": 5297,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2178,
@@ -2322,8 +2280,7 @@
          "offset_index_offset": 6511,
          "offset_index_length": 11,
          "column_index_offset": 5312,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2232,
@@ -2359,8 +2316,7 @@
          "offset_index_offset": 6522,
          "offset_index_length": 11,
          "column_index_offset": 5327,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2286,
@@ -2396,8 +2352,7 @@
          "offset_index_offset": 6533,
          "offset_index_length": 11,
          "column_index_offset": 5342,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2340,
@@ -2433,8 +2388,7 @@
          "offset_index_offset": 6544,
          "offset_index_length": 11,
          "column_index_offset": 5357,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2394,
@@ -2470,8 +2424,7 @@
          "offset_index_offset": 6555,
          "offset_index_length": 11,
          "column_index_offset": 5372,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2448,
@@ -2507,8 +2460,7 @@
          "offset_index_offset": 6566,
          "offset_index_length": 11,
          "column_index_offset": 5387,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2502,
@@ -2544,8 +2496,7 @@
          "offset_index_offset": 6577,
          "offset_index_length": 11,
          "column_index_offset": 5402,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2556,
@@ -2581,8 +2532,7 @@
          "offset_index_offset": 6588,
          "offset_index_length": 11,
          "column_index_offset": 5417,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2610,
@@ -2618,8 +2568,7 @@
          "offset_index_offset": 6599,
          "offset_index_length": 11,
          "column_index_offset": 5432,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2664,
@@ -2655,8 +2604,7 @@
          "offset_index_offset": 6610,
          "offset_index_length": 11,
          "column_index_offset": 5447,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2718,
@@ -2693,8 +2641,7 @@
          "offset_index_offset": 6621,
          "offset_index_length": 11,
          "column_index_offset": 5462,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2773,
@@ -2730,8 +2677,7 @@
          "offset_index_offset": 6632,
          "offset_index_length": 11,
          "column_index_offset": 5477,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2826,
@@ -2767,8 +2713,7 @@
          "offset_index_offset": 6643,
          "offset_index_length": 11,
          "column_index_offset": 5492,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2879,
@@ -2801,8 +2746,7 @@
          "offset_index_offset": 6654,
          "offset_index_length": 11,
          "column_index_offset": 5507,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2928,
@@ -2835,8 +2779,7 @@
          "offset_index_offset": 6665,
          "offset_index_length": 11,
          "column_index_offset": 5522,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 2977,
@@ -2869,8 +2812,7 @@
          "offset_index_offset": 6676,
          "offset_index_length": 11,
          "column_index_offset": 5537,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3026,
@@ -2904,8 +2846,7 @@
          "offset_index_offset": 6687,
          "offset_index_length": 11,
          "column_index_offset": 5552,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3076,
@@ -2939,8 +2880,7 @@
          "offset_index_offset": 6698,
          "offset_index_length": 11,
          "column_index_offset": 5567,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3126,
@@ -2974,8 +2914,7 @@
          "offset_index_offset": 6709,
          "offset_index_length": 11,
          "column_index_offset": 5582,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3177,
@@ -3009,8 +2948,7 @@
          "offset_index_offset": 6720,
          "offset_index_length": 11,
          "column_index_offset": 5597,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3227,
@@ -3044,8 +2982,7 @@
          "offset_index_offset": 6731,
          "offset_index_length": 11,
          "column_index_offset": 5612,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3277,
@@ -3079,8 +3016,7 @@
          "offset_index_offset": 6742,
          "offset_index_length": 11,
          "column_index_offset": 5627,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3327,
@@ -3114,8 +3050,7 @@
          "offset_index_offset": 6753,
          "offset_index_length": 11,
          "column_index_offset": 5642,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3377,
@@ -3149,8 +3084,7 @@
          "offset_index_offset": 6764,
          "offset_index_length": 11,
          "column_index_offset": 5657,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3427,
@@ -3184,8 +3118,7 @@
          "offset_index_offset": 6775,
          "offset_index_length": 11,
          "column_index_offset": 5672,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3477,
@@ -3219,8 +3152,7 @@
          "offset_index_offset": 6786,
          "offset_index_length": 11,
          "column_index_offset": 5687,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3527,
@@ -3254,8 +3186,7 @@
          "offset_index_offset": 6797,
          "offset_index_length": 11,
          "column_index_offset": 5702,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3578,
@@ -3289,8 +3220,7 @@
          "offset_index_offset": 6808,
          "offset_index_length": 11,
          "column_index_offset": 5717,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3629,
@@ -3324,8 +3254,7 @@
          "offset_index_offset": 6819,
          "offset_index_length": 11,
          "column_index_offset": 5732,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3679,
@@ -3359,8 +3288,7 @@
          "offset_index_offset": 6830,
          "offset_index_length": 11,
          "column_index_offset": 5747,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3729,
@@ -3395,8 +3323,7 @@
          "offset_index_offset": 6841,
          "offset_index_length": 11,
          "column_index_offset": 5762,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3780,
@@ -3431,8 +3358,7 @@
          "offset_index_offset": 6852,
          "offset_index_length": 11,
          "column_index_offset": 5777,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3831,
@@ -3465,8 +3391,7 @@
          "offset_index_offset": 6863,
          "offset_index_length": 11,
          "column_index_offset": 5792,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3880,
@@ -3499,8 +3424,7 @@
          "offset_index_offset": 6874,
          "offset_index_length": 11,
          "column_index_offset": 5807,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3929,
@@ -3533,8 +3457,7 @@
          "offset_index_offset": 6885,
          "offset_index_length": 11,
          "column_index_offset": 5822,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 3978,
@@ -3567,8 +3490,7 @@
          "offset_index_offset": 6896,
          "offset_index_length": 11,
          "column_index_offset": 5837,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 4029,
@@ -3601,8 +3523,7 @@
          "offset_index_offset": 6907,
          "offset_index_length": 11,
          "column_index_offset": 5852,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 4078,
@@ -3635,8 +3556,7 @@
          "offset_index_offset": 6918,
          "offset_index_length": 11,
          "column_index_offset": 5867,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 4127,
@@ -3669,8 +3589,7 @@
          "offset_index_offset": 6929,
          "offset_index_length": 11,
          "column_index_offset": 5882,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 4176,
@@ -3703,8 +3622,7 @@
          "offset_index_offset": 6940,
          "offset_index_length": 11,
          "column_index_offset": 5897,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 4225,
@@ -3737,8 +3655,7 @@
          "offset_index_offset": 6951,
          "offset_index_length": 11,
          "column_index_offset": 5912,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 4274,
@@ -3771,8 +3688,7 @@
          "offset_index_offset": 6962,
          "offset_index_length": 11,
          "column_index_offset": 5927,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 4323,
@@ -3805,8 +3721,7 @@
          "offset_index_offset": 6973,
          "offset_index_length": 11,
          "column_index_offset": 5942,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 4374,
@@ -3839,8 +3754,7 @@
          "offset_index_offset": 6984,
          "offset_index_length": 11,
          "column_index_offset": 5957,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 4425,
@@ -3873,8 +3787,7 @@
          "offset_index_offset": 6995,
          "offset_index_length": 11,
          "column_index_offset": 5972,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 4476,
@@ -3911,8 +3824,7 @@
          "offset_index_offset": 7006,
          "offset_index_length": 11,
          "column_index_offset": 5987,
-         "column_index_length": 17,
-         "crypto_metadata": 17
+         "column_index_length": 17
        },
        {
          "file_offset": 4525,
@@ -3949,8 +3861,7 @@
          "offset_index_offset": 7017,
          "offset_index_length": 11,
          "column_index_offset": 6004,
-         "column_index_length": 17,
-         "crypto_metadata": 17
+         "column_index_length": 17
        },
        {
          "file_offset": 4574,
@@ -3983,8 +3894,7 @@
          "offset_index_offset": 7028,
          "offset_index_length": 11,
          "column_index_offset": 6021,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        },
        {
          "file_offset": 4623,
@@ -4017,8 +3927,7 @@
          "offset_index_offset": 7039,
          "offset_index_length": 11,
          "column_index_offset": 6036,
-         "column_index_length": 15,
-         "crypto_metadata": 15
+         "column_index_length": 15
        }
      ],
      "total_byte_size": 2976,

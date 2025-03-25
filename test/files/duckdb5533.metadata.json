@@ -83,8 +83,7 @@
           "offset_index_offset": 656,
           "offset_index_length": 11,
           "column_index_offset": 531,
-          "column_index_length": 31,
-          "crypto_metadata": 31
+          "column_index_length": 31
         },
         {
           "file_offset": 197,
@@ -111,8 +110,7 @@
           "offset_index_offset": 667,
           "offset_index_length": 12,
           "column_index_offset": 562,
-          "column_index_length": 23,
-          "crypto_metadata": 23
+          "column_index_length": 23
         },
         {
           "file_offset": 279,
@@ -137,8 +135,7 @@
           "offset_index_offset": 679,
           "offset_index_length": 11,
           "column_index_offset": 585,
-          "column_index_length": 17,
-          "crypto_metadata": 17
+          "column_index_length": 17
         },
         {
           "file_offset": 383,
@@ -165,8 +162,7 @@
           "offset_index_offset": 690,
           "offset_index_length": 12,
           "column_index_offset": 602,
-          "column_index_length": 31,
-          "crypto_metadata": 31
+          "column_index_length": 31
         },
         {
           "file_offset": 492,
@@ -193,8 +189,7 @@
           "offset_index_offset": 702,
           "offset_index_length": 11,
           "column_index_offset": 633,
-          "column_index_length": 23,
-          "crypto_metadata": 23
+          "column_index_length": 23
         }
       ],
       "total_byte_size": 294,
