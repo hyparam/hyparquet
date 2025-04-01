@@ -186,6 +186,7 @@ type ColumnCryptoMetaData = Record<string, never>
 
 export type Encoding =
   'PLAIN' |
+  'GROUP_VAR_INT' | // deprecated
   'PLAIN_DICTIONARY' |
   'RLE' |
   'BIT_PACKED' | // deprecated
@@ -209,7 +210,7 @@ export type Compressors = {
   [K in CompressionCodec]?: (input: Uint8Array, outputLength: number) => Uint8Array
 }
 
-interface KeyValue {
+export interface KeyValue {
   key: string
   value?: string
 }

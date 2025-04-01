@@ -180,6 +180,10 @@ await parquetRead({
 
 The `parquetReadObjects` function defaults to returning an array of objects.
 
+## Parquet Writing
+
+To create parquet files from javascript, check out the [hyparquet-writer](https://github.com/hyparam/hyparquet-writer) package.
+
 ## Supported Parquet Files
 
 The parquet format is known to be a sprawling format which includes options for a wide array of compression schemes, encoding types, and data structures.

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { snappyUncompress } from '../src/snappy.js'
 
 describe('snappy uncompress', () => {
-  it('decompresses valid input correctly', async () => {
+  it('decompresses valid input correctly', () => {
     const testCases = [
       { compressed: [0x00], expected: '' },
       { compressed: [0x01, 0x00, 0x68], expected: 'h' },
@@ -37,18 +37,16 @@ describe('snappy uncompress', () => {
       { compressed: [ 6, 20, 2, 0, 0, 0, 3, 23], expected: new Uint8Array([2, 0, 0, 0, 3, 23]) },
     ]
 
-    const futures = testCases.map(async ({ compressed, expected }) => {
+    for (const { compressed, expected } of testCases) {
       const output = new Uint8Array(expected.length)
-      await snappyUncompress(new Uint8Array(compressed), output)
+      snappyUncompress(new Uint8Array(compressed), output)
       if (typeof expected === 'string') {
         const outputStr = new TextDecoder().decode(output)
         expect(outputStr).toBe(expected)
       } else {
         expect(output).toEqual(expected) // Uint8Array
       }
-    })
-
-    await Promise.all(futures)
+    }
   })
 
   it('decompress hyparquet.jpg.snappy', async () => {

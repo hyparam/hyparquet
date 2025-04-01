@@ -10,9 +10,10 @@ export const ParquetType = [
   'FIXED_LEN_BYTE_ARRAY',
 ]
 
+/** @type {import('../src/types.d.ts').Encoding[]} */
 export const Encoding = [
   'PLAIN',
-  undefined,
+  'GROUP_VAR_INT', // deprecated
   'PLAIN_DICTIONARY',
   'RLE',
   'BIT_PACKED', // deprecated
@@ -23,6 +24,7 @@ export const Encoding = [
   'BYTE_STREAM_SPLIT',
 ]
 
+/** @type {import('../src/types.d.ts').FieldRepetitionType[]} */
 export const FieldRepetitionType = [
   'REQUIRED',
   'OPTIONAL',
@@ -74,6 +76,7 @@ export const logicalTypeType = [
   'UUID',
 ]
 
+/** @type {import('../src/types.d.ts').CompressionCodec[]} */
 export const CompressionCodec = [
   'UNCOMPRESSED',
   'SNAPPY',

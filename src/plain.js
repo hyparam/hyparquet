@@ -139,7 +139,7 @@ function readPlainDouble(reader, count) {
 function readPlainByteArray(reader, count) {
   const values = new Array(count)
   for (let i = 0; i < count; i++) {
-    const length = reader.view.getInt32(reader.offset, true)
+    const length = reader.view.getUint32(reader.offset, true)
     reader.offset += 4
     values[i] = new Uint8Array(reader.view.buffer, reader.view.byteOffset + reader.offset, length)
     reader.offset += length
