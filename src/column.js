@@ -3,7 +3,6 @@ import { Encoding, PageType } from './constants.js'
 import { convertWithDictionary } from './convert.js'
 import { decompressPage, readDataPage, readDataPageV2 } from './datapage.js'
 import { readPlain } from './plain.js'
-import { getMaxDefinitionLevel } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
 /**
@@ -81,9 +80,7 @@ export function readPage(reader, columnMetadata, schemaPath, element, dictionary
     // convert types, dereference dictionary, and assemble lists
     let values = convertWithDictionary(dataPage, dictionary, element, daph.encoding, utf8)
     if (repetitionLevels.length || definitionLevels?.length) {
-      const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
-      const repetitionPath = schemaPath.map(({ element }) => element.repetition_type)
-      return assembleLists([], definitionLevels, repetitionLevels, values, repetitionPath, maxDefinitionLevel)
+      return assembleLists([], definitionLevels, repetitionLevels, values, schemaPath)
     } else {
       // wrap nested flat data by depth
       for (let i = 2; i < schemaPath.length; i++) {
@@ -103,13 +100,7 @@ export function readPage(reader, columnMetadata, schemaPath, element, dictionary
 
     // convert types, dereference dictionary, and assemble lists
     const values = convertWithDictionary(dataPage, dictionary, element, daph2.encoding, utf8)
-    if (repetitionLevels.length || definitionLevels?.length) {
-      const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
-      const repetitionPath = schemaPath.map(({ element }) => element.repetition_type)
-      return assembleLists([], definitionLevels, repetitionLevels, values, repetitionPath, maxDefinitionLevel)
-    } else {
-      return values
-    }
+    return assembleLists([], definitionLevels, repetitionLevels, values, schemaPath)
   } else if (header.type === 'DICTIONARY_PAGE') {
     const diph = header.dictionary_page_header
     if (!diph) throw new Error('parquet dictionary page header is undefined')

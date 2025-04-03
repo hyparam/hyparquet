@@ -1,24 +1,22 @@
-import { isListLike, isMapLike } from './schema.js'
+import { getMaxDefinitionLevel, isListLike, isMapLike } from './schema.js'
 
 /**
- * Dremel-assembly of arrays of values into lists
+ * Reconstructs a complex nested structure from flat arrays of values and
+ * definition and repetition levels, according to Dremel encoding.
  *
- * Reconstructs a complex nested structure from flat arrays of definition and repetition levels,
- * according to Dremel encoding.
- *
- * @import {DecodedArray, FieldRepetitionType} from '../src/types.d.ts'
+ * @import {DecodedArray} from '../src/types.d.ts'
  * @param {any[]} output
  * @param {number[] | undefined} definitionLevels
  * @param {number[]} repetitionLevels
  * @param {DecodedArray} values
- * @param {(FieldRepetitionType | undefined)[]} repetitionPath
- * @param {number} maxDefinitionLevel definition level that corresponds to non-null
- * @returns {any[]}
+ * @param {SchemaTree[]} schemaPath
+ * @returns {DecodedArray}
  */
-export function assembleLists(
-  output, definitionLevels, repetitionLevels, values, repetitionPath, maxDefinitionLevel
-) {
+export function assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath) {
   const n = definitionLevels?.length || repetitionLevels.length
+  if (!n) return values
+  const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
+  const repetitionPath = schemaPath.map(({ element }) => element.repetition_type)
   let valueIndex = 0
 
   // Track state of nested structures

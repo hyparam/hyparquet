@@ -92,7 +92,7 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
   }
 
   const promises = []
-  // Top-level columns to assemble
+  // top-level columns to assemble
   const { children } = getSchemaPath(metadata.schema, [])[0]
   const subcolumnNames = new Map(children.map(child => [child.element.name, getSubcolumns(child)]))
   /** @type {Map<string, DecodedArray[]>} */
@@ -138,7 +138,7 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
       let chunks = columnData
 
       // TODO: fast path for non-nested columns
-      // Save column data for assembly
+      // save column data for assembly
       const subcolumn = columnMetadata.path_in_schema.join('.')
       subcolumnData.set(subcolumn, chunks)
       chunks = undefined
