@@ -49,7 +49,7 @@ Check out a minimal parquet viewer demo that shows how to integrate hyparquet in
 
 ### Node.js Example
 
-To read the contents of a parquet file in a node.js environment use `asyncBufferFromFile`:
+To read the contents of a local parquet file in a node.js environment use `asyncBufferFromFile`:
 
 ```javascript
 const { asyncBufferFromFile, parquetReadObjects } = await import('hyparquet')
