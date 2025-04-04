@@ -19,13 +19,13 @@ export const CompactType = {
 /**
  * Parse TCompactProtocol
  *
- * @import {DataReader} from '../src/types.d.ts'
+ * @import {DataReader, ThriftObject, ThriftType} from '../src/types.d.ts'
  * @param {DataReader} reader
- * @returns {Record<string, any>}
+ * @returns {{ [key: `field_${number}`]: any }}
  */
 export function deserializeTCompactProtocol(reader) {
   let lastFid = 0
-  /** @type {Record<string, any>} */
+  /** @type {ThriftObject} */
   const value = {}
 
   while (reader.offset < reader.view.byteLength) {
@@ -49,7 +49,7 @@ export function deserializeTCompactProtocol(reader) {
  *
  * @param {DataReader} reader
  * @param {number} type
- * @returns {any} value
+ * @returns {ThriftType}
  */
 function readElement(reader, type) {
   switch (type) {
@@ -86,7 +86,7 @@ function readElement(reader, type) {
     return values
   }
   case CompactType.STRUCT: {
-    /** @type {Record<string, any>} */
+    /** @type {ThriftObject} */
     const structValues = {}
     let structLastFid = 0
     while (true) {
@@ -99,15 +99,7 @@ function readElement(reader, type) {
     }
     return structValues
   }
-  // TODO: MAP and SET
-  case CompactType.UUID: {
-    // Read 16 bytes to uuid string
-    let uuid = ''
-    for (let i = 0; i < 16; i++) {
-      uuid += reader.view.getUint8(reader.offset++).toString(16).padStart(2, '0')
-    }
-    return uuid
-  }
+  // TODO: MAP, SET, UUID
   default:
     throw new Error(`thrift unhandled type: ${type}`)
   }
@@ -119,7 +111,7 @@ function readElement(reader, type) {
  * Reads groups of 7 low bits until high bit is 0.
  *
  * @param {DataReader} reader
- * @returns {number} value
+ * @returns {number}
  */
 export function readVarInt(reader) {
   let result = 0
@@ -138,7 +130,7 @@ export function readVarInt(reader) {
  * Read a varint as a bigint.
  *
  * @param {DataReader} reader
- * @returns {bigint} value
+ * @returns {bigint}
  */
 function readVarBigInt(reader) {
   let result = 0n
@@ -158,7 +150,7 @@ function readVarBigInt(reader) {
  * A zigzag int folds positive and negative numbers into the positive number space.
  *
  * @param {DataReader} reader
- * @returns {number} value
+ * @returns {number}
  */
 export function readZigZag(reader) {
   const zigzag = readVarInt(reader)
@@ -171,7 +163,7 @@ export function readZigZag(reader) {
  * This version returns a BigInt.
  *
  * @param {DataReader} reader
- * @returns {bigint} value
+ * @returns {bigint}
  */
 export function readZigZagBigInt(reader) {
   const zigzag = readVarBigInt(reader)

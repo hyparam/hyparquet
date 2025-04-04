@@ -222,8 +222,8 @@ export interface Statistics {
   min?: MinMaxType
   null_count?: bigint
   distinct_count?: bigint
-  max_value?: string
-  min_value?: string
+  max_value?: MinMaxType
+  min_value?: MinMaxType
   is_max_value_exact?: boolean
   is_min_value_exact?: boolean
 }
@@ -373,3 +373,6 @@ export interface ParquetQueryFilter {
   $or?: ParquetQueryFilter[]
   $not?: ParquetQueryFilter
 }
+
+export type ThriftObject = { [ key: `field_${number}` ]: ThriftType }
+export type ThriftType = boolean | number | bigint | Uint8Array | ThriftType[] | ThriftObject
