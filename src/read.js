@@ -41,8 +41,7 @@ export async function parquetRead(options) {
     // if row group overlaps with row range, read it
     if (groupStart + groupRows >= rowStart && (rowEnd === undefined || groupStart < rowEnd)) {
       // read row group
-      const rowLimit = rowEnd && rowEnd - groupStart
-      const groupData = await readRowGroup(options, rowGroup, groupStart, rowLimit)
+      const groupData = await readRowGroup(options, rowGroup, groupStart)
       if (onComplete) {
         // filter to rows in range
         const start = Math.max(rowStart - groupStart, 0)
@@ -62,13 +61,14 @@ export async function parquetRead(options) {
  * @param {ParquetReadOptions} options read options
  * @param {RowGroup} rowGroup row group to read
  * @param {number} groupStart row index of the first row in the group
- * @param {number} [rowLimit] max rows to read from this group
  * @returns {Promise<any[][]>} resolves to row data
  */
-export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
-  const { file, metadata, columns } = options
+export async function readRowGroup(options, rowGroup, groupStart) {
+  const { file, metadata, columns, rowStart, rowEnd } = options
   if (!metadata) throw new Error('parquet metadata not found')
-  if (rowLimit === undefined || rowLimit > rowGroup.num_rows) rowLimit = Number(rowGroup.num_rows)
+  const numRows = Number(rowGroup.num_rows)
+  const rowGroupStart = Math.max((rowStart || 0) - groupStart, 0)
+  const rowGroupEnd = rowEnd === undefined ? numRows : Math.min(rowEnd - groupStart, numRows)
 
   // loop through metadata to find min/max bytes to read
   let [groupStartByte, groupEndByte] = [file.byteLength, 0]
@@ -134,7 +134,7 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
     promises.push(buffer.then(arrayBuffer => {
       const schemaPath = getSchemaPath(metadata.schema, columnMetadata.path_in_schema)
       const reader = { view: new DataView(arrayBuffer), offset: bufferOffset }
-      const columnData = readColumn(reader, rowLimit, columnMetadata, schemaPath, options)
+      const columnData = readColumn(reader, rowGroupStart, rowGroupEnd, columnMetadata, schemaPath, options)
       /** @type {DecodedArray[] | undefined} */
       let chunks = columnData
 
@@ -164,7 +164,7 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
           columnName,
           columnData: chunk,
           rowStart: groupStart,
-          rowEnd: groupStart + rowLimit,
+          rowEnd: groupStart + chunk.length,
         })
       }
     }))
@@ -179,8 +179,8 @@ export async function readRowGroup(options, rowGroup, groupStart, rowLimit) {
       .map(name => includedColumnNames.includes(name) ? flatten(subcolumnData.get(name)) : undefined)
 
     // transpose columns into rows
-    const groupData = new Array(rowLimit)
-    for (let row = 0; row < rowLimit; row++) {
+    const groupData = new Array(rowGroupEnd)
+    for (let row = rowGroupStart; row < rowGroupEnd; row++) {
       if (options.rowFormat === 'object') {
         // return each row as an object
         /** @type {Record<string, any>} */

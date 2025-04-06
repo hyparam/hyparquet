@@ -3,46 +3,47 @@ import { Encoding, PageType } from './constants.js'
 import { convertWithDictionary } from './convert.js'
 import { decompressPage, readDataPage, readDataPageV2 } from './datapage.js'
 import { readPlain } from './plain.js'
+import { isFlatColumn } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
 /**
  * Parse column data from a buffer.
  *
  * @param {DataReader} reader
- * @param {number | undefined} rowLimit maximum number of rows to read (undefined reads all rows)
+ * @param {number} rowGroupStart skip this many rows in the row group
+ * @param {number} rowGroupEnd read up to this index in the row group (Infinity reads all rows)
  * @param {ColumnMetaData} columnMetadata column metadata
  * @param {SchemaTree[]} schemaPath schema path for the column
  * @param {ParquetReadOptions} options read options
  * @returns {DecodedArray[]}
  */
-export function readColumn(reader, rowLimit, columnMetadata, schemaPath, options) {
+export function readColumn(reader, rowGroupStart, rowGroupEnd, columnMetadata, schemaPath, options) {
   const { element } = schemaPath[schemaPath.length - 1]
   /** @type {DecodedArray[]} */
   const chunks = []
   /** @type {DecodedArray | undefined} */
   let dictionary = undefined
-  const hasRowLimit = rowLimit !== undefined && rowLimit >= 0 && isFinite(rowLimit)
   let rowCount = 0
 
   // read dictionary
   if (hasDictionary(columnMetadata)) {
-    dictionary = readPage(reader, columnMetadata, schemaPath, element, dictionary, options)
+    dictionary = readPage(reader, columnMetadata, schemaPath, element, dictionary, 0, options)
   }
 
-  while (!hasRowLimit || rowCount < rowLimit) {
+  while (rowCount < rowGroupEnd) {
     if (reader.offset >= reader.view.byteLength - 1) break // end of reader
-    const values = readPage(reader, columnMetadata, schemaPath, element, dictionary, options)
+    const values = readPage(reader, columnMetadata, schemaPath, element, dictionary, rowGroupStart - rowCount, options)
     chunks.push(values)
     rowCount += values.length
   }
-  if (hasRowLimit) {
-    if (rowCount < rowLimit) {
-      throw new Error(`parquet row data length ${rowCount} does not match row group limit ${rowLimit}}`)
+  if (isFinite(rowGroupEnd)) {
+    if (rowCount < rowGroupEnd) {
+      throw new Error(`parquet row data length ${rowCount} does not match row group limit ${rowGroupEnd}}`)
     }
-    if (rowCount > rowLimit) {
+    if (rowCount > rowGroupEnd) {
       // truncate last chunk to row limit
       const lastChunk = chunks[chunks.length - 1]
-      chunks[chunks.length - 1] = lastChunk.slice(0, rowLimit - (rowCount - lastChunk.length))
+      chunks[chunks.length - 1] = lastChunk.slice(0, rowGroupEnd - (rowCount - lastChunk.length))
     }
   }
   return chunks
@@ -56,10 +57,11 @@ export function readColumn(reader, rowLimit, columnMetadata, schemaPath, options
  * @param {SchemaTree[]} schemaPath
  * @param {SchemaElement} element
  * @param {DecodedArray | undefined} dictionary
+ * @param {number} pageStart skip this many rows in the page
  * @param {ParquetReadOptions} options
  * @returns {DecodedArray}
  */
-export function readPage(reader, columnMetadata, schemaPath, element, dictionary, { utf8, compressors }) {
+export function readPage(reader, columnMetadata, schemaPath, element, dictionary, pageStart, { utf8, compressors }) {
   const header = parquetHeader(reader) // column header
 
   // read compressed_page_size bytes
@@ -72,6 +74,11 @@ export function readPage(reader, columnMetadata, schemaPath, element, dictionary
   if (header.type === 'DATA_PAGE') {
     const daph = header.data_page_header
     if (!daph) throw new Error('parquet data page header is undefined')
+
+    // skip unnecessary non-nested pages
+    if (pageStart > daph.num_values && isFlatColumn(schemaPath)) {
+      return new Array(daph.num_values) // TODO: don't allocate array
+    }
 
     const page = decompressPage(compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec, compressors)
     const { definitionLevels, repetitionLevels, dataPage } = readDataPage(page, daph, schemaPath, columnMetadata)
@@ -93,6 +100,11 @@ export function readPage(reader, columnMetadata, schemaPath, element, dictionary
   } else if (header.type === 'DATA_PAGE_V2') {
     const daph2 = header.data_page_header_v2
     if (!daph2) throw new Error('parquet data page header v2 is undefined')
+
+    // skip unnecessary pages
+    if (pageStart > daph2.num_rows) {
+      return new Array(daph2.num_values) // TODO: don't allocate array
+    }
 
     const { definitionLevels, repetitionLevels, dataPage } = readDataPageV2(
       compressedBytes, header, schemaPath, columnMetadata, compressors

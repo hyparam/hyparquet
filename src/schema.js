@@ -117,3 +117,17 @@ export function isMapLike(schema) {
 
   return true
 }
+
+/**
+ * Returns true if a column is non-nested.
+ *
+ * @param {SchemaTree[]} schemaPath
+ * @returns {boolean}
+ */
+export function isFlatColumn(schemaPath) {
+  if (schemaPath.length !== 2) return false
+  const [, column] = schemaPath
+  if (column.element.repetition_type === 'REPEATED') return false
+  if (column.children.length) return false
+  return true
+}

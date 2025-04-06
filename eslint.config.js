@@ -53,6 +53,7 @@ export default [
       'no-useless-return': 'error',
       'no-var': 'error',
       'object-curly-spacing': ['error', 'always'],
+      'object-shorthand': 'error',
       'prefer-const': 'error',
       'prefer-destructuring': ['warn', {
         object: true,

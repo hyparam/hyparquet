@@ -179,6 +179,6 @@ describe('parquetRead', () => {
       rowEnd: 91,
     })
     expect(rows).toEqual([{ col: 'bad' }])
-    expect(convertWithDictionary).toHaveBeenCalledTimes(10)
+    expect(convertWithDictionary).toHaveBeenCalledTimes(2)
   })
 })
