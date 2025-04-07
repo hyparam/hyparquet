@@ -1,0 +1,130 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "schema",
+      "num_children": 1
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "col",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    }
+  ],
+  "num_rows": 200,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 338,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "col"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 100,
+            "total_uncompressed_size": 312,
+            "total_compressed_size": 334,
+            "data_page_offset": 35,
+            "dictionary_page_offset": 4,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "good",
+              "min_value": "bad"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 10
+              }
+            ]
+          },
+          "offset_index_offset": 1036,
+          "offset_index_length": 85,
+          "column_index_offset": 798,
+          "column_index_length": 121
+        }
+      ],
+      "total_byte_size": 312,
+      "num_rows": 100,
+      "file_offset": 4,
+      "total_compressed_size": 334,
+      "ordinal": 0
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 731,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "col"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 100,
+            "total_uncompressed_size": 306,
+            "total_compressed_size": 328,
+            "data_page_offset": 434,
+            "dictionary_page_offset": 403,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "good",
+              "min_value": "bad"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 10
+              }
+            ]
+          },
+          "offset_index_offset": 1121,
+          "offset_index_length": 86,
+          "column_index_offset": 919,
+          "column_index_length": 117
+        }
+      ],
+      "total_byte_size": 306,
+      "num_rows": 100,
+      "file_offset": 403,
+      "total_compressed_size": 328,
+      "ordinal": 1
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "ARROW:schema",
+      "value": "/////3AAAAAQAAAAAAAKAAwABgAFAAgACgAAAAABBAAMAAAACAAIAAAABAAIAAAABAAAAAEAAAAUAAAAEAAUAAgABgAHAAwAAAAQABAAAAAAAAEFEAAAABgAAAAEAAAAAAAAAAMAAABjb2wABAAEAAQAAAAAAAAA"
+    }
+  ],
+  "created_by": "parquet-cpp-arrow version 15.0.0",
+  "metadata_length": 447
+}

@@ -22,13 +22,14 @@ export async function parquetRead(options) {
   if (!options.file || !(options.file.byteLength >= 0)) {
     throw new Error('parquetRead expected file AsyncBuffer')
   }
+  const rowStart = options.rowStart || 0
+  if (rowStart < 0) throw new Error('parquetRead rowStart must be postive')
 
   // load metadata if not provided
   options.metadata ||= await parquetMetadataAsync(options.file)
   if (!options.metadata) throw new Error('parquet metadata not found')
 
   const { metadata, onComplete, rowEnd } = options
-  const rowStart = options.rowStart || 0
   /** @type {any[][]} */
   const rowData = []
 

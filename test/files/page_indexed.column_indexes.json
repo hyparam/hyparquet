@@ -1,0 +1,108 @@
+[
+  [
+    {
+      "boundary_order": "ASCENDING",
+      "max_values": [
+        "good",
+        "good",
+        "good",
+        "good",
+        "good",
+        "good",
+        "good",
+        "good",
+        "good",
+        "good"
+      ],
+      "min_values": [
+        "bad",
+        "bad",
+        "bad",
+        "bad",
+        "bad",
+        "bad",
+        "bad",
+        "bad",
+        "bad",
+        "bad"
+      ],
+      "null_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "null_pages": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  ],
+  [
+    {
+      "boundary_order": "UNORDERED",
+      "max_values": [
+        "good",
+        "bad",
+        "good",
+        "bad",
+        "good",
+        "bad",
+        "good",
+        "good",
+        "bad",
+        "good"
+      ],
+      "min_values": [
+        "bad",
+        "bad",
+        "bad",
+        "bad",
+        "bad",
+        "bad",
+        "bad",
+        "bad",
+        "bad",
+        "bad"
+      ],
+      "null_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "null_pages": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  ]
+]

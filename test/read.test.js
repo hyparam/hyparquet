@@ -1,6 +1,9 @@
-import { describe, expect, it } from 'vitest'
-import { parquetRead, parquetReadObjects } from '../src/hyparquet.js'
+import { describe, expect, it, vi } from 'vitest'
+import { convertWithDictionary } from '../src/convert.js'
+import { parquetMetadataAsync, parquetRead, parquetReadObjects } from '../src/hyparquet.js'
 import { asyncBufferFromFile } from '../src/utils.js'
+
+vi.mock('../src/convert.js', { spy: true })
 
 describe('parquetRead', () => {
   it('throws error for undefined file', async () => {
@@ -163,5 +166,19 @@ describe('parquetRead', () => {
       { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
       { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
     ])
+  })
+
+  it('skips converting unnecessary pages', async () => {
+    const file = await asyncBufferFromFile('test/files/page_indexed.parquet')
+    const metadata = await parquetMetadataAsync(file)
+    vi.mocked(convertWithDictionary).mockClear()
+    const rows = await parquetReadObjects({
+      file,
+      metadata,
+      rowStart: 90,
+      rowEnd: 91,
+    })
+    expect(rows).toEqual([{ col: 'bad' }])
+    expect(convertWithDictionary).toHaveBeenCalledTimes(10)
   })
 })

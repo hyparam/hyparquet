@@ -2,8 +2,6 @@ import { defaultInitialFetchSize } from './metadata.js'
 
 /**
  * Replace bigint, date, etc with legal JSON types.
- * When parsing parquet files, bigints are used to represent 64-bit integers.
- * However, JSON does not support bigints, so it's helpful to convert to numbers.
  *
  * @param {any} obj object to convert
  * @returns {unknown} converted object
