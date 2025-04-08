@@ -29,6 +29,7 @@ export function assembleLists(output, definitionLevels, repetitionLevels, values
   if (repetitionLevels[0]) {
     // continue previous row
     while (currentDepth < repetitionPath.length - 2 && currentRepLevel < repetitionLevels[0]) {
+      if (!currentContainer) throw new Error('parquet cannot resume previous page')
       // go into last list
       currentContainer = currentContainer.at(-1)
       containerStack.push(currentContainer)

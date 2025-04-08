@@ -1,0 +1,90 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "schema",
+      "num_children": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "int_list",
+      "num_children": 1,
+      "converted_type": "LIST",
+      "logical_type": {
+        "type": "LIST"
+      }
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "list",
+      "num_children": 1
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "element"
+    }
+  ],
+  "num_rows": 100,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "int_list",
+              "list",
+              "element"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 2000,
+            "total_uncompressed_size": 2692,
+            "total_compressed_size": 2338,
+            "data_page_offset": 426,
+            "dictionary_page_offset": 4,
+            "statistics": {
+              "max": 99,
+              "min": 0,
+              "null_count": 0,
+              "max_value": 99,
+              "min_value": 0
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 2
+              }
+            ]
+          }
+        }
+      ],
+      "total_byte_size": 2692,
+      "num_rows": 100,
+      "file_offset": 4,
+      "total_compressed_size": 2338,
+      "ordinal": 0
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "ARROW:schema",
+      "value": "/////7AAAAAQAAAAAAAKAAwABgAFAAgACgAAAAABBAAMAAAACAAIAAAABAAIAAAABAAAAAEAAAAEAAAAzP///wAAAQwUAAAAJAAAAAQAAAABAAAALAAAAAgAAABpbnRfbGlzdAAAAAAEAAQABAAAABAAFAAIAAYABwAMAAAAEAAQAAAAAAABAhAAAAAgAAAABAAAAAAAAAAEAAAAaXRlbQAAAAAIAAwACAAHAAgAAAAAAAABIAAAAA=="
+    }
+  ],
+  "created_by": "parquet-cpp-arrow version 19.0.1",
+  "metadata_length": 488
+}

@@ -27,14 +27,21 @@ export function readColumn(reader, rowGroupStart, rowGroupEnd, columnMetadata, s
 
   // read dictionary
   if (hasDictionary(columnMetadata)) {
-    dictionary = readPage(reader, columnMetadata, schemaPath, element, dictionary, 0, options)
+    dictionary = readPage(reader, columnMetadata, schemaPath, element, dictionary, undefined, 0, options)
   }
 
   while (rowCount < rowGroupEnd) {
     if (reader.offset >= reader.view.byteLength - 1) break // end of reader
-    const values = readPage(reader, columnMetadata, schemaPath, element, dictionary, rowGroupStart - rowCount, options)
-    chunks.push(values)
-    rowCount += values.length
+    const lastChunk = chunks.at(-1)
+    const lastChunkLength = lastChunk ? lastChunk.length : 0
+    const values = readPage(reader, columnMetadata, schemaPath, element, dictionary, lastChunk, rowGroupStart - rowCount, options)
+    if (lastChunk === values) {
+      // continued from previous page
+      rowCount += values.length - lastChunkLength
+    } else {
+      chunks.push(values)
+      rowCount += values.length
+    }
   }
   if (isFinite(rowGroupEnd)) {
     if (rowCount < rowGroupEnd) {
@@ -57,11 +64,12 @@ export function readColumn(reader, rowGroupStart, rowGroupEnd, columnMetadata, s
  * @param {SchemaTree[]} schemaPath
  * @param {SchemaElement} element
  * @param {DecodedArray | undefined} dictionary
+ * @param {DecodedArray | undefined} previousChunk
  * @param {number} pageStart skip this many rows in the page
  * @param {ParquetReadOptions} options
  * @returns {DecodedArray}
  */
-export function readPage(reader, columnMetadata, schemaPath, element, dictionary, pageStart, { utf8, compressors }) {
+export function readPage(reader, columnMetadata, schemaPath, element, dictionary, previousChunk, pageStart, { utf8, compressors }) {
   const header = parquetHeader(reader) // column header
 
   // read compressed_page_size bytes
@@ -87,7 +95,8 @@ export function readPage(reader, columnMetadata, schemaPath, element, dictionary
     // convert types, dereference dictionary, and assemble lists
     let values = convertWithDictionary(dataPage, dictionary, element, daph.encoding, utf8)
     if (repetitionLevels.length || definitionLevels?.length) {
-      return assembleLists([], definitionLevels, repetitionLevels, values, schemaPath)
+      const output = Array.isArray(previousChunk) ? previousChunk : []
+      return assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
     } else {
       // wrap nested flat data by depth
       for (let i = 2; i < schemaPath.length; i++) {
@@ -112,7 +121,8 @@ export function readPage(reader, columnMetadata, schemaPath, element, dictionary
 
     // convert types, dereference dictionary, and assemble lists
     const values = convertWithDictionary(dataPage, dictionary, element, daph2.encoding, utf8)
-    return assembleLists([], definitionLevels, repetitionLevels, values, schemaPath)
+    const output = Array.isArray(previousChunk) ? previousChunk : []
+    return assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
   } else if (header.type === 'DICTIONARY_PAGE') {
     const diph = header.dictionary_page_header
     if (!diph) throw new Error('parquet dictionary page header is undefined')
