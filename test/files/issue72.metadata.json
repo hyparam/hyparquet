@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "name": "root",
+      "num_children": 1
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "TextColumn",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    }
+  ],
+  "num_rows": 3,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "BIT_PACKED",
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "TextColumn"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 3,
+            "total_uncompressed_size": 283,
+            "total_compressed_size": 288,
+            "data_page_offset": 4,
+            "statistics": {
+              "max": "258d7fff-6418-499f-af07-c6611937d7d8",
+              "min": "086f2968-327b-48a8-8cdf-64f46bcd8173",
+              "null_count": 0,
+              "distinct_count": 2,
+              "max_value": "258d7fff-6418-499f-af07-c6611937d7d8",
+              "min_value": "086f2968-327b-48a8-8cdf-64f46bcd8173"
+            }
+          }
+        }
+      ],
+      "total_byte_size": 288,
+      "num_rows": 3
+    }
+  ],
+  "created_by": "Parquet.Net version 4.25.0 (build 687fbb462e94eddd1dc5a0aa26f33ba8e53f60e3)",
+  "metadata_length": 321
+}

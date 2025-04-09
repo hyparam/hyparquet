@@ -1,6 +1,6 @@
 import { assembleLists } from './assemble.js'
 import { Encoding, PageType } from './constants.js'
-import { convertWithDictionary } from './convert.js'
+import { convert, convertWithDictionary } from './convert.js'
 import { decompressPage, readDataPage, readDataPageV2 } from './datapage.js'
 import { readPlain } from './plain.js'
 import { isFlatColumn } from './schema.js'
@@ -25,22 +25,26 @@ export function readColumn(reader, rowGroupStart, rowGroupEnd, columnMetadata, s
   let dictionary = undefined
   let rowCount = 0
 
-  // read dictionary
-  if (hasDictionary(columnMetadata)) {
-    dictionary = readPage(reader, columnMetadata, schemaPath, element, dictionary, undefined, 0, options)
-  }
-
   while (rowCount < rowGroupEnd) {
     if (reader.offset >= reader.view.byteLength - 1) break // end of reader
-    const lastChunk = chunks.at(-1)
-    const lastChunkLength = lastChunk ? lastChunk.length : 0
-    const values = readPage(reader, columnMetadata, schemaPath, element, dictionary, lastChunk, rowGroupStart - rowCount, options)
-    if (lastChunk === values) {
-      // continued from previous page
-      rowCount += values.length - lastChunkLength
+
+    // read page header
+    const header = parquetHeader(reader)
+    if (header.type === 'DICTIONARY_PAGE') {
+      // assert(!dictionary)
+      dictionary = readPage(reader, header, columnMetadata, schemaPath, element, dictionary, undefined, 0, options)
+      dictionary = convert(dictionary, element, options.utf8)
     } else {
-      chunks.push(values)
-      rowCount += values.length
+      const lastChunk = chunks.at(-1)
+      const lastChunkLength = lastChunk?.length || 0
+      const values = readPage(reader, header, columnMetadata, schemaPath, element, dictionary, lastChunk, rowGroupStart - rowCount, options)
+      if (lastChunk === values) {
+        // continued from previous page
+        rowCount += values.length - lastChunkLength
+      } else {
+        chunks.push(values)
+        rowCount += values.length
+      }
     }
   }
   if (isFinite(rowGroupEnd)) {
@@ -60,6 +64,7 @@ export function readColumn(reader, rowGroupStart, rowGroupEnd, columnMetadata, s
  * Read a page (data or dictionary) from a buffer.
  *
  * @param {DataReader} reader
+ * @param {PageHeader} header
  * @param {ColumnMetaData} columnMetadata
  * @param {SchemaTree[]} schemaPath
  * @param {SchemaElement} element
@@ -69,9 +74,7 @@ export function readColumn(reader, rowGroupStart, rowGroupEnd, columnMetadata, s
  * @param {ParquetReadOptions} options
  * @returns {DecodedArray}
  */
-export function readPage(reader, columnMetadata, schemaPath, element, dictionary, previousChunk, pageStart, { utf8, compressors }) {
-  const header = parquetHeader(reader) // column header
-
+export function readPage(reader, header, columnMetadata, schemaPath, element, dictionary, previousChunk, pageStart, { utf8, compressors }) {
   // read compressed_page_size bytes
   const compressedBytes = new Uint8Array(
     reader.view.buffer, reader.view.byteOffset + reader.offset, header.compressed_page_size
@@ -136,14 +139,6 @@ export function readPage(reader, columnMetadata, schemaPath, element, dictionary
   } else {
     throw new Error(`parquet unsupported page type: ${header.type}`)
   }
-}
-
-/**
- * @param {ColumnMetaData} columnMetadata
- * @returns {boolean}
- */
-function hasDictionary(columnMetadata) {
-  return columnMetadata.encodings.some(e => e.endsWith('_DICTIONARY'))
 }
 
 /**

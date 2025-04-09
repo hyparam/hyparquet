@@ -13,8 +13,6 @@ const dayMillis = 86400000 // 1 day in milliseconds
  */
 export function convertWithDictionary(data, dictionary, schemaElement, encoding, utf8 = true) {
   if (dictionary && encoding.endsWith('_DICTIONARY')) {
-    // convert dictionary
-    dictionary = convert(dictionary, schemaElement, utf8)
     let output = data
     if (data instanceof Uint8Array && !(dictionary instanceof Uint8Array)) {
       // @ts-expect-error upgrade data to match dictionary type with fancy constructor
