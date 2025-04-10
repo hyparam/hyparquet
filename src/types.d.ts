@@ -386,3 +386,10 @@ export interface ColumnDecoder {
   compressors?: Compressors
   utf8?: boolean
 }
+
+export interface RowGroupSelect {
+  groupStart: number // row index of the first row in the group
+  selectStart: number // row index in the group to start reading
+  selectEnd: number // row index in the group to stop reading
+  numRows: number
+}

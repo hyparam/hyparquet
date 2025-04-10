@@ -67,8 +67,11 @@ export async function readRowGroup(options, rowGroup, groupStart) {
   const { file, metadata, columns, rowStart, rowEnd } = options
   if (!metadata) throw new Error('parquet metadata not found')
   const numRows = Number(rowGroup.num_rows)
-  const rowGroupStart = Math.max((rowStart || 0) - groupStart, 0)
-  const rowGroupEnd = rowEnd === undefined ? numRows : Math.min(rowEnd - groupStart, numRows)
+  // index within the group to start and stop reading:
+  const selectStart = Math.max((rowStart || 0) - groupStart, 0)
+  const selectEnd = Math.min((rowEnd ?? Infinity) - groupStart, numRows)
+  /** @type {RowGroupSelect} */
+  const rowGroupSelect = { groupStart, selectStart, selectEnd, numRows }
 
   // loop through metadata to find min/max bytes to read
   let [groupStartByte, groupEndByte] = [file.byteLength, 0]
@@ -143,7 +146,7 @@ export async function readRowGroup(options, rowGroup, groupStart) {
         compressors: options.compressors,
         utf8: options.utf8,
       }
-      const columnData = readColumn(reader, rowGroupStart, rowGroupEnd, columnDecoder)
+      const columnData = readColumn(reader, rowGroupSelect, columnDecoder)
       /** @type {DecodedArray[] | undefined} */
       let chunks = columnData
 
@@ -168,13 +171,15 @@ export async function readRowGroup(options, rowGroup, groupStart) {
       // do not emit column data until structs are fully parsed
       if (!chunks) return
       // notify caller of column data
-      for (const chunk of chunks) {
-        options.onChunk?.({
-          columnName,
-          columnData: chunk,
-          rowStart: groupStart,
-          rowEnd: groupStart + chunk.length,
-        })
+      if (options.onChunk) {
+        for (const chunk of chunks) {
+          options.onChunk({
+            columnName,
+            columnData: chunk,
+            rowStart: groupStart,
+            rowEnd: groupStart + chunk.length,
+          })
+        }
       }
     }))
   }
@@ -188,8 +193,8 @@ export async function readRowGroup(options, rowGroup, groupStart) {
       .map(name => includedColumnNames.includes(name) ? flatten(subcolumnData.get(name)) : undefined)
 
     // transpose columns into rows
-    const groupData = new Array(rowGroupEnd)
-    for (let row = rowGroupStart; row < rowGroupEnd; row++) {
+    const groupData = new Array(selectEnd)
+    for (let row = selectStart; row < selectEnd; row++) {
       if (options.rowFormat === 'object') {
         // return each row as an object
         /** @type {Record<string, any>} */
@@ -228,7 +233,7 @@ function flatten(chunks) {
 /**
  * Return a list of sub-columns needed to construct a top-level column.
  *
- * @import {DecodedArray, ParquetReadOptions, RowGroup, SchemaTree} from '../src/types.d.ts'
+ * @import {DecodedArray, ParquetReadOptions, RowGroup, RowGroupSelect, SchemaTree} from '../src/types.d.ts'
  * @param {SchemaTree} schema
  * @param {string[]} output
  * @returns {string[]}

@@ -10,12 +10,11 @@ import { deserializeTCompactProtocol } from './thrift.js'
  * Parse column data from a buffer.
  *
  * @param {DataReader} reader
- * @param {number} rowGroupStart skip this many rows in the row group
- * @param {number} rowGroupEnd read up to this index in the row group (Infinity reads all rows)
+ * @param {RowGroupSelect} rowGroupSelect row group selection
  * @param {ColumnDecoder} columnDecoder column decoder params
  * @returns {DecodedArray[]}
  */
-export function readColumn(reader, rowGroupStart, rowGroupEnd, columnDecoder) {
+export function readColumn(reader, { selectStart, selectEnd }, columnDecoder) {
   const { element, utf8 } = columnDecoder
   /** @type {DecodedArray[]} */
   const chunks = []
@@ -23,7 +22,7 @@ export function readColumn(reader, rowGroupStart, rowGroupEnd, columnDecoder) {
   let dictionary = undefined
   let rowCount = 0
 
-  while (rowCount < rowGroupEnd) {
+  while (rowCount < selectEnd) {
     if (reader.offset >= reader.view.byteLength - 1) break // end of reader
 
     // read page header
@@ -35,7 +34,7 @@ export function readColumn(reader, rowGroupStart, rowGroupEnd, columnDecoder) {
     } else {
       const lastChunk = chunks.at(-1)
       const lastChunkLength = lastChunk?.length || 0
-      const values = readPage(reader, header, columnDecoder, dictionary, lastChunk, rowGroupStart - rowCount)
+      const values = readPage(reader, header, columnDecoder, dictionary, lastChunk, selectStart - rowCount)
       if (lastChunk === values) {
         // continued from previous page
         rowCount += values.length - lastChunkLength
@@ -45,15 +44,11 @@ export function readColumn(reader, rowGroupStart, rowGroupEnd, columnDecoder) {
       }
     }
   }
-  if (isFinite(rowGroupEnd)) {
-    if (rowCount < rowGroupEnd) {
-      throw new Error(`parquet row data length ${rowCount} does not match row group limit ${rowGroupEnd}}`)
-    }
-    if (rowCount > rowGroupEnd) {
-      // truncate last chunk to row limit
-      const lastChunk = chunks[chunks.length - 1]
-      chunks[chunks.length - 1] = lastChunk.slice(0, rowGroupEnd - (rowCount - lastChunk.length))
-    }
+  // assert(rowCount >= selectEnd)
+  if (rowCount > selectEnd) {
+    // truncate last chunk to row limit
+    const lastChunk = chunks[chunks.length - 1]
+    chunks[chunks.length - 1] = lastChunk.slice(0, selectEnd - (rowCount - lastChunk.length))
   }
   return chunks
 }
@@ -150,7 +145,7 @@ export function getColumnRange({ dictionary_page_offset, data_page_offset, total
 /**
  * Read parquet header from a buffer.
  *
- * @import {ColumnMetaData, DecodedArray, DataReader, PageHeader, ColumnDecoder} from '../src/types.d.ts'
+ * @import {ColumnMetaData, DecodedArray, DataReader, PageHeader, ColumnDecoder, RowGroupSelect} from '../src/types.d.ts'
  * @param {DataReader} reader
  * @returns {PageHeader}
  */
