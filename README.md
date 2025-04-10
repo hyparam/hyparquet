@@ -78,6 +78,10 @@ const data = await parquetReadObjects({
 })
 ```
 
+## Parquet Writing
+
+To create parquet files from javascript, check out the [hyparquet-writer](https://github.com/hyparam/hyparquet-writer) package.
+
 ## Advanced Usage
 
 ### Reading Metadata
@@ -179,10 +183,6 @@ await parquetRead({
 ```
 
 The `parquetReadObjects` function defaults to returning an array of objects.
-
-## Parquet Writing
-
-To create parquet files from javascript, check out the [hyparquet-writer](https://github.com/hyparam/hyparquet-writer) package.
 
 ## Supported Parquet Files
 

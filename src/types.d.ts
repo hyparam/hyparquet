@@ -1,4 +1,48 @@
-export type Awaitable<T> = T | Promise<T>
+/**
+ * Parquet query options for reading data
+ */
+export interface ParquetReadOptions {
+  file: AsyncBuffer // file-like object containing parquet data
+  metadata?: FileMetaData // parquet metadata, will be parsed if not provided
+  columns?: string[] // columns to read, all columns if undefined
+  rowFormat?: string // format of each row passed to the onComplete function
+  rowStart?: number // first requested row index (inclusive)
+  rowEnd?: number // last requested row index (exclusive)
+  onChunk?: (chunk: ColumnData) => void // called when a column chunk is parsed. chunks may contain data outside the requested range.
+  onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
+  compressors?: Compressors // custom decompressors
+  utf8?: boolean // decode byte arrays as utf8 strings (default true)
+}
+
+/**
+ * Parquet query options for filtering data
+ */
+export interface ParquetQueryFilter {
+  [key: string]: ParquetQueryValue | ParquetQueryOperator | ParquetQueryFilter[] | undefined
+  $and?: ParquetQueryFilter[]
+  $or?: ParquetQueryFilter[]
+  $not?: ParquetQueryFilter
+}
+export type ParquetQueryValue = string | number | boolean | object | null | undefined
+export type ParquetQueryOperator = {
+  $gt?: ParquetQueryValue
+  $gte?: ParquetQueryValue
+  $lt?: ParquetQueryValue
+  $lte?: ParquetQueryValue
+  $ne?: ParquetQueryValue
+  $in?: ParquetQueryValue[]
+  $nin?: ParquetQueryValue[]
+}
+
+/**
+ * A run of column data
+ */
+export interface ColumnData {
+  columnName: string
+  columnData: DecodedArray
+  rowStart: number
+  rowEnd: number
+}
 
 /**
  * File-like object that can read slices of a file asynchronously.
@@ -7,6 +51,7 @@ export interface AsyncBuffer {
   byteLength: number
   slice(start: number, end?: number): Awaitable<ArrayBuffer>
 }
+export type Awaitable<T> = T | Promise<T>
 
 export interface DataReader {
   view: DataView
@@ -328,51 +373,6 @@ export interface ColumnIndex {
 }
 
 export type BoundaryOrder = 'UNORDERED' | 'ASCENDING' | 'DESCENDING'
-
-/**
- * A run of column data
- */
-export interface ColumnData {
-  columnName: string
-  columnData: ArrayLike<any>
-  rowStart: number
-  rowEnd: number
-}
-
-/**
- * Parquet query options for reading data
- */
-export interface ParquetReadOptions {
-  file: AsyncBuffer // file-like object containing parquet data
-  metadata?: FileMetaData // parquet metadata, will be parsed if not provided
-  columns?: string[] // columns to read, all columns if undefined
-  rowFormat?: string // format of each row passed to the onComplete function
-  rowStart?: number // first requested row index (inclusive)
-  rowEnd?: number // last requested row index (exclusive)
-  onChunk?: (chunk: ColumnData) => void // called when a column chunk is parsed. chunks may be outside the requested range.
-  onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
-  compressors?: Compressors // custom decompressors
-  utf8?: boolean // decode byte arrays as utf8 strings (default true)
-}
-
-export type ParquetQueryValue = string | number | boolean | object | null | undefined
-
-export type ParquetQueryOperator = {
-  $gt?: ParquetQueryValue
-  $gte?: ParquetQueryValue
-  $lt?: ParquetQueryValue
-  $lte?: ParquetQueryValue
-  $ne?: ParquetQueryValue
-  $in?: ParquetQueryValue[]
-  $nin?: ParquetQueryValue[]
-}
-
-export interface ParquetQueryFilter {
-  [key: string]: ParquetQueryValue | ParquetQueryOperator | ParquetQueryFilter[] | undefined
-  $and?: ParquetQueryFilter[]
-  $or?: ParquetQueryFilter[]
-  $not?: ParquetQueryFilter
-}
 
 export type ThriftObject = { [ key: `field_${number}` ]: ThriftType }
 export type ThriftType = boolean | number | bigint | Uint8Array | ThriftType[] | ThriftObject
