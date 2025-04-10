@@ -48,6 +48,7 @@ export function parquetReadObjects(options) {
  * @typedef {import('../src/types.d.ts').Encoding} Encoding
  * @typedef {import('../src/types.d.ts').CompressionCodec} CompressionCodec
  * @typedef {import('../src/types.d.ts').Compressors} Compressors
+ * @typedef {import('../src/types.d.ts').KeyValue} KeyValue
  * @typedef {import('../src/types.d.ts').Statistics} Statistics
  * @typedef {import('../src/types.d.ts').PageType} PageType
  * @typedef {import('../src/types.d.ts').PageHeader} PageHeader

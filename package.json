@@ -1,10 +1,11 @@
 {
   "name": "hyparquet",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "description": "Parquet file parser for JavaScript",
   "author": "Hyperparam",
   "homepage": "https://hyperparam.app",
   "keywords": [
+    "hyperparam",
     "hyparquet",
     "parquet",
     "parquetjs",

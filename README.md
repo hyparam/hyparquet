@@ -58,7 +58,7 @@ const file = await asyncBufferFromFile(filename)
 const data = await parquetReadObjects({ file })
 ```
 
-Note: Hyparquet is published as an ES module, so dynamic `import()` may be required on the command line.
+Note: hyparquet is published as an ES module, so dynamic `import()` may be required on the command line.
 
 ### Browser Example
 
