@@ -57,25 +57,6 @@ export const ConvertedType = [
   'INTERVAL',
 ]
 
-/** @type {import('../src/types.d.ts').LogicalTypeType[]} */
-export const logicalTypeType = [
-  'NULL',
-  'STRING',
-  'MAP',
-  'LIST',
-  'ENUM',
-  'DECIMAL',
-  'DATE',
-  'TIME',
-  'TIMESTAMP',
-  'INTERVAL',
-  'INTEGER',
-  'NULL',
-  'JSON',
-  'BSON',
-  'UUID',
-]
-
 /** @type {import('../src/types.d.ts').CompressionCodec[]} */
 export const CompressionCodec = [
   'UNCOMPRESSED',

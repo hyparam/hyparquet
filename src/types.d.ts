@@ -170,7 +170,6 @@ type LogicalTypeSimple =
   'MAP' |
   'LIST' |
   'ENUM' |
-  'DECIMAL' |
   'DATE' |
   'INTERVAL' |
   'NULL' |

@@ -5,8 +5,11 @@
   "author": "Hyperparam",
   "homepage": "https://hyperparam.app",
   "keywords": [
+    "ai",
+    "data",
     "hyperparam",
     "hyparquet",
+    "ml",
     "parquet",
     "parquetjs",
     "parser",
