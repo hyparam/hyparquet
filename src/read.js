@@ -146,9 +146,11 @@ export async function readRowGroup(options, rowGroup, groupStart) {
         compressors: options.compressors,
         utf8: options.utf8,
       }
-      const columnData = readColumn(reader, rowGroupSelect, columnDecoder)
       /** @type {DecodedArray[] | undefined} */
-      let chunks = columnData
+      let chunks = readColumn(reader, rowGroupSelect, columnDecoder, options.onPage)
+
+      // skip assembly if no onComplete or onChunk
+      if (!options.onComplete && !options.onChunk) return
 
       // TODO: fast path for non-nested columns
       // save column data for assembly
@@ -172,12 +174,12 @@ export async function readRowGroup(options, rowGroup, groupStart) {
       if (!chunks) return
       // notify caller of column data
       if (options.onChunk) {
-        for (const chunk of chunks) {
+        for (const columnData of chunks) {
           options.onChunk({
             columnName,
-            columnData: chunk,
+            columnData,
             rowStart: groupStart,
-            rowEnd: groupStart + chunk.length,
+            rowEnd: groupStart + columnData.length,
           })
         }
       }

@@ -112,8 +112,7 @@ const metadata = parquetMetadata(arrayBuffer)
 
 ### AsyncBuffer
 
-Hyparquet accepts argument `file` of type `AsyncBuffer` which is like a js `ArrayBuffer` but the `slice` method can return `Promise<ArrayBuffer>`.
-You can pass an `ArrayBuffer` anywhere that an `AsyncBuffer` is expected, if you have the entire file in memory.
+Hyparquet requires an argument `file` of type `AsyncBuffer`. An `AsyncBuffer` is similar to a js `ArrayBuffer` but the `slice` method can return async `Promise<ArrayBuffer>`.
 
 ```typescript
 type Awaitable<T> = T | Promise<T>
@@ -123,7 +122,39 @@ interface AsyncBuffer {
 }
 ```
 
-You can define your own `AsyncBuffer` to create a virtual file that can be read asynchronously. In most cases, you should probably use `asyncBufferFromUrl` or `asyncBufferFromFile`.
+In most cases, you should probably use `asyncBufferFromUrl` or `asyncBufferFromFile` to create an `AsyncBuffer` for hyparquet.
+
+#### asyncBufferFromFile
+
+If you are in a local node.js environment, use `asyncBufferFromFile` to wrap a local file as an `AsyncBuffer`:
+
+```typescript
+const file: AsyncBuffer = asyncBufferFromFile('local.parquet')
+const data = await parquetReadObjects({ file })
+```
+
+#### asyncBufferFromUrl
+
+If you want to read a parquet file remotely over http, use `asyncBufferFromUrl` to wrap an http url as an `AsyncBuffer` using http range requests.
+
+ - Pass `requestInit` option to provide additional fetch headers for authentication (optional)
+ - Pass `byteLength` if you know the file size to save a round trip HEAD request (optional)
+
+```typescript
+const url = 'https://s3.hyperparam.app/wiki_en.parquet'
+const requestInit = { headers: { Authorization: 'Bearer my_token' } }
+const byteLength = 415958713
+const file: AsyncBuffer = await asyncBufferFromUrl({ url, requestInit, byteLength })
+const data = await parquetReadObjects({ file })
+```
+
+#### ArrayBuffer
+
+You can provide an `ArrayBuffer` anywhere that an `AsyncBuffer` is expected. This is useful if you already have the entire parquet file in memory.
+
+#### Custom AsyncBuffer
+
+You can implement your own `AsyncBuffer` to create a virtual file that can be read asynchronously by hyparquet.
 
 ### parquetRead vs parquetReadObjects
 
@@ -139,11 +170,17 @@ parquetReadObjects({ file }): Promise<Record<string, any>[]>
 
 `parquetRead` is the "base" function for reading parquet files.
 It returns a `Promise<void>` that resolves when the file has been read or rejected if an error occurs.
-Data is returned via `onComplete` or `onChunk` callbacks passed as arguments.
+Data is returned via `onComplete` or `onChunk` or `onPage` callbacks passed as arguments.
 
 The reason for this design is that parquet is a column-oriented format, and returning data in row-oriented format requires transposing the column data. This is an expensive operation in javascript. If you don't pass in an `onComplete` argument to `parquetRead`, hyparquet will skip this transpose step and save memory.
 
-The `onChunk` callback allows column-oriented data to be streamed back as it is read.
+### Chunk Streaming
+
+The `onChunk` callback returns column-oriented data as it is ready. `onChunk` will always return top-level columns, including structs, assembled as a single column. This may require waiting for multiple sub-columns to all load before assembly can occur.
+
+The `onPage` callback returns column-oriented page data as it is ready. `onPage` will NOT assemble struct columns and will always return individual sub-column data. Note that `onPage` _will_ assemble nested lists.
+
+In some cases, `onPage` can return data sooner than `onChunk`.
 
 ```typescript
 interface ColumnData {
@@ -152,25 +189,20 @@ interface ColumnData {
   rowStart: number
   rowEnd: number
 }
-function onChunk(chunk: ColumnData): void {
-  console.log(chunk)
-}
-await parquetRead({ file, onChunk })
-```
-
-### Authorization
-
-Pass the `requestInit` option to `asyncBufferFromUrl` to provide authentication information to a remote web server. For example:
-
-```javascript
-const requestInit = { headers: { Authorization: 'Bearer my_token' } }
-const file = await asyncBufferFromUrl({ url, requestInit })
+await parquetRead({
+  file,
+  onChunk(chunk: ColumnData) {
+    console.log('chunk', chunk)
+  },
+  onPage(chunk: ColumnData) {
+    console.log('page', chunk)
+  },
+})
 ```
 
 ### Returned row format
 
-By default, data returned by `parquetRead` in the `onComplete` function will be one **array** of columns per row.
-If you would like each row to be an **object** with each key the name of the column, set the option `rowFormat` to `object`.
+By default, the `onComplete` function returns an **array** of values for each row: `[value]`. If you would prefer each row to be an **object**:  `{ columnName: value }`, set the option `rowFormat` to `'object'`.
 
 ```javascript
 import { parquetRead } from 'hyparquet'
@@ -182,7 +214,7 @@ await parquetRead({
 })
 ```
 
-The `parquetReadObjects` function defaults to returning an array of objects.
+The `parquetReadObjects` function defaults to `rowFormat: 'object'`.
 
 ## Supported Parquet Files
 

@@ -9,6 +9,7 @@ export interface ParquetReadOptions {
   rowStart?: number // first requested row index (inclusive)
   rowEnd?: number // last requested row index (exclusive)
   onChunk?: (chunk: ColumnData) => void // called when a column chunk is parsed. chunks may contain data outside the requested range.
+  onPage?: (chunk: ColumnData) => void // called when a data page is parsed. pages may contain data outside the requested range.
   onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
   compressors?: Compressors // custom decompressors
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
