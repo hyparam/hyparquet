@@ -23,8 +23,15 @@ describe('readColumn', () => {
     const columnArrayBuffer = arrayBuffer.slice(columnStartByte, columnEndByte)
     const schemaPath = getSchemaPath(metadata.schema, column.meta_data?.path_in_schema ?? [])
     const reader = { view: new DataView(columnArrayBuffer), offset: 0 }
+    const columnDecoder = {
+      columnName: column.meta_data.path_in_schema.join('.'),
+      type: column.meta_data.type,
+      element: schemaPath[schemaPath.length - 1].element,
+      schemaPath,
+      codec: column.meta_data.codec,
+    }
 
-    const result = readColumn(reader, 0, rowGroupEnd, column.meta_data, schemaPath, { file })
+    const result = readColumn(reader, 0, rowGroupEnd, columnDecoder)
     expect(result).toEqual(expected)
   })
 
@@ -40,8 +47,15 @@ describe('readColumn', () => {
     const columnArrayBuffer = arrayBuffer.slice(columnStartByte, columnEndByte)
     const schemaPath = getSchemaPath(metadata.schema, column.meta_data?.path_in_schema ?? [])
     const reader = { view: new DataView(columnArrayBuffer), offset: 0 }
+    const columnDecoder = {
+      columnName: column.meta_data.path_in_schema.join('.'),
+      type: column.meta_data.type,
+      element: schemaPath[schemaPath.length - 1].element,
+      schemaPath,
+      codec: column.meta_data.codec,
+    }
 
-    const columnData = readColumn(reader, 0, Infinity, column.meta_data, schemaPath, { file })
+    const columnData = readColumn(reader, 0, Infinity, columnDecoder)
     expect(columnData[0]).toBeInstanceOf(Int32Array)
   })
 })

@@ -376,3 +376,13 @@ export type BoundaryOrder = 'UNORDERED' | 'ASCENDING' | 'DESCENDING'
 
 export type ThriftObject = { [ key: `field_${number}` ]: ThriftType }
 export type ThriftType = boolean | number | bigint | Uint8Array | ThriftType[] | ThriftObject
+
+export interface ColumnDecoder {
+  columnName: string
+  type: ParquetType
+  element: SchemaElement
+  schemaPath: SchemaTree[]
+  codec: CompressionCodec
+  compressors?: Compressors
+  utf8?: boolean
+}

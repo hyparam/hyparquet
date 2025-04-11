@@ -9,11 +9,10 @@ import { snappyUncompress } from './snappy.js'
  *
  * @param {Uint8Array} bytes raw page data (should already be decompressed)
  * @param {DataPageHeader} daph data page header
- * @param {SchemaTree[]} schemaPath
- * @param {ColumnMetaData} columnMetadata
+ * @param {ColumnDecoder} columnDecoder
  * @returns {DataPage} definition levels, repetition levels, and array of values
  */
-export function readDataPage(bytes, daph, schemaPath, { type }) {
+export function readDataPage(bytes, daph, { type, element, schemaPath }) {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
   const reader = { view, offset: 0 }
   /** @type {DecodedArray} */
@@ -28,8 +27,7 @@ export function readDataPage(bytes, daph, schemaPath, { type }) {
   // read values based on encoding
   const nValues = daph.num_values - numNulls
   if (daph.encoding === 'PLAIN') {
-    const { type_length } = schemaPath[schemaPath.length - 1].element
-    dataPage = readPlain(reader, type, nValues, type_length)
+    dataPage = readPlain(reader, type, nValues, element.type_length)
   } else if (
     daph.encoding === 'PLAIN_DICTIONARY' ||
     daph.encoding === 'RLE_DICTIONARY' ||
@@ -49,8 +47,7 @@ export function readDataPage(bytes, daph, schemaPath, { type }) {
       dataPage = new Uint8Array(nValues) // nValue zeroes
     }
   } else if (daph.encoding === 'BYTE_STREAM_SPLIT') {
-    const { type_length } = schemaPath[schemaPath.length - 1].element
-    dataPage = byteStreamSplit(reader, nValues, type, type_length)
+    dataPage = byteStreamSplit(reader, nValues, type, element.type_length)
   } else {
     throw new Error(`parquet unsupported encoding: ${daph.encoding}`)
   }
@@ -59,7 +56,7 @@ export function readDataPage(bytes, daph, schemaPath, { type }) {
 }
 
 /**
- * @import {ColumnMetaData, CompressionCodec, Compressors, DataPage, DataPageHeader, DataPageHeaderV2, DataReader, DecodedArray, PageHeader, SchemaTree} from '../src/types.d.ts'
+ * @import {ColumnDecoder, CompressionCodec, Compressors, DataPage, DataPageHeader, DataPageHeaderV2, DataReader, DecodedArray, PageHeader, SchemaTree} from '../src/types.d.ts'
  * @param {DataReader} reader data view for the page
  * @param {DataPageHeader} daph data page header
  * @param {SchemaTree[]} schemaPath
@@ -133,15 +130,13 @@ export function decompressPage(compressedBytes, uncompressed_page_size, codec, c
  *
  * @param {Uint8Array} compressedBytes raw page data
  * @param {PageHeader} ph page header
- * @param {SchemaTree[]} schemaPath
- * @param {ColumnMetaData} columnMetadata
- * @param {Compressors | undefined} compressors
+ * @param {ColumnDecoder} columnDecoder
  * @returns {DataPage} definition levels, repetition levels, and array of values
  */
-export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, compressors) {
+export function readDataPageV2(compressedBytes, ph, columnDecoder) {
   const view = new DataView(compressedBytes.buffer, compressedBytes.byteOffset, compressedBytes.byteLength)
   const reader = { view, offset: 0 }
-  const { codec, type } = columnMetadata
+  const { type, element, schemaPath, codec, compressors } = columnDecoder
   const daph2 = ph.data_page_header_v2
   if (!daph2) throw new Error('parquet data page header v2 is undefined')
 
@@ -167,10 +162,9 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
   let dataPage
   const nValues = daph2.num_values - daph2.num_nulls
   if (daph2.encoding === 'PLAIN') {
-    const { type_length } = schemaPath[schemaPath.length - 1].element
-    dataPage = readPlain(pageReader, type, nValues, type_length)
+    dataPage = readPlain(pageReader, type, nValues, element.type_length)
   } else if (daph2.encoding === 'RLE') {
-    // assert(columnMetadata.type === 'BOOLEAN')
+    // assert(type === 'BOOLEAN')
     dataPage = new Array(nValues)
     readRleBitPackedHybrid(pageReader, 1, 0, dataPage)
     dataPage = dataPage.map(x => !!x)
@@ -192,8 +186,7 @@ export function readDataPageV2(compressedBytes, ph, schemaPath, columnMetadata, 
     dataPage = new Array(nValues)
     deltaByteArray(pageReader, nValues, dataPage)
   } else if (daph2.encoding === 'BYTE_STREAM_SPLIT') {
-    const { type_length } = schemaPath[schemaPath.length - 1].element
-    dataPage = byteStreamSplit(reader, nValues, type, type_length)
+    dataPage = byteStreamSplit(reader, nValues, type, element.type_length)
   } else {
     throw new Error(`parquet unsupported encoding: ${daph2.encoding}`)
   }

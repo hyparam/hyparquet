@@ -12,13 +12,11 @@ import { deserializeTCompactProtocol } from './thrift.js'
  * @param {DataReader} reader
  * @param {number} rowGroupStart skip this many rows in the row group
  * @param {number} rowGroupEnd read up to this index in the row group (Infinity reads all rows)
- * @param {ColumnMetaData} columnMetadata column metadata
- * @param {SchemaTree[]} schemaPath schema path for the column
- * @param {ParquetReadOptions} options read options
+ * @param {ColumnDecoder} columnDecoder column decoder params
  * @returns {DecodedArray[]}
  */
-export function readColumn(reader, rowGroupStart, rowGroupEnd, columnMetadata, schemaPath, options) {
-  const { element } = schemaPath[schemaPath.length - 1]
+export function readColumn(reader, rowGroupStart, rowGroupEnd, columnDecoder) {
+  const { element, utf8 } = columnDecoder
   /** @type {DecodedArray[]} */
   const chunks = []
   /** @type {DecodedArray | undefined} */
@@ -32,12 +30,12 @@ export function readColumn(reader, rowGroupStart, rowGroupEnd, columnMetadata, s
     const header = parquetHeader(reader)
     if (header.type === 'DICTIONARY_PAGE') {
       // assert(!dictionary)
-      dictionary = readPage(reader, header, columnMetadata, schemaPath, element, dictionary, undefined, 0, options)
-      dictionary = convert(dictionary, element, options.utf8)
+      dictionary = readPage(reader, header, columnDecoder, dictionary, undefined, 0)
+      dictionary = convert(dictionary, element, utf8)
     } else {
       const lastChunk = chunks.at(-1)
       const lastChunkLength = lastChunk?.length || 0
-      const values = readPage(reader, header, columnMetadata, schemaPath, element, dictionary, lastChunk, rowGroupStart - rowCount, options)
+      const values = readPage(reader, header, columnDecoder, dictionary, lastChunk, rowGroupStart - rowCount)
       if (lastChunk === values) {
         // continued from previous page
         rowCount += values.length - lastChunkLength
@@ -65,16 +63,14 @@ export function readColumn(reader, rowGroupStart, rowGroupEnd, columnMetadata, s
  *
  * @param {DataReader} reader
  * @param {PageHeader} header
- * @param {ColumnMetaData} columnMetadata
- * @param {SchemaTree[]} schemaPath
- * @param {SchemaElement} element
+ * @param {ColumnDecoder} columnDecoder
  * @param {DecodedArray | undefined} dictionary
  * @param {DecodedArray | undefined} previousChunk
  * @param {number} pageStart skip this many rows in the page
- * @param {ParquetReadOptions} options
  * @returns {DecodedArray}
  */
-export function readPage(reader, header, columnMetadata, schemaPath, element, dictionary, previousChunk, pageStart, { utf8, compressors }) {
+export function readPage(reader, header, columnDecoder, dictionary, previousChunk, pageStart) {
+  const { type, element, schemaPath, codec, compressors, utf8 } = columnDecoder
   // read compressed_page_size bytes
   const compressedBytes = new Uint8Array(
     reader.view.buffer, reader.view.byteOffset + reader.offset, header.compressed_page_size
@@ -91,8 +87,8 @@ export function readPage(reader, header, columnMetadata, schemaPath, element, di
       return new Array(daph.num_values) // TODO: don't allocate array
     }
 
-    const page = decompressPage(compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec, compressors)
-    const { definitionLevels, repetitionLevels, dataPage } = readDataPage(page, daph, schemaPath, columnMetadata)
+    const page = decompressPage(compressedBytes, Number(header.uncompressed_page_size), codec, compressors)
+    const { definitionLevels, repetitionLevels, dataPage } = readDataPage(page, daph, columnDecoder)
     // assert(!daph.statistics?.null_count || daph.statistics.null_count === BigInt(daph.num_values - dataPage.length))
 
     // convert types, dereference dictionary, and assemble lists
@@ -118,9 +114,8 @@ export function readPage(reader, header, columnMetadata, schemaPath, element, di
       return new Array(daph2.num_values) // TODO: don't allocate array
     }
 
-    const { definitionLevels, repetitionLevels, dataPage } = readDataPageV2(
-      compressedBytes, header, schemaPath, columnMetadata, compressors
-    )
+    const { definitionLevels, repetitionLevels, dataPage } =
+      readDataPageV2(compressedBytes, header, columnDecoder)
 
     // convert types, dereference dictionary, and assemble lists
     const values = convertWithDictionary(dataPage, dictionary, element, daph2.encoding, utf8)
@@ -131,11 +126,11 @@ export function readPage(reader, header, columnMetadata, schemaPath, element, di
     if (!diph) throw new Error('parquet dictionary page header is undefined')
 
     const page = decompressPage(
-      compressedBytes, Number(header.uncompressed_page_size), columnMetadata.codec, compressors
+      compressedBytes, Number(header.uncompressed_page_size), codec, compressors
     )
 
     const reader = { view: new DataView(page.buffer, page.byteOffset, page.byteLength), offset: 0 }
-    return readPlain(reader, columnMetadata.type, diph.num_values, element.type_length)
+    return readPlain(reader, type, diph.num_values, element.type_length)
   } else {
     throw new Error(`parquet unsupported page type: ${header.type}`)
   }
@@ -155,7 +150,7 @@ export function getColumnRange({ dictionary_page_offset, data_page_offset, total
 /**
  * Read parquet header from a buffer.
  *
- * @import {ColumnMetaData, DecodedArray, DataReader, PageHeader, ParquetReadOptions, SchemaElement, SchemaTree} from '../src/types.d.ts'
+ * @import {ColumnMetaData, DecodedArray, DataReader, PageHeader, ColumnDecoder} from '../src/types.d.ts'
  * @param {DataReader} reader
  * @returns {PageHeader}
  */

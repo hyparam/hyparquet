@@ -134,7 +134,16 @@ export async function readRowGroup(options, rowGroup, groupStart) {
     promises.push(buffer.then(arrayBuffer => {
       const schemaPath = getSchemaPath(metadata.schema, columnMetadata.path_in_schema)
       const reader = { view: new DataView(arrayBuffer), offset: bufferOffset }
-      const columnData = readColumn(reader, rowGroupStart, rowGroupEnd, columnMetadata, schemaPath, options)
+      const columnDecoder = {
+        columnName: columnMetadata.path_in_schema.join('.'),
+        type: columnMetadata.type,
+        element: schemaPath[schemaPath.length - 1].element,
+        schemaPath,
+        codec: columnMetadata.codec,
+        compressors: options.compressors,
+        utf8: options.utf8,
+      }
+      const columnData = readColumn(reader, rowGroupStart, rowGroupEnd, columnDecoder)
       /** @type {DecodedArray[] | undefined} */
       let chunks = columnData
 
