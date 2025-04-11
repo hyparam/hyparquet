@@ -15,7 +15,7 @@ if (!stat) {
   if (!res.ok) throw new Error(res.statusText)
   // write to file async
   await pipeline(res.body, createWriteStream(filename))
-  stat = await fs.stat(filename).catch(() => undefined)
+  stat = await fs.stat(filename)
   console.log('downloaded example.parquet', stat.size)
 }
 

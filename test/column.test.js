@@ -6,9 +6,6 @@ import { asyncBufferFromFile } from '../src/utils.js'
 
 const values = [null, 1, -2, NaN, 0, -1, -0, 2]
 
-/**
- * @import {RowGroupSelect} from '../src/types.d.ts'
- */
 describe('readColumn', () => {
   it.for([
     { selectEnd: Infinity, expected: [values] },

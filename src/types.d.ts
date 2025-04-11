@@ -260,7 +260,7 @@ export interface KeyValue {
   value?: string
 }
 
-type MinMaxType = bigint | boolean | number | string | Date | Uint8Array
+export type MinMaxType = bigint | boolean | number | string | Date | Uint8Array
 
 export interface Statistics {
   max?: MinMaxType
