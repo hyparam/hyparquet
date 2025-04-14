@@ -59,9 +59,11 @@ export function equals(a, b) {
  *
  * @param {string} url
  * @param {RequestInit} [requestInit] fetch options
+ * @param {typeof globalThis.fetch} [customFetch] fetch function to use
  * @returns {Promise<number>}
  */
-export async function byteLengthFromUrl(url, requestInit) {
+export async function byteLengthFromUrl(url, requestInit, customFetch) {
+  const fetch = customFetch ?? globalThis.fetch
   return await fetch(url, { ...requestInit, method: 'HEAD' })
     .then(res => {
       if (!res.ok) throw new Error(`fetch head failed ${res.status}`)
@@ -74,18 +76,21 @@ export async function byteLengthFromUrl(url, requestInit) {
 /**
  * Construct an AsyncBuffer for a URL.
  * If byteLength is not provided, will make a HEAD request to get the file size.
+ * I fetch is provided, it will be used instead of the global fetch.
  * If requestInit is provided, it will be passed to fetch.
  *
  * @param {object} options
  * @param {string} options.url
  * @param {number} [options.byteLength]
+ * @param {typeof globalThis.fetch} [options.fetch] fetch function to use
  * @param {RequestInit} [options.requestInit]
  * @returns {Promise<AsyncBuffer>}
  */
-export async function asyncBufferFromUrl({ url, byteLength, requestInit }) {
+export async function asyncBufferFromUrl({ url, byteLength, requestInit, fetch: customFetch }) {
   if (!url) throw new Error('missing url')
+  const fetch = customFetch ?? globalThis.fetch
   // byte length from HEAD request
-  byteLength ||= await byteLengthFromUrl(url, requestInit)
+  byteLength ||= await byteLengthFromUrl(url, requestInit, fetch)
 
   /**
    * A promise for the whole buffer, if range requests are not supported.
