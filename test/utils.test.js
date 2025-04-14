@@ -83,6 +83,18 @@ describe('byteLengthFromUrl', () => {
 
     await expect(byteLengthFromUrl('https://example.com')).rejects.toThrow('fetch head failed 401')
   })
+
+  it ('uses the provided fetch function, along with requestInit if passed', async () => {
+    const customFetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      headers: new Map([['Content-Length', '2048']]),
+    })
+
+    const requestInit = { headers: { authorization: 'Bearer token' } }
+    const result = await byteLengthFromUrl('https://example.com', requestInit, customFetch)
+    expect(result).toBe(2048)
+    expect(customFetch).toHaveBeenCalledWith('https://example.com', { ...requestInit, method: 'HEAD' })
+  })
 })
 
 describe('asyncBufferFromUrl', () => {
@@ -224,6 +236,45 @@ describe('asyncBufferFromUrl', () => {
       await buffer.slice(550, 600)
 
       expect(fetch).toBeCalledTimes(1)
+    })
+  })
+
+  describe('when a custom fetch function is provided', () => {
+    it ('is used to get the byte length', async () => {
+      const customFetch = vi.fn().mockResolvedValueOnce({
+        ok: true,
+        headers: new Map([['Content-Length', '2048']]),
+      })
+
+      const requestInit = { headers: { authorization: 'Bearer token' } }
+      const buffer = await asyncBufferFromUrl({ url: 'https://example.com', requestInit, fetch: customFetch })
+      expect(buffer.byteLength).toBe(2048)
+      expect(customFetch).toHaveBeenCalledWith('https://example.com', { ...requestInit, method: 'HEAD' })
+    })
+    it ('is used to fetch the slice', async () => {
+      const mockArrayBuffer = new ArrayBuffer(35)
+      let counter = 0
+      function rateLimitedFetch() {
+        counter++
+        if (counter === 2) {
+          return Promise.resolve({ ok: true, status: 206, body: {}, arrayBuffer: () => Promise.resolve(mockArrayBuffer) })
+        }
+        return Promise.resolve({ ok: false, status: 429 })
+      }
+      const customFetch = vi.fn().mockImplementation(async () => {
+        while (true) {
+          const result = await rateLimitedFetch()
+          if (result.ok) {
+            return result
+          }
+          await new Promise(resolve => setTimeout(resolve, 100)) // wait for 100ms before retrying
+        }
+      })
+      const requestInit = { headers: { authorization: 'Bearer token' } }
+      const buffer = await asyncBufferFromUrl({ url: 'https://example.com', byteLength: 1024, requestInit, fetch: customFetch })
+      const result = await buffer.slice(50, 85)
+      expect(result).toBe(mockArrayBuffer)
+      expect(customFetch).toHaveBeenCalledWith('https://example.com', { headers: new Headers({ ...requestInit.headers, Range: 'bytes=50-84' }) })
     })
   })
 })
