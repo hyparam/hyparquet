@@ -76,7 +76,7 @@ export async function byteLengthFromUrl(url, requestInit, customFetch) {
 /**
  * Construct an AsyncBuffer for a URL.
  * If byteLength is not provided, will make a HEAD request to get the file size.
- * I fetch is provided, it will be used instead of the global fetch.
+ * If fetch is provided, it will be used instead of the global fetch.
  * If requestInit is provided, it will be passed to fetch.
  *
  * @param {object} options
