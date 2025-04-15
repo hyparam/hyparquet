@@ -344,6 +344,7 @@ interface DataPage {
 
 export type DecodedArray =
   Uint8Array |
+  Uint32Array |
   Int32Array |
   BigInt64Array |
   BigUint64Array |

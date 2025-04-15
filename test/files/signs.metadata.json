@@ -1,0 +1,410 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "schema",
+      "num_children": 8
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "unsigned_int8",
+      "converted_type": "UINT_8",
+      "logical_type": {
+        "type": "INTEGER",
+        "bitWidth": 8,
+        "isSigned": false
+      }
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "unsigned_int16",
+      "converted_type": "UINT_16",
+      "logical_type": {
+        "type": "INTEGER",
+        "bitWidth": 16,
+        "isSigned": false
+      }
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "unsigned_int32",
+      "converted_type": "UINT_32",
+      "logical_type": {
+        "type": "INTEGER",
+        "bitWidth": 32,
+        "isSigned": false
+      }
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "unsigned_int64",
+      "converted_type": "UINT_64",
+      "logical_type": {
+        "type": "INTEGER",
+        "bitWidth": 64,
+        "isSigned": false
+      }
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "signed_int8",
+      "converted_type": "INT_8",
+      "logical_type": {
+        "type": "INTEGER",
+        "bitWidth": 8,
+        "isSigned": true
+      }
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "signed_int16",
+      "converted_type": "INT_16",
+      "logical_type": {
+        "type": "INTEGER",
+        "bitWidth": 16,
+        "isSigned": true
+      }
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "signed_int32"
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "signed_int64"
+    }
+  ],
+  "num_rows": 4,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "unsigned_int8"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 73,
+            "total_compressed_size": 77,
+            "data_page_offset": 36,
+            "dictionary_page_offset": 4,
+            "statistics": {
+              "null_count": 0,
+              "max_value": 255,
+              "min_value": 0
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "unsigned_int16"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 73,
+            "total_compressed_size": 77,
+            "data_page_offset": 113,
+            "dictionary_page_offset": 81,
+            "statistics": {
+              "null_count": 0,
+              "max_value": 65535,
+              "min_value": 0
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "unsigned_int32"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 73,
+            "total_compressed_size": 77,
+            "data_page_offset": 190,
+            "dictionary_page_offset": 158,
+            "statistics": {
+              "null_count": 0,
+              "max_value": -1,
+              "min_value": 0
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "unsigned_int64"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 97,
+            "total_compressed_size": 90,
+            "data_page_offset": 272,
+            "dictionary_page_offset": 235,
+            "statistics": {
+              "null_count": 0,
+              "max_value": -1,
+              "min_value": 0
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "signed_int8"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 85,
+            "total_compressed_size": 89,
+            "data_page_offset": 357,
+            "dictionary_page_offset": 325,
+            "statistics": {
+              "max": 127,
+              "min": -128,
+              "null_count": 0,
+              "max_value": 127,
+              "min_value": -128
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "signed_int16"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 85,
+            "total_compressed_size": 89,
+            "data_page_offset": 446,
+            "dictionary_page_offset": 414,
+            "statistics": {
+              "max": 32767,
+              "min": -32768,
+              "null_count": 0,
+              "max_value": 32767,
+              "min_value": -32768
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "signed_int32"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 85,
+            "total_compressed_size": 89,
+            "data_page_offset": 535,
+            "dictionary_page_offset": 503,
+            "statistics": {
+              "max": 2147483647,
+              "min": -2147483648,
+              "null_count": 0,
+              "max_value": 2147483647,
+              "min_value": -2147483648
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "signed_int64"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 117,
+            "total_compressed_size": 110,
+            "data_page_offset": 629,
+            "dictionary_page_offset": 592,
+            "statistics": {
+              "max": 9223372036854776000,
+              "min": -9223372036854776000,
+              "null_count": 0,
+              "max_value": 9223372036854776000,
+              "min_value": -9223372036854776000
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ]
+          }
+        }
+      ],
+      "total_byte_size": 688,
+      "num_rows": 4,
+      "file_offset": 4,
+      "total_compressed_size": 698,
+      "ordinal": 0
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "ARROW:schema",
+      "value": "/////xgCAAAQAAAAAAAKAAwABgAFAAgACgAAAAABBAAMAAAACAAIAAAABAAIAAAABAAAAAgAAACwAQAAaAEAADABAAD4AAAAuAAAAHwAAABAAAAABAAAAID+//8AAAECEAAAACAAAAAEAAAAAAAAAAwAAABzaWduZWRfaW50NjQAAAAAXP///wAAAAFAAAAAuP7//wAAAQIQAAAAIAAAAAQAAAAAAAAADAAAAHNpZ25lZF9pbnQzMgAAAACU////AAAAASAAAADw/v//AAABAhAAAAAgAAAABAAAAAAAAAAMAAAAc2lnbmVkX2ludDE2AAAAAMz///8AAAABEAAAACj///8AAAECEAAAACQAAAAEAAAAAAAAAAsAAABzaWduZWRfaW50OAAIAAwACAAHAAgAAAAAAAABCAAAAGT///8AAAECEAAAACAAAAAEAAAAAAAAAA4AAAB1bnNpZ25lZF9pbnQ2NAAAVv///0AAAACY////AAABAhAAAAAgAAAABAAAAAAAAAAOAAAAdW5zaWduZWRfaW50MzIAAIr///8gAAAAzP///wAAAQIQAAAAIAAAAAQAAAAAAAAADgAAAHVuc2lnbmVkX2ludDE2AAC+////EAAAABAAFAAIAAYABwAMAAAAEAAQAAAAAAABAhAAAAAkAAAABAAAAAAAAAANAAAAdW5zaWduZWRfaW50OAAGAAgABAAGAAAACAAAAA=="
+    }
+  ],
+  "created_by": "parquet-cpp-arrow version 19.0.1",
+  "metadata_length": 1733
+}

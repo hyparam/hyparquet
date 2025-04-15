@@ -36,7 +36,7 @@ export function convertWithDictionary(data, dictionary, schemaElement, encoding,
  * @returns {DecodedArray} series of rich types
  */
 export function convert(data, schemaElement, utf8 = true) {
-  const ctype = schemaElement.converted_type
+  const { type, converted_type: ctype, logical_type: ltype } = schemaElement
   if (ctype === 'DECIMAL') {
     const scale = schemaElement.scale || 0
     const factor = 10 ** -scale
@@ -50,7 +50,7 @@ export function convert(data, schemaElement, utf8 = true) {
     }
     return arr
   }
-  if (ctype === undefined && schemaElement.type === 'INT96') {
+  if (!ctype && type === 'INT96') {
     return Array.from(data).map(parseInt96Date)
   }
   if (ctype === 'DATE') {
@@ -84,7 +84,7 @@ export function convert(data, schemaElement, utf8 = true) {
   if (ctype === 'INTERVAL') {
     throw new Error('parquet interval not supported')
   }
-  if (ctype === 'UTF8' || utf8 && schemaElement.type === 'BYTE_ARRAY') {
+  if (ctype === 'UTF8' || utf8 && type === 'BYTE_ARRAY') {
     const decoder = new TextDecoder()
     const arr = new Array(data.length)
     for (let i = 0; i < arr.length; i++) {
@@ -92,18 +92,27 @@ export function convert(data, schemaElement, utf8 = true) {
     }
     return arr
   }
-  if (ctype === 'UINT_64') {
-    const arr = new BigUint64Array(data.length)
-    for (let i = 0; i < arr.length; i++) {
-      arr[i] = BigInt(data[i])
+  if (ctype === 'UINT_64' || ltype?.type === 'INTEGER' && ltype.bitWidth === 64 && !ltype.isSigned) {
+    if (data instanceof BigInt64Array) {
+      return new BigUint64Array(data.buffer, data.byteOffset, data.length)
     }
+    const arr = new BigUint64Array(data.length)
+    for (let i = 0; i < arr.length; i++) arr[i] = BigInt(data[i])
     return arr
   }
-  if (schemaElement.logical_type?.type === 'FLOAT16') {
+  if (ctype === 'UINT_32' || ltype?.type === 'INTEGER' && ltype.bitWidth === 32 && !ltype.isSigned) {
+    if (data instanceof Int32Array) {
+      return new Uint32Array(data.buffer, data.byteOffset, data.length)
+    }
+    const arr = new Uint32Array(data.length)
+    for (let i = 0; i < arr.length; i++) arr[i] = data[i]
+    return arr
+  }
+  if (ltype?.type === 'FLOAT16') {
     return Array.from(data).map(parseFloat16)
   }
-  if (schemaElement.logical_type?.type === 'TIMESTAMP') {
-    const { unit } = schemaElement.logical_type
+  if (ltype?.type === 'TIMESTAMP') {
+    const { unit } = ltype
     let factor = 1n
     if (unit === 'MICROS') factor = 1000n
     if (unit === 'NANOS') factor = 1000000n
