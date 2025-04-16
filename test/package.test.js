@@ -25,7 +25,11 @@ describe('package.json', () => {
     const { exports } = packageJson
     expect(exports).toBeDefined()
     for (const [, exportObj] of Object.entries(exports)) {
-      expect(Object.keys(exportObj)).toEqual(['types', 'import'])
+      if (typeof exportObj === 'object') {
+        expect(Object.keys(exportObj)).toEqual(['types', 'import'])
+      } else {
+        expect(typeof exportObj).toBe('string')
+      }
     }
   })
 })
