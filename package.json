@@ -30,12 +30,12 @@
   "types": "types/hyparquet.d.ts",
   "exports": {
     ".": {
-      "import": "./src/hyparquet.js",
-      "types": "./types/hyparquet.d.ts"
+      "types": "./types/hyparquet.d.ts",
+      "import": "./src/hyparquet.js"
     },
     "./src/*.js": {
-      "import": "./src/*.js",
-      "types": "./types/*.d.ts"
+      "types": "./types/*.d.ts",
+      "import": "./src/*.js"
     }
   },
   "scripts": {
