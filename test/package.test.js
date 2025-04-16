@@ -21,4 +21,11 @@ describe('package.json', () => {
     expect('dependencies' in packageJson).toBe(false)
     expect('peerDependencies' in packageJson).toBe(false)
   })
+  it('should have exports with types first', () => {
+    const { exports } = packageJson
+    expect(exports).toBeDefined()
+    for (const [, exportObj] of Object.entries(exports)) {
+      expect(Object.keys(exportObj)).toEqual(['types', 'import'])
+    }
+  })
 })
