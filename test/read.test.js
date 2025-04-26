@@ -178,13 +178,13 @@ describe('parquetRead', () => {
       rowStart: 90,
       rowEnd: 91,
     })
-    expect(rows).toEqual([{ col: 'bad' }])
-    expect(convertWithDictionary).toHaveBeenCalledTimes(2)
+    expect(rows).toEqual([{ row: 90n, quality: 'bad' }])
+    expect(convertWithDictionary).toHaveBeenCalledTimes(4)
   })
 
   it('reads individual pages', async () => {
-    const file = await asyncBufferFromFile('test/files/page_indexed.parquet')
-    /** @type {import('../src/types.js').ColumnData[]} */
+    const file = countingBuffer(await asyncBufferFromFile('test/files/page_indexed.parquet'))
+    /** @type {ColumnData[]} */
     const pages = []
 
     await parquetRead({
@@ -196,7 +196,13 @@ describe('parquetRead', () => {
 
     expect(pages).toEqual([
       {
-        columnName: 'col',
+        columnName: 'row',
+        columnData: Array.from({ length: 100 }, (_, i) => BigInt(i)),
+        rowStart: 0,
+        rowEnd: 100,
+      },
+      {
+        columnName: 'quality',
         columnData: [
           'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'good', 'bad', 'bad', 'bad',
           'good', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad',
@@ -213,7 +219,13 @@ describe('parquetRead', () => {
         rowEnd: 100,
       },
       {
-        columnName: 'col',
+        columnName: 'row',
+        columnData: Array.from({ length: 100 }, (_, i) => BigInt(i + 100)),
+        rowStart: 100,
+        rowEnd: 200,
+      },
+      {
+        columnName: 'quality',
         columnData: [
           'good', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'good',
           'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad',
@@ -230,5 +242,25 @@ describe('parquetRead', () => {
         rowEnd: 200,
       },
     ])
+    expect(file.fetches).toBe(3) // 1 metadata, 2 rowgroups
   })
 })
+
+/**
+ * Wraps an AsyncBuffer to count the number of fetches made
+ *
+ * @import {AsyncBuffer, ColumnData} from '../src/types.js'
+ * @param {AsyncBuffer} asyncBuffer
+ * @returns {AsyncBuffer & {fetches: number}}
+ */
+
+function countingBuffer(asyncBuffer) {
+  return {
+    ...asyncBuffer,
+    fetches: 0,
+    slice(start, end) {
+      this.fetches++
+      return asyncBuffer.slice(start, end)
+    },
+  }
+}

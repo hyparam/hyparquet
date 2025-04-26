@@ -3,54 +3,108 @@
     {
       "page_locations": [
         {
+          "compressed_page_size": 36,
+          "first_row_index": 0,
+          "offset": 432
+        },
+        {
+          "compressed_page_size": 38,
+          "first_row_index": 10,
+          "offset": 468
+        },
+        {
+          "compressed_page_size": 38,
+          "first_row_index": 20,
+          "offset": 506
+        },
+        {
+          "compressed_page_size": 40,
+          "first_row_index": 30,
+          "offset": 544
+        },
+        {
+          "compressed_page_size": 40,
+          "first_row_index": 40,
+          "offset": 584
+        },
+        {
+          "compressed_page_size": 40,
+          "first_row_index": 50,
+          "offset": 624
+        },
+        {
+          "compressed_page_size": 42,
+          "first_row_index": 60,
+          "offset": 664
+        },
+        {
+          "compressed_page_size": 42,
+          "first_row_index": 70,
+          "offset": 706
+        },
+        {
+          "compressed_page_size": 42,
+          "first_row_index": 80,
+          "offset": 748
+        },
+        {
+          "compressed_page_size": 42,
+          "first_row_index": 90,
+          "offset": 790
+        }
+      ]
+    },
+    {
+      "page_locations": [
+        {
           "compressed_page_size": 30,
           "first_row_index": 0,
-          "offset": 35
+          "offset": 863
         },
         {
           "compressed_page_size": 30,
           "first_row_index": 10,
-          "offset": 65
+          "offset": 893
         },
         {
           "compressed_page_size": 31,
           "first_row_index": 20,
-          "offset": 95
+          "offset": 923
         },
         {
           "compressed_page_size": 30,
           "first_row_index": 30,
-          "offset": 126
+          "offset": 954
         },
         {
           "compressed_page_size": 30,
           "first_row_index": 40,
-          "offset": 156
+          "offset": 984
         },
         {
           "compressed_page_size": 30,
           "first_row_index": 50,
-          "offset": 186
+          "offset": 1014
         },
         {
           "compressed_page_size": 31,
           "first_row_index": 60,
-          "offset": 216
+          "offset": 1044
         },
         {
           "compressed_page_size": 30,
           "first_row_index": 70,
-          "offset": 247
+          "offset": 1075
         },
         {
           "compressed_page_size": 30,
           "first_row_index": 80,
-          "offset": 277
+          "offset": 1105
         },
         {
           "compressed_page_size": 31,
           "first_row_index": 90,
-          "offset": 307
+          "offset": 1135
         }
       ]
     }
@@ -59,54 +113,108 @@
     {
       "page_locations": [
         {
+          "compressed_page_size": 36,
+          "first_row_index": 0,
+          "offset": 1598
+        },
+        {
+          "compressed_page_size": 38,
+          "first_row_index": 10,
+          "offset": 1634
+        },
+        {
+          "compressed_page_size": 38,
+          "first_row_index": 20,
+          "offset": 1672
+        },
+        {
+          "compressed_page_size": 40,
+          "first_row_index": 30,
+          "offset": 1710
+        },
+        {
+          "compressed_page_size": 40,
+          "first_row_index": 40,
+          "offset": 1750
+        },
+        {
+          "compressed_page_size": 40,
+          "first_row_index": 50,
+          "offset": 1790
+        },
+        {
+          "compressed_page_size": 42,
+          "first_row_index": 60,
+          "offset": 1830
+        },
+        {
+          "compressed_page_size": 42,
+          "first_row_index": 70,
+          "offset": 1872
+        },
+        {
+          "compressed_page_size": 42,
+          "first_row_index": 80,
+          "offset": 1914
+        },
+        {
+          "compressed_page_size": 42,
+          "first_row_index": 90,
+          "offset": 1956
+        }
+      ]
+    },
+    {
+      "page_locations": [
+        {
           "compressed_page_size": 30,
           "first_row_index": 0,
-          "offset": 434
+          "offset": 2029
         },
         {
           "compressed_page_size": 29,
           "first_row_index": 10,
-          "offset": 464
+          "offset": 2059
         },
         {
           "compressed_page_size": 31,
           "first_row_index": 20,
-          "offset": 493
+          "offset": 2088
         },
         {
           "compressed_page_size": 29,
           "first_row_index": 30,
-          "offset": 524
+          "offset": 2119
         },
         {
           "compressed_page_size": 30,
           "first_row_index": 40,
-          "offset": 553
+          "offset": 2148
         },
         {
           "compressed_page_size": 29,
           "first_row_index": 50,
-          "offset": 583
+          "offset": 2178
         },
         {
           "compressed_page_size": 30,
           "first_row_index": 60,
-          "offset": 612
+          "offset": 2207
         },
         {
           "compressed_page_size": 30,
           "first_row_index": 70,
-          "offset": 642
+          "offset": 2237
         },
         {
           "compressed_page_size": 29,
           "first_row_index": 80,
-          "offset": 672
+          "offset": 2267
         },
         {
           "compressed_page_size": 30,
           "first_row_index": 90,
-          "offset": 701
+          "offset": 2296
         }
       ]
     }

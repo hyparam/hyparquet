@@ -2,107 +2,33 @@
   [
     {
       "boundary_order": "ASCENDING",
-      "max_values": [
-        "good",
-        "good",
-        "good",
-        "good",
-        "good",
-        "good",
-        "good",
-        "good",
-        "good",
-        "good"
-      ],
-      "min_values": [
-        "bad",
-        "bad",
-        "bad",
-        "bad",
-        "bad",
-        "bad",
-        "bad",
-        "bad",
-        "bad",
-        "bad"
-      ],
-      "null_counts": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "null_pages": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ]
+      "max_values": [9, 19, 29, 39, 49, 59, 69, 79, 89, 99],
+      "min_values": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90],
+      "null_counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "null_pages": [false, false, false, false, false, false, false, false, false, false]
+    },
+    {
+      "boundary_order": "ASCENDING",
+      "max_values": ["good", "good", "good", "good", "good", "good", "good", "good", "good", "good"],
+      "min_values": ["bad", "bad", "bad", "bad", "bad", "bad", "bad", "bad", "bad", "bad"],
+      "null_counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "null_pages": [false, false, false, false, false, false, false, false, false, false]
     }
   ],
   [
     {
+      "boundary_order": "ASCENDING",
+      "max_values": [109, 119, 129, 139, 149, 159, 169, 179, 189, 199],
+      "min_values": [100, 110, 120, 130, 140, 150, 160, 170, 180, 190],
+      "null_counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "null_pages": [false, false, false, false, false, false, false, false, false, false]
+    },
+    {
       "boundary_order": "UNORDERED",
-      "max_values": [
-        "good",
-        "bad",
-        "good",
-        "bad",
-        "good",
-        "bad",
-        "good",
-        "good",
-        "bad",
-        "good"
-      ],
-      "min_values": [
-        "bad",
-        "bad",
-        "bad",
-        "bad",
-        "bad",
-        "bad",
-        "bad",
-        "bad",
-        "bad",
-        "bad"
-      ],
-      "null_counts": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "null_pages": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ]
+      "max_values": ["good", "bad", "good", "bad", "good", "bad", "good", "good", "bad", "good"],
+      "min_values": ["bad", "bad", "bad", "bad", "bad", "bad", "bad", "bad", "bad", "bad"],
+      "null_counts": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "null_pages": [false, false, false, false, false, false, false, false, false, false]
     }
   ]
 ]
