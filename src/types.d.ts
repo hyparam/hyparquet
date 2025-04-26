@@ -53,6 +53,18 @@ export interface AsyncBuffer {
   slice(start: number, end?: number): Awaitable<ArrayBuffer>
 }
 export type Awaitable<T> = T | Promise<T>
+export type ByteRange = { startByte: number, endByte: number }
+
+/**
+ * Query plan for which byte ranges to read.
+ */
+export interface QueryPlan {
+  ranges: ByteRange[] // byte ranges to fetch
+  groups: GroupPlan[] // byte ranges by row group
+}
+interface GroupPlan {
+  plan: ByteRange[]
+}
 
 export interface DataReader {
   view: DataView

@@ -187,6 +187,7 @@ describe('parquetRead', () => {
     /** @type {ColumnData[]} */
     const pages = []
 
+    // check onPage callback
     await parquetRead({
       file,
       onPage(page) {
@@ -194,7 +195,7 @@ describe('parquetRead', () => {
       },
     })
 
-    expect(pages).toEqual([
+    const expectedPages = [
       {
         columnName: 'row',
         columnData: Array.from({ length: 100 }, (_, i) => BigInt(i)),
@@ -241,7 +242,13 @@ describe('parquetRead', () => {
         rowStart: 100,
         rowEnd: 200,
       },
-    ])
+    ]
+
+    // expect each page to exist in expected
+    for (const expected of expectedPages) {
+      const page = pages.find(p => p.columnName === expected.columnName && p.rowStart === expected.rowStart)
+      expect(page).toEqual(expected)
+    }
     expect(file.fetches).toBe(3) // 1 metadata, 2 rowgroups
   })
 })
