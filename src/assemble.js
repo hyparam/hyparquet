@@ -4,7 +4,6 @@ import { getMaxDefinitionLevel, isListLike, isMapLike } from './schema.js'
  * Reconstructs a complex nested structure from flat arrays of values and
  * definition and repetition levels, according to Dremel encoding.
  *
- * @import {DecodedArray} from '../src/types.d.ts'
  * @param {any[]} output
  * @param {number[] | undefined} definitionLevels
  * @param {number[]} repetitionLevels
@@ -102,7 +101,6 @@ export function assembleLists(output, definitionLevels, repetitionLevels, values
  * Assemble a nested structure from subcolumn data.
  * https://github.com/apache/parquet-format/blob/apache-parquet-format-2.10.0/LogicalTypes.md#nested-types
  *
- * @import {SchemaTree} from '../src/types.d.ts'
  * @param {Map<string, DecodedArray>} subcolumnData
  * @param {SchemaTree} schema top-level schema element
  * @param {number} [depth] depth of nested structure
@@ -179,6 +177,7 @@ export function assembleNested(subcolumnData, schema, depth = 0) {
 }
 
 /**
+ * @import {DecodedArray, SchemaTree} from '../src/types.d.ts'
  * @param {DecodedArray} arr
  * @param {number} depth
  */

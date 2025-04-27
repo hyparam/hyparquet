@@ -19,7 +19,6 @@ export const CompactType = {
 /**
  * Parse TCompactProtocol
  *
- * @import {DataReader, ThriftObject, ThriftType} from '../src/types.d.ts'
  * @param {DataReader} reader
  * @returns {{ [key: `field_${number}`]: any }}
  */
@@ -47,6 +46,7 @@ export function deserializeTCompactProtocol(reader) {
 /**
  * Read a single element based on its type
  *
+ * @import {DataReader, ThriftObject, ThriftType} from '../src/types.d.ts'
  * @param {DataReader} reader
  * @param {number} type
  * @returns {ThriftType}
