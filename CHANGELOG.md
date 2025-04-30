@@ -1,69 +1,72 @@
- # Changelog
+# Changelog
 
- ## [1.12.1]
+## [1.13.0]
+ - Query planner: pre-fetch byte ranges in parallel (#75)
+
+## [1.12.1]
  - Fix conversion of unsigned types.
  - Allow passing a custom fetch function to utilities (#73).
 
- ## [1.12.0]
+## [1.12.0]
  - Add `onPage` callback to `parquetRead`.
 
- ## [1.11.1]
+## [1.11.1]
  - Fix handling of dictionary pages from parquet.net.
 
- ## [1.11.0]
+## [1.11.0]
  - Fix continued data pages
  - Skip decoding unnecessary pages.
 
- ## [1.10.4]
+## [1.10.4]
  - Add type definitions for thrift.
 
- ## [1.10.3]
+## [1.10.3]
  - Internal refactor split out `readPage` function.
 
- ## [1.10.2]
+## [1.10.2]
  - Export additional internal constants.
 
- ## [1.10.1]
+## [1.10.1]
  - Fix parsing of `crypto_metadata` in thrift.
 
- ## [1.10.0]
+## [1.10.0]
  - Map `src` files to TypeScript types via package exports (#70).
  - Use `defaultInitialFetchSize` for both metadata and `cachedAsyncBuffer`.
 
- ## [1.9.x]
+## [1.9.x]
  - Add `minSize` parameter to `cachedAsyncBuffer` for finer control.
  - Return typed arrays in `onChunk` callbacks.
  - Change `readColumn` to return an array of `DecodedArray` (#67).
 
- ## [1.8.x]
+## [1.8.x]
  - Support endpoints without range requests in `asyncBufferFromUrl` (#57).
  - Enhance error messages for common parsing issues.
  - Mongo-style `filter` option in `parquetQuery`.
 
- ## [1.7.0]
+## [1.7.0]
  - Enable `readColumn` to read all rows (#53).
  - Validate url in `asyncBufferFromUrl`.
 
- ## [1.6.x]
+## [1.6.x]
  - Fix timestamp conversion in metadata parsing.
  - Build TypeScript types before publishing to npm.
 
- ## [1.5.0]
+## [1.5.0]
  - Export `cachedAsyncBuffer` utility.
 
- ## [1.4.0]
+## [1.4.0]
  - Add `parquetQuery` with `orderBy` option.
 
- ## [1.3.0]
+## [1.3.0]
  - Promisify `parquetReadObjects` function.
  - Add support for parsing column and offset indexes (#29).
 
- ## [1.2.0]
+## [1.2.0]
  - Return columns in the requested order (#27).
  - Add option to return each row as an object keyed by column names (#25).
 
- ## [1.1.0]
+## [1.1.0]
  - Export `asyncBufferFromFile` and `asyncBufferFromUrl` utilities.
 
- ## [1.0.0]
+## [1.0.0]
  - Initial stable release.
