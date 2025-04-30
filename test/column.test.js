@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { getColumnRange, readColumn } from '../src/column.js'
+import { readColumn } from '../src/column.js'
 import { parquetMetadata } from '../src/hyparquet.js'
+import { getColumnRange } from '../src/plan.js'
 import { getSchemaPath } from '../src/schema.js'
 import { asyncBufferFromFile } from '../src/utils.js'
 
@@ -19,8 +20,8 @@ describe('readColumn', () => {
 
     const column = metadata.row_groups[0].columns[0]
     if (!column.meta_data) throw new Error(`No column metadata for ${testFile}`)
-    const [columnStartByte, columnEndByte] = getColumnRange(column.meta_data).map(Number)
-    const columnArrayBuffer = arrayBuffer.slice(columnStartByte, columnEndByte)
+    const { startByte, endByte } = getColumnRange(column.meta_data)
+    const columnArrayBuffer = arrayBuffer.slice(startByte, endByte)
     const schemaPath = getSchemaPath(metadata.schema, column.meta_data?.path_in_schema ?? [])
     const reader = { view: new DataView(columnArrayBuffer), offset: 0 }
     const columnDecoder = {
@@ -49,8 +50,8 @@ describe('readColumn', () => {
 
     const column = metadata.row_groups[0].columns[1] // second column
     if (!column.meta_data) throw new Error(`No column metadata for ${testFile}`)
-    const [columnStartByte, columnEndByte] = getColumnRange(column.meta_data).map(Number)
-    const columnArrayBuffer = arrayBuffer.slice(columnStartByte, columnEndByte)
+    const { startByte, endByte } = getColumnRange(column.meta_data)
+    const columnArrayBuffer = arrayBuffer.slice(startByte, endByte)
     const schemaPath = getSchemaPath(metadata.schema, column.meta_data?.path_in_schema ?? [])
     const reader = { view: new DataView(columnArrayBuffer), offset: 0 }
     const columnDecoder = {

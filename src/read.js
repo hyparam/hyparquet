@@ -1,6 +1,7 @@
 import { assembleNested } from './assemble.js'
-import { getColumnRange, readColumn } from './column.js'
+import { readColumn } from './column.js'
 import { parquetMetadataAsync } from './metadata.js'
+import { getColumnRange, parquetPlan, prefetchAsyncBuffer } from './plan.js'
 import { getSchemaPath } from './schema.js'
 import { concat } from './utils.js'
 
@@ -22,18 +23,20 @@ export async function parquetRead(options) {
   if (!options.file || !(options.file.byteLength >= 0)) {
     throw new Error('parquetRead expected file AsyncBuffer')
   }
-  const rowStart = options.rowStart || 0
-  if (rowStart < 0) throw new Error('parquetRead rowStart must be postive')
 
   // load metadata if not provided
-  options.metadata ||= await parquetMetadataAsync(options.file)
-  if (!options.metadata) throw new Error('parquet metadata not found')
+  options.metadata ??= await parquetMetadataAsync(options.file)
+  const { metadata, onComplete, rowStart = 0, rowEnd } = options
+  if (rowStart < 0) throw new Error('parquetRead rowStart must be postive')
 
-  const { metadata, onComplete, rowEnd } = options
+  // prefetch byte ranges
+  const plan = parquetPlan(options)
+  options.file = prefetchAsyncBuffer(options.file, plan)
+
   /** @type {any[][]} */
   const rowData = []
 
-  // find which row groups to read
+  // read row groups
   let groupStart = 0 // first row index of the current group
   for (const rowGroup of metadata.row_groups) {
     // number of rows in this row group
@@ -64,37 +67,16 @@ export async function parquetRead(options) {
  * @returns {Promise<any[][]>} resolves to row data
  */
 export async function readRowGroup(options, rowGroup, groupStart) {
-  const { file, metadata, columns, rowStart, rowEnd } = options
+  const { file, metadata, columns, rowStart = 0, rowEnd } = options
   if (!metadata) throw new Error('parquet metadata not found')
   const numRows = Number(rowGroup.num_rows)
-  // index within the group to start and stop reading:
-  const selectStart = Math.max((rowStart || 0) - groupStart, 0)
+  // indexes within the group to read:
+  const selectStart = Math.max(rowStart - groupStart, 0)
   const selectEnd = Math.min((rowEnd ?? Infinity) - groupStart, numRows)
   /** @type {RowGroupSelect} */
   const rowGroupSelect = { groupStart, selectStart, selectEnd, numRows }
 
-  // loop through metadata to find min/max bytes to read
-  let [groupStartByte, groupEndByte] = [file.byteLength, 0]
-  for (const { meta_data } of rowGroup.columns) {
-    if (!meta_data) throw new Error('parquet column metadata is undefined')
-    // skip columns that are not requested
-    if (columns && !columns.includes(meta_data.path_in_schema[0])) continue
-
-    const [columnStartByte, columnEndByte] = getColumnRange(meta_data).map(Number)
-    groupStartByte = Math.min(groupStartByte, columnStartByte)
-    groupEndByte = Math.max(groupEndByte, columnEndByte)
-  }
-  if (groupStartByte >= groupEndByte && columns?.length) {
-    throw new Error(`parquet columns not found: ${columns.join(', ')}`)
-  }
-  // if row group size is less than 32mb, pre-load in one read
-  let groupBuffer
-  if (groupEndByte - groupStartByte <= 1 << 25) {
-    // pre-load row group byte data in one big read,
-    // otherwise read column data individually
-    groupBuffer = await file.slice(groupStartByte, groupEndByte)
-  }
-
+  /** @type {Promise<void>[]} */
   const promises = []
   // top-level columns to assemble
   const { children } = getSchemaPath(metadata.schema, [])[0]
@@ -110,33 +92,25 @@ export async function readRowGroup(options, rowGroup, groupStart) {
     const columnName = columnMetadata.path_in_schema[0]
     if (columns && !columns.includes(columnName)) continue
 
-    const [columnStartByte, columnEndByte] = getColumnRange(columnMetadata).map(Number)
-    const columnBytes = columnEndByte - columnStartByte
+    const { startByte, endByte } = getColumnRange(columnMetadata)
+    const columnBytes = endByte - startByte
 
     // skip columns larger than 1gb
     // TODO: stream process the data, returning only the requested rows
     if (columnBytes > 1 << 30) {
-      console.warn(`parquet skipping huge column "${columnMetadata.path_in_schema}" ${columnBytes.toLocaleString()} bytes`)
+      console.warn(`parquet skipping huge column "${columnMetadata.path_in_schema}" ${columnBytes} bytes`)
       // TODO: set column to new Error('parquet column too large')
       continue
     }
 
-    // use pre-loaded row group byte data if available, else read column data
+    // wrap awaitable to ensure it's a promise
     /** @type {Promise<ArrayBuffer>} */
-    let buffer
-    let bufferOffset = 0
-    if (groupBuffer) {
-      buffer = Promise.resolve(groupBuffer)
-      bufferOffset = columnStartByte - groupStartByte
-    } else {
-      // wrap awaitable to ensure it's a promise
-      buffer = Promise.resolve(file.slice(columnStartByte, columnEndByte))
-    }
+    const buffer = Promise.resolve(file.slice(startByte, endByte))
 
     // read column data async
     promises.push(buffer.then(arrayBuffer => {
       const schemaPath = getSchemaPath(metadata.schema, columnMetadata.path_in_schema)
-      const reader = { view: new DataView(arrayBuffer), offset: bufferOffset }
+      const reader = { view: new DataView(arrayBuffer), offset: 0 }
       const columnDecoder = {
         columnName: columnMetadata.path_in_schema.join('.'),
         type: columnMetadata.type,

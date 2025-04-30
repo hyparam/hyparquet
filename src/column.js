@@ -145,20 +145,9 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
 }
 
 /**
- * Find the start byte offset for a column chunk.
- *
- * @param {ColumnMetaData} columnMetadata
- * @returns {[bigint, bigint]} byte offset range
- */
-export function getColumnRange({ dictionary_page_offset, data_page_offset, total_compressed_size }) {
-  const columnOffset = dictionary_page_offset || data_page_offset
-  return [columnOffset, columnOffset + total_compressed_size]
-}
-
-/**
  * Read parquet header from a buffer.
  *
- * @import {ColumnData, ColumnDecoder, ColumnMetaData, DataReader, DecodedArray, PageHeader, RowGroupSelect} from '../src/types.d.ts'
+ * @import {ColumnData, ColumnDecoder, DataReader, DecodedArray, PageHeader, RowGroupSelect} from '../src/types.d.ts'
  * @param {DataReader} reader
  * @returns {PageHeader}
  */
