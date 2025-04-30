@@ -25,7 +25,7 @@ export async function parquetRead(options) {
   }
 
   // load metadata if not provided
-  options.metadata ||= await parquetMetadataAsync(options.file)
+  options.metadata ??= await parquetMetadataAsync(options.file)
   const { metadata, onComplete, rowStart = 0, rowEnd } = options
   if (rowStart < 0) throw new Error('parquetRead rowStart must be postive')
 

@@ -1,5 +1,8 @@
 import { concat } from './utils.js'
 
+// Combine column chunks into a single byte range if less than 32mb
+const columnChunkAggregation = 1 << 25 // 32mb
+
 /**
  * @import {AsyncBuffer, ByteRange, ColumnMetaData, GroupPlan, ParquetReadOptions, QueryPlan} from '../src/types.js'
  */
@@ -37,7 +40,7 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
 
       // map group plan to ranges
       const groupSize = plan[plan.length - 1]?.endByte - plan[0]?.startByte
-      if (!columns && groupSize < 1 << 25) {
+      if (!columns && groupSize < columnChunkAggregation) {
         // full row group
         ranges.push({
           startByte: plan[0].startByte,
