@@ -29,7 +29,8 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
       /** @type {ByteRange[]} */
       const plan = []
       // loop through each column chunk
-      for (const { meta_data } of rowGroup.columns) {
+      for (const { file_path, meta_data } of rowGroup.columns) {
+        if (file_path) throw new Error('parquet file_path not supported')
         if (!meta_data) throw new Error('parquet column metadata is undefined')
         // add included columns to the plan
         if (!columns || columns.includes(meta_data.path_in_schema[0])) {

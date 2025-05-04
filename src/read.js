@@ -84,21 +84,21 @@ export async function readRowGroup(options, rowGroup, groupStart) {
   /** @type {Map<string, DecodedArray[]>} */
   const subcolumnData = new Map() // columns to assemble as maps
   // read column data
-  for (let i = 0; i < rowGroup.columns.length; i++) {
-    const columnMetadata = rowGroup.columns[i].meta_data
-    if (!columnMetadata) throw new Error('parquet column metadata is undefined')
+  for (const { file_path, meta_data } of rowGroup.columns) {
+    if (file_path) throw new Error('parquet file_path not supported')
+    if (!meta_data) throw new Error('parquet column metadata is undefined')
 
     // skip columns that are not requested
-    const columnName = columnMetadata.path_in_schema[0]
+    const columnName = meta_data.path_in_schema[0]
     if (columns && !columns.includes(columnName)) continue
 
-    const { startByte, endByte } = getColumnRange(columnMetadata)
+    const { startByte, endByte } = getColumnRange(meta_data)
     const columnBytes = endByte - startByte
 
     // skip columns larger than 1gb
     // TODO: stream process the data, returning only the requested rows
     if (columnBytes > 1 << 30) {
-      console.warn(`parquet skipping huge column "${columnMetadata.path_in_schema}" ${columnBytes} bytes`)
+      console.warn(`parquet skipping huge column "${meta_data.path_in_schema}" ${columnBytes} bytes`)
       // TODO: set column to new Error('parquet column too large')
       continue
     }
@@ -109,14 +109,15 @@ export async function readRowGroup(options, rowGroup, groupStart) {
 
     // read column data async
     promises.push(buffer.then(arrayBuffer => {
-      const schemaPath = getSchemaPath(metadata.schema, columnMetadata.path_in_schema)
+      const schemaPath = getSchemaPath(metadata.schema, meta_data.path_in_schema)
       const reader = { view: new DataView(arrayBuffer), offset: 0 }
+      const subcolumn = meta_data.path_in_schema.join('.')
       const columnDecoder = {
-        columnName: columnMetadata.path_in_schema.join('.'),
-        type: columnMetadata.type,
+        columnName: subcolumn,
+        type: meta_data.type,
         element: schemaPath[schemaPath.length - 1].element,
         schemaPath,
-        codec: columnMetadata.codec,
+        codec: meta_data.codec,
         compressors: options.compressors,
         utf8: options.utf8,
       }
@@ -128,7 +129,6 @@ export async function readRowGroup(options, rowGroup, groupStart) {
 
       // TODO: fast path for non-nested columns
       // save column data for assembly
-      const subcolumn = columnMetadata.path_in_schema.join('.')
       subcolumnData.set(subcolumn, chunks)
       chunks = undefined
 
