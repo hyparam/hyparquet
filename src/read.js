@@ -67,7 +67,7 @@ export async function parquetRead(options) {
  * @returns {Promise<any[][]>} resolves to row data
  */
 export async function readRowGroup(options, rowGroup, groupStart) {
-  const { file, metadata, columns, rowStart = 0, rowEnd } = options
+  const { metadata, columns, rowStart = 0, rowEnd, fileProvider } = options
   if (!metadata) throw new Error('parquet metadata not found')
   const numRows = Number(rowGroup.num_rows)
   // indexes within the group to read:
@@ -85,12 +85,18 @@ export async function readRowGroup(options, rowGroup, groupStart) {
   const subcolumnData = new Map() // columns to assemble as maps
   // read column data
   for (const { file_path, meta_data } of rowGroup.columns) {
-    if (file_path) throw new Error('parquet file_path not supported')
     if (!meta_data) throw new Error('parquet column metadata is undefined')
 
     // skip columns that are not requested
     const columnName = meta_data.path_in_schema[0]
     if (columns && !columns.includes(columnName)) continue
+
+    // use external file_path if provided
+    let { file } = options
+    if (file_path) {
+      if (!fileProvider) throw new Error('parquet column uses external file_path, fileProvider required')
+      file = await fileProvider(file_path)
+    }
 
     const { startByte, endByte } = getColumnRange(meta_data)
     const columnBytes = endByte - startByte

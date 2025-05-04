@@ -260,7 +260,6 @@ describe('parquetRead', () => {
  * @param {AsyncBuffer} asyncBuffer
  * @returns {AsyncBuffer & {fetches: number}}
  */
-
 function countingBuffer(asyncBuffer) {
   return {
     ...asyncBuffer,

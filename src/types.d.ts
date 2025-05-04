@@ -13,6 +13,7 @@ export interface ParquetReadOptions {
   onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
   compressors?: Compressors // custom decompressors
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
+  fileProvider?: (filePath: string) => Promise<AsyncBuffer> // convert path to AsyncBuffer (for external file_path references)
 }
 
 /**
