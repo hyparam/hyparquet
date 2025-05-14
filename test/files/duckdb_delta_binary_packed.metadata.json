@@ -9,11 +9,11 @@
     {
       "type": "INT64",
       "repetition_type": "OPTIONAL",
-      "name": "numeric_val3",
+      "name": "range",
       "converted_type": "INT_64"
     }
   ],
-  "num_rows": 4564,
+  "num_rows": 1250,
   "row_groups": [
     {
       "columns": [
@@ -22,27 +22,27 @@
           "meta_data": {
             "type": "INT64",
             "encodings": ["DELTA_BINARY_PACKED"],
-            "path_in_schema": ["numeric_val3"],
+            "path_in_schema": ["range"],
             "codec": "SNAPPY",
-            "num_values": 4564,
-            "total_uncompressed_size": 14866,
-            "total_compressed_size": 13913,
+            "num_values": 1250,
+            "total_uncompressed_size": 40,
+            "total_compressed_size": 42,
             "data_page_offset": 4,
             "statistics": {
-              "max": 27300000,
-              "min": 26,
-              "null_count": 544,
-              "max_value": 27300000,
-              "min_value": 26
+              "max": 1249,
+              "min": 0,
+              "null_count": 0,
+              "max_value": 1249,
+              "min_value": 0
             }
           }
         }
       ],
-      "total_byte_size": 14866,
-      "num_rows": 4564,
+      "total_byte_size": 40,
+      "num_rows": 1250,
       "file_offset": 4
     }
   ],
-  "created_by": "DuckDB version v1.2.2 (build 7c039464e4)",
-  "metadata_length": 190
+  "created_by": "DuckDB version v1.2.1 (build 8e52ec4395)",
+  "metadata_length": 169
 }
