@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "duckdb_schema",
+      "num_children": 1
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "str",
+      "converted_type": "UTF8"
+    }
+  ],
+  "num_rows": 4564,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": ["DELTA_LENGTH_BYTE_ARRAY"],
+            "path_in_schema": ["str"],
+            "codec": "SNAPPY",
+            "num_values": 4564,
+            "total_uncompressed_size": 146110,
+            "total_compressed_size": 146101,
+            "data_page_offset": 4,
+            "statistics": {
+              "max": "fff1e69bca697c78ae10651c7d32ae82",
+              "min": "002a4ece4977ad4fd7e0b4f39eec725b",
+              "null_count": 0,
+              "max_value": "fff1e69bca697c78ae10651c7d32ae82",
+              "min_value": "002a4ece4977ad4fd7e0b4f39eec725b"
+            }
+          }
+        }
+      ],
+      "total_byte_size": 146110,
+      "num_rows": 4564,
+      "file_offset": 4
+    }
+  ],
+  "created_by": "DuckDB version v1.2.2 (build 7c039464e4)",
+  "metadata_length": 267
+}
