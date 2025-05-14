@@ -1,7 +1,13 @@
 # Changelog
 
+## [1.13.2]
+ - Fix duckdb delta encoding (#77 thanks @mike-iqmo).
+
+## [1.13.1]
+ - Throw exception for unsupported file_path.
+
 ## [1.13.0]
- - Query planner: pre-fetch byte ranges in parallel (#75)
+ - Query planner: pre-fetch byte ranges in parallel (#75).
 
 ## [1.12.1]
  - Fix conversion of unsigned types.
@@ -39,16 +45,16 @@
  - Change `readColumn` to return an array of `DecodedArray` (#67).
 
 ## [1.8.x]
- - Support endpoints without range requests in `asyncBufferFromUrl` (#57).
+ - Support endpoints without range requests in `asyncBufferFromUrl` (#57 thanks @swlynch99).
  - Enhance error messages for common parsing issues.
- - Mongo-style `filter` option in `parquetQuery`.
+ - Mongo-style `filter` option in `parquetQuery` (#56 thanks @park-brian).
 
 ## [1.7.0]
- - Enable `readColumn` to read all rows (#53).
+ - Enable `readColumn` to read all rows (#53 thanks @park-brian).
  - Validate url in `asyncBufferFromUrl`.
 
 ## [1.6.x]
- - Fix timestamp conversion in metadata parsing.
+ - Fix timestamp conversion in metadata parsing (#45 thanks @cbardasano).
  - Build TypeScript types before publishing to npm.
 
 ## [1.5.0]
@@ -62,8 +68,8 @@
  - Add support for parsing column and offset indexes (#29).
 
 ## [1.2.0]
- - Return columns in the requested order (#27).
- - Add option to return each row as an object keyed by column names (#25).
+ - Return columns in the requested order (#27 thanks @cstranstrum).
+ - Add option to return each row as an object keyed by column names (#25 thanks @cstranstrum).
 
 ## [1.1.0]
  - Export `asyncBufferFromFile` and `asyncBufferFromUrl` utilities.
