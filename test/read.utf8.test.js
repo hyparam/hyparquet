@@ -51,4 +51,17 @@ describe('parquetRead utf8', () => {
       },
     ])
   })
+
+  it('Lazy strings', async () => {
+    const file = await asyncBufferFromFile('test/files/strings.parquet')
+    const rows = await parquetReadObjects({ file, lazyStrings: true, rowEnd: 1 })
+    expect(rows.length).toEqual(1)
+    expect(rows[0].bytes).not.toEqual('alpha')
+    expect(rows[0].bytes.bytes).toEqual(new Uint8Array([97, 108, 112, 104, 97]))
+    expect(rows[0].bytes.toString()).toEqual('alpha')
+    expect(rows[0].bytes.bytes).toBeUndefined()
+    expect(rows[0].bytes.string).toEqual('alpha')
+    expect(rows[0].c_utf8.toString()).toEqual('alpha')
+    expect(rows[0].l_utf8.toString()).toEqual('alpha')
+  })
 })

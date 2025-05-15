@@ -120,6 +120,7 @@ export async function readRowGroup(options, rowGroup, groupStart) {
         codec: meta_data.codec,
         compressors: options.compressors,
         utf8: options.utf8,
+        lazyStrings: options.lazyStrings,
       }
       /** @type {DecodedArray[] | undefined} */
       let chunks = readColumn(reader, rowGroupSelect, columnDecoder, options.onPage)

@@ -13,6 +13,7 @@ export interface ParquetReadOptions {
   onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
   compressors?: Compressors // custom decompressors
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
+  lazyStrings?: boolean // decode utf8 strings lazily? (default false)
 }
 
 /**
@@ -401,6 +402,7 @@ export interface ColumnDecoder {
   codec: CompressionCodec
   compressors?: Compressors
   utf8?: boolean
+  lazyStrings?: boolean
 }
 
 export interface RowGroupSelect {

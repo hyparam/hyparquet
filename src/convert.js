@@ -8,9 +8,10 @@ const dayMillis = 86400000 // 1 day in milliseconds
  * @param {SchemaElement} schemaElement
  * @param {Encoding} encoding
  * @param {boolean} [utf8] decode bytes as utf8?
+ * @param {boolean} [lazyStrings] decode utf8 lazily?
  * @returns {DecodedArray} series of rich types
  */
-export function convertWithDictionary(data, dictionary, schemaElement, encoding, utf8) {
+export function convertWithDictionary(data, dictionary, schemaElement, encoding, utf8, lazyStrings) {
   if (dictionary && encoding.endsWith('_DICTIONARY')) {
     let output = data
     if (data instanceof Uint8Array && !(dictionary instanceof Uint8Array)) {
@@ -22,7 +23,7 @@ export function convertWithDictionary(data, dictionary, schemaElement, encoding,
     }
     return output
   } else {
-    return convert(data, schemaElement, utf8)
+    return convert(data, schemaElement, utf8, lazyStrings)
   }
 }
 
@@ -32,9 +33,10 @@ export function convertWithDictionary(data, dictionary, schemaElement, encoding,
  * @param {DecodedArray} data series of primitive types
  * @param {SchemaElement} schemaElement
  * @param {boolean} [utf8] decode bytes as utf8?
+ * @param {boolean} [lazyStrings] decode utf8 lazily?
  * @returns {DecodedArray} series of rich types
  */
-export function convert(data, schemaElement, utf8 = true) {
+export function convert(data, schemaElement, utf8 = true, lazyStrings = false) {
   const { type, converted_type: ctype, logical_type: ltype } = schemaElement
   if (ctype === 'DECIMAL') {
     const scale = schemaElement.scale || 0
@@ -87,7 +89,7 @@ export function convert(data, schemaElement, utf8 = true) {
     const decoder = new TextDecoder()
     const arr = new Array(data.length)
     for (let i = 0; i < arr.length; i++) {
-      arr[i] = data[i] && decoder.decode(data[i])
+      arr[i] = data[i] && lazyStrings ? new LazyString(data[i]) : decoder.decode(data[i])
     }
     return arr
   }
@@ -168,4 +170,23 @@ export function parseFloat16(bytes) {
   if (exp === 0) return sign * 2 ** -14 * (frac / 1024) // subnormals
   if (exp === 0x1f) return frac ? NaN : sign * Infinity
   return sign * 2 ** (exp - 15) * (1 + frac / 1024)
+}
+
+/**
+ * A lazy string decoder that only decodes on toString().
+ */
+export class LazyString {
+  /** @param {Uint8Array} bytes */
+  constructor(bytes) {
+    /** @type {Uint8Array | undefined} */
+    this.bytes = bytes
+    /** @type {string | undefined} */
+    this.string = undefined
+  }
+
+  toString() {
+    this.string ??= new TextDecoder().decode(this.bytes)
+    this.bytes = undefined // free the memory
+    return this.string
+  }
 }

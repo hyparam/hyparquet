@@ -78,7 +78,7 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
  * @returns {DecodedArray}
  */
 export function readPage(reader, header, columnDecoder, dictionary, previousChunk, pageStart) {
-  const { type, element, schemaPath, codec, compressors, utf8 } = columnDecoder
+  const { type, element, schemaPath, codec, compressors, utf8, lazyStrings } = columnDecoder
   // read compressed_page_size bytes
   const compressedBytes = new Uint8Array(
     reader.view.buffer, reader.view.byteOffset + reader.offset, header.compressed_page_size
@@ -100,7 +100,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
     // assert(!daph.statistics?.null_count || daph.statistics.null_count === BigInt(daph.num_values - dataPage.length))
 
     // convert types, dereference dictionary, and assemble lists
-    let values = convertWithDictionary(dataPage, dictionary, element, daph.encoding, utf8)
+    let values = convertWithDictionary(dataPage, dictionary, element, daph.encoding, utf8, lazyStrings)
     if (repetitionLevels.length || definitionLevels?.length) {
       const output = Array.isArray(previousChunk) ? previousChunk : []
       return assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
@@ -126,7 +126,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
       readDataPageV2(compressedBytes, header, columnDecoder)
 
     // convert types, dereference dictionary, and assemble lists
-    const values = convertWithDictionary(dataPage, dictionary, element, daph2.encoding, utf8)
+    const values = convertWithDictionary(dataPage, dictionary, element, daph2.encoding, utf8, lazyStrings)
     const output = Array.isArray(previousChunk) ? previousChunk : []
     return assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
   } else if (header.type === 'DICTIONARY_PAGE') {
