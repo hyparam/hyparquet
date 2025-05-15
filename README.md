@@ -142,8 +142,8 @@ If you want to read a parquet file remotely over http, use `asyncBufferFromUrl` 
 
 ```typescript
 const url = 'https://s3.hyperparam.app/wiki_en.parquet'
-const requestInit = { headers: { Authorization: 'Bearer my_token' } }
-const byteLength = 415958713
+const requestInit = { headers: { Authorization: 'Bearer my_token' } } // auth header
+const byteLength = 415958713 // optional
 const file: AsyncBuffer = await asyncBufferFromUrl({ url, requestInit, byteLength })
 const data = await parquetReadObjects({ file })
 ```
