@@ -12,26 +12,42 @@ import { equals } from './utils.js'
  * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
  */
 export async function parquetQuery(options) {
-  const { file, rowStart, rowEnd, orderBy, filter } = options
-  if (!file || !(file.byteLength >= 0)) {
+  if (!options.file || !(options.file.byteLength >= 0)) {
     throw new Error('parquetQuery expected file AsyncBuffer')
   }
-  options.metadata ||= await parquetMetadataAsync(file)
+  options.metadata ??= await parquetMetadataAsync(options.file)
+  const { metadata, rowStart = 0, orderBy, filter } = options
+  if (rowStart < 0) throw new Error('parquetQuery rowStart must be positive')
+  const rowEnd = options.rowEnd ?? Number(metadata.num_rows)
 
-  // TODO: Faster path for: no orderBy, no rowStart/rowEnd, one row group
-
-  if (filter) {
-    // TODO: Move filter to parquetRead for performance
-    const results = await parquetReadObjects({ ...options, rowStart: undefined, rowEnd: undefined })
-    return results
+  if (filter && !orderBy && rowEnd < metadata.num_rows) {
+    // iterate through row groups and filter until we have enough rows
+    const filteredRows = new Array()
+    let groupStart = 0
+    for (const group of metadata.row_groups) {
+      const groupEnd = groupStart + Number(group.num_rows)
+      // TODO: if expected > group size, start fetching next groups
+      const groupData = await parquetReadObjects({ ...options, rowStart: groupStart, rowEnd: groupEnd })
+      for (const row of groupData) {
+        if (matchQuery(row, filter)) {
+          filteredRows.push(row)
+        }
+      }
+      if (filteredRows.length >= rowEnd) break
+      groupStart = groupEnd
+    }
+    return filteredRows.slice(rowStart, rowEnd)
+  } else if (filter) {
+    // read all rows, sort, and filter
+    const results = (await parquetReadObjects({ ...options, rowStart: undefined, rowEnd: undefined }))
       .filter(row => matchQuery(row, filter))
-      .sort((a, b) => orderBy ? compare(a[orderBy], b[orderBy]) : 0)
-      .slice(rowStart, rowEnd)
+    if (orderBy) results.sort((a, b) => compare(a[orderBy], b[orderBy]))
+    return results.slice(rowStart, rowEnd)
   } else if (typeof orderBy === 'string') {
-    // Fetch orderBy column first
+    // sorted but unfiltered: fetch orderBy column first
     const orderColumn = await parquetReadObjects({ ...options, rowStart: undefined, rowEnd: undefined, columns: [orderBy] })
 
-    // Compute row groups to fetch
+    // compute row groups to fetch
     const sortedIndices = Array.from(orderColumn, (_, index) => index)
       .sort((a, b) => compare(orderColumn[a][orderBy], orderColumn[b][orderBy]))
       .slice(rowStart, rowEnd)
@@ -107,7 +123,7 @@ async function parquetReadRows(options) {
 function compare(a, b) {
   if (a < b) return -1
   if (a > b) return 1
-  return 1 // TODO: how to handle nulls?
+  return 0 // TODO: null handling
 }
 
 /**
