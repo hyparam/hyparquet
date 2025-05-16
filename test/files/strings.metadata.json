@@ -1,0 +1,90 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "name": "root",
+      "num_children": 3
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "name": "bytes"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "name": "c_utf8",
+      "converted_type": "UTF8"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "name": "l_utf8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    }
+  ],
+  "num_rows": 4,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": ["PLAIN"],
+            "path_in_schema": ["bytes"],
+            "codec": "UNCOMPRESSED",
+            "num_values": 4,
+            "total_uncompressed_size": 62,
+            "total_compressed_size": 62,
+            "data_page_offset": 4,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "delta",
+              "min_value": "alpha"
+            }
+          }
+        },
+        {
+          "file_offset": 66,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": ["PLAIN"],
+            "path_in_schema": ["c_utf8"],
+            "codec": "UNCOMPRESSED",
+            "num_values": 4,
+            "total_uncompressed_size": 62,
+            "total_compressed_size": 62,
+            "data_page_offset": 66,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "delta",
+              "min_value": "alpha"
+            }
+          }
+        },
+        {
+          "file_offset": 128,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": ["PLAIN"],
+            "path_in_schema": ["l_utf8"],
+            "codec": "UNCOMPRESSED",
+            "num_values": 4,
+            "total_uncompressed_size": 62,
+            "total_compressed_size": 62,
+            "data_page_offset": 128,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "delta",
+              "min_value": "alpha"
+            }
+          }
+        }
+      ],
+      "total_byte_size": 186,
+      "num_rows": 4
+    }
+  ],
+  "created_by": "hyparquet",
+  "metadata_length": 219
+}

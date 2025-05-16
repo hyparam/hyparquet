@@ -7,10 +7,10 @@ const dayMillis = 86400000 // 1 day in milliseconds
  * @param {DecodedArray | undefined} dictionary
  * @param {SchemaElement} schemaElement
  * @param {Encoding} encoding
- * @param {boolean | undefined} utf8 decode bytes as utf8?
+ * @param {boolean} [utf8] decode bytes as utf8?
  * @returns {DecodedArray} series of rich types
  */
-export function convertWithDictionary(data, dictionary, schemaElement, encoding, utf8 = true) {
+export function convertWithDictionary(data, dictionary, schemaElement, encoding, utf8) {
   if (dictionary && encoding.endsWith('_DICTIONARY')) {
     let output = data
     if (data instanceof Uint8Array && !(dictionary instanceof Uint8Array)) {
@@ -31,7 +31,7 @@ export function convertWithDictionary(data, dictionary, schemaElement, encoding,
  *
  * @param {DecodedArray} data series of primitive types
  * @param {SchemaElement} schemaElement
- * @param {boolean | undefined} utf8 decode bytes as utf8?
+ * @param {boolean} [utf8] decode bytes as utf8?
  * @returns {DecodedArray} series of rich types
  */
 export function convert(data, schemaElement, utf8 = true) {
@@ -83,7 +83,7 @@ export function convert(data, schemaElement, utf8 = true) {
   if (ctype === 'INTERVAL') {
     throw new Error('parquet interval not supported')
   }
-  if (ctype === 'UTF8' || utf8 && type === 'BYTE_ARRAY') {
+  if (ctype === 'UTF8' || ltype?.type === 'STRING' || utf8 && type === 'BYTE_ARRAY') {
     const decoder = new TextDecoder()
     const arr = new Array(data.length)
     for (let i = 0; i < arr.length; i++) {
