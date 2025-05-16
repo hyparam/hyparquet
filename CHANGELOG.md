@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.13.3]
+ - Convert logical type 'STRING'
+ - Side-effect-free in package.json
+
 ## [1.13.2]
  - Fix duckdb delta encoding (#77 thanks @mike-iqmo).
 
