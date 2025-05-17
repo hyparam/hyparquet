@@ -9,12 +9,10 @@ import { concat } from './utils.js'
  * Read parquet data rows from a file-like object.
  * Reads the minimal number of row groups and columns to satisfy the request.
  *
- * Returns a void promise when complete, and to throw errors.
- * Data is returned in onComplete, not the return promise, because
- * if onComplete is undefined, we parse the data, and emit chunks, but skip
- * computing the row view directly. This saves on allocation if the caller
- * wants to cache the full chunks, and make their own view of the data from
- * the chunks.
+ * Returns a void promise when complete.
+ * Errors are thrown on the returned promise.
+ * Data is returned in callbacks onComplete, onChunk, onPage, NOT the return promise.
+ * See parquetReadObjects for a more convenient API.
  *
  * @param {ParquetReadOptions} options read options
  * @returns {Promise<void>} resolves when all requested rows and columns are parsed, all errors are thrown here
@@ -27,7 +25,7 @@ export async function parquetRead(options) {
   // load metadata if not provided
   options.metadata ??= await parquetMetadataAsync(options.file)
   const { metadata, onComplete, rowStart = 0, rowEnd } = options
-  if (rowStart < 0) throw new Error('parquetRead rowStart must be postive')
+  if (rowStart < 0) throw new Error('parquetRead rowStart must be positive')
 
   // prefetch byte ranges
   const plan = parquetPlan(options)

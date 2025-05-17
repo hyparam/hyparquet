@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { parquetQuery } from '../src/query.js'
 import { asyncBufferFromFile } from '../src/utils.js'
+import { countingBuffer } from './helpers.js'
 
 describe('parquetQuery', () => {
   it('throws error for undefined file', async () => {
@@ -194,5 +195,17 @@ describe('parquetQuery', () => {
       { a: 'abc', b: 3, c: 4, d: true },
       { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
     ])
+  })
+
+  it('reads data efficiently with filter', async () => {
+    const file = countingBuffer(await asyncBufferFromFile('test/files/page_indexed.parquet'))
+    const rows = await parquetQuery({ file, filter: { quality: 'good' }, rowStart: 1, rowEnd: 5 })
+    expect(rows).toEqual([
+      { row: 10n, quality: 'good' },
+      { row: 29n, quality: 'good' },
+      { row: 32n, quality: 'good' },
+      { row: 37n, quality: 'good' },
+    ])
+    expect(file.fetches).toBe(2)
   })
 })
