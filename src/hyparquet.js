@@ -4,7 +4,7 @@ export { parquetMetadata, parquetMetadataAsync, parquetSchema } from './metadata
 export { parquetRead }
 export { parquetQuery } from './query.js'
 export { snappyUncompress } from './snappy.js'
-export { asyncBufferFromFile, asyncBufferFromUrl, byteLengthFromUrl, cachedAsyncBuffer, toJson } from './utils.js'
+export { asyncBufferFromFile, asyncBufferFromUrl, byteLengthFromUrl, cachedAsyncBuffer, flatten, toJson } from './utils.js'
 
 /**
  * This is a helper function to read parquet row data as a promise.
