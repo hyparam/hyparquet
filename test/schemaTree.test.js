@@ -6,8 +6,8 @@ describe('parquetSchema', () => {
   it('parse schema tree from rowgroups.parquet', async () => {
     const arrayBuffer = await asyncBufferFromFile('test/files/rowgroups.parquet')
     const metadata = await parquetMetadataAsync(arrayBuffer)
-    const result = parquetSchema(metadata)
-    expect(result).toEqual(rowgroupsSchema)
+    const schemaTree = parquetSchema(metadata)
+    expect(schemaTree).toEqual(rowgroupsSchema)
   })
 })
 

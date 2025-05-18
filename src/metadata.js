@@ -187,11 +187,11 @@ export function parquetMetadata(arrayBuffer) {
 /**
  * Return a tree of schema elements from parquet metadata.
  *
- * @param {FileMetaData} metadata parquet metadata object
+ * @param {{schema: SchemaElement[]}} metadata parquet metadata object
  * @returns {SchemaTree} tree of schema elements
  */
-export function parquetSchema(metadata) {
-  return getSchemaPath(metadata.schema, [])[0]
+export function parquetSchema({ schema }) {
+  return getSchemaPath(schema, [])[0]
 }
 
 /**
