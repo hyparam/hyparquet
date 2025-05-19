@@ -45,6 +45,7 @@ export async function parquetQuery(options) {
     return results.slice(rowStart, rowEnd)
   } else if (typeof orderBy === 'string') {
     // sorted but unfiltered: fetch orderBy column first
+    // TODO: don't transpose column data
     const orderColumn = await parquetReadObjects({ ...options, rowStart: undefined, rowEnd: undefined, columns: [orderBy] })
 
     // compute row groups to fetch

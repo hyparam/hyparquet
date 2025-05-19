@@ -426,5 +426,6 @@ export interface AsyncColumn {
 }
 export interface AsyncRowGroup {
   groupStart: number
+  groupRows: number
   asyncColumns: AsyncColumn[]
 }
