@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { convertWithDictionary } from '../src/convert.js'
 import { parquetMetadataAsync, parquetRead, parquetReadObjects } from '../src/hyparquet.js'
 import { asyncBufferFromFile } from '../src/utils.js'
+import { countingBuffer } from './helpers.js'
 
 vi.mock('../src/convert.js', { spy: true })
 
@@ -184,7 +185,7 @@ describe('parquetRead', () => {
 
   it('reads individual pages', async () => {
     const file = countingBuffer(await asyncBufferFromFile('test/files/page_indexed.parquet'))
-    /** @type {ColumnData[]} */
+    /** @type {import('../src/types.js').ColumnData[]} */
     const pages = []
 
     // check onPage callback
@@ -250,24 +251,6 @@ describe('parquetRead', () => {
       expect(page).toEqual(expected)
     }
     expect(file.fetches).toBe(3) // 1 metadata, 2 rowgroups
+    expect(file.bytes).toBe(6421)
   })
 })
-
-/**
- * Wraps an AsyncBuffer to count the number of fetches made
- *
- * @import {AsyncBuffer, ColumnData} from '../src/types.js'
- * @param {AsyncBuffer} asyncBuffer
- * @returns {AsyncBuffer & {fetches: number}}
- */
-
-function countingBuffer(asyncBuffer) {
-  return {
-    ...asyncBuffer,
-    fetches: 0,
-    slice(start, end) {
-      this.fetches++
-      return asyncBuffer.slice(start, end)
-    },
-  }
-}
