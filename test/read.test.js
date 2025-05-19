@@ -251,5 +251,6 @@ describe('parquetRead', () => {
       expect(page).toEqual(expected)
     }
     expect(file.fetches).toBe(3) // 1 metadata, 2 rowgroups
+    expect(file.bytes).toBe(6421)
   })
 })

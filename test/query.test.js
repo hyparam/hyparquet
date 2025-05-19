@@ -206,6 +206,8 @@ describe('parquetQuery', () => {
       { row: 32n, quality: 'good' },
       { row: 37n, quality: 'good' },
     ])
-    expect(file.fetches).toBe(2)
+    // if we weren't streaming row groups, this would be 3:
+    expect(file.fetches).toBe(2) // 1 metadata, 1 row group
+    expect(file.bytes).toBe(5261)
   })
 })
