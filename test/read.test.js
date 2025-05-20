@@ -253,4 +253,18 @@ describe('parquetRead', () => {
     expect(file.fetches).toBe(3) // 1 metadata, 2 rowgroups
     expect(file.bytes).toBe(6421)
   })
+
+  it('no columns is same as all columns', async () => {
+    const nocolumns = countingBuffer(await asyncBufferFromFile('test/files/page_indexed.parquet'))
+    await parquetRead({ file: nocolumns })
+
+    const allcolumns = countingBuffer(await asyncBufferFromFile('test/files/page_indexed.parquet'))
+    await parquetRead({ file: allcolumns, columns: ['row', 'quality'] })
+
+    expect(nocolumns.fetches).toBe(3) // 1 metadata, 2 rowgroups
+    expect(nocolumns.bytes).toBe(6421)
+    // should be same:
+    expect(allcolumns.fetches).toBe(3)
+    expect(allcolumns.bytes).toBe(6421)
+  })
 })
