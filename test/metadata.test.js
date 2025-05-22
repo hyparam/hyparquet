@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { describe, expect, it } from 'vitest'
 import { parquetMetadata, parquetMetadataAsync } from '../src/hyparquet.js'
-import { asyncBufferFromFile, toJson } from '../src/utils.js'
+import { asyncBufferFromFile, toJson } from '../src/node.js'
 import { fileToJson } from './helpers.js'
 
 const files = fs.readdirSync('test/files').filter(f => f.endsWith('.parquet'))

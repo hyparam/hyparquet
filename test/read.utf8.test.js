@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parquetReadObjects } from '../src/hyparquet.js'
-import { asyncBufferFromFile } from '../src/utils.js'
+import { asyncBufferFromFile } from '../src/node.js'
 
 describe('parquetRead utf8', () => {
   it('default utf8 behavior', async () => {
