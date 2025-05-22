@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { parquetMetadata } from '../src/hyparquet.js'
 import { readColumnIndex, readOffsetIndex } from '../src/indexes.js'
 import { getSchemaPath } from '../src/schema.js'
-import { asyncBufferFromFile, toJson } from '../src/utils.js'
+import { asyncBufferFromFile, toJson } from '../src/node.js'
 import { fileToJson } from './helpers.js'
 
 describe('readColumnIndex', () => {

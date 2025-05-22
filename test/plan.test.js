@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parquetMetadataAsync } from '../src/hyparquet.js'
-import { asyncBufferFromFile } from '../src/utils.js'
+import { asyncBufferFromFile } from '../src/node.js'
 import { parquetPlan } from '../src/plan.js'
 
 describe('parquetPlan', () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parquetMetadataAsync, parquetSchema } from '../src/hyparquet.js'
-import { asyncBufferFromFile } from '../src/utils.js'
+import { asyncBufferFromFile } from '../src/node.js'
 
 describe('parquetSchema', () => {
   it('parse schema tree from rowgroups.parquet', async () => {

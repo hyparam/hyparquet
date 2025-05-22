@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { readColumn } from '../src/column.js'
 import { parquetMetadata } from '../src/hyparquet.js'
+import { asyncBufferFromFile } from '../src/node.js'
 import { getColumnRange } from '../src/plan.js'
 import { getSchemaPath } from '../src/schema.js'
-import { asyncBufferFromFile } from '../src/utils.js'
 
 const values = [null, 1, -2, NaN, 0, -1, -0, 2]
 
