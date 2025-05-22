@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { convertWithDictionary } from '../src/convert.js'
 import { parquetMetadataAsync, parquetRead, parquetReadObjects } from '../src/hyparquet.js'
-import { asyncBufferFromFile } from '../src/utils.js'
+import { asyncBufferFromFile } from '../src/node.js'
 import { countingBuffer } from './helpers.js'
 
 vi.mock('../src/convert.js', { spy: true })

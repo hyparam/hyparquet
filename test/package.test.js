@@ -23,13 +23,12 @@ describe('package.json', () => {
   })
   it('should have exports with types first', () => {
     const { exports } = packageJson
-    expect(exports).toBeDefined()
-    for (const [, exportObj] of Object.entries(exports)) {
-      if (typeof exportObj === 'object') {
-        expect(Object.keys(exportObj)).toEqual(['types', 'import'])
-      } else {
-        expect(typeof exportObj).toBe('string')
-      }
-    }
+    expect(Object.keys(exports)).toEqual(['.', './src/*.js'])
+    // node vs default (browser)
+    expect(Object.keys(exports['.'])).toEqual(['browser', 'default'])
+    expect(Object.keys(exports['.'].browser)).toEqual(['types', 'import'])
+    expect(Object.keys(exports['.'].default)).toEqual(['types', 'import'])
+    // deep imports
+    expect(Object.keys(exports['./src/*.js'])).toEqual(['types', 'import'])
   })
 })
