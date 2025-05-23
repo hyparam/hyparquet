@@ -1,16 +1,16 @@
-export { parquetMetadata, parquetMetadataAsync, parquetSchema } from './metadata.js'
-
 import { parquetRead } from './read.js'
+
+export { parquetMetadata, parquetMetadataAsync, parquetSchema } from './metadata.js'
 export { parquetRead }
-
 export { parquetQuery } from './query.js'
-
 export { snappyUncompress } from './snappy.js'
-
 export { asyncBufferFromFile, asyncBufferFromUrl, byteLengthFromUrl, cachedAsyncBuffer, toJson } from './utils.js'
 
 /**
- * @param {ParquetReadOptions} options
+ * This is a helper function to read parquet row data as a promise.
+ * It is a wrapper around the more configurable parquetRead function.
+ *
+ * @param {Omit<ParquetReadOptions, 'onComplete'>} options
  * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
 */
 export function parquetReadObjects(options) {
@@ -22,6 +22,7 @@ export function parquetReadObjects(options) {
     }).catch(reject)
   })
 }
+
 /**
  * Explicitly export types for use in downstream typescript projects through
  * `import { ParquetReadOptions } from 'hyparquet'` for example.
@@ -29,7 +30,6 @@ export function parquetReadObjects(options) {
  * @template {any} T
  * @typedef {import('../src/types.d.ts').Awaitable<T>} Awaitable<T>
  */
-
 /**
  * @typedef {import('../src/types.d.ts').AsyncBuffer} AsyncBuffer
  * @typedef {import('../src/types.d.ts').DataReader} DataReader

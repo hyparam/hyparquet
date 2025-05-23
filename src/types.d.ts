@@ -5,7 +5,7 @@ export interface ParquetReadOptions {
   file: AsyncBuffer // file-like object containing parquet data
   metadata?: FileMetaData // parquet metadata, will be parsed if not provided
   columns?: string[] // columns to read, all columns if undefined
-  rowFormat?: string // format of each row passed to the onComplete function
+  rowFormat?: 'object' | 'array' // format of each row passed to the onComplete function
   rowStart?: number // first requested row index (inclusive)
   rowEnd?: number // last requested row index (exclusive)
   onChunk?: (chunk: ColumnData) => void // called when a column chunk is parsed. chunks may contain data outside the requested range.
