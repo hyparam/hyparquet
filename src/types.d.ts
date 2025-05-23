@@ -58,17 +58,6 @@ export interface ByteRange {
   endByte: number // exclusive
 }
 
-/**
- * Query plan for which byte ranges to read.
- */
-export interface QueryPlan {
-  ranges: ByteRange[] // byte ranges to fetch
-  groups: GroupPlan[] // byte ranges by row group
-}
-interface GroupPlan {
-  plan: ByteRange[]
-}
-
 export interface DataReader {
   view: DataView
   offset: number
@@ -393,6 +382,27 @@ export type BoundaryOrder = 'UNORDERED' | 'ASCENDING' | 'DESCENDING'
 export type ThriftObject = { [ key: `field_${number}` ]: ThriftType }
 export type ThriftType = boolean | number | bigint | Uint8Array | ThriftType[] | ThriftObject
 
+/**
+ * Query plan for which byte ranges to read.
+ */
+export interface QueryPlan {
+  metadata: FileMetaData
+  rowStart: number
+  rowEnd?: number
+  columns?: string[] // columns to read
+  fetches: ByteRange[] // byte ranges to fetch
+  groups: GroupPlan[] // byte ranges by row group
+}
+// Plan for one group
+interface GroupPlan {
+  ranges: ByteRange[]
+  rowGroup: RowGroup // row group metadata
+  groupStart: number // row index of the first row in the group
+  selectStart: number // row index in the group to start reading
+  selectEnd: number // row index in the group to stop reading
+  groupRows: number
+}
+
 export interface ColumnDecoder {
   columnName: string
   type: ParquetType
@@ -407,5 +417,5 @@ export interface RowGroupSelect {
   groupStart: number // row index of the first row in the group
   selectStart: number // row index in the group to start reading
   selectEnd: number // row index in the group to stop reading
-  numRows: number
+  groupRows: number
 }
