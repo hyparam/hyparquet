@@ -65,14 +65,14 @@ export async function parquetRead(options) {
  * @returns {Promise<any[][]>} resolves to row data
  */
 export async function readRowGroup(options, rowGroup, groupStart) {
-  const { file, metadata, columns, rowStart = 0, rowEnd } = options
+  const { file, metadata, columns, rowStart = 0, rowEnd, onComplete, onChunk } = options
   if (!metadata) throw new Error('parquet metadata not found')
-  const numRows = Number(rowGroup.num_rows)
+  const groupRows = Number(rowGroup.num_rows)
   // indexes within the group to read:
   const selectStart = Math.max(rowStart - groupStart, 0)
-  const selectEnd = Math.min((rowEnd ?? Infinity) - groupStart, numRows)
+  const selectEnd = Math.min((rowEnd ?? Infinity) - groupStart, groupRows)
   /** @type {RowGroupSelect} */
-  const rowGroupSelect = { groupStart, selectStart, selectEnd, numRows }
+  const rowGroupSelect = { groupStart, selectStart, selectEnd, groupRows }
 
   /** @type {Promise<void>[]} */
   const promises = []
@@ -123,7 +123,7 @@ export async function readRowGroup(options, rowGroup, groupStart) {
       let chunks = readColumn(reader, rowGroupSelect, columnDecoder, options.onPage)
 
       // skip assembly if no onComplete or onChunk
-      if (!options.onComplete && !options.onChunk) return
+      if (!onComplete && !onChunk) return
 
       // TODO: fast path for non-nested columns
       // save column data for assembly
@@ -145,9 +145,9 @@ export async function readRowGroup(options, rowGroup, groupStart) {
       // do not emit column data until structs are fully parsed
       if (!chunks) return
       // notify caller of column data
-      if (options.onChunk) {
+      if (onChunk) {
         for (const columnData of chunks) {
-          options.onChunk({
+          onChunk({
             columnName,
             columnData,
             rowStart: groupStart,
@@ -158,7 +158,7 @@ export async function readRowGroup(options, rowGroup, groupStart) {
     }))
   }
   await Promise.all(promises)
-  if (options.onComplete) {
+  if (onComplete) {
     const includedColumnNames = children
       .map(child => child.element.name)
       .filter(name => !columns || columns.includes(name))

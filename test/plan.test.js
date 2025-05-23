@@ -8,20 +8,27 @@ describe('parquetPlan', () => {
     const file = await asyncBufferFromFile('test/files/page_indexed.parquet')
     const metadata = await parquetMetadataAsync(file)
     const plan = parquetPlan({ file, metadata })
-    expect(plan).toEqual({
-      ranges: [
+    expect(plan).toMatchObject({
+      metadata,
+      rowStart: 0,
+      rowEnd: 200,
+      fetches: [
         { startByte: 4, endByte: 1166 },
         { startByte: 1166, endByte: 2326 },
       ],
       groups: [
         {
-          plan: [
+          groupRows: 100,
+          groupStart: 0,
+          ranges: [
             { startByte: 4, endByte: 832 },
             { startByte: 832, endByte: 1166 },
           ],
         },
         {
-          plan: [
+          groupRows: 100,
+          groupStart: 100,
+          ranges: [
             { startByte: 1166, endByte: 1998 },
             { startByte: 1998, endByte: 2326 },
           ],

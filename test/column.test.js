@@ -35,7 +35,7 @@ describe('readColumn', () => {
       groupStart: 0,
       selectStart: 0,
       selectEnd,
-      numRows: expected.length,
+      groupRows: expected.length,
     }
 
     const result = readColumn(reader, rowGroupSelect, columnDecoder)
@@ -65,7 +65,7 @@ describe('readColumn', () => {
       groupStart: 0,
       selectStart: 0,
       selectEnd: Infinity,
-      numRows: Number(column.meta_data.num_values),
+      groupRows: Number(column.meta_data.num_values),
     }
 
     const columnData = readColumn(reader, rowGroupSelect, columnDecoder)
