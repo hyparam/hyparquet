@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.13.6]
+ - Fix page continuation (#81 thanks @jpivarski).
+
+## [1.13.5]
+ - Fast parquetQuery filter (#78)
+
 ## [1.13.4]
  - parquetSchema more generic argument type.
 
