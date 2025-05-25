@@ -4,6 +4,9 @@ import { readRowGroup } from './rowgroup.js'
 import { concat } from './utils.js'
 
 /**
+ * @import {ParquetReadOptions} from '../src/types.d.ts'
+ */
+/**
  * Read parquet data rows from a file-like object.
  * Reads the minimal number of row groups and columns to satisfy the request.
  *
@@ -53,7 +56,3 @@ export async function parquetRead(options) {
 
   if (onComplete) onComplete(rowData)
 }
-
-/**
- * @import {DecodedArray, ParquetReadOptions, RowGroup, RowGroupSelect, SchemaTree} from '../src/types.d.ts'
- */

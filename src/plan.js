@@ -18,37 +18,40 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
   /** @type {GroupPlan[]} */
   const groups = []
   /** @type {ByteRange[]} */
-  const ranges = []
+  const fetches = []
 
   // find which row groups to read
   let groupStart = 0 // first row index of the current group
   for (const rowGroup of metadata.row_groups) {
-    const groupEnd = groupStart + Number(rowGroup.num_rows)
+    const groupRows = Number(rowGroup.num_rows)
+    const groupEnd = groupStart + groupRows
     // if row group overlaps with row range, add it to the plan
     if (groupEnd >= rowStart && groupStart < rowEnd) {
       /** @type {ByteRange[]} */
-      const plan = []
+      const ranges = []
       // loop through each column chunk
       for (const { file_path, meta_data } of rowGroup.columns) {
         if (file_path) throw new Error('parquet file_path not supported')
         if (!meta_data) throw new Error('parquet column metadata is undefined')
         // add included columns to the plan
         if (!columns || columns.includes(meta_data.path_in_schema[0])) {
-          plan.push(getColumnRange(meta_data))
+          ranges.push(getColumnRange(meta_data))
         }
       }
-      groups.push({ plan })
+      const selectStart = Math.max(rowStart - groupStart, 0)
+      const selectEnd = Math.min(rowEnd - groupStart, groupRows)
+      groups.push({ ranges, rowGroup, groupStart, groupRows, selectStart, selectEnd })
 
       // map group plan to ranges
-      const groupSize = plan[plan.length - 1]?.endByte - plan[0]?.startByte
+      const groupSize = ranges[ranges.length - 1]?.endByte - ranges[0]?.startByte
       if (!columns && groupSize < columnChunkAggregation) {
         // full row group
-        ranges.push({
-          startByte: plan[0].startByte,
-          endByte: plan[plan.length - 1].endByte,
+        fetches.push({
+          startByte: ranges[0].startByte,
+          endByte: ranges[ranges.length - 1].endByte,
         })
-      } else if (plan.length) {
-        concat(ranges, plan)
+      } else if (ranges.length) {
+        concat(fetches, ranges)
       } else if (columns?.length) {
         throw new Error(`parquet columns not found: ${columns.join(', ')}`)
       }
@@ -56,8 +59,9 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
 
     groupStart = groupEnd
   }
+  if (!isFinite(rowEnd)) rowEnd = groupStart
 
-  return { ranges, groups }
+  return { metadata, rowStart, rowEnd, columns, fetches, groups }
 }
 
 /**
@@ -79,19 +83,19 @@ export function getColumnRange({ dictionary_page_offset, data_page_offset, total
  * @param {QueryPlan} plan
  * @returns {AsyncBuffer}
  */
-export function prefetchAsyncBuffer(file, { ranges }) {
+export function prefetchAsyncBuffer(file, { fetches }) {
   // fetch byte ranges from the file
-  const promises = ranges.map(({ startByte, endByte }) => file.slice(startByte, endByte))
+  const promises = fetches.map(({ startByte, endByte }) => file.slice(startByte, endByte))
   return {
     byteLength: file.byteLength,
     slice(start, end = file.byteLength) {
       // find matching slice
-      const index = ranges.findIndex(({ startByte, endByte }) => startByte <= start && end <= endByte)
+      const index = fetches.findIndex(({ startByte, endByte }) => startByte <= start && end <= endByte)
       if (index < 0) throw new Error(`no prefetch for range [${start}, ${end}]`)
-      if (ranges[index].startByte !== start || ranges[index].endByte !== end) {
+      if (fetches[index].startByte !== start || fetches[index].endByte !== end) {
         // slice a subrange of the prefetch
-        const startOffset = start - ranges[index].startByte
-        const endOffset = end - ranges[index].startByte
+        const startOffset = start - fetches[index].startByte
+        const endOffset = end - fetches[index].startByte
         if (promises[index] instanceof Promise) {
           return promises[index].then(buffer => buffer.slice(startOffset, endOffset))
         } else {

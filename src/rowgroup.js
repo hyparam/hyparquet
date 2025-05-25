@@ -15,12 +15,12 @@ import { flatten } from './utils.js'
 export async function readRowGroup(options, rowGroup, groupStart) {
   const { file, metadata, columns, rowStart = 0, rowEnd } = options
   if (!metadata) throw new Error('parquet metadata not found')
-  const numRows = Number(rowGroup.num_rows)
+  const groupRows = Number(rowGroup.num_rows)
   // indexes within the group to read:
   const selectStart = Math.max(rowStart - groupStart, 0)
-  const selectEnd = Math.min((rowEnd ?? Infinity) - groupStart, numRows)
+  const selectEnd = Math.min((rowEnd ?? Infinity) - groupStart, groupRows)
   /** @type {RowGroupSelect} */
-  const rowGroupSelect = { groupStart, selectStart, selectEnd, numRows }
+  const rowGroupSelect = { groupStart, selectStart, selectEnd, groupRows }
 
   /** @type {Promise<void>[]} */
   const promises = []
