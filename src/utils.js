@@ -230,3 +230,20 @@ function cacheKey(start, end, size) {
     return `${start},${size}`
   }
 }
+
+/**
+ * Flatten a list of lists into a single list.
+ *
+ * @param {DecodedArray[]} [chunks]
+ * @returns {DecodedArray}
+ */
+export function flatten(chunks) {
+  if (!chunks) return []
+  if (chunks.length === 1) return chunks[0]
+  /** @type {any[]} */
+  const output = []
+  for (const chunk of chunks) {
+    concat(output, chunk)
+  }
+  return output
+}
