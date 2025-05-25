@@ -66,13 +66,21 @@ describe('assembleLists', () => {
     expect(result).toEqual([[['a', 'b']], [], [['d', 'e']]])
   })
 
-  it('should handle continuing a row from the previous page', () => {
+  it('should continue from the previous page', () => {
     const definitionLevels = [3, 3, 3, 1]
     const repetitionLevels = [1, 0, 1, 0]
     const values = ['b', 'c', 'd', 'e']
     const prev = [[['a']]]
     const result = assembleLists(prev, definitionLevels, repetitionLevels, values, nullable)
     expect(result).toEqual([[['a', 'b']], [['c', 'd']], [[]]])
+  })
+
+  it('should continue from the previous page (depth 2)', () => {
+    const repetitionLevels = [2, 0, 2, 0]
+    const values = ['b', 'c', 'd', 'e']
+    const prev = [[['a']]]
+    const result = assembleLists(prev, [], repetitionLevels, values, nestedRequired)
+    expect(result).toEqual([[['a', 'b']], [['c', 'd']], [['e']]])
   })
 
   it('should handle nested arrays', () => {
