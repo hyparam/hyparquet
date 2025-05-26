@@ -7,7 +7,7 @@ describe('parquetQuery', () => {
   it('throws error for undefined file', async () => {
     // @ts-expect-error testing invalid input
     await expect(parquetQuery({ file: undefined }))
-      .rejects.toThrow('parquetQuery expected file AsyncBuffer')
+      .rejects.toThrow('parquet expected AsyncBuffer')
   })
 
   it('reads data without orderBy', async () => {

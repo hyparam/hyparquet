@@ -30,7 +30,7 @@ export const defaultInitialFetchSize = 1 << 19 // 512kb
  * @returns {Promise<FileMetaData>} parquet metadata object
  */
 export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = defaultInitialFetchSize) {
-  if (!asyncBuffer || !(asyncBuffer.byteLength >= 0)) throw new Error('parquetMetadataAsync expected AsyncBuffer')
+  if (!asyncBuffer || !(asyncBuffer.byteLength >= 0)) throw new Error('parquet expected AsyncBuffer')
 
   // fetch last bytes (footer) of the file
   const footerOffset = Math.max(0, asyncBuffer.byteLength - initialFetchSize)
@@ -73,7 +73,7 @@ export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = defau
  * @returns {FileMetaData} parquet metadata object
  */
 export function parquetMetadata(arrayBuffer) {
-  if (!(arrayBuffer instanceof ArrayBuffer)) throw new Error('parquetMetadata expected ArrayBuffer')
+  if (!(arrayBuffer instanceof ArrayBuffer)) throw new Error('parquet expected ArrayBuffer')
   const view = new DataView(arrayBuffer)
 
   // Validate footer magic number "PAR1"

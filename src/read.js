@@ -19,10 +19,6 @@ import { concat } from './utils.js'
  * @returns {Promise<void>} resolves when all requested rows and columns are parsed, all errors are thrown here
  */
 export async function parquetRead(options) {
-  if (!options.file || !(options.file.byteLength >= 0)) {
-    throw new Error('parquetRead expected file AsyncBuffer')
-  }
-
   // load metadata if not provided
   options.metadata ??= await parquetMetadataAsync(options.file)
   const { metadata, onComplete, rowStart = 0, rowEnd } = options

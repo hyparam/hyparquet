@@ -13,11 +13,11 @@ import { equals } from './utils.js'
  */
 export async function parquetQuery(options) {
   if (!options.file || !(options.file.byteLength >= 0)) {
-    throw new Error('parquetQuery expected file AsyncBuffer')
+    throw new Error('parquet expected AsyncBuffer')
   }
   options.metadata ??= await parquetMetadataAsync(options.file)
   const { metadata, rowStart = 0, orderBy, filter } = options
-  if (rowStart < 0) throw new Error('parquetQuery rowStart must be positive')
+  if (rowStart < 0) throw new Error('parquet rowStart must be positive')
   const rowEnd = options.rowEnd ?? Number(metadata.num_rows)
 
   if (filter && !orderBy && rowEnd < metadata.num_rows) {
