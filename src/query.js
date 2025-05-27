@@ -1,5 +1,6 @@
 import { parquetReadObjects } from './hyparquet.js'
 import { parquetMetadataAsync } from './metadata.js'
+import { parquetReadColumn } from './read.js'
 import { equals } from './utils.js'
 
 /**
@@ -45,11 +46,11 @@ export async function parquetQuery(options) {
     return results.slice(rowStart, rowEnd)
   } else if (typeof orderBy === 'string') {
     // sorted but unfiltered: fetch orderBy column first
-    const orderColumn = await parquetReadObjects({ ...options, rowStart: undefined, rowEnd: undefined, columns: [orderBy] })
+    const orderColumn = await parquetReadColumn({ ...options, rowStart: undefined, rowEnd: undefined, columns: [orderBy] })
 
     // compute row groups to fetch
     const sortedIndices = Array.from(orderColumn, (_, index) => index)
-      .sort((a, b) => compare(orderColumn[a][orderBy], orderColumn[b][orderBy]))
+      .sort((a, b) => compare(orderColumn[a], orderColumn[b]))
       .slice(rowStart, rowEnd)
 
     const sparseData = await parquetReadRows({ ...options, rows: sortedIndices })

@@ -419,3 +419,13 @@ export interface RowGroupSelect {
   selectEnd: number // row index in the group to stop reading
   groupRows: number
 }
+
+export interface AsyncColumn {
+  pathInSchema: string[]
+  data: Promise<DecodedArray[]>
+}
+export interface AsyncRowGroup {
+  groupStart: number
+  groupRows: number
+  asyncColumns: AsyncColumn[]
+}
