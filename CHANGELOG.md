@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.14.0]
+ - Refactor to use `AsyncRowGroup` and `AsyncColumn` abstractions for better performance and flexibility (#83).
+
 ## [1.13.6]
  - Fix page continuation (#81 thanks @jpivarski).
 
