@@ -1,12 +1,10 @@
 import { createReadStream, promises as fs } from 'fs'
 
-export * from './hyparquet.js'
-
 /**
  * Construct an AsyncBuffer for a local file using node fs package.
  *
  * @param {string} filename
- * @returns {Promise<import('./types.js').AsyncBuffer>}
+ * @returns {Promise<AsyncBuffer>}
  */
 export async function asyncBufferFromFile(filename) {
   const stat = await fs.stat(filename)
@@ -21,6 +19,7 @@ export async function asyncBufferFromFile(filename) {
 }
 
 /**
+ * @import {AsyncBuffer} from '../src/types.js'
  * @param {import('stream').Readable} input
  * @returns {Promise<ArrayBuffer>}
  */

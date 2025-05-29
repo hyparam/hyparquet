@@ -21,23 +21,22 @@
     "type": "git",
     "url": "git+https://github.com/hyparam/hyparquet.git"
   },
-  "main": "src/hyparquet.js",
   "files": [
     "src",
     "types"
   ],
   "type": "module",
-  "types": "types/hyparquet.d.ts",
+  "types": "./types/hyparquet.d.ts",
+  "main": "./src/hyparquet.js",
+  "browser": "./src/hyparquet.js",
   "exports": {
     ".": {
-      "browser": {
-        "types": "./types/hyparquet.d.ts",
-        "import": "./src/hyparquet.js"
-      },
-      "default": {
-        "types": "./types/node.d.ts",
-        "import": "./src/node.js"
-      }
+      "types": "./types/hyparquet.d.ts",
+      "import": "./src/hyparquet.js"
+    },
+    "./node": {
+      "types": "./types/node.d.ts",
+      "import": "./src/node.js"
     },
     "./src/*.js": {
       "types": "./types/*.d.ts",
