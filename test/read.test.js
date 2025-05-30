@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { convertWithDictionary } from '../src/convert.js'
-import { parquetMetadataAsync, parquetRead, parquetReadObjects } from '../src/hyparquet.js'
+import { parquetMetadataAsync, parquetRead, parquetReadObjects } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { countingBuffer } from './helpers.js'
 

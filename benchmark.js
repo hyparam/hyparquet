@@ -1,8 +1,8 @@
 import { createWriteStream, promises as fs } from 'fs'
 import { compressors } from 'hyparquet-compressors'
 import { pipeline } from 'stream/promises'
-import { parquetReadObjects } from './src/hyparquet.js'
-import { asyncBufferFromFile } from './src/utils.js'
+import { parquetReadObjects } from './src/index.js'
+import { asyncBufferFromFile } from './src/node.js'
 
 const url = 'https://huggingface.co/datasets/wikimedia/wikipedia/resolve/main/20231101.en/train-00000-of-00041.parquet'
 const filename = 'example.parquet'

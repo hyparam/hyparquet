@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parquetMetadataAsync } from '../src/hyparquet.js'
+import { parquetMetadataAsync } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { parquetPlan } from '../src/plan.js'
 

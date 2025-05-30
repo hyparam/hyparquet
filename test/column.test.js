@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { readColumn } from '../src/column.js'
-import { parquetMetadata } from '../src/hyparquet.js'
+import { parquetMetadata } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { getColumnRange } from '../src/plan.js'
 import { getSchemaPath } from '../src/schema.js'
