@@ -26,17 +26,18 @@
     "types"
   ],
   "type": "module",
-  "types": "./types/hyparquet.d.ts",
-  "main": "./src/hyparquet.js",
-  "browser": "./src/hyparquet.js",
+  "types": "types/hyparquet.d.ts",
+  "main": "src/hyparquet.js",
   "exports": {
     ".": {
-      "types": "./types/hyparquet.d.ts",
-      "import": "./src/hyparquet.js"
-    },
-    "./node": {
-      "types": "./types/node.d.ts",
-      "import": "./src/node.js"
+      "browser": {
+        "types": "./types/hyparquet.d.ts",
+        "import": "./src/hyparquet.js"
+      },
+      "default": {
+        "types": "./types/node.d.ts",
+        "import": "./src/node.js"
+      }
     },
     "./src/*.js": {
       "types": "./types/*.d.ts",

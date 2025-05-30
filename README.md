@@ -70,14 +70,13 @@ const data = await parquetReadObjects({
 To read the contents of a local parquet file in a node.js environment use `asyncBufferFromFile`:
 
 ```javascript
-const { parquetReadObjects } = await import('hyparquet')
-const { asyncBufferFromFile } = await import('hyparquet/node')
+const { asyncBufferFromFile, parquetReadObjects } = await import('hyparquet')
 
-const file = await asyncBufferFromFile(filename)
+const file = await asyncBufferFromFile('example.parquet')
 const data = await parquetReadObjects({ file })
 ```
 
-Note: hyparquet is published as an ES module, so dynamic `import()` may be required on the command line for old versions of node.
+Note: hyparquet is published as an ES module, so dynamic `import()` may be required for old versions of node.
 
 ## Parquet Writing
 
@@ -142,17 +141,14 @@ const data = await parquetReadObjects({ file })
 
 #### asyncBufferFromFile
 
-If you are in a local node.js environment, use `asyncBufferFromFile` to wrap a local file as an `AsyncBuffer`:
+If you are in a node.js environment, use `asyncBufferFromFile` to wrap a local file as an `AsyncBuffer`:
 
 ```typescript
-import { parquetReadObjects } from 'hyparquet'
-import { asyncBufferFromFile } from 'hyparquet/node'
+import { asyncBufferFromFile, parquetReadObjects } from 'hyparquet'
 
-const file: AsyncBuffer = await asyncBufferFromFile('local.parquet')
+const file: AsyncBuffer = await asyncBufferFromFile('example.parquet')
 const data = await parquetReadObjects({ file })
 ```
-
-> Update v1.15.0+: `asyncBufferFromFile` was moved from `hyparquet` to `hyparquet/node`. This is to avoid bundling node-specific code into browser bundles.
 
 #### ArrayBuffer
 

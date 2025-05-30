@@ -1,5 +1,7 @@
 import { createReadStream, promises as fs } from 'fs'
 
+export * from './hyparquet.js'
+
 /**
  * Construct an AsyncBuffer for a local file using node fs package.
  *
