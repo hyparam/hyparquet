@@ -47,19 +47,6 @@ Check out a minimal parquet viewer demo that shows how to integrate hyparquet in
 
 ## Quick Start
 
-### Node.js Example
-
-To read the contents of a local parquet file in a node.js environment use `asyncBufferFromFile`:
-
-```javascript
-const { asyncBufferFromFile, parquetReadObjects } = await import('hyparquet')
-
-const file = await asyncBufferFromFile(filename)
-const data = await parquetReadObjects({ file })
-```
-
-Note: hyparquet is published as an ES module, so dynamic `import()` may be required on the command line.
-
 ### Browser Example
 
 In the browser use `asyncBufferFromUrl` to wrap a url for reading asynchronously over the network.
@@ -77,6 +64,19 @@ const data = await parquetReadObjects({
   rowEnd: 20,
 })
 ```
+
+### Node.js Example
+
+To read the contents of a local parquet file in a node.js environment use `asyncBufferFromFile`:
+
+```javascript
+const { asyncBufferFromFile, parquetReadObjects } = await import('hyparquet')
+
+const file = await asyncBufferFromFile('example.parquet')
+const data = await parquetReadObjects({ file })
+```
+
+Note: hyparquet is published as an ES module, so dynamic `import()` may be required for old versions of node.
 
 ## Parquet Writing
 
@@ -124,15 +124,6 @@ interface AsyncBuffer {
 
 In most cases, you should probably use `asyncBufferFromUrl` or `asyncBufferFromFile` to create an `AsyncBuffer` for hyparquet.
 
-#### asyncBufferFromFile
-
-If you are in a local node.js environment, use `asyncBufferFromFile` to wrap a local file as an `AsyncBuffer`:
-
-```typescript
-const file: AsyncBuffer = asyncBufferFromFile('local.parquet')
-const data = await parquetReadObjects({ file })
-```
-
 #### asyncBufferFromUrl
 
 If you want to read a parquet file remotely over http, use `asyncBufferFromUrl` to wrap an http url as an `AsyncBuffer` using http range requests.
@@ -145,6 +136,17 @@ const url = 'https://s3.hyperparam.app/wiki_en.parquet'
 const requestInit = { headers: { Authorization: 'Bearer my_token' } } // auth header
 const byteLength = 415958713 // optional
 const file: AsyncBuffer = await asyncBufferFromUrl({ url, requestInit, byteLength })
+const data = await parquetReadObjects({ file })
+```
+
+#### asyncBufferFromFile
+
+If you are in a node.js environment, use `asyncBufferFromFile` to wrap a local file as an `AsyncBuffer`:
+
+```typescript
+import { asyncBufferFromFile, parquetReadObjects } from 'hyparquet'
+
+const file: AsyncBuffer = await asyncBufferFromFile('example.parquet')
 const data = await parquetReadObjects({ file })
 ```
 
@@ -252,7 +254,6 @@ You can include support for ALL parquet `compressors` plus hysnappy using the [h
 import { parquetReadObjects } from 'hyparquet'
 import { compressors } from 'hyparquet-compressors'
 
-const file = await asyncBufferFromFile(filename)
 const data = await parquetReadObjects({ file, compressors })
 ```
 

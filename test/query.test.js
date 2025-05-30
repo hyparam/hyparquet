@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parquetQuery } from '../src/query.js'
-import { asyncBufferFromFile } from '../src/utils.js'
+import { asyncBufferFromFile } from '../src/node.js'
 import { countingBuffer } from './helpers.js'
 
 describe('parquetQuery', () => {
