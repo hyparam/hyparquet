@@ -1,6 +1,6 @@
 import { createReadStream, promises as fs } from 'fs'
 
-export * from './hyparquet.js'
+export * from './index.js'
 
 /**
  * @import {AsyncBuffer} from '../src/types.js'

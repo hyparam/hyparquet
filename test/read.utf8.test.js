@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parquetReadObjects } from '../src/hyparquet.js'
+import { parquetReadObjects } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
 
 describe('parquetRead utf8', () => {

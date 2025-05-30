@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { describe, expect, it } from 'vitest'
-import { parquetMetadata, toJson } from '../src/hyparquet.js'
+import { parquetMetadata, toJson } from '../src/index.js'
 import { readColumnIndex, readOffsetIndex } from '../src/indexes.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { getSchemaPath } from '../src/schema.js'

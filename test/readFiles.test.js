@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { compressors } from 'hyparquet-compressors'
 import { describe, expect, it } from 'vitest'
-import { parquetMetadataAsync, parquetRead, toJson } from '../src/hyparquet.js'
+import { parquetMetadataAsync, parquetRead, toJson } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { fileToJson } from './helpers.js'
 
