@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.15.0]
+ - Change packaging to have node-specific exports for `asyncBufferFromFile` (#80).
+
 ## [1.14.0]
  - Refactor to use `AsyncRowGroup` and `AsyncColumn` abstractions for better performance and flexibility (#83).
 
