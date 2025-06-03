@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { readColumn } from '../src/column.js'
+import { DEFAULT_PARSERS } from '../src/convert.js'
 import { parquetMetadata } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { getColumnRange } from '../src/plan.js'
@@ -29,6 +30,7 @@ describe('readColumn', () => {
       type: column.meta_data.type,
       element: schemaPath[schemaPath.length - 1].element,
       schemaPath,
+      parsers: DEFAULT_PARSERS,
       codec: column.meta_data.codec,
     }
     const rowGroupSelect = {
@@ -59,6 +61,7 @@ describe('readColumn', () => {
       type: column.meta_data.type,
       element: schemaPath[schemaPath.length - 1].element,
       schemaPath,
+      parsers: DEFAULT_PARSERS,
       codec: column.meta_data.codec,
     }
     const rowGroupSelect = {

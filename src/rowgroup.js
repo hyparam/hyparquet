@@ -1,11 +1,12 @@
 import { assembleNested } from './assemble.js'
 import { readColumn } from './column.js'
+import { DEFAULT_PARSERS } from './convert.js'
 import { getColumnRange } from './plan.js'
 import { getSchemaPath } from './schema.js'
 import { flatten } from './utils.js'
 
 /**
- * @import {AsyncColumn, AsyncRowGroup, DecodedArray, GroupPlan, ParquetReadOptions, QueryPlan, RowGroup, SchemaTree} from './types.js'
+ * @import {AsyncColumn, AsyncRowGroup, DecodedArray, GroupPlan, ParquetParsers, ParquetReadOptions, QueryPlan, RowGroup, SchemaTree} from './types.js'
  */
 /**
  * Read a row group from a file-like object.
@@ -20,6 +21,8 @@ export function readRowGroup(options, { metadata, columns }, groupPlan) {
 
   /** @type {AsyncColumn[]} */
   const asyncColumns = []
+  /** @type {ParquetParsers} */
+  const parsers = { ...DEFAULT_PARSERS, ...options.parsers }
 
   // read column data
   for (const { file_path, meta_data } of groupPlan.rowGroup.columns) {
@@ -58,6 +61,7 @@ export function readRowGroup(options, { metadata, columns }, groupPlan) {
           element: schemaPath[schemaPath.length - 1].element,
           schemaPath,
           codec: meta_data.codec,
+          parsers,
           compressors,
           utf8,
         }
