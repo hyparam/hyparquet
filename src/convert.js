@@ -5,12 +5,11 @@ const dayMillis = 86400000 // 1 day in milliseconds
  *
  * @param {DecodedArray} data series of primitive types
  * @param {DecodedArray | undefined} dictionary
- * @param {SchemaElement} schemaElement
  * @param {Encoding} encoding
- * @param {boolean} [utf8] decode bytes as utf8?
+ * @param {ColumnDecoder} columnDecoder
  * @returns {DecodedArray} series of rich types
  */
-export function convertWithDictionary(data, dictionary, schemaElement, encoding, utf8) {
+export function convertWithDictionary(data, dictionary, encoding, columnDecoder) {
   if (dictionary && encoding.endsWith('_DICTIONARY')) {
     let output = data
     if (data instanceof Uint8Array && !(dictionary instanceof Uint8Array)) {
@@ -22,7 +21,7 @@ export function convertWithDictionary(data, dictionary, schemaElement, encoding,
     }
     return output
   } else {
-    return convert(data, schemaElement, utf8)
+    return convert(data, columnDecoder)
   }
 }
 
@@ -30,14 +29,14 @@ export function convertWithDictionary(data, dictionary, schemaElement, encoding,
  * Convert known types from primitive to rich.
  *
  * @param {DecodedArray} data series of primitive types
- * @param {SchemaElement} schemaElement
- * @param {boolean} [utf8] decode bytes as utf8?
+ * @param {Pick<ColumnDecoder, "element" | "utf8">} columnDecoder
  * @returns {DecodedArray} series of rich types
  */
-export function convert(data, schemaElement, utf8 = true) {
-  const { type, converted_type: ctype, logical_type: ltype } = schemaElement
+export function convert(data, columnDecoder) {
+  const { element, utf8 = true } = columnDecoder
+  const { type, converted_type: ctype, logical_type: ltype } = element
   if (ctype === 'DECIMAL') {
-    const scale = schemaElement.scale || 0
+    const scale = element.scale || 0
     const factor = 10 ** -scale
     const arr = new Array(data.length)
     for (let i = 0; i < arr.length; i++) {
@@ -144,7 +143,7 @@ export function parseDecimal(bytes) {
 }
 
 /**
- * @import {DecodedArray, Encoding, SchemaElement} from '../src/types.d.ts'
+ * @import {ColumnDecoder, DecodedArray, Encoding, SchemaElement} from '../src/types.d.ts'
  * @param {bigint} value
  * @returns {Date}
  */
