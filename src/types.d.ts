@@ -1,4 +1,21 @@
 /**
+ * Custom parsers for columns
+ */
+export interface ParquetParsers {
+  timestampFromMilliseconds(millis: bigint): any;
+  timestampFromMicroseconds(micros: bigint): any;
+  timestampFromNanoseconds(nanos: bigint): any;
+  dateFromDays(days: number): any;
+}
+
+/**
+ * Paruqet Metadata options for metadata parsing
+ */
+export interface MetadataOptions {
+  parsers?: ParquetParsers // custom parsers to decode advanced types
+}
+
+/**
  * Parquet query options for reading data
  */
 export interface ParquetReadOptions {
@@ -13,6 +30,7 @@ export interface ParquetReadOptions {
   onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
   compressors?: Compressors // custom decompressors
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
+  parsers?: ParquetParsers // custom parsers to decode advanced types
 }
 
 /**
@@ -409,6 +427,7 @@ export interface ColumnDecoder {
   element: SchemaElement
   schemaPath: SchemaTree[]
   codec: CompressionCodec
+  parsers: ParquetParsers
   compressors?: Compressors
   utf8?: boolean
 }
