@@ -16,7 +16,7 @@ import { deserializeTCompactProtocol } from './thrift.js'
  * @returns {DecodedArray[]}
  */
 export function readColumn(reader, { groupStart, selectStart, selectEnd }, columnDecoder, onPage) {
-  const { columnName, element, utf8 } = columnDecoder
+  const { columnName } = columnDecoder
   /** @type {DecodedArray[]} */
   const chunks = []
   /** @type {DecodedArray | undefined} */
@@ -42,7 +42,7 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
     if (header.type === 'DICTIONARY_PAGE') {
       // assert(!dictionary)
       dictionary = readPage(reader, header, columnDecoder, dictionary, undefined, 0)
-      dictionary = convert(dictionary, element, utf8)
+      dictionary = convert(dictionary, columnDecoder)
     } else {
       const lastChunkLength = lastChunk?.length || 0
       const values = readPage(reader, header, columnDecoder, dictionary, lastChunk, selectStart - rowCount)
@@ -78,7 +78,7 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
  * @returns {DecodedArray}
  */
 export function readPage(reader, header, columnDecoder, dictionary, previousChunk, pageStart) {
-  const { type, element, schemaPath, codec, compressors, utf8 } = columnDecoder
+  const { type, element, schemaPath, codec, compressors } = columnDecoder
   // read compressed_page_size bytes
   const compressedBytes = new Uint8Array(
     reader.view.buffer, reader.view.byteOffset + reader.offset, header.compressed_page_size
@@ -100,7 +100,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
     // assert(!daph.statistics?.null_count || daph.statistics.null_count === BigInt(daph.num_values - dataPage.length))
 
     // convert types, dereference dictionary, and assemble lists
-    let values = convertWithDictionary(dataPage, dictionary, element, daph.encoding, utf8)
+    let values = convertWithDictionary(dataPage, dictionary, daph.encoding, columnDecoder)
     if (repetitionLevels.length || definitionLevels?.length) {
       const output = Array.isArray(previousChunk) ? previousChunk : []
       return assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
@@ -126,7 +126,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
       readDataPageV2(compressedBytes, header, columnDecoder)
 
     // convert types, dereference dictionary, and assemble lists
-    const values = convertWithDictionary(dataPage, dictionary, element, daph2.encoding, utf8)
+    const values = convertWithDictionary(dataPage, dictionary, daph2.encoding, columnDecoder)
     const output = Array.isArray(previousChunk) ? previousChunk : []
     return assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
   } else if (header.type === 'DICTIONARY_PAGE') {
