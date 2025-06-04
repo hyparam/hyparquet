@@ -27,6 +27,7 @@ export function convertWithDictionary(data, dictionary, encoding, columnDecoder)
 
 /**
  * Convert known types from primitive to rich.
+ * COMMENT CHANGE
  *
  * @param {DecodedArray} data series of primitive types
  * @param {Pick<ColumnDecoder, "element" | "utf8">} columnDecoder
