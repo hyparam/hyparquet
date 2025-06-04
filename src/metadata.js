@@ -1,5 +1,5 @@
 import { CompressionCodec, ConvertedType, Encoding, FieldRepetitionType, PageType, ParquetType } from './constants.js'
-import { parseDecimal, parseFloat16 } from './convert.js'
+import { DEFAULT_PARSERS, parseDecimal, parseFloat16 } from './convert.js'
 import { getSchemaPath } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
@@ -26,10 +26,10 @@ export const defaultInitialFetchSize = 1 << 19 // 512kb
  * or a second request for up to the metadata size.
  *
  * @param {AsyncBuffer} asyncBuffer parquet file contents
- * @param {number} initialFetchSize initial fetch size in bytes (default 512kb)
+ * @param {MetadataOptions & { initialFetchSize?: number }} options initial fetch size in bytes (default 512kb)
  * @returns {Promise<FileMetaData>} parquet metadata object
  */
-export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = defaultInitialFetchSize) {
+export async function parquetMetadataAsync(asyncBuffer, { parsers, initialFetchSize = defaultInitialFetchSize } = {}) {
   if (!asyncBuffer || !(asyncBuffer.byteLength >= 0)) throw new Error('parquet expected AsyncBuffer')
 
   // fetch last bytes (footer) of the file
@@ -59,10 +59,10 @@ export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = defau
     const combinedView = new Uint8Array(combinedBuffer)
     combinedView.set(new Uint8Array(metadataBuffer))
     combinedView.set(new Uint8Array(footerBuffer), footerOffset - metadataOffset)
-    return parquetMetadata(combinedBuffer)
+    return parquetMetadata(combinedBuffer, { parsers })
   } else {
     // parse metadata from the footer
-    return parquetMetadata(footerBuffer)
+    return parquetMetadata(footerBuffer, { parsers })
   }
 }
 
@@ -70,11 +70,15 @@ export async function parquetMetadataAsync(asyncBuffer, initialFetchSize = defau
  * Read parquet metadata from a buffer synchronously.
  *
  * @param {ArrayBuffer} arrayBuffer parquet file footer
+ * @param {MetadataOptions} options metadata parsing options
  * @returns {FileMetaData} parquet metadata object
  */
-export function parquetMetadata(arrayBuffer) {
+export function parquetMetadata(arrayBuffer, { parsers } = {}) {
   if (!(arrayBuffer instanceof ArrayBuffer)) throw new Error('parquet expected ArrayBuffer')
   const view = new DataView(arrayBuffer)
+
+  // Use default parsers if not given
+  parsers = { ...DEFAULT_PARSERS, ...parsers }
 
   // Validate footer magic number "PAR1"
   if (view.byteLength < 8) {
@@ -135,7 +139,7 @@ export function parquetMetadata(arrayBuffer) {
         data_page_offset: column.field_3.field_9,
         index_page_offset: column.field_3.field_10,
         dictionary_page_offset: column.field_3.field_11,
-        statistics: convertStats(column.field_3.field_12, columnSchema[columnIndex]),
+        statistics: convertStats(column.field_3.field_12, columnSchema[columnIndex], parsers),
         encoding_stats: column.field_3.field_13?.map((/** @type {any} */ encodingStat) => ({
           page_type: PageType[encodingStat.field_1],
           encoding: Encoding[encodingStat.field_2],
@@ -246,19 +250,20 @@ function timeUnit(unit) {
 /**
  * Convert column statistics based on column type.
  *
- * @import {AsyncBuffer, FileMetaData, LogicalType, MinMaxType, SchemaElement, SchemaTree, Statistics, TimeUnit} from '../src/types.d.ts'
+ * @import {AsyncBuffer, FileMetaData, LogicalType, MetadataOptions, MinMaxType, ParquetParsers, SchemaElement, SchemaTree, Statistics, TimeUnit} from '../src/types.d.ts'
  * @param {any} stats
  * @param {SchemaElement} schema
+ * @param {ParquetParsers} parsers
  * @returns {Statistics}
  */
-function convertStats(stats, schema) {
+function convertStats(stats, schema, parsers) {
   return stats && {
-    max: convertMetadata(stats.field_1, schema),
-    min: convertMetadata(stats.field_2, schema),
+    max: convertMetadata(stats.field_1, schema, parsers),
+    min: convertMetadata(stats.field_2, schema, parsers),
     null_count: stats.field_3,
     distinct_count: stats.field_4,
-    max_value: convertMetadata(stats.field_5, schema),
-    min_value: convertMetadata(stats.field_6, schema),
+    max_value: convertMetadata(stats.field_5, schema, parsers),
+    min_value: convertMetadata(stats.field_6, schema, parsers),
     is_max_value_exact: stats.field_7,
     is_min_value_exact: stats.field_8,
   }
@@ -267,9 +272,10 @@ function convertStats(stats, schema) {
 /**
  * @param {Uint8Array | undefined} value
  * @param {SchemaElement} schema
+ * @param {ParquetParsers} parsers
  * @returns {MinMaxType | undefined}
  */
-export function convertMetadata(value, schema) {
+export function convertMetadata(value, schema, parsers) {
   const { type, converted_type, logical_type } = schema
   if (value === undefined) return value
   if (type === 'BOOLEAN') return value[0] === 1
@@ -277,12 +283,12 @@ export function convertMetadata(value, schema) {
   const view = new DataView(value.buffer, value.byteOffset, value.byteLength)
   if (type === 'FLOAT' && view.byteLength === 4) return view.getFloat32(0, true)
   if (type === 'DOUBLE' && view.byteLength === 8) return view.getFloat64(0, true)
-  if (type === 'INT32' && converted_type === 'DATE') return new Date(view.getInt32(0, true) * 86400000)
-  if (type === 'INT64' && converted_type === 'TIMESTAMP_MICROS') return new Date(Number(view.getBigInt64(0, true) / 1000n))
-  if (type === 'INT64' && converted_type === 'TIMESTAMP_MILLIS') return new Date(Number(view.getBigInt64(0, true)))
-  if (type === 'INT64' && logical_type?.type === 'TIMESTAMP' && logical_type?.unit === 'NANOS') return new Date(Number(view.getBigInt64(0, true) / 1000000n))
-  if (type === 'INT64' && logical_type?.type === 'TIMESTAMP' && logical_type?.unit === 'MICROS') return new Date(Number(view.getBigInt64(0, true) / 1000n))
-  if (type === 'INT64' && logical_type?.type === 'TIMESTAMP') return new Date(Number(view.getBigInt64(0, true)))
+  if (type === 'INT32' && converted_type === 'DATE') return parsers.dateFromDays(view.getInt32(0, true))
+  if (type === 'INT64' && converted_type === 'TIMESTAMP_MILLIS') return parsers.timestampFromMilliseconds(view.getBigInt64(0, true))
+  if (type === 'INT64' && converted_type === 'TIMESTAMP_MICROS') return parsers.timestampFromMicroseconds(view.getBigInt64(0, true))
+  if (type === 'INT64' && logical_type?.type === 'TIMESTAMP' && logical_type?.unit === 'NANOS') return parsers.timestampFromNanoseconds(view.getBigInt64(0, true))
+  if (type === 'INT64' && logical_type?.type === 'TIMESTAMP' && logical_type?.unit === 'MICROS') return parsers.timestampFromMicroseconds(view.getBigInt64(0, true))
+  if (type === 'INT64' && logical_type?.type === 'TIMESTAMP') return parsers.timestampFromMilliseconds(view.getBigInt64(0, true))
   if (type === 'INT32' && view.byteLength === 4) return view.getInt32(0, true)
   if (type === 'INT64' && view.byteLength === 8) return view.getBigInt64(0, true)
   if (converted_type === 'DECIMAL') return parseDecimal(value) * 10 ** -(schema.scale || 0)

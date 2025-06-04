@@ -60,4 +60,6 @@ export function parquetReadObjects(options) {
  * @typedef {import('../src/types.d.ts').BoundaryOrder} BoundaryOrder
  * @typedef {import('../src/types.d.ts').ColumnData} ColumnData
  * @typedef {import('../src/types.d.ts').ParquetReadOptions} ParquetReadOptions
+ * @typedef {import('../src/types.d.ts').MetadataOptions} MetadataOptions
+ * @typedef {import('../src/types.d.ts').ParquetParsers} ParquetParsers
  */
