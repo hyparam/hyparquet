@@ -1,18 +1,22 @@
 import { BoundaryOrder } from './constants.js'
+import { DEFAULT_PARSERS } from './convert.js'
 import { convertMetadata } from './metadata.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
 /**
  * @param {DataReader} reader
  * @param {SchemaElement} schema
+ * @param {ParquetParsers | undefined} parsers
  * @returns {ColumnIndex}
  */
-export function readColumnIndex(reader, schema) {
+export function readColumnIndex(reader, schema, parsers = undefined) {
+  parsers = { ...DEFAULT_PARSERS, ...parsers }
+
   const thrift = deserializeTCompactProtocol(reader)
   return {
     null_pages: thrift.field_1,
-    min_values: thrift.field_2.map((/** @type {any} */ m) => convertMetadata(m, schema)),
-    max_values: thrift.field_3.map((/** @type {any} */ m) => convertMetadata(m, schema)),
+    min_values: thrift.field_2.map((/** @type {any} */ m) => convertMetadata(m, schema, parsers)),
+    max_values: thrift.field_3.map((/** @type {any} */ m) => convertMetadata(m, schema, parsers)),
     boundary_order: BoundaryOrder[thrift.field_4],
     null_counts: thrift.field_5,
     repetition_level_histograms: thrift.field_6,
@@ -33,7 +37,7 @@ export function readOffsetIndex(reader) {
 }
 
 /**
- * @import {ColumnIndex, DataReader, OffsetIndex, PageLocation, SchemaElement} from '../src/types.d.ts'
+ * @import {ColumnIndex, DataReader, OffsetIndex, PageLocation, ParquetParsers, SchemaElement} from '../src/types.d.ts'
  * @param {any} loc
  * @returns {PageLocation}
  */

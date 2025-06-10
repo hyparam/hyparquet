@@ -1,4 +1,26 @@
-const dayMillis = 86400000 // 1 day in milliseconds
+/**
+ * @import {ColumnDecoder, DecodedArray, Encoding, ParquetParsers, SchemaElement} from '../src/types.d.ts'
+ */
+
+/**
+ * Default type parsers when no custom ones are given
+ * @type ParquetParsers
+ */
+export const DEFAULT_PARSERS = {
+  timestampFromMilliseconds(millis) {
+    return new Date(Number(millis))
+  },
+  timestampFromMicroseconds(micros) {
+    return new Date(Number(micros / 1000n))
+  },
+  timestampFromNanoseconds(nanos) {
+    return new Date(Number(nanos / 1000000n))
+  },
+  dateFromDays(days) {
+    const dayInMillis = 86400000
+    return new Date(days * dayInMillis)
+  },
+}
 
 /**
  * Convert known types from primitive to rich, and dereference dictionary.
@@ -29,11 +51,11 @@ export function convertWithDictionary(data, dictionary, encoding, columnDecoder)
  * Convert known types from primitive to rich.
  *
  * @param {DecodedArray} data series of primitive types
- * @param {Pick<ColumnDecoder, "element" | "utf8">} columnDecoder
+ * @param {Pick<ColumnDecoder, "element" | "utf8" | "parsers">} columnDecoder
  * @returns {DecodedArray} series of rich types
  */
 export function convert(data, columnDecoder) {
-  const { element, utf8 = true } = columnDecoder
+  const { element, parsers, utf8 = true } = columnDecoder
   const { type, converted_type: ctype, logical_type: ltype } = element
   if (ctype === 'DECIMAL') {
     const scale = element.scale || 0
@@ -49,26 +71,30 @@ export function convert(data, columnDecoder) {
     return arr
   }
   if (!ctype && type === 'INT96') {
-    return Array.from(data).map(parseInt96Date)
+    const arr = new Array(data.length)
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = parsers.timestampFromNanoseconds(parseInt96Nanos(data[i]))
+    }
+    return arr
   }
   if (ctype === 'DATE') {
     const arr = new Array(data.length)
     for (let i = 0; i < arr.length; i++) {
-      arr[i] = new Date(data[i] * dayMillis)
+      arr[i] = parsers.dateFromDays(data[i])
     }
     return arr
   }
   if (ctype === 'TIMESTAMP_MILLIS') {
     const arr = new Array(data.length)
     for (let i = 0; i < arr.length; i++) {
-      arr[i] = new Date(Number(data[i]))
+      arr[i] = parsers.timestampFromMilliseconds(data[i])
     }
     return arr
   }
   if (ctype === 'TIMESTAMP_MICROS') {
     const arr = new Array(data.length)
     for (let i = 0; i < arr.length; i++) {
-      arr[i] = new Date(Number(data[i] / 1000n))
+      arr[i] = parsers.timestampFromMicroseconds(data[i])
     }
     return arr
   }
@@ -111,12 +137,13 @@ export function convert(data, columnDecoder) {
   }
   if (ltype?.type === 'TIMESTAMP') {
     const { unit } = ltype
-    let factor = 1n
-    if (unit === 'MICROS') factor = 1000n
-    if (unit === 'NANOS') factor = 1000000n
+    /** @type {ParquetParsers[keyof ParquetParsers]} */
+    let parser = parsers.timestampFromMilliseconds
+    if (unit === 'MICROS') parser = parsers.timestampFromMicroseconds
+    if (unit === 'NANOS') parser = parsers.timestampFromNanoseconds
     const arr = new Array(data.length)
     for (let i = 0; i < arr.length; i++) {
-      arr[i] = new Date(Number(data[i] / factor))
+      arr[i] = parser(data[i])
     }
     return arr
   }
@@ -143,15 +170,14 @@ export function parseDecimal(bytes) {
 }
 
 /**
- * @import {ColumnDecoder, DecodedArray, Encoding, SchemaElement} from '../src/types.d.ts'
+ * Converts INT96 date format (hi 32bit days, lo 64bit nanos) to nanos since epoch
  * @param {bigint} value
- * @returns {Date}
+ * @returns {bigint}
  */
-function parseInt96Date(value) {
-  const days = Number((value >> 64n) - 2440588n)
-  const nano = Number((value & 0xffffffffffffffffn) / 1000000n)
-  const millis = days * dayMillis + nano
-  return new Date(millis)
+function parseInt96Nanos(value) {
+  const days = (value >> 64n) - 2440588n
+  const nano = value & 0xffffffffffffffffn
+  return days * 86400000000000n + nano
 }
 
 /**
