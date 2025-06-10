@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.16.0]
+ - New `parsers` option for custom date parsing.
+ - Breaking change: parquetMetadataAsync moved initialFetchSize into an options object.
+
 ## [1.15.0]
  - Change packaging to have node-specific exports for `asyncBufferFromFile` (#80).
 

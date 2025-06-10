@@ -9,7 +9,7 @@ export interface ParquetParsers {
 }
 
 /**
- * Paruqet Metadata options for metadata parsing
+ * Parquet Metadata options for metadata parsing
  */
 export interface MetadataOptions {
   parsers?: ParquetParsers // custom parsers to decode advanced types
