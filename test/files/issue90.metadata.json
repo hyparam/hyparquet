@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "duckdb_schema",
+      "num_children": 1
+    },
+    {
+      "type": "DOUBLE",
+      "repetition_type": "OPTIONAL",
+      "name": "elb_01yr_imp_val"
+    }
+  ],
+  "num_rows": 6144,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "elb_01yr_imp_val"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 6144,
+            "total_uncompressed_size": 45059,
+            "total_compressed_size": 44650,
+            "data_page_offset": 4,
+            "statistics": {
+              "max": 449097851.5197593,
+              "min": 0,
+              "null_count": 610,
+              "max_value": 449097851.5197593,
+              "min_value": 0,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            }
+          }
+        }
+      ],
+      "total_byte_size": 45059,
+      "num_rows": 6144,
+      "file_offset": 4
+    }
+  ],
+  "created_by": "DuckDB version v1.3.0 (build 71c5c07cdd)",
+  "metadata_length": 198
+}
