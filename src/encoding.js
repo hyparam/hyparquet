@@ -22,9 +22,10 @@ export function bitWidth(value) {
  */
 export function readRleBitPackedHybrid(reader, width, length, output) {
   if (!length) {
-    // length = reader.view.getUint32(reader.offset, true)
+    length = reader.view.getUint32(reader.offset, true)
     reader.offset += 4
   }
+  const startOffset = reader.offset
   let seen = 0
   while (seen < output.length) {
     const header = readVarInt(reader)
@@ -38,7 +39,7 @@ export function readRleBitPackedHybrid(reader, width, length, output) {
       seen += count
     }
   }
-  // assert(reader.offset - startOffset === length)
+  reader.offset = startOffset + length // duckdb writes an empty block
 }
 
 /**

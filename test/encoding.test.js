@@ -110,7 +110,7 @@ describe('readBitPacked', () => {
     const reader = { view, offset: 0 }
 
     const values = new Array(72)
-    readRleBitPackedHybrid(reader, 17, 72, values)
+    readRleBitPackedHybrid(reader, 17, 154, values)
     expect(reader.offset).toBe(154)
     expect(values).toEqual([
       131071, 0, 0, 0, 0, 0, 0, 0,
