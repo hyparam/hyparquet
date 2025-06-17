@@ -16,12 +16,12 @@ export function bitWidth(value) {
  * If length is zero, then read int32 length at the start.
  *
  * @param {DataReader} reader
- * @param {number} width - width of each bit-packed group
- * @param {number} length - length of the encoded data
+ * @param {number} width - bitwidth
  * @param {DecodedArray} output
+ * @param {number} [length] - length of the encoded data
  */
-export function readRleBitPackedHybrid(reader, width, length, output) {
-  if (!length) {
+export function readRleBitPackedHybrid(reader, width, output, length) {
+  if (length === undefined) {
     length = reader.view.getUint32(reader.offset, true)
     reader.offset += 4
   }

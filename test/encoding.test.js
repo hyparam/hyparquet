@@ -14,7 +14,7 @@ describe('readRle', () => {
     const reader = { view, offset: 0 }
 
     const values = new Array(6)
-    readRleBitPackedHybrid(reader, 1, 4, values)
+    readRleBitPackedHybrid(reader, 1, values, 4)
     expect(reader.offset).toBe(4)
     expect(values).toEqual([1, 1, 1, 100, 100, 100])
   })
@@ -28,7 +28,7 @@ describe('readRle', () => {
     const reader = { view, offset: 0 }
 
     const values = new Array(3)
-    readRleBitPackedHybrid(reader, 16, 6, values)
+    readRleBitPackedHybrid(reader, 16, values, 6)
     expect(reader.offset).toBe(6)
     expect(values).toEqual([65535, 65535, 65535])
   })
@@ -44,7 +44,7 @@ describe('readRle', () => {
     const reader = { view, offset: 0 }
 
     const values = new Array(2)
-    readRleBitPackedHybrid(reader, 24, 4, values)
+    readRleBitPackedHybrid(reader, 24, values, 4)
     expect(reader.offset).toBe(4)
     expect(values).toEqual([16777215, 16777215])
   })
@@ -58,7 +58,7 @@ describe('readRle', () => {
     const reader = { view, offset: 0 }
 
     const values = new Array(3)
-    readRleBitPackedHybrid(reader, 32, 5, values)
+    readRleBitPackedHybrid(reader, 32, values, 5)
     expect(reader.offset).toBe(5)
     expect(values).toEqual([234000, 234000, 234000])
   })
@@ -75,7 +75,7 @@ describe('readBitPacked', () => {
     const reader = { view, offset: 0 }
 
     const values = new Array(3)
-    readRleBitPackedHybrid(reader, 1, 0, values)
+    readRleBitPackedHybrid(reader, 1, values)
     expect(reader.offset).toBe(6)
     expect(values).toEqual([0, 0, 1])
   })
@@ -90,7 +90,7 @@ describe('readBitPacked', () => {
     const reader = { view, offset: 0 }
 
     const values = new Array(9)
-    readRleBitPackedHybrid(reader, 1, 3, values)
+    readRleBitPackedHybrid(reader, 1, values, 3)
     expect(reader.offset).toBe(3)
     expect(values).toEqual([1, 1, 1, 1, 1, 1, 1, 1, 1])
   })
@@ -110,7 +110,7 @@ describe('readBitPacked', () => {
     const reader = { view, offset: 0 }
 
     const values = new Array(72)
-    readRleBitPackedHybrid(reader, 17, 154, values)
+    readRleBitPackedHybrid(reader, 17, values, 154)
     expect(reader.offset).toBe(154)
     expect(values).toEqual([
       131071, 0, 0, 0, 0, 0, 0, 0,
@@ -132,7 +132,7 @@ describe('readBitPacked', () => {
     const reader = { view, offset: 0 }
 
     const values = new Array(3)
-    expect(() => readRleBitPackedHybrid(reader, 1, 3, values))
+    expect(() => readRleBitPackedHybrid(reader, 1, values, 3))
       .toThrow('parquet bitpack offset 1 out of range')
   })
 })

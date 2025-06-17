@@ -1,0 +1,42 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "name": "root",
+      "num_children": 1
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "empty"
+    }
+  ],
+  "num_rows": 10,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": ["RLE_DICTIONARY"],
+            "path_in_schema": ["empty"],
+            "codec": "SNAPPY",
+            "num_values": 10,
+            "total_uncompressed_size": 40,
+            "total_compressed_size": 40,
+            "data_page_offset": 18,
+            "dictionary_page_offset": 4,
+            "statistics": {
+              "null_count": 10
+            }
+          }
+        }
+      ],
+      "total_byte_size": 40,
+      "num_rows": 10
+    }
+  ],
+  "created_by": "hyparquet",
+  "metadata_length": 82
+}
