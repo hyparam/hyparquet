@@ -37,11 +37,11 @@ export function readDataPage(bytes, daph, { type, element, schemaPath }) {
     if (bitWidth) {
       dataPage = new Array(nValues)
       if (type === 'BOOLEAN') {
-        readRleBitPackedHybrid(reader, bitWidth, 0, dataPage)
+        readRleBitPackedHybrid(reader, bitWidth, dataPage)
         dataPage = dataPage.map(x => !!x) // convert to boolean
       } else {
         // assert(daph.encoding.endsWith('_DICTIONARY'))
-        readRleBitPackedHybrid(reader, bitWidth, view.byteLength - reader.offset, dataPage)
+        readRleBitPackedHybrid(reader, bitWidth, dataPage, view.byteLength - reader.offset)
       }
     } else {
       dataPage = new Uint8Array(nValues) // nValue zeroes
@@ -74,7 +74,7 @@ function readRepetitionLevels(reader, daph, schemaPath) {
     const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
     if (maxRepetitionLevel) {
       const values = new Array(daph.num_values)
-      readRleBitPackedHybrid(reader, bitWidth(maxRepetitionLevel), 0, values)
+      readRleBitPackedHybrid(reader, bitWidth(maxRepetitionLevel), values)
       return values
     }
   }
@@ -92,7 +92,7 @@ function readDefinitionLevels(reader, daph, schemaPath) {
   if (!maxDefinitionLevel) return { definitionLevels: [], numNulls: 0 }
 
   const definitionLevels = new Array(daph.num_values)
-  readRleBitPackedHybrid(reader, bitWidth(maxDefinitionLevel), 0, definitionLevels)
+  readRleBitPackedHybrid(reader, bitWidth(maxDefinitionLevel), definitionLevels)
 
   // count nulls
   let numNulls = daph.num_values
@@ -173,7 +173,7 @@ export function readDataPageV2(compressedBytes, ph, columnDecoder) {
   } else if (daph2.encoding === 'RLE') {
     // assert(type === 'BOOLEAN')
     dataPage = new Array(nValues)
-    readRleBitPackedHybrid(pageReader, 1, 0, dataPage)
+    readRleBitPackedHybrid(pageReader, 1, dataPage)
     dataPage = dataPage.map(x => !!x)
   } else if (
     daph2.encoding === 'PLAIN_DICTIONARY' ||
@@ -181,7 +181,7 @@ export function readDataPageV2(compressedBytes, ph, columnDecoder) {
   ) {
     const bitWidth = pageView.getUint8(pageReader.offset++)
     dataPage = new Array(nValues)
-    readRleBitPackedHybrid(pageReader, bitWidth, uncompressedPageSize - 1, dataPage)
+    readRleBitPackedHybrid(pageReader, bitWidth, dataPage, uncompressedPageSize - 1)
   } else if (daph2.encoding === 'DELTA_BINARY_PACKED') {
     const int32 = type === 'INT32'
     dataPage = int32 ? new Int32Array(nValues) : new BigInt64Array(nValues)
@@ -212,9 +212,7 @@ function readRepetitionLevelsV2(reader, daph2, schemaPath) {
   if (!maxRepetitionLevel) return []
 
   const values = new Array(daph2.num_values)
-  readRleBitPackedHybrid(
-    reader, bitWidth(maxRepetitionLevel), daph2.repetition_levels_byte_length, values
-  )
+  readRleBitPackedHybrid(reader, bitWidth(maxRepetitionLevel), values, daph2.repetition_levels_byte_length)
   return values
 }
 
@@ -229,7 +227,7 @@ function readDefinitionLevelsV2(reader, daph2, schemaPath) {
   if (maxDefinitionLevel) {
     // V2 we know the length
     const values = new Array(daph2.num_values)
-    readRleBitPackedHybrid(reader, bitWidth(maxDefinitionLevel), daph2.definition_levels_byte_length, values)
+    readRleBitPackedHybrid(reader, bitWidth(maxDefinitionLevel), values, daph2.definition_levels_byte_length)
     return values
   }
 }
