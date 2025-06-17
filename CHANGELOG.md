@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.16.2]
+ - Fix readRleBitPackedHybrid when length is zero
+
+## [1.16.1]
+ - Fix duckdb empty block
+
 ## [1.16.0]
  - New `parsers` option for custom date parsing.
  - Breaking change: parquetMetadataAsync moved initialFetchSize into an options object.

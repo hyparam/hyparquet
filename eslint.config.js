@@ -1,5 +1,4 @@
 import javascript from '@eslint/js'
-import typescript from 'typescript-eslint'
 import jsdoc from 'eslint-plugin-jsdoc'
 import globals from 'globals'
 
@@ -7,7 +6,6 @@ export default [
   {
     plugins: {
       jsdoc,
-      typescript,
     },
 
     languageOptions: {
@@ -19,7 +17,6 @@ export default [
 
     rules: {
       ...javascript.configs.recommended.rules,
-      ...typescript.configs.recommended.rules,
       'arrow-spacing': 'error',
       camelcase: 'off',
       'comma-spacing': 'error',
