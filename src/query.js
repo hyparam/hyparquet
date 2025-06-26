@@ -1,5 +1,5 @@
 import { parquetReadObjects } from './index.js'
-import { parquetMetadataAsync } from './metadata.js'
+import { parquetMetadataAsync, parquetSchema } from './metadata.js'
 import { parquetReadColumn } from './read.js'
 import { equals } from './utils.js'
 
@@ -17,9 +17,27 @@ export async function parquetQuery(options) {
     throw new Error('parquet expected AsyncBuffer')
   }
   options.metadata ??= await parquetMetadataAsync(options.file)
-  const { metadata, rowStart = 0, orderBy, filter } = options
+
+  const { metadata, rowStart = 0, columns, orderBy, filter } = options
   if (rowStart < 0) throw new Error('parquet rowStart must be positive')
   const rowEnd = options.rowEnd ?? Number(metadata.num_rows)
+
+  // Collect columns needed for the query
+  const filterColumns = columnsNeededForFilter(filter)
+  const allColumns = parquetSchema(options.metadata).children.map(c => c.element.name)
+  // Check if all filter columns exist
+  const missingColumns = filterColumns.filter(column => !allColumns.includes(column))
+  if (missingColumns.length) {
+    throw new Error(`parquet filter columns not found: ${missingColumns.join(', ')}`)
+  }
+  if (orderBy && !allColumns.includes(orderBy)) {
+    throw new Error(`parquet orderBy column not found: ${orderBy}`)
+  }
+  const relevantColumns = columns ? allColumns.filter(column =>
+    columns.includes(column) || filterColumns.includes(column) || column === orderBy
+  ) : undefined
+  // Is the output a subset of the relevant columns?
+  const requiresProjection = columns && relevantColumns ? columns.length < relevantColumns.length : false
 
   if (filter && !orderBy && rowEnd < metadata.num_rows) {
     // iterate through row groups and filter until we have enough rows
@@ -28,9 +46,21 @@ export async function parquetQuery(options) {
     for (const group of metadata.row_groups) {
       const groupEnd = groupStart + Number(group.num_rows)
       // TODO: if expected > group size, start fetching next groups
-      const groupData = await parquetReadObjects({ ...options, rowStart: groupStart, rowEnd: groupEnd })
+      const groupData = await parquetReadObjects({
+        ...options,
+        rowStart: groupStart,
+        rowEnd: groupEnd,
+        columns: relevantColumns,
+      })
       for (const row of groupData) {
         if (matchQuery(row, filter)) {
+          if (requiresProjection && relevantColumns) {
+            for (const column of relevantColumns) {
+              if (columns && !columns.includes(column)) {
+                delete row[column] // remove columns not in the projection
+              }
+            }
+          }
           filteredRows.push(row)
         }
       }
@@ -40,10 +70,27 @@ export async function parquetQuery(options) {
     return filteredRows.slice(rowStart, rowEnd)
   } else if (filter) {
     // read all rows, sort, and filter
-    const results = (await parquetReadObjects({ ...options, rowStart: undefined, rowEnd: undefined }))
-      .filter(row => matchQuery(row, filter))
+    const results = await parquetReadObjects({
+      ...options,
+      rowStart: undefined,
+      rowEnd: undefined,
+      columns: relevantColumns,
+    })
     if (orderBy) results.sort((a, b) => compare(a[orderBy], b[orderBy]))
-    return results.slice(rowStart, rowEnd)
+    const filteredRows = new Array()
+    for (const row of results) {
+      if (matchQuery(row, filter)) {
+        if (requiresProjection && relevantColumns) {
+          for (const column of relevantColumns) {
+            if (columns && !columns.includes(column)) {
+              delete row[column] // remove columns not in the projection
+            }
+          }
+        }
+        filteredRows.push(row)
+      }
+    }
+    return filteredRows.slice(rowStart, rowEnd)
   } else if (typeof orderBy === 'string') {
     // sorted but unfiltered: fetch orderBy column first
     const orderColumn = await parquetReadColumn({ ...options, rowStart: undefined, rowEnd: undefined, columns: [orderBy] })
@@ -136,23 +183,21 @@ function compare(a, b) {
  * @example matchQuery({ id: 1 }, { id: {$gte: 1} }) // true
  */
 export function matchQuery(record, query = {}) {
-
-  if (query.$not) {
-    return !matchQuery(record, query.$not)
-  }
-
-  if (query.$and) {
+  if ('$and' in query && Array.isArray(query.$and)) {
     return query.$and.every(subQuery => matchQuery(record, subQuery))
   }
-
-  if (query.$or) {
+  if ('$or' in query && Array.isArray(query.$or)) {
     return query.$or.some(subQuery => matchQuery(record, subQuery))
+  }
+  if ('$nor' in query && Array.isArray(query.$nor)) {
+    return !query.$nor.some(subQuery => matchQuery(record, subQuery))
   }
 
   return Object.entries(query).every(([field, condition]) => {
     const value = record[field]
 
-    if (condition !== null && (Array.isArray(condition) || typeof condition !== 'object')) {
+    // implicit $eq for non-object conditions
+    if (typeof condition !== 'object' || condition === null || Array.isArray(condition)) {
       return equals(value, condition)
     }
 
@@ -166,6 +211,8 @@ export function matchQuery(record, query = {}) {
         return value < target
       case '$lte':
         return value <= target
+      case '$eq':
+        return equals(value, target)
       case '$ne':
         return !equals(value, target)
       case '$in':
@@ -179,4 +226,27 @@ export function matchQuery(record, query = {}) {
       }
     })
   })
+}
+
+/**
+ * Returns an array of column names that are needed to evaluate the mongo filter.
+ *
+ * @param {ParquetQueryFilter} [filter]
+ * @returns {string[]}
+ */
+function columnsNeededForFilter(filter) {
+  if (!filter) return []
+  /** @type {string[]} */
+  const columns = []
+  if ('$and' in filter && Array.isArray(filter.$and)) {
+    columns.push(...filter.$and.flatMap(columnsNeededForFilter))
+  } else if ('$or' in filter && Array.isArray(filter.$or)) {
+    columns.push(...filter.$or.flatMap(columnsNeededForFilter))
+  } else if ('$nor' in filter && Array.isArray(filter.$nor)) {
+    columns.push(...filter.$nor.flatMap(columnsNeededForFilter))
+  } else {
+    // Column filters
+    columns.push(...Object.keys(filter))
+  }
+  return columns
 }
