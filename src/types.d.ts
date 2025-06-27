@@ -311,8 +311,7 @@ export type PageType =
   'DATA_PAGE' |
   'INDEX_PAGE' |
   'DICTIONARY_PAGE' |
-  'DATA_PAGE_V2' |
-  'BLOOM_FILTER_PAGE'
+  'DATA_PAGE_V2'
 
 interface SortingColumn {
   column_idx: number
@@ -330,7 +329,6 @@ export interface PageHeader {
   index_page_header?: IndexPageHeader
   dictionary_page_header?: DictionaryPageHeader
   data_page_header_v2?: DataPageHeaderV2
-  bloom_filter_page_header?: BloomFilterPageHeader
 }
 
 export interface DataPageHeader {
