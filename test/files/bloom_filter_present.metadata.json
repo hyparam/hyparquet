@@ -1,0 +1,391 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "duckdb_schema",
+      "num_children": 1
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "r",
+      "converted_type": "INT_64"
+    }
+  ],
+  "num_rows": 100000,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "r"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 10240,
+            "total_uncompressed_size": 5413,
+            "total_compressed_size": 5391,
+            "data_page_offset": 71,
+            "dictionary_page_offset": 4,
+            "statistics": {
+              "max": 900,
+              "min": 0,
+              "null_count": 0,
+              "distinct_count": 10,
+              "max_value": 900,
+              "min_value": 0,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "bloom_filter_offset": 52612,
+            "bloom_filter_length": 47
+          }
+        }
+      ],
+      "total_byte_size": 5413,
+      "num_rows": 10240,
+      "file_offset": 4
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "r"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 10240,
+            "total_uncompressed_size": 5413,
+            "total_compressed_size": 5390,
+            "data_page_offset": 5461,
+            "dictionary_page_offset": 5395,
+            "statistics": {
+              "max": 900,
+              "min": 0,
+              "null_count": 0,
+              "distinct_count": 10,
+              "max_value": 900,
+              "min_value": 0,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "bloom_filter_offset": 52659,
+            "bloom_filter_length": 47
+          }
+        }
+      ],
+      "total_byte_size": 5413,
+      "num_rows": 10240,
+      "file_offset": 5395
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "r"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 10240,
+            "total_uncompressed_size": 5413,
+            "total_compressed_size": 5390,
+            "data_page_offset": 10851,
+            "dictionary_page_offset": 10785,
+            "statistics": {
+              "max": 900,
+              "min": 0,
+              "null_count": 0,
+              "distinct_count": 10,
+              "max_value": 900,
+              "min_value": 0,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "bloom_filter_offset": 52706,
+            "bloom_filter_length": 47
+          }
+        }
+      ],
+      "total_byte_size": 5413,
+      "num_rows": 10240,
+      "file_offset": 10785
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "r"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 10240,
+            "total_uncompressed_size": 5413,
+            "total_compressed_size": 5390,
+            "data_page_offset": 16241,
+            "dictionary_page_offset": 16175,
+            "statistics": {
+              "max": 900,
+              "min": 0,
+              "null_count": 0,
+              "distinct_count": 10,
+              "max_value": 900,
+              "min_value": 0,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "bloom_filter_offset": 52753,
+            "bloom_filter_length": 47
+          }
+        }
+      ],
+      "total_byte_size": 5413,
+      "num_rows": 10240,
+      "file_offset": 16175
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "r"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 10240,
+            "total_uncompressed_size": 5413,
+            "total_compressed_size": 5388,
+            "data_page_offset": 21629,
+            "dictionary_page_offset": 21565,
+            "statistics": {
+              "max": 900,
+              "min": 0,
+              "null_count": 0,
+              "distinct_count": 10,
+              "max_value": 900,
+              "min_value": 0,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "bloom_filter_offset": 52800,
+            "bloom_filter_length": 47
+          }
+        }
+      ],
+      "total_byte_size": 5413,
+      "num_rows": 10240,
+      "file_offset": 21565
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "r"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 10240,
+            "total_uncompressed_size": 5413,
+            "total_compressed_size": 5391,
+            "data_page_offset": 27020,
+            "dictionary_page_offset": 26953,
+            "statistics": {
+              "max": 900,
+              "min": 0,
+              "null_count": 0,
+              "distinct_count": 10,
+              "max_value": 900,
+              "min_value": 0,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "bloom_filter_offset": 52847,
+            "bloom_filter_length": 47
+          }
+        }
+      ],
+      "total_byte_size": 5413,
+      "num_rows": 10240,
+      "file_offset": 26953
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "r"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 10240,
+            "total_uncompressed_size": 5413,
+            "total_compressed_size": 5392,
+            "data_page_offset": 32412,
+            "dictionary_page_offset": 32344,
+            "statistics": {
+              "max": 900,
+              "min": 0,
+              "null_count": 0,
+              "distinct_count": 10,
+              "max_value": 900,
+              "min_value": 0,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "bloom_filter_offset": 52894,
+            "bloom_filter_length": 47
+          }
+        }
+      ],
+      "total_byte_size": 5413,
+      "num_rows": 10240,
+      "file_offset": 32344
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "r"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 10240,
+            "total_uncompressed_size": 5413,
+            "total_compressed_size": 5388,
+            "data_page_offset": 37800,
+            "dictionary_page_offset": 37736,
+            "statistics": {
+              "max": 900,
+              "min": 0,
+              "null_count": 0,
+              "distinct_count": 10,
+              "max_value": 900,
+              "min_value": 0,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "bloom_filter_offset": 52941,
+            "bloom_filter_length": 47
+          }
+        }
+      ],
+      "total_byte_size": 5413,
+      "num_rows": 10240,
+      "file_offset": 37736
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "r"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 10240,
+            "total_uncompressed_size": 5413,
+            "total_compressed_size": 5391,
+            "data_page_offset": 43191,
+            "dictionary_page_offset": 43124,
+            "statistics": {
+              "max": 900,
+              "min": 0,
+              "null_count": 0,
+              "distinct_count": 10,
+              "max_value": 900,
+              "min_value": 0,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "bloom_filter_offset": 52988,
+            "bloom_filter_length": 47
+          }
+        }
+      ],
+      "total_byte_size": 5413,
+      "num_rows": 10240,
+      "file_offset": 43124
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "r"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 7840,
+            "total_uncompressed_size": 4121,
+            "total_compressed_size": 4097,
+            "data_page_offset": 48580,
+            "dictionary_page_offset": 48515,
+            "statistics": {
+              "max": 900,
+              "min": 0,
+              "null_count": 0,
+              "distinct_count": 10,
+              "max_value": 900,
+              "min_value": 0,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "bloom_filter_offset": 53035,
+            "bloom_filter_length": 47
+          }
+        }
+      ],
+      "total_byte_size": 4121,
+      "num_rows": 7840,
+      "file_offset": 48515
+    }
+  ],
+  "created_by": "DuckDB version v1.3.0 (build 71c5c07cdd)",
+  "metadata_length": 1093
+}
