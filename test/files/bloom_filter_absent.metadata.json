@@ -7,20 +7,20 @@
       "num_children": 1
     },
     {
-      "type": "INT64",
+      "type": "INT32",
       "repetition_type": "OPTIONAL",
       "name": "r",
-      "converted_type": "INT_64"
+      "converted_type": "INT_32"
     }
   ],
-  "num_rows": 100000,
+  "num_rows": 10000,
   "row_groups": [
     {
       "columns": [
         {
           "file_offset": 0,
           "meta_data": {
-            "type": "INT64",
+            "type": "INT32",
             "encodings": [
               "PLAIN"
             ],
@@ -28,15 +28,15 @@
               "r"
             ],
             "codec": "SNAPPY",
-            "num_values": 10240,
-            "total_uncompressed_size": 81951,
-            "total_compressed_size": 19449,
+            "num_values": 2048,
+            "total_uncompressed_size": 8220,
+            "total_compressed_size": 427,
             "data_page_offset": 4,
             "statistics": {
-              "max": 900,
+              "max": 20,
               "min": 0,
               "null_count": 0,
-              "max_value": 900,
+              "max_value": 20,
               "min_value": 0,
               "is_max_value_exact": true,
               "is_min_value_exact": true
@@ -44,8 +44,8 @@
           }
         }
       ],
-      "total_byte_size": 81951,
-      "num_rows": 10240,
+      "total_byte_size": 8220,
+      "num_rows": 2048,
       "file_offset": 4
     },
     {
@@ -53,7 +53,7 @@
         {
           "file_offset": 0,
           "meta_data": {
-            "type": "INT64",
+            "type": "INT32",
             "encodings": [
               "PLAIN"
             ],
@@ -61,32 +61,32 @@
               "r"
             ],
             "codec": "SNAPPY",
-            "num_values": 10240,
-            "total_uncompressed_size": 81951,
-            "total_compressed_size": 19379,
-            "data_page_offset": 19453,
+            "num_values": 2048,
+            "total_uncompressed_size": 8220,
+            "total_compressed_size": 430,
+            "data_page_offset": 431,
             "statistics": {
-              "max": 900,
-              "min": 0,
+              "max": 40,
+              "min": 20,
               "null_count": 0,
-              "max_value": 900,
-              "min_value": 0,
+              "max_value": 40,
+              "min_value": 20,
               "is_max_value_exact": true,
               "is_min_value_exact": true
             }
           }
         }
       ],
-      "total_byte_size": 81951,
-      "num_rows": 10240,
-      "file_offset": 19453
+      "total_byte_size": 8220,
+      "num_rows": 2048,
+      "file_offset": 431
     },
     {
       "columns": [
         {
           "file_offset": 0,
           "meta_data": {
-            "type": "INT64",
+            "type": "INT32",
             "encodings": [
               "PLAIN"
             ],
@@ -94,32 +94,32 @@
               "r"
             ],
             "codec": "SNAPPY",
-            "num_values": 10240,
-            "total_uncompressed_size": 81951,
-            "total_compressed_size": 19459,
-            "data_page_offset": 38832,
+            "num_values": 2048,
+            "total_uncompressed_size": 8220,
+            "total_compressed_size": 430,
+            "data_page_offset": 861,
             "statistics": {
-              "max": 900,
-              "min": 0,
+              "max": 60,
+              "min": 40,
               "null_count": 0,
-              "max_value": 900,
-              "min_value": 0,
+              "max_value": 60,
+              "min_value": 40,
               "is_max_value_exact": true,
               "is_min_value_exact": true
             }
           }
         }
       ],
-      "total_byte_size": 81951,
-      "num_rows": 10240,
-      "file_offset": 38832
+      "total_byte_size": 8220,
+      "num_rows": 2048,
+      "file_offset": 861
     },
     {
       "columns": [
         {
           "file_offset": 0,
           "meta_data": {
-            "type": "INT64",
+            "type": "INT32",
             "encodings": [
               "PLAIN"
             ],
@@ -127,32 +127,32 @@
               "r"
             ],
             "codec": "SNAPPY",
-            "num_values": 10240,
-            "total_uncompressed_size": 81951,
-            "total_compressed_size": 19448,
-            "data_page_offset": 58291,
+            "num_values": 2048,
+            "total_uncompressed_size": 8220,
+            "total_compressed_size": 430,
+            "data_page_offset": 1291,
             "statistics": {
-              "max": 900,
-              "min": 0,
+              "max": 80,
+              "min": 60,
               "null_count": 0,
-              "max_value": 900,
-              "min_value": 0,
+              "max_value": 80,
+              "min_value": 60,
               "is_max_value_exact": true,
               "is_min_value_exact": true
             }
           }
         }
       ],
-      "total_byte_size": 81951,
-      "num_rows": 10240,
-      "file_offset": 58291
+      "total_byte_size": 8220,
+      "num_rows": 2048,
+      "file_offset": 1291
     },
     {
       "columns": [
         {
           "file_offset": 0,
           "meta_data": {
-            "type": "INT64",
+            "type": "INT32",
             "encodings": [
               "PLAIN"
             ],
@@ -160,192 +160,27 @@
               "r"
             ],
             "codec": "SNAPPY",
-            "num_values": 10240,
-            "total_uncompressed_size": 81951,
-            "total_compressed_size": 19479,
-            "data_page_offset": 77739,
+            "num_values": 1808,
+            "total_uncompressed_size": 7259,
+            "total_compressed_size": 380,
+            "data_page_offset": 1721,
             "statistics": {
-              "max": 900,
-              "min": 0,
+              "max": 90,
+              "min": 80,
               "null_count": 0,
-              "max_value": 900,
-              "min_value": 0,
+              "max_value": 90,
+              "min_value": 80,
               "is_max_value_exact": true,
               "is_min_value_exact": true
             }
           }
         }
       ],
-      "total_byte_size": 81951,
-      "num_rows": 10240,
-      "file_offset": 77739
-    },
-    {
-      "columns": [
-        {
-          "file_offset": 0,
-          "meta_data": {
-            "type": "INT64",
-            "encodings": [
-              "PLAIN"
-            ],
-            "path_in_schema": [
-              "r"
-            ],
-            "codec": "SNAPPY",
-            "num_values": 10240,
-            "total_uncompressed_size": 81951,
-            "total_compressed_size": 19407,
-            "data_page_offset": 97218,
-            "statistics": {
-              "max": 900,
-              "min": 0,
-              "null_count": 0,
-              "max_value": 900,
-              "min_value": 0,
-              "is_max_value_exact": true,
-              "is_min_value_exact": true
-            }
-          }
-        }
-      ],
-      "total_byte_size": 81951,
-      "num_rows": 10240,
-      "file_offset": 97218
-    },
-    {
-      "columns": [
-        {
-          "file_offset": 0,
-          "meta_data": {
-            "type": "INT64",
-            "encodings": [
-              "PLAIN"
-            ],
-            "path_in_schema": [
-              "r"
-            ],
-            "codec": "SNAPPY",
-            "num_values": 10240,
-            "total_uncompressed_size": 81951,
-            "total_compressed_size": 19445,
-            "data_page_offset": 116625,
-            "statistics": {
-              "max": 900,
-              "min": 0,
-              "null_count": 0,
-              "max_value": 900,
-              "min_value": 0,
-              "is_max_value_exact": true,
-              "is_min_value_exact": true
-            }
-          }
-        }
-      ],
-      "total_byte_size": 81951,
-      "num_rows": 10240,
-      "file_offset": 116625
-    },
-    {
-      "columns": [
-        {
-          "file_offset": 0,
-          "meta_data": {
-            "type": "INT64",
-            "encodings": [
-              "PLAIN"
-            ],
-            "path_in_schema": [
-              "r"
-            ],
-            "codec": "SNAPPY",
-            "num_values": 10240,
-            "total_uncompressed_size": 81951,
-            "total_compressed_size": 19483,
-            "data_page_offset": 136070,
-            "statistics": {
-              "max": 900,
-              "min": 0,
-              "null_count": 0,
-              "max_value": 900,
-              "min_value": 0,
-              "is_max_value_exact": true,
-              "is_min_value_exact": true
-            }
-          }
-        }
-      ],
-      "total_byte_size": 81951,
-      "num_rows": 10240,
-      "file_offset": 136070
-    },
-    {
-      "columns": [
-        {
-          "file_offset": 0,
-          "meta_data": {
-            "type": "INT64",
-            "encodings": [
-              "PLAIN"
-            ],
-            "path_in_schema": [
-              "r"
-            ],
-            "codec": "SNAPPY",
-            "num_values": 10240,
-            "total_uncompressed_size": 81951,
-            "total_compressed_size": 19425,
-            "data_page_offset": 155553,
-            "statistics": {
-              "max": 900,
-              "min": 0,
-              "null_count": 0,
-              "max_value": 900,
-              "min_value": 0,
-              "is_max_value_exact": true,
-              "is_min_value_exact": true
-            }
-          }
-        }
-      ],
-      "total_byte_size": 81951,
-      "num_rows": 10240,
-      "file_offset": 155553
-    },
-    {
-      "columns": [
-        {
-          "file_offset": 0,
-          "meta_data": {
-            "type": "INT64",
-            "encodings": [
-              "PLAIN"
-            ],
-            "path_in_schema": [
-              "r"
-            ],
-            "codec": "SNAPPY",
-            "num_values": 7840,
-            "total_uncompressed_size": 62749,
-            "total_compressed_size": 14865,
-            "data_page_offset": 174978,
-            "statistics": {
-              "max": 900,
-              "min": 0,
-              "null_count": 0,
-              "max_value": 900,
-              "min_value": 0,
-              "is_max_value_exact": true,
-              "is_min_value_exact": true
-            }
-          }
-        }
-      ],
-      "total_byte_size": 62749,
-      "num_rows": 7840,
-      "file_offset": 174978
+      "total_byte_size": 7259,
+      "num_rows": 1808,
+      "file_offset": 1721
     }
   ],
   "created_by": "DuckDB version v1.3.0 (build 71c5c07cdd)",
-  "metadata_length": 1007
+  "metadata_length": 439
 }
