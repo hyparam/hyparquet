@@ -100,7 +100,7 @@ function mask(x) {
  * @param {number} i
  * @returns {number} 1 if bit set else 0
  */
-export function checkBit(x, i) {
+function checkBit(x, i) {
   // Bit shift into the least significant digit and check if set
   return x >> i & 1
 }
