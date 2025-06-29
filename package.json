@@ -60,6 +60,7 @@
     "eslint-plugin-jsdoc": "51.0.3",
     "hyparquet-compressors": "1.1.1",
     "typescript": "5.8.3",
-    "vitest": "3.2.4"
+    "vitest": "3.2.4",
+    "xxhashjs": "0.2.2"
   }
 }
