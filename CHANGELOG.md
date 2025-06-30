@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.17.0]
+ - Require explicit `$eq` operator for `parquetQuery` filters.
+
 ## [1.16.2]
  - Fix readRleBitPackedHybrid when length is zero
 
