@@ -36,21 +36,23 @@ export interface ParquetReadOptions {
 /**
  * Parquet query options for filtering data
  */
-export interface ParquetQueryFilter {
-  [key: string]: ParquetQueryValue | ParquetQueryOperator | ParquetQueryFilter[] | undefined
-  $and?: ParquetQueryFilter[]
-  $or?: ParquetQueryFilter[]
-  $not?: ParquetQueryFilter
-}
+export type ParquetQueryFilter =
+  | ParquetQueryColumnsFilter
+  | { $and: ParquetQueryFilter[] }
+  | { $or: ParquetQueryFilter[] }
+  | { $nor: ParquetQueryFilter[] }
+type ParquetQueryColumnsFilter = { [key: string]: ParquetQueryOperator }
 export type ParquetQueryValue = string | number | boolean | object | null | undefined
 export type ParquetQueryOperator = {
   $gt?: ParquetQueryValue
   $gte?: ParquetQueryValue
   $lt?: ParquetQueryValue
   $lte?: ParquetQueryValue
+  $eq?: ParquetQueryValue
   $ne?: ParquetQueryValue
   $in?: ParquetQueryValue[]
   $nin?: ParquetQueryValue[]
+  $not?: ParquetQueryOperator
 }
 
 /**
