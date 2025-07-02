@@ -26,7 +26,7 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
     const groupRows = Number(rowGroup.num_rows)
     const groupEnd = groupStart + groupRows
     // if row group overlaps with row range, add it to the plan
-    if (groupEnd >= rowStart && groupStart < rowEnd) {
+    if (groupRows > 0 && groupEnd >= rowStart && groupStart < rowEnd) {
       /** @type {ByteRange[]} */
       const ranges = []
       // loop through each column chunk

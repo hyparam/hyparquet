@@ -1,0 +1,87 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "schema",
+      "num_children": 2
+    },
+    {
+      "type": "DOUBLE",
+      "repetition_type": "OPTIONAL",
+      "name": "a"
+    },
+    {
+      "type": "BOOLEAN",
+      "repetition_type": "OPTIONAL",
+      "name": "b"
+    }
+  ],
+  "num_rows": 0,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "a"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 0,
+            "total_uncompressed_size": 14,
+            "total_compressed_size": 14,
+            "data_page_offset": 0,
+            "dictionary_page_offset": 4,
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BOOLEAN",
+            "encodings": [
+              "RLE"
+            ],
+            "path_in_schema": [
+              "b"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 0,
+            "total_uncompressed_size": 0,
+            "total_compressed_size": 0,
+            "data_page_offset": 0,
+            "encoding_stats": []
+          }
+        }
+      ],
+      "total_byte_size": 14,
+      "num_rows": 0,
+      "file_offset": 4,
+      "total_compressed_size": 14
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "pandas",
+      "value": "{\"index_columns\": [{\"kind\": \"range\", \"name\": null, \"start\": 0, \"stop\": 0, \"step\": 1}], \"column_indexes\": [{\"name\": null, \"field_name\": null, \"pandas_type\": \"unicode\", \"numpy_type\": \"object\", \"metadata\": {\"encoding\": \"UTF-8\"}}], \"columns\": [{\"name\": \"a\", \"field_name\": \"a\", \"pandas_type\": \"float64\", \"numpy_type\": \"float64\", \"metadata\": null}, {\"name\": \"b\", \"field_name\": \"b\", \"pandas_type\": \"bool\", \"numpy_type\": \"bool\", \"metadata\": null}], \"creator\": {\"library\": \"pyarrow\", \"version\": \"20.0.0\"}, \"pandas_version\": \"2.3.0\"}"
+    },
+    {
+      "key": "ARROW:schema",
+      "value": "/////+ACAAAQAAAAAAAKAA4ABgAFAAgACgAAAAABBAAQAAAAAAAKAAwAAAAEAAgACgAAAEACAAAEAAAAAQAAAAwAAAAIAAwABAAIAAgAAAAYAgAABAAAAAsCAAB7ImluZGV4X2NvbHVtbnMiOiBbeyJraW5kIjogInJhbmdlIiwgIm5hbWUiOiBudWxsLCAic3RhcnQiOiAwLCAic3RvcCI6IDAsICJzdGVwIjogMX1dLCAiY29sdW1uX2luZGV4ZXMiOiBbeyJuYW1lIjogbnVsbCwgImZpZWxkX25hbWUiOiBudWxsLCAicGFuZGFzX3R5cGUiOiAidW5pY29kZSIsICJudW1weV90eXBlIjogIm9iamVjdCIsICJtZXRhZGF0YSI6IHsiZW5jb2RpbmciOiAiVVRGLTgifX1dLCAiY29sdW1ucyI6IFt7Im5hbWUiOiAiYSIsICJmaWVsZF9uYW1lIjogImEiLCAicGFuZGFzX3R5cGUiOiAiZmxvYXQ2NCIsICJudW1weV90eXBlIjogImZsb2F0NjQiLCAibWV0YWRhdGEiOiBudWxsfSwgeyJuYW1lIjogImIiLCAiZmllbGRfbmFtZSI6ICJiIiwgInBhbmRhc190eXBlIjogImJvb2wiLCAibnVtcHlfdHlwZSI6ICJib29sIiwgIm1ldGFkYXRhIjogbnVsbH1dLCAiY3JlYXRvciI6IHsibGlicmFyeSI6ICJweWFycm93IiwgInZlcnNpb24iOiAiMjAuMC4wIn0sICJwYW5kYXNfdmVyc2lvbiI6ICIyLjMuMCJ9AAYAAABwYW5kYXMAAAIAAABAAAAABAAAANj///8AAAEGEAAAABgAAAAEAAAAAAAAAAEAAABiAAAABAAEAAQAAAAQABQACAAGAAcADAAAABAAEAAAAAAAAQMQAAAAGAAAAAQAAAAAAAAAAQAAAGEABgAIAAYABgAAAAAAAgAAAAAA"
+    }
+  ],
+  "created_by": "parquet-cpp-arrow version 20.0.0",
+  "metadata_length": 1700
+}
