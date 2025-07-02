@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.17.1]
+ - Fix zero row file (#98 thanks @kroche98)
+
 ## [1.17.0]
  - Require explicit `$eq` operator for `parquetQuery` filters.
 

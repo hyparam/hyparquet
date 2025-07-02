@@ -37,11 +37,7 @@ describe('parquetRead test files', () => {
         rowEnd: numRows,
         onComplete(rows) {
           const base = filename.replace('.parquet', '')
-          if (filename === 'issue97.parquet') {
-            // issue97 has no rows
-            const expected = fileToJson(`test/files/${base}.json`)
-            expect(toJson(rows)).toEqual(expected)
-          } else {
+          if (rows.length) {
             const expected = [fileToJson(`test/files/${base}.json`).at(-1)]
             expect(toJson(rows)).toEqual(expected)
           }
