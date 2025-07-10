@@ -1,7 +1,7 @@
 import { readColumnIndex, readOffsetIndex } from './indexes.js'
 import { parquetMetadataAsync, parquetSchema } from './metadata.js'
 import { getSchemaPath } from './schema.js'
-import { readColumn } from './column.js'
+import { decodeDataPage, decodeDictionaryPage, readColumn } from './column.js'
 import { parquetReadObjects } from './index.js'
 import { DEFAULT_PARSERS } from './convert.js'
 import { concat, equals } from './utils.js'
@@ -282,7 +282,8 @@ export async function selectPages(file, metadata, rowGroup, predicates, columnIn
     // Find matching pages
     const matchingPages = new Set()
     for (let i = 0; i < indexes.columnIndex.min_values.length; i++) {
-      if (predicate(indexes.columnIndex.min_values[i], indexes.columnIndex.max_values[i])) {
+      const matches = predicate(indexes.columnIndex.min_values[i], indexes.columnIndex.max_values[i])
+      if (matches) {
         matchingPages.add(i)
       }
     }
@@ -386,7 +387,7 @@ export async function readSelectedPages(file, metadata, rowGroup, columns, selec
 
     // Read all pages
     const pageBuffers = await sliceAll(file, pageRanges)
-    const dictionary = needsDictionary ? pageBuffers.shift() : null
+    const dictionaryBuffer = needsDictionary ? pageBuffers.shift() : null
 
     // Decode pages
     const schemaPath = getSchemaPath(metadata.schema, column.meta_data.path_in_schema)
@@ -401,20 +402,16 @@ export async function readSelectedPages(file, metadata, rowGroup, columns, selec
       utf8: options.utf8 !== false,
     }
 
+    // Decode dictionary once if present
+    const dictionary = dictionaryBuffer
+      ? decodeDictionaryPage(dictionaryBuffer, columnDecoder)
+      : undefined
+
     const allValues = []
     for (let i = 0; i < selectedPagesList.length; i++) {
       const pageIdx = selectedPagesList[i]
       const pageBuffer = pageBuffers[i]
       const location = indexes.offsetIndex.page_locations[pageIdx]
-
-      // Combine dictionary and page if needed
-      let fullBuffer = pageBuffer
-      if (dictionary) {
-        const combined = new ArrayBuffer(dictionary.byteLength + pageBuffer.byteLength)
-        new Uint8Array(combined).set(new Uint8Array(dictionary), 0)
-        new Uint8Array(combined).set(new Uint8Array(pageBuffer), dictionary.byteLength)
-        fullBuffer = combined
-      }
 
       // Calculate page row count
       const pageFirstRow = Number(location.first_row_index)
@@ -423,24 +420,12 @@ export async function readSelectedPages(file, metadata, rowGroup, columns, selec
         ? Number(nextLocation.first_row_index) - pageFirstRow
         : Number(column.meta_data.num_values) - pageFirstRow
 
-      // Read page
-      const reader = { view: new DataView(fullBuffer), offset: 0 }
-      const pageValues = readColumn(
-        reader,
-        {
-          groupStart: 0,
-          selectStart: 0,
-          selectEnd: pageRowCount,
-          groupRows: pageRowCount,
-        },
-        columnDecoder
-      )
+      // Decode the data page
+      const pageValues = decodeDataPage(pageBuffer, columnDecoder, dictionary, pageRowCount)
 
-      // Flatten values
+      // Collect values - pageValues should always be an array
       if (Array.isArray(pageValues)) {
-        for (const chunk of pageValues) {
-          concat(allValues, chunk)
-        }
+        concat(allValues, pageValues)
       } else {
         allValues.push(pageValues)
       }
