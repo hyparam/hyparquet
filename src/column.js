@@ -151,7 +151,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
  * @param {DataReader} reader
  * @returns {PageHeader}
  */
-function parquetHeader(reader) {
+export function parquetHeader(reader) {
   const header = deserializeTCompactProtocol(reader)
 
   // Parse parquet header from thrift data
@@ -200,4 +200,57 @@ function parquetHeader(reader) {
     dictionary_page_header,
     data_page_header_v2,
   }
+}
+
+/**
+ * Decode a dictionary page from a pre-fetched buffer.
+ *
+ * @param {ArrayBuffer} buffer - buffer containing the dictionary page
+ * @param {ColumnDecoder} columnDecoder - column decoder parameters
+ * @returns {DecodedArray} decoded dictionary values
+ */
+export function decodeDictionaryPage(buffer, columnDecoder) {
+  const reader = { view: new DataView(buffer), offset: 0 }
+  const header = parquetHeader(reader)
+
+  if (header.type !== 'DICTIONARY_PAGE') {
+    throw new Error(`Expected DICTIONARY_PAGE but got ${header.type}`)
+  }
+
+  const dictionary = readPage(reader, header, columnDecoder, undefined, undefined, 0)
+  const converted = convert(dictionary, columnDecoder)
+
+  return converted
+}
+
+/**
+ * Decode a data page from a pre-fetched buffer.
+ *
+ * @param {ArrayBuffer} buffer - buffer containing the data page
+ * @param {ColumnDecoder} columnDecoder - column decoder parameters
+ * @param {DecodedArray} [dictionary] - optional dictionary for dictionary encoding
+ * @param {number} [rowLimit] - maximum number of rows to read
+ * @returns {DecodedArray} decoded values
+ */
+export function decodeDataPage(buffer, columnDecoder, dictionary, rowLimit) {
+  const reader = { view: new DataView(buffer), offset: 0 }
+  const header = parquetHeader(reader)
+
+  if (header.type !== 'DATA_PAGE' && header.type !== 'DATA_PAGE_V2') {
+    throw new Error(`Expected DATA_PAGE or DATA_PAGE_V2 but got ${header.type}`)
+  }
+
+  // For data pages, we may need to limit the number of values read
+  const pageRows = header.type === 'DATA_PAGE'
+    ? header.data_page_header?.num_values
+    : header.data_page_header_v2?.num_rows
+
+  const values = readPage(reader, header, columnDecoder, dictionary, undefined, 0)
+
+  // If we have a row limit and the page has more rows, truncate
+  if (rowLimit !== undefined && pageRows !== undefined && pageRows > rowLimit) {
+    return values.slice(0, rowLimit)
+  }
+
+  return values
 }
