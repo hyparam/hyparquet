@@ -71,12 +71,9 @@ export async function parquetQuery(options) {
     const { size } = getRowGroupFullRange(rowGroup)
     const useSmallGroupOptimization = size < 4 * 1024 * 1024
 
-    let groupData
-    if (useSmallGroupOptimization) {
-      groupData = await readSmallRowGroup(file, metadata, rgIndex, predicates, requiredColumns, options, groupStart)
-    } else {
-      groupData = await readLargeRowGroup(file, metadata, rgIndex, predicates, requiredColumns, options, groupStart)
-    }
+    /** @type {typeof readSmallRowGroup | typeof readLargeRowGroup} */
+    const groupDataFn = useSmallGroupOptimization ? readSmallRowGroup : readLargeRowGroup
+    let groupData = await groupDataFn(file, metadata, rgIndex, predicates, requiredColumns, options, groupStart)
 
     // Apply filter if needed
     if (filter) {
