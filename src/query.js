@@ -8,27 +8,18 @@ import { concat, equals } from './utils.js'
 import { createColumnIndexMap, createPredicates, extractFilterColumns, getRowGroupFullRange } from './plan.js'
 
 /**
- * @import {AsyncBuffer, FileMetaData, ColumnChunk, SchemaElement, ColumnIndex, OffsetIndex, CompressionCodec, Compressors, ParquetParsers, RowGroup, DecodedArray} from './types.js'
+ * @import {AsyncBuffer, FileMetaData, ColumnChunk, SchemaElement, ColumnIndex, OffsetIndex, CompressionCodec, Compressors, ParquetParsers, RowGroup, DecodedArray, ParquetReadOptions, ParquetQueryFilter} from './types.js'
  */
 
 /**
  * Query parquet file with predicate pushdown.
+ * This is a parquet-aware query engine that can read a subset of rows and columns.
  * Uses Parquet statistics to skip data that doesn't match filters.
- * @param {object} options - Query options
- * @param {AsyncBuffer} options.file - Parquet file buffer
- * @param {FileMetaData} [options.metadata] - Parquet metadata (will be loaded if not provided)
- * @param {object} [options.filter] - MongoDB-style filter
- * @param {string[]} [options.columns] - Columns to return
- * @param {string} [options.orderBy] - Column to sort by
- * @param {boolean} [options.desc] - Sort descending
- * @param {number} [options.rowStart] - First row to return (inclusive)
- * @param {number} [options.rowEnd] - Last row to return (exclusive)
- * @param {number} [options.offset] - Skip this many rows (alternative to rowStart)
- * @param {number} [options.limit] - Return at most this many rows (alternative to rowEnd)
- * @param {Compressors} [options.compressors] - Custom decompressors
- * @param {boolean} [options.utf8] - Decode byte arrays as utf8 strings
- * @param {ParquetParsers} [options.parsers] - Custom parsers
- * @returns {Promise<object[]>} Array of row objects
+ * Accepts optional filter object to filter the results and orderBy column name to sort the results.
+ * Note that using orderBy may SIGNIFICANTLY increase the query time.
+ *
+ * @param {ParquetReadOptions & { filter?: ParquetQueryFilter, orderBy?: string, desc?: boolean, offset?: number, limit?: number }} options
+ * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
  */
 export async function parquetQuery(options) {
   const { file, filter, columns, orderBy, desc = false } = options
@@ -46,7 +37,7 @@ export async function parquetQuery(options) {
   // Need both output columns and filter columns for evaluation
   const filterColumns = filter ? extractFilterColumns(filter) : []
   const outputColumns = columns || allColumns
-  const requiredColumns = [...new Set([...outputColumns, ...filterColumns, ...(orderBy ? [orderBy] : [])].filter(Boolean))]
+  const requiredColumns = [...new Set([...outputColumns, ...filterColumns, ...orderBy ? [orderBy] : []].filter(Boolean))]
 
   // Convert filter to predicates that can test min/max statistics
   const predicates = filter ? createPredicates(filter) : new Map()
@@ -108,7 +99,8 @@ export async function parquetQuery(options) {
     if (!filter) {
       // Add stable sort indexes
       rows.forEach((row, idx) => {
-        /** @type {any} */ (row).__index__ = idx
+        // @ts-ignore
+        row.__index__ = idx
       })
     }
     sortRows(rows, orderBy, desc)
@@ -126,7 +118,7 @@ export async function parquetQuery(options) {
  * @param {number} rgIndex
  * @param {Map<string, (min: any, max: any) => boolean>} predicates
  * @param {string[]} columns
- * @param {object} options
+ * @param {{parsers?: ParquetParsers, compressors?: Compressors, utf8?: boolean}} options
  * @param {number} groupStart
  * @returns {Promise<object[]>}
  */
@@ -144,19 +136,20 @@ export async function readSmallRowGroup(file, metadata, rgIndex, predicates, col
     /**
      * @param {number} sliceStart
      * @param {number} sliceEnd
+     * @returns {Promise<ArrayBuffer>}
      */
     slice(sliceStart, sliceEnd) {
       if (sliceStart >= start && sliceEnd <= end) {
         return Promise.resolve(rgBuffer.slice(sliceStart - start, sliceEnd - start))
       }
-      return file.slice(sliceStart, sliceEnd)
+      return Promise.resolve(file.slice(sliceStart, sliceEnd))
     },
     /**
      * @param {([number, number] | null)[]} ranges
      * @returns {Promise<ArrayBuffer[]>}
      */
     sliceAll(ranges) {
-      const allInBuffer = ranges.every((range) => !range || (range[0] >= start && range[1] <= end))
+      const allInBuffer = ranges.every((range) => !range || range[0] >= start && range[1] <= end)
       if (allInBuffer) {
         return Promise.resolve(
           ranges.map((range) => range ? rgBuffer.slice(range[0] - start, range[1] - start) : new ArrayBuffer(0))
@@ -190,7 +183,7 @@ export async function readSmallRowGroup(file, metadata, rgIndex, predicates, col
  * @param {number} rgIndex
  * @param {Map<string, (min: any, max: any) => boolean>} predicates
  * @param {string[]} columns
- * @param {object} options
+ * @param {{parsers?: ParquetParsers, compressors?: Compressors, utf8?: boolean}} options
  * @param {number} groupStart
  * @returns {Promise<object[]>}
  */
@@ -245,7 +238,7 @@ function canRowGroupMatch(rowGroup, predicates) {
  * @param {number} rgIndex
  * @param {Map<string, (min: any, max: any) => boolean>} predicates
  * @param {string[]} columns
- * @param {object} options
+ * @param {{parsers?: ParquetParsers, compressors?: Compressors, utf8?: boolean}} options
  * @returns {Promise<object[]>}
  */
 export async function readRowGroupWithPageFilter(file, metadata, rgIndex, predicates, columns, options) {
@@ -454,15 +447,8 @@ export async function readSelectedPages(file, metadata, rowGroup, columns, selec
  * @param {FileMetaData} metadata
  * @param {RowGroup} rowGroup
  * @param {ColumnChunk} column
- * @param {object} options
- * @returns {Promise<DecodedArray>}
- */
-/**
- * @param {AsyncBuffer} file
- * @param {FileMetaData} metadata
- * @param {RowGroup} rowGroup
- * @param {ColumnChunk} column
  * @param {{parsers?: ParquetParsers, compressors?: Compressors, utf8?: boolean}} options
+ * @returns {Promise<DecodedArray>}
  */
 export async function readFullColumn(file, metadata, rowGroup, column, options) {
   const start = Number(column.meta_data?.dictionary_page_offset || column.meta_data?.data_page_offset)
@@ -567,7 +553,7 @@ export function matchesFilter(row, filter) {
   for (const [col, cond] of Object.entries(filter)) {
     if (col.startsWith('$')) continue
 
-    const value = /** @type {{[key: string]: any}} */ (row)[col]
+    const value = /** @type {{[key: string]: any}} */ row[col]
     if (!matchesCondition(value, cond)) {
       return false
     }
@@ -637,8 +623,8 @@ export function sortRows(rows, orderBy, desc) {
 
     if (aVal === bVal) {
       // Use __index__ for stable sort
-      if (a.__index__ !== undefined && b.__index__ !== undefined) {
-        return a.__index__ - b.__index__
+      if (/** @type {any} */ a.__index__ !== undefined && /** @type {any} */ b.__index__ !== undefined) {
+        return /** @type {any} */ a.__index__ - /** @type {any} */ b.__index__
       }
       return 0
     }
@@ -660,7 +646,7 @@ export function projectRow(row, columns) {
   /** @type {{[key: string]: any}} */
   const projected = {}
   for (const col of columns) {
-    projected[col] = /** @type {{[key: string]: any}} */ (row)[col]
+    projected[col] = /** @type {{[key: string]: any}} */ row[col]
   }
   return projected
 }
