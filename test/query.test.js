@@ -236,7 +236,7 @@ describe('parquetQuery', () => {
 })
 
 // Import functions we want to test directly
-import { matchesFilter, matchesCondition, sortRows, projectRow, assembleRows, sliceAll } from '../src/query.js'
+import { assembleRows, matchesCondition, matchesFilter, projectRow, sliceAll, sortRows } from '../src/query.js'
 
 describe('matchesFilter', () => {
   it('matches simple equality', () => {
@@ -280,8 +280,8 @@ describe('matchesFilter', () => {
       $and: [
         { $or: [{ name: 'John' }, { name: 'Jane' }] },
         { age: { $gte: 25 } },
-        { status: 'active' }
-      ]
+        { status: 'active' },
+      ],
     }
     expect(matchesFilter(row, filter)).toBe(true)
   })
@@ -487,7 +487,7 @@ describe('sliceAll', () => {
     }
     const ranges = [[0, 10], [20, 40]]
     const result = await sliceAll(mockFile, ranges)
-    
+
     expect(mockFile.sliceAll).toHaveBeenCalledWith(ranges)
     expect(result).toHaveLength(2)
     expect(result[0].byteLength).toBe(10)
@@ -502,7 +502,7 @@ describe('sliceAll', () => {
     }
     const ranges = [[0, 10], [20, 40]]
     const result = await sliceAll(mockFile, ranges)
-    
+
     expect(mockFile.slice).toHaveBeenCalledTimes(2)
     expect(mockFile.slice).toHaveBeenCalledWith(0, 10)
     expect(mockFile.slice).toHaveBeenCalledWith(20, 40)
@@ -515,7 +515,7 @@ describe('sliceAll', () => {
     }
     const ranges = [[0, 10], null, [20, 30]]
     const result = await sliceAll(mockFile, ranges)
-    
+
     expect(mockFile.slice).toHaveBeenCalledTimes(2)
     expect(result).toHaveLength(3)
     expect(result[1].byteLength).toBe(0) // null range returns empty buffer

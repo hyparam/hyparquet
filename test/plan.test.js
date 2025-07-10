@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { parquetMetadataAsync } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
-import { 
-  parquetPlan, 
-  getColumnRange, 
-  getRowGroupFullRange, 
-  createColumnIndexMap, 
-  extractFilterColumns, 
-  createPredicates, 
-  createRangePredicate 
+import {
+  createColumnIndexMap,
+  createPredicates,
+  createRangePredicate,
+  extractFilterColumns,
+  getColumnRange,
+  getRowGroupFullRange,
+  parquetPlan,
 } from '../src/plan.js'
 
 describe('parquetPlan', () => {
@@ -87,7 +87,7 @@ describe('getRowGroupFullRange', () => {
         },
       ],
     }
-    
+
     const range = getRowGroupFullRange(rowGroup)
     expect(range).toEqual({
       start: 100,
@@ -111,7 +111,7 @@ describe('createColumnIndexMap', () => {
         { meta_data: { path_in_schema: ['city'] } },
       ],
     }
-    
+
     const map = createColumnIndexMap(rowGroup)
     expect(map.get('name')).toBe(0)
     expect(map.get('age')).toBe(1)
@@ -127,7 +127,7 @@ describe('createColumnIndexMap', () => {
         { meta_data: { path_in_schema: [] } },
       ],
     }
-    
+
     const map = createColumnIndexMap(rowGroup)
     expect(map.size).toBe(1)
     expect(map.get('name')).toBe(0)
@@ -191,7 +191,7 @@ describe('createPredicates', () => {
   it('creates predicates for simple equality', () => {
     const predicates = createPredicates({ age: 30 })
     expect(predicates.size).toBe(1)
-    
+
     const agePred = predicates.get('age')
     expect(agePred(25, 35)).toBe(true) // 30 is in range
     expect(agePred(35, 40)).toBe(false) // 30 is not in range
@@ -202,7 +202,7 @@ describe('createPredicates', () => {
       $and: [{ age: { $gt: 25 } }, { age: { $lt: 35 } }],
     })
     expect(predicates.size).toBe(1)
-    
+
     const agePred = predicates.get('age')
     // Only the last condition for 'age' is kept, which is $lt: 35
     expect(agePred(20, 30)).toBe(true) // min < 35
