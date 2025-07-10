@@ -109,8 +109,8 @@ export function prefetchAsyncBuffer(file, { fetches }) {
 }
 
 /**
- * Calculate the total byte range of a row group including indices.
- * Includes column data and any page indices for complete row group reads.
+ * Calculate the total byte range of a row group including indexes.
+ * Includes column data and any page indexes for complete row group reads.
  *
  * @param {RowGroup} rowGroup - row group metadata
  * @returns {{start: number, end: number, size: number}} byte range and size

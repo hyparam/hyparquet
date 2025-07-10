@@ -106,7 +106,7 @@ export async function parquetQuery(options) {
   // Handle sorting
   if (orderBy) {
     if (!filter) {
-      // Add stable sort indices
+      // Add stable sort indexes
       rows.forEach((row, idx) => {
         row.__index__ = idx
       })
@@ -158,8 +158,8 @@ export async function readSmallRowGroup(file, metadata, rgIndex, predicates, col
   }
 
   // Use page filtering if available
-  const hasIndices = rowGroup.columns.some((col) => col.column_index_offset)
-  if (hasIndices && predicates.size > 0) {
+  const hasIndexes = rowGroup.columns.some((col) => col.column_index_offset)
+  if (hasIndexes && predicates.size > 0) {
     return readRowGroupWithPageFilter(bufferedFile, metadata, rgIndex, predicates, columns, options)
   }
 
@@ -187,9 +187,9 @@ export async function readSmallRowGroup(file, metadata, rgIndex, predicates, col
  */
 export async function readLargeRowGroup(file, metadata, rgIndex, predicates, columns, options, groupStart) {
   const rowGroup = metadata.row_groups[rgIndex]
-  const hasIndices = rowGroup.columns.some((col) => col.column_index_offset)
+  const hasIndexes = rowGroup.columns.some((col) => col.column_index_offset)
 
-  if (hasIndices && predicates.size > 0) {
+  if (hasIndexes && predicates.size > 0) {
     return readRowGroupWithPageFilter(file, metadata, rgIndex, predicates, columns, options)
   }
 
@@ -276,13 +276,13 @@ export async function selectPages(file, metadata, rowGroup, predicates, columnIn
     const column = rowGroup.columns[colIndex]
     if (!column.column_index_offset) continue
 
-    // Read indices
-    const indices = await readIndices(file, column, metadata.schema)
+    // Read indexes
+    const indexes = await readIndexes(file, column, metadata.schema)
 
     // Find matching pages
     const matchingPages = new Set()
-    for (let i = 0; i < indices.columnIndex.min_values.length; i++) {
-      if (predicate(indices.columnIndex.min_values[i], indices.columnIndex.max_values[i])) {
+    for (let i = 0; i < indexes.columnIndex.min_values.length; i++) {
+      if (predicate(indexes.columnIndex.min_values[i], indexes.columnIndex.max_values[i])) {
         matchingPages.add(i)
       }
     }
@@ -309,13 +309,13 @@ export async function selectPages(file, metadata, rowGroup, predicates, columnIn
 }
 
 /**
- * Read indices for a column
+ * Read indexes for a column
  * @param {AsyncBuffer} file
  * @param {ColumnChunk} column
  * @param {SchemaElement[]} schema
  * @returns {Promise<{columnIndex: ColumnIndex, offsetIndex: OffsetIndex}>}
  */
-export async function readIndices(file, column, schema) {
+export async function readIndexes(file, column, schema) {
   const ranges = [
     [Number(column.column_index_offset), Number(column.column_index_offset) + Number(column.column_index_length)],
     [Number(column.offset_index_offset), Number(column.offset_index_offset) + Number(column.offset_index_length)],
@@ -360,8 +360,8 @@ export async function readSelectedPages(file, metadata, rowGroup, columns, selec
       continue
     }
 
-    // Read indices
-    const indices = await readIndices(file, column, metadata.schema)
+    // Read indexes
+    const indexes = await readIndexes(file, column, metadata.schema)
     const selectedPagesList = Array.from(selectedPages).sort((a, b) => a - b)
 
     // Collect page ranges
@@ -377,7 +377,7 @@ export async function readSelectedPages(file, metadata, rowGroup, columns, selec
     }
 
     for (const pageIdx of selectedPagesList) {
-      const location = indices.offsetIndex.page_locations[pageIdx]
+      const location = indexes.offsetIndex.page_locations[pageIdx]
       pageRanges.push([
         Number(location.offset),
         Number(location.offset) + location.compressed_page_size,
@@ -405,7 +405,7 @@ export async function readSelectedPages(file, metadata, rowGroup, columns, selec
     for (let i = 0; i < selectedPagesList.length; i++) {
       const pageIdx = selectedPagesList[i]
       const pageBuffer = pageBuffers[i]
-      const location = indices.offsetIndex.page_locations[pageIdx]
+      const location = indexes.offsetIndex.page_locations[pageIdx]
 
       // Combine dictionary and page if needed
       let fullBuffer = pageBuffer
@@ -418,7 +418,7 @@ export async function readSelectedPages(file, metadata, rowGroup, columns, selec
 
       // Calculate page row count
       const pageFirstRow = Number(location.first_row_index)
-      const nextLocation = indices.offsetIndex.page_locations[pageIdx + 1]
+      const nextLocation = indexes.offsetIndex.page_locations[pageIdx + 1]
       const pageRowCount = nextLocation
         ? Number(nextLocation.first_row_index) - pageFirstRow
         : Number(column.meta_data.num_values) - pageFirstRow
