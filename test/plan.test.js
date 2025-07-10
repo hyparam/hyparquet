@@ -11,6 +11,10 @@ import {
   parquetPlan,
 } from '../src/plan.js'
 
+/**
+ * @import {ColumnMetaData, RowGroup} from '../src/types.js'
+ */
+
 describe('parquetPlan', () => {
   it('generates a query plan', async () => {
     const file = await asyncBufferFromFile('test/files/page_indexed.parquet')
@@ -48,31 +52,58 @@ describe('parquetPlan', () => {
 
 describe('getColumnRange', () => {
   it('calculates byte range with dictionary page', () => {
-    const range = getColumnRange({
-      dictionary_page_offset: 100n,
-      data_page_offset: 200n,
+    /** @type {ColumnMetaData} */
+    const columnMetadata = {
+      type: 'BYTE_ARRAY',
+      encodings: ['PLAIN'],
+      path_in_schema: ['test'],
+      codec: 'UNCOMPRESSED',
+      num_values: 100n,
+      total_uncompressed_size: 500n,
       total_compressed_size: 500n,
-    })
+      data_page_offset: 200n,
+      dictionary_page_offset: 100n,
+    }
+    const range = getColumnRange(columnMetadata)
     expect(range).toEqual({ startByte: 100, endByte: 600 })
   })
 
   it('calculates byte range without dictionary page', () => {
-    const range = getColumnRange({
-      data_page_offset: 200n,
+    /** @type {ColumnMetaData} */
+    const columnMetadata = {
+      type: 'BYTE_ARRAY',
+      encodings: ['PLAIN'],
+      path_in_schema: ['test'],
+      codec: 'UNCOMPRESSED',
+      num_values: 100n,
+      total_uncompressed_size: 300n,
       total_compressed_size: 300n,
-    })
+      data_page_offset: 200n,
+    }
+    const range = getColumnRange(columnMetadata)
     expect(range).toEqual({ startByte: 200, endByte: 500 })
   })
 })
 
 describe('getRowGroupFullRange', () => {
   it('calculates full range including indexes', () => {
+    /** @type {RowGroup} */
     const rowGroup = {
+      total_byte_size: 1000n,
+      num_rows: 100n,
       columns: [
         {
+          file_offset: 0n,
           meta_data: {
-            dictionary_page_offset: 100n,
+            type: 'BYTE_ARRAY',
+            encodings: ['PLAIN'],
+            path_in_schema: ['col1'],
+            codec: 'UNCOMPRESSED',
+            num_values: 50n,
+            total_uncompressed_size: 200n,
             total_compressed_size: 200n,
+            data_page_offset: 200n,
+            dictionary_page_offset: 100n,
           },
           column_index_offset: 400n,
           column_index_length: 50,
@@ -80,9 +111,16 @@ describe('getRowGroupFullRange', () => {
           offset_index_length: 60,
         },
         {
+          file_offset: 0n,
           meta_data: {
-            data_page_offset: 300n,
+            type: 'BYTE_ARRAY',
+            encodings: ['PLAIN'],
+            path_in_schema: ['col2'],
+            codec: 'UNCOMPRESSED',
+            num_values: 50n,
+            total_uncompressed_size: 100n,
             total_compressed_size: 100n,
+            data_page_offset: 300n,
           },
         },
       ],
@@ -97,18 +135,63 @@ describe('getRowGroupFullRange', () => {
   })
 
   it('handles empty row group', () => {
-    const range = getRowGroupFullRange({ columns: [] })
+    /** @type {RowGroup} */
+    const rowGroup = {
+      total_byte_size: 0n,
+      num_rows: 0n,
+      columns: [],
+    }
+    const range = getRowGroupFullRange(rowGroup)
     expect(range).toEqual({ start: Infinity, end: 0, size: -Infinity })
   })
 })
 
 describe('createColumnIndexMap', () => {
   it('creates mapping from column names to indexes', () => {
+    /** @type {RowGroup} */
     const rowGroup = {
+      total_byte_size: 1000n,
+      num_rows: 100n,
       columns: [
-        { meta_data: { path_in_schema: ['name'] } },
-        { meta_data: { path_in_schema: ['age'] } },
-        { meta_data: { path_in_schema: ['city'] } },
+        {
+          file_offset: 0n,
+          meta_data: {
+            type: 'BYTE_ARRAY',
+            encodings: ['PLAIN'],
+            path_in_schema: ['name'],
+            codec: 'UNCOMPRESSED',
+            num_values: 100n,
+            total_uncompressed_size: 300n,
+            total_compressed_size: 300n,
+            data_page_offset: 100n,
+          },
+        },
+        {
+          file_offset: 0n,
+          meta_data: {
+            type: 'INT32',
+            encodings: ['PLAIN'],
+            path_in_schema: ['age'],
+            codec: 'UNCOMPRESSED',
+            num_values: 100n,
+            total_uncompressed_size: 400n,
+            total_compressed_size: 400n,
+            data_page_offset: 400n,
+          },
+        },
+        {
+          file_offset: 0n,
+          meta_data: {
+            type: 'BYTE_ARRAY',
+            encodings: ['PLAIN'],
+            path_in_schema: ['city'],
+            codec: 'UNCOMPRESSED',
+            num_values: 100n,
+            total_uncompressed_size: 300n,
+            total_compressed_size: 300n,
+            data_page_offset: 700n,
+          },
+        },
       ],
     }
 
@@ -120,11 +203,40 @@ describe('createColumnIndexMap', () => {
   })
 
   it('skips columns without metadata', () => {
+    /** @type {RowGroup} */
     const rowGroup = {
+      total_byte_size: 1000n,
+      num_rows: 100n,
       columns: [
-        { meta_data: { path_in_schema: ['name'] } },
-        {},
-        { meta_data: { path_in_schema: [] } },
+        {
+          file_offset: 0n,
+          meta_data: {
+            type: 'BYTE_ARRAY',
+            encodings: ['PLAIN'],
+            path_in_schema: ['name'],
+            codec: 'UNCOMPRESSED',
+            num_values: 100n,
+            total_uncompressed_size: 300n,
+            total_compressed_size: 300n,
+            data_page_offset: 100n,
+          },
+        },
+        {
+          file_offset: 0n,
+        },
+        {
+          file_offset: 0n,
+          meta_data: {
+            type: 'BYTE_ARRAY',
+            encodings: ['PLAIN'],
+            path_in_schema: [],
+            codec: 'UNCOMPRESSED',
+            num_values: 100n,
+            total_uncompressed_size: 300n,
+            total_compressed_size: 300n,
+            data_page_offset: 700n,
+          },
+        },
       ],
     }
 
@@ -193,8 +305,8 @@ describe('createPredicates', () => {
     expect(predicates.size).toBe(1)
 
     const agePred = predicates.get('age')
-    expect(agePred(25, 35)).toBe(true) // 30 is in range
-    expect(agePred(35, 40)).toBe(false) // 30 is not in range
+    expect(agePred?.(25, 35)).toBe(true) // 30 is in range
+    expect(agePred?.(35, 40)).toBe(false) // 30 is not in range
   })
 
   it('creates predicates for $and conditions', () => {
@@ -205,8 +317,8 @@ describe('createPredicates', () => {
 
     const agePred = predicates.get('age')
     // Only the last condition for 'age' is kept, which is $lt: 35
-    expect(agePred(20, 30)).toBe(true) // min < 35
-    expect(agePred(40, 50)).toBe(false) // min not < 35
+    expect(agePred?.(20, 30)).toBe(true) // min < 35
+    expect(agePred?.(40, 50)).toBe(false) // min not < 35
   })
 
   it('ignores $or conditions', () => {
@@ -228,62 +340,62 @@ describe('createPredicates', () => {
 describe('createRangePredicate', () => {
   it('handles direct value comparison', () => {
     const pred = createRangePredicate(42)
-    expect(pred(40, 50)).toBe(true)
-    expect(pred(50, 60)).toBe(false)
+    expect(pred?.(40, 50)).toBe(true)
+    expect(pred?.(50, 60)).toBe(false)
   })
 
   it('handles $eq operator', () => {
     const pred = createRangePredicate({ $eq: 42 })
-    expect(pred(40, 50)).toBe(true)
-    expect(pred(50, 60)).toBe(false)
+    expect(pred?.(40, 50)).toBe(true)
+    expect(pred?.(50, 60)).toBe(false)
   })
 
   it('handles $gt operator', () => {
     const pred = createRangePredicate({ $gt: 30 })
-    expect(pred(20, 25)).toBe(false) // max not > 30
-    expect(pred(20, 35)).toBe(true) // max > 30
-    expect(pred(35, 40)).toBe(true) // all values > 30
+    expect(pred?.(20, 25)).toBe(false) // max not > 30
+    expect(pred?.(20, 35)).toBe(true) // max > 30
+    expect(pred?.(35, 40)).toBe(true) // all values > 30
   })
 
   it('handles $gte operator', () => {
     const pred = createRangePredicate({ $gte: 30 })
-    expect(pred(20, 25)).toBe(false) // max not >= 30
-    expect(pred(20, 30)).toBe(true) // max >= 30
-    expect(pred(30, 40)).toBe(true) // all values >= 30
+    expect(pred?.(20, 25)).toBe(false) // max not >= 30
+    expect(pred?.(20, 30)).toBe(true) // max >= 30
+    expect(pred?.(30, 40)).toBe(true) // all values >= 30
   })
 
   it('handles $lt operator', () => {
     const pred = createRangePredicate({ $lt: 30 })
-    expect(pred(35, 40)).toBe(false) // min not < 30
-    expect(pred(25, 35)).toBe(true) // min < 30
-    expect(pred(20, 25)).toBe(true) // all values < 30
+    expect(pred?.(35, 40)).toBe(false) // min not < 30
+    expect(pred?.(25, 35)).toBe(true) // min < 30
+    expect(pred?.(20, 25)).toBe(true) // all values < 30
   })
 
   it('handles $lte operator', () => {
     const pred = createRangePredicate({ $lte: 30 })
-    expect(pred(35, 40)).toBe(false) // min not <= 30
-    expect(pred(30, 35)).toBe(true) // min <= 30
-    expect(pred(20, 30)).toBe(true) // all values <= 30
+    expect(pred?.(35, 40)).toBe(false) // min not <= 30
+    expect(pred?.(30, 35)).toBe(true) // min <= 30
+    expect(pred?.(20, 30)).toBe(true) // all values <= 30
   })
 
   it('handles $in operator', () => {
     const pred = createRangePredicate({ $in: [10, 20, 30] })
-    expect(pred(5, 15)).toBe(true) // contains 10
-    expect(pred(25, 35)).toBe(true) // contains 30
-    expect(pred(35, 45)).toBe(false) // contains none
+    expect(pred?.(5, 15)).toBe(true) // contains 10
+    expect(pred?.(25, 35)).toBe(true) // contains 30
+    expect(pred?.(35, 45)).toBe(false) // contains none
   })
 
   it('handles multiple operators', () => {
     const pred = createRangePredicate({ $gte: 20, $lt: 40 })
-    expect(pred(10, 15)).toBe(false) // max < 20
-    expect(pred(15, 25)).toBe(true) // overlaps [20, 40)
-    expect(pred(35, 45)).toBe(true) // overlaps [20, 40)
-    expect(pred(45, 50)).toBe(false) // min >= 40
+    expect(pred?.(10, 15)).toBe(false) // max < 20
+    expect(pred?.(15, 25)).toBe(true) // overlaps [20, 40)
+    expect(pred?.(35, 45)).toBe(true) // overlaps [20, 40)
+    expect(pred?.(45, 50)).toBe(false) // min >= 40
   })
 
   it('returns null for unsupported operators', () => {
     const pred = createRangePredicate({ $ne: 42 })
     expect(pred).toBeDefined() // still creates a predicate
-    expect(pred(40, 50)).toBe(true) // but always returns true for unsupported ops
+    expect(pred?.(40, 50)).toBe(true) // but always returns true for unsupported ops
   })
 })

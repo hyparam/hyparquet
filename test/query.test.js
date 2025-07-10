@@ -480,11 +480,14 @@ describe('assembleRows', () => {
 describe('sliceAll', () => {
   it('uses native sliceAll when available', async () => {
     const mockFile = {
+      byteLength: 1000,
+      slice: vi.fn(),
       sliceAll: vi.fn().mockResolvedValue([
         new ArrayBuffer(10),
         new ArrayBuffer(20),
       ]),
     }
+    /** @type {[number, number][]} */
     const ranges = [[0, 10], [20, 40]]
     const result = await sliceAll(mockFile, ranges)
 
@@ -496,10 +499,12 @@ describe('sliceAll', () => {
 
   it('falls back to parallel slices', async () => {
     const mockFile = {
+      byteLength: 1000,
       slice: vi.fn()
         .mockResolvedValueOnce(new ArrayBuffer(10))
         .mockResolvedValueOnce(new ArrayBuffer(20)),
     }
+    /** @type {[number, number][]} */
     const ranges = [[0, 10], [20, 40]]
     const result = await sliceAll(mockFile, ranges)
 
@@ -511,8 +516,10 @@ describe('sliceAll', () => {
 
   it('handles null ranges', async () => {
     const mockFile = {
+      byteLength: 1000,
       slice: vi.fn().mockResolvedValue(new ArrayBuffer(10)),
     }
+    /** @type {([number, number] | null)[]} */
     const ranges = [[0, 10], null, [20, 30]]
     const result = await sliceAll(mockFile, ranges)
 
