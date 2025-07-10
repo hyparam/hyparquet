@@ -210,7 +210,7 @@ describe('parquetQuery', () => {
     ])
     // if we weren't streaming row groups, this would be 3:
     expect(file.fetches).toBe(2) // 1 metadata, 1 row group
-    expect(file.bytes).toBe(5261)
+    expect(file.bytes).toBe(7253) // 4099 (metadata) + 3154 (row group 0 with indices)
   })
 
   it('filter on columns that are not selected', async () => {
