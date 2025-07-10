@@ -46,7 +46,7 @@ export async function parquetQuery(options) {
   // Need both output columns and filter columns for evaluation
   const filterColumns = filter ? extractFilterColumns(filter) : []
   const outputColumns = columns || allColumns
-  const requiredColumns = [...new Set([...outputColumns, ...filterColumns, orderBy].filter(Boolean))]
+  const requiredColumns = [...new Set([...outputColumns, ...filterColumns, ...(orderBy ? [orderBy] : [])].filter(Boolean))]
 
   // Convert filter to predicates that can test min/max statistics
   const predicates = filter ? createPredicates(filter) : new Map()
@@ -108,7 +108,7 @@ export async function parquetQuery(options) {
     if (!filter) {
       // Add stable sort indexes
       rows.forEach((row, idx) => {
-        row.__index__ = idx
+        /** @type {any} */ (row).__index__ = idx
       })
     }
     sortRows(rows, orderBy, desc)
@@ -138,16 +138,25 @@ export async function readSmallRowGroup(file, metadata, rgIndex, predicates, col
   const rgBuffer = await file.slice(start, end)
 
   // Create buffered file
+  /** @type {AsyncBuffer & {sliceAll: (ranges: ([number, number] | null)[]) => Promise<ArrayBuffer[]>}} */
   const bufferedFile = {
     byteLength: file.byteLength,
+    /**
+     * @param {number} sliceStart
+     * @param {number} sliceEnd
+     */
     slice(sliceStart, sliceEnd) {
       if (sliceStart >= start && sliceEnd <= end) {
         return Promise.resolve(rgBuffer.slice(sliceStart - start, sliceEnd - start))
       }
       return file.slice(sliceStart, sliceEnd)
     },
+    /**
+     * @param {([number, number] | null)[]} ranges
+     * @returns {Promise<ArrayBuffer[]>}
+     */
     sliceAll(ranges) {
-      const allInBuffer = ranges.every((range) => !range || range[0] >= start && range[1] <= end)
+      const allInBuffer = ranges.every((range) => !range || (range[0] >= start && range[1] <= end))
       if (allInBuffer) {
         return Promise.resolve(
           ranges.map((range) => range ? rgBuffer.slice(range[0] - start, range[1] - start) : new ArrayBuffer(0))
@@ -302,7 +311,7 @@ export async function selectPages(file, metadata, rowGroup, predicates, columnIn
     if (selectedPages === null) {
       selectedPages = new Set(pages)
     } else {
-      selectedPages = new Set([...selectedPages].filter((p) => pages.has(p)))
+      selectedPages = new Set([...selectedPages].filter((/** @type {number} */ p) => pages.has(p)))
     }
   }
 
@@ -317,6 +326,7 @@ export async function selectPages(file, metadata, rowGroup, predicates, columnIn
  * @returns {Promise<{columnIndex: ColumnIndex, offsetIndex: OffsetIndex}>}
  */
 export async function readIndexes(file, column, schema) {
+  /** @type {[number, number][]} */
   const ranges = [
     [Number(column.column_index_offset), Number(column.column_index_offset) + Number(column.column_index_length)],
     [Number(column.offset_index_offset), Number(column.offset_index_offset) + Number(column.offset_index_length)],
@@ -324,7 +334,7 @@ export async function readIndexes(file, column, schema) {
 
   const [colIndexData, offsetIndexData] = await sliceAll(file, ranges)
 
-  const schemaPath = getSchemaPath(schema, column.meta_data.path_in_schema)
+  const schemaPath = getSchemaPath(schema, column.meta_data?.path_in_schema || [])
   const element = schemaPath[schemaPath.length - 1]?.element
 
   return {
@@ -341,7 +351,7 @@ export async function readIndexes(file, column, schema) {
  * @param {string[]} columns
  * @param {Set<number>} selectedPages
  * @param {Map<string, number>} columnIndexMap
- * @param {object} options
+ * @param {{parsers?: ParquetParsers, compressors?: Compressors, utf8?: boolean}} options
  * @returns {Promise<Map<string, any[]>>}
  */
 export async function readSelectedPages(file, metadata, rowGroup, columns, selectedPages, columnIndexMap, options) {
@@ -366,6 +376,7 @@ export async function readSelectedPages(file, metadata, rowGroup, columns, selec
     const selectedPagesList = Array.from(selectedPages).sort((a, b) => a - b)
 
     // Collect page ranges
+    /** @type {[number, number][]} */
     const pageRanges = []
     let needsDictionary = false
 
@@ -397,9 +408,9 @@ export async function readSelectedPages(file, metadata, rowGroup, columns, selec
       element: schemaPath[schemaPath.length - 1].element,
       schemaPath,
       codec: column.meta_data.codec,
-      parsers: options.parsers || DEFAULT_PARSERS,
-      compressors: options.compressors,
-      utf8: options.utf8 !== false,
+      parsers: options?.parsers || DEFAULT_PARSERS,
+      compressors: options?.compressors,
+      utf8: options?.utf8 !== false,
     }
 
     // Decode dictionary once if present
@@ -446,6 +457,13 @@ export async function readSelectedPages(file, metadata, rowGroup, columns, selec
  * @param {object} options
  * @returns {Promise<DecodedArray>}
  */
+/**
+ * @param {AsyncBuffer} file
+ * @param {FileMetaData} metadata
+ * @param {RowGroup} rowGroup
+ * @param {ColumnChunk} column
+ * @param {{parsers?: ParquetParsers, compressors?: Compressors, utf8?: boolean}} options
+ */
 export async function readFullColumn(file, metadata, rowGroup, column, options) {
   const start = Number(column.meta_data?.dictionary_page_offset || column.meta_data?.data_page_offset)
   const size = Number(column.meta_data?.total_compressed_size)
@@ -463,14 +481,14 @@ export async function readFullColumn(file, metadata, rowGroup, column, options) 
       groupRows: Number(rowGroup.num_rows),
     },
     {
-      columnName: column.meta_data?.path_in_schema.join('.'),
-      type: column.meta_data?.type,
+      columnName: column.meta_data?.path_in_schema?.join('.') || '',
+      type: column.meta_data?.type || 'BYTE_ARRAY',
       element: schemaPath[schemaPath.length - 1].element,
       schemaPath,
-      codec: column.meta_data?.codec,
-      parsers: options.parsers || DEFAULT_PARSERS,
-      compressors: options.compressors,
-      utf8: options.utf8 !== false,
+      codec: column.meta_data?.codec || 'UNCOMPRESSED',
+      parsers: options?.parsers || DEFAULT_PARSERS,
+      compressors: options?.compressors,
+      utf8: options?.utf8 !== false,
     }
   )
 
@@ -486,7 +504,7 @@ export async function readFullColumn(file, metadata, rowGroup, column, options) 
 
 /**
  * Batch read multiple byte ranges
- * @param {AsyncBuffer} file
+ * @param {AsyncBuffer & {sliceAll?: (ranges: ([number, number] | null)[]) => Promise<ArrayBuffer[]>}} file
  * @param {Array<[number, number]|null>} ranges
  * @returns {Promise<ArrayBuffer[]>}
  */
@@ -510,6 +528,7 @@ export function assembleRows(columnData, columns) {
   const rows = []
 
   for (let i = 0; i < numRows; i++) {
+    /** @type {{[key: string]: any}} */
     const row = {}
     for (const col of columns) {
       const data = columnData.get(col)
@@ -523,21 +542,21 @@ export function assembleRows(columnData, columns) {
 
 /**
  * Check if row matches filter
- * @param {object} row
+ * @param {{[key: string]: any}} row
  * @param {any} filter
  * @returns {boolean}
  */
 export function matchesFilter(row, filter) {
   if (filter.$and) {
-    return filter.$and.every((f) => matchesFilter(row, f))
+    return filter.$and.every((/** @type {any} */ f) => matchesFilter(row, f))
   }
 
   if (filter.$or) {
-    return filter.$or.some((f) => matchesFilter(row, f))
+    return filter.$or.some((/** @type {any} */ f) => matchesFilter(row, f))
   }
 
   if (filter.$nor) {
-    return !filter.$nor.some((f) => matchesFilter(row, f))
+    return !filter.$nor.some((/** @type {any} */ f) => matchesFilter(row, f))
   }
 
   if (filter.$not) {
@@ -548,7 +567,7 @@ export function matchesFilter(row, filter) {
   for (const [col, cond] of Object.entries(filter)) {
     if (col.startsWith('$')) continue
 
-    const value = row[col]
+    const value = /** @type {{[key: string]: any}} */ (row)[col]
     if (!matchesCondition(value, cond)) {
       return false
     }
@@ -633,14 +652,15 @@ export function sortRows(rows, orderBy, desc) {
 
 /**
  * Project row to selected columns
- * @param {object} row
+ * @param {{[key: string]: any}} row
  * @param {string[]} columns
  * @returns {object}
  */
 export function projectRow(row, columns) {
+  /** @type {{[key: string]: any}} */
   const projected = {}
   for (const col of columns) {
-    projected[col] = row[col]
+    projected[col] = /** @type {{[key: string]: any}} */ (row)[col]
   }
   return projected
 }

@@ -154,7 +154,7 @@ export function getRowGroupFullRange(rowGroup) {
 export function createColumnIndexMap(rowGroup) {
   const map = new Map()
   rowGroup.columns.forEach((column, index) => {
-    if (column.meta_data?.path_in_schema?.length > 0) {
+    if (column.meta_data?.path_in_schema?.length && column.meta_data.path_in_schema.length > 0) {
       map.set(column.meta_data.path_in_schema[0], index)
     }
   })
@@ -171,6 +171,9 @@ export function createColumnIndexMap(rowGroup) {
 export function extractFilterColumns(filter) {
   const columns = new Set()
 
+  /**
+   * @param {any} f
+   */
   function extract(f) {
     if (f.$and || f.$or || f.$nor) {
       (f.$and || f.$or || f.$nor).forEach(extract)
@@ -197,6 +200,9 @@ export function extractFilterColumns(filter) {
 export function createPredicates(filter) {
   const predicates = new Map()
 
+  /**
+   * @param {any} f
+   */
   function processFilter(f) {
     if (f.$and) {
       f.$and.forEach(processFilter)

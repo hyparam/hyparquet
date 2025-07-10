@@ -248,7 +248,7 @@ export function decodeDataPage(buffer, columnDecoder, dictionary, rowLimit) {
   const values = readPage(reader, header, columnDecoder, dictionary, undefined, 0)
 
   // If we have a row limit and the page has more rows, truncate
-  if (rowLimit !== undefined && pageRows > rowLimit) {
+  if (rowLimit !== undefined && pageRows !== undefined && pageRows > rowLimit) {
     return values.slice(0, rowLimit)
   }
 
