@@ -609,7 +609,7 @@ export function matchesCondition(value, condition) {
 
 /**
  * Sort rows by column
- * @param {any[]} rows
+ * @param {Record<string, any>[]} rows
  * @param {string} orderBy
  * @param {boolean} desc
  */
@@ -620,8 +620,10 @@ export function sortRows(rows, orderBy, desc) {
 
     if (aVal === bVal) {
       // Use __index__ for stable sort
-      if (/** @type {any} */ a.__index__ !== undefined && /** @type {any} */ b.__index__ !== undefined) {
-        return /** @type {any} */ a.__index__ - /** @type {any} */ b.__index__
+      const aIndex = a.__index__
+      const bIndex = b.__index__
+      if (aIndex !== undefined && bIndex !== undefined) {
+        return aIndex - bIndex
       }
       return 0
     }
@@ -637,13 +639,13 @@ export function sortRows(rows, orderBy, desc) {
  * Project row to selected columns
  * @param {{[key: string]: any}} row
  * @param {string[]} columns
- * @returns {object}
+ * @returns {{[key: string]: any}}
  */
 export function projectRow(row, columns) {
   /** @type {{[key: string]: any}} */
   const projected = {}
   for (const col of columns) {
-    projected[col] = /** @type {{[key: string]: any}} */ row[col]
+    projected[col] = row[col]
   }
   return projected
 }
