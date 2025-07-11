@@ -1,0 +1,206 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "duckdb_schema",
+      "num_children": 1
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "r",
+      "converted_type": "INT_32"
+    }
+  ],
+  "num_rows": 10000,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "r"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 2048,
+            "total_uncompressed_size": 59,
+            "total_compressed_size": 63,
+            "data_page_offset": 31,
+            "dictionary_page_offset": 4,
+            "statistics": {
+              "max": 20,
+              "min": 0,
+              "null_count": 0,
+              "distinct_count": 3,
+              "max_value": 20,
+              "min_value": 0,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "bloom_filter_offset": 316,
+            "bloom_filter_length": 47
+          }
+        }
+      ],
+      "total_byte_size": 59,
+      "num_rows": 2048,
+      "file_offset": 4
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "r"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 2048,
+            "total_uncompressed_size": 60,
+            "total_compressed_size": 64,
+            "data_page_offset": 94,
+            "dictionary_page_offset": 67,
+            "statistics": {
+              "max": 40,
+              "min": 20,
+              "null_count": 0,
+              "distinct_count": 3,
+              "max_value": 40,
+              "min_value": 20,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "bloom_filter_offset": 363,
+            "bloom_filter_length": 47
+          }
+        }
+      ],
+      "total_byte_size": 60,
+      "num_rows": 2048,
+      "file_offset": 67
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "r"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 2048,
+            "total_uncompressed_size": 60,
+            "total_compressed_size": 64,
+            "data_page_offset": 158,
+            "dictionary_page_offset": 131,
+            "statistics": {
+              "max": 60,
+              "min": 40,
+              "null_count": 0,
+              "distinct_count": 3,
+              "max_value": 60,
+              "min_value": 40,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "bloom_filter_offset": 410,
+            "bloom_filter_length": 47
+          }
+        }
+      ],
+      "total_byte_size": 60,
+      "num_rows": 2048,
+      "file_offset": 131
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "r"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 2048,
+            "total_uncompressed_size": 60,
+            "total_compressed_size": 64,
+            "data_page_offset": 222,
+            "dictionary_page_offset": 195,
+            "statistics": {
+              "max": 80,
+              "min": 60,
+              "null_count": 0,
+              "distinct_count": 3,
+              "max_value": 80,
+              "min_value": 60,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "bloom_filter_offset": 457,
+            "bloom_filter_length": 47
+          }
+        }
+      ],
+      "total_byte_size": 60,
+      "num_rows": 2048,
+      "file_offset": 195
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "r"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 1808,
+            "total_uncompressed_size": 53,
+            "total_compressed_size": 57,
+            "data_page_offset": 282,
+            "dictionary_page_offset": 259,
+            "statistics": {
+              "max": 90,
+              "min": 80,
+              "null_count": 0,
+              "distinct_count": 2,
+              "max_value": 90,
+              "min_value": 80,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "bloom_filter_offset": 504,
+            "bloom_filter_length": 47
+          }
+        }
+      ],
+      "total_byte_size": 53,
+      "num_rows": 1808,
+      "file_offset": 259
+    }
+  ],
+  "created_by": "DuckDB version v1.3.0 (build 71c5c07cdd)",
+  "metadata_length": 468
+}

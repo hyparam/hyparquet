@@ -450,3 +450,39 @@ export interface AsyncRowGroup {
   groupRows: number
   asyncColumns: AsyncColumn[]
 }
+
+/*
+* Bloom filters
+* See https://parquet.apache.org/docs/file-format/bloomfilter/
+*
+* Bloom filters are a compact data structure allowing for fast membership checks.
+* Since 2018 the parquet spec has supported writing a `bloom_filter_page_header`,
+* allowing for efficient predicate pushdown when querying row group metadata.
+*/
+export interface SplitBlockAlgorithm {}
+
+// Currently the spec only supports one algorithm
+export type BloomFilterAlgorithm = {
+  BLOCK: SplitBlockAlgorithm
+}
+
+export interface XxHash {}
+
+// Currently the spec only supports one hash function
+export type BloomFilterHash = {
+  XXHASH: XxHash
+}
+
+export interface Uncompressed {}
+
+// Currently the spec only supports one compression algorithm
+export type BloomFilterCompression = {
+  UNCOMPRESSED: Uncompressed
+}
+
+export interface BloomFilterPageHeader {
+  numBytes: number
+  algorithm: BloomFilterAlgorithm
+  hash: BloomFilterHash
+  compression: BloomFilterCompression
+}
