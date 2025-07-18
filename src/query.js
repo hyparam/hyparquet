@@ -80,7 +80,7 @@ export async function parquetQuery(options) {
       groupData = groupData.filter((row) => matchesFilter(row, filter))
     }
 
-    rows.push(...groupData)
+    concat(rows, groupData)
 
     // Early exit for limited queries without sorting
     if (!orderBy && limit !== undefined && rows.length >= offset + limit) {
@@ -506,8 +506,7 @@ export function sliceAll(file, ranges) {
  */
 export function assembleRows(columnData, columns) {
   if (columnData.size === 0) return []
-
-  const numRows = Math.max(...[...columnData.values()].map((d) => d.length))
+  const numRows = max(...[...columnData.values()].map((d) => d.length))
   const rows = []
 
   for (let i = 0; i < numRows; i++) {
