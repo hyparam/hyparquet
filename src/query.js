@@ -506,7 +506,7 @@ export function sliceAll(file, ranges) {
  */
 export function assembleRows(columnData, columns) {
   if (columnData.size === 0) return []
-  const numRows = max(...[...columnData.values()].map((d) => d.length))
+  const numRows = [...columnData.values()].reduce((max, d) => Math.max(max, d.length), 0)
   const rows = []
 
   for (let i = 0; i < numRows; i++) {
