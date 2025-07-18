@@ -53,10 +53,11 @@ export async function parquetQuery(options) {
     throw new Error(`parquet orderBy column not found: ${orderBy}`)
   }
 
-  // Main processing loop
+  /** @type {Record<string, any>[]} */
   const rows = []
   let groupStart = 0
 
+  // Main processing loop
   for (let rgIndex = 0; rgIndex < metadata.row_groups.length; rgIndex++) {
     const rowGroup = metadata.row_groups[rgIndex]
     const groupRows = Number(rowGroup.num_rows)
