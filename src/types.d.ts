@@ -15,11 +15,11 @@ export interface MetadataOptions {
   parsers?: ParquetParsers // custom parsers to decode advanced types
 }
 
-export interface ArrayRowFormat {
+interface ArrayRowFormat {
   rowFormat?: 'array' // format of each row passed to the onComplete function. Can be omitted, as it's the default.
   onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
 }
-export interface ObjectRowFormat {
+interface ObjectRowFormat {
   rowFormat: 'object' // format of each row passed to the onComplete function
   onComplete?: (rows: Record<string, any>[]) => void // called when all requested rows and columns are parsed
 }
@@ -27,7 +27,7 @@ export interface ObjectRowFormat {
 /**
  * Parquet query options for reading data
  */
-export type BaseParquetReadOptions = {
+export type ParquetReadOptions = {
   file: AsyncBuffer // file-like object containing parquet data
   metadata?: FileMetaData // parquet metadata, will be parsed if not provided
   columns?: string[] // columns to read, all columns if undefined
@@ -38,8 +38,7 @@ export type BaseParquetReadOptions = {
   compressors?: Compressors // custom decompressors
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
   parsers?: ParquetParsers // custom parsers to decode advanced types
-}
-export type ParquetReadOptions = BaseParquetReadOptions & (ArrayRowFormat | ObjectRowFormat)
+} & (ArrayRowFormat | ObjectRowFormat)
 
 /**
  * Parquet query options for filtering data

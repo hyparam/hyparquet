@@ -9,8 +9,9 @@ export { parquetRead }
 /**
  * This is a helper function to read parquet row data as a promise.
  * It is a wrapper around the more configurable parquetRead function.
+ *
  * @param {Omit<ParquetReadOptions, 'onComplete'>} options
- * @returns {Promise<Parameters<ObjectRowFormat['onComplete']>[0]>} resolves when all requested rows and columns are parsed.
+ * @returns {Promise<Record<string, any>[] |any[][]>} resolves when all requested rows and columns are parsed.
  *   Depending on the rowFormat, this will be an array of arrays or an array of objects. The default is an array of objects.
 */
 export function parquetReadObjects(options) {
@@ -60,9 +61,6 @@ export function parquetReadObjects(options) {
  * @typedef {import('../src/types.d.ts').BoundaryOrder} BoundaryOrder
  * @typedef {import('../src/types.d.ts').ColumnData} ColumnData
  * @typedef {import('../src/types.d.ts').ParquetReadOptions} ParquetReadOptions
- * @typedef {import('../src/types.d.ts').BaseParquetReadOptions} BaseParquetReadOptions
- * @typedef {import('../src/types.d.ts').ArrayRowFormat} ArrayRowFormat
- * @typedef {import('../src/types.d.ts').ObjectRowFormat} ObjectRowFormat
  * @typedef {import('../src/types.d.ts').MetadataOptions} MetadataOptions
  * @typedef {import('../src/types.d.ts').ParquetParsers} ParquetParsers
  */
