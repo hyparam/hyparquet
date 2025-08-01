@@ -1,7 +1,7 @@
 import { parquetRead } from './read.js'
 
-export { parquetRead }
 export { parquetMetadata, parquetMetadataAsync, parquetSchema } from './metadata.js'
+export { parquetRead }
 export { parquetQuery } from './query.js'
 export { snappyUncompress } from './snappy.js'
 export { asyncBufferFromUrl, byteLengthFromUrl, cachedAsyncBuffer, flatten, toJson } from './utils.js'
