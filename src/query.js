@@ -7,8 +7,8 @@ import { equals } from './utils.js'
  * This is a parquet-aware query engine that can read a subset of rows and columns.
  * Accepts optional filter object to filter the results and orderBy column name to sort the results.
  * Note that using orderBy may SIGNIFICANTLY increase the query time.
- *
- * @param {ParquetReadOptions & { filter?: ParquetQueryFilter, orderBy?: string }} options
+ * @import {BaseParquetReadOptions} from '../src/types.d.ts'
+ * @param {BaseParquetReadOptions & { filter?: ParquetQueryFilter, orderBy?: string }} options
  * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
  */
 export async function parquetQuery(options) {
@@ -110,8 +110,8 @@ export async function parquetQuery(options) {
 /**
  * Reads a list rows from a parquet file, reading only the row groups that contain the rows.
  * Returns a sparse array of rows.
- * @import {ParquetQueryFilter, ParquetReadOptions} from '../src/types.d.ts'
- * @param {ParquetReadOptions & { rows: number[] }} options
+ * @import {ParquetQueryFilter} from '../src/types.d.ts'
+ * @param {BaseParquetReadOptions & { rows: number[] }} options
  * @returns {Promise<Record<string, any>[]>}
  */
 async function parquetReadRows(options) {
