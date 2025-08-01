@@ -1,10 +1,10 @@
 import { parquetRead } from './read.js'
 
+export { parquetRead }
 export { parquetMetadata, parquetMetadataAsync, parquetSchema } from './metadata.js'
 export { parquetQuery } from './query.js'
 export { snappyUncompress } from './snappy.js'
 export { asyncBufferFromUrl, byteLengthFromUrl, cachedAsyncBuffer, flatten, toJson } from './utils.js'
-export { parquetRead }
 
 /**
  * This is a helper function to read parquet row data as a promise.
@@ -12,7 +12,7 @@ export { parquetRead }
  *
  * @param {Omit<ParquetReadOptions, 'onComplete'>} options
  * @returns {Promise<Record<string, any>[] |any[][]>} resolves when all requested rows and columns are parsed.
- *   Depending on the rowFormat, this will be an array of arrays or an array of objects. The default is an array of objects.
+ *   Resolves to an array of arrays if 'rowFormat' is 'array', else to an array of objects (default).
 */
 export function parquetReadObjects(options) {
   return new Promise((onComplete, reject) => {
