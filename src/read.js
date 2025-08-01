@@ -4,7 +4,7 @@ import { assembleAsync, asyncGroupToRows, readRowGroup } from './rowgroup.js'
 import { concat, flatten } from './utils.js'
 
 /**
- * @import {AsyncRowGroup, DecodedArray, ParquetReadOptions} from '../src/types.js'
+ * @import {AsyncRowGroup, DecodedArray, ObjectRowFormat, ParquetReadOptions} from '../src/types.js'
  */
 /**
  * Read parquet data rows from a file-like object.
@@ -124,16 +124,15 @@ export async function parquetReadColumn(options) {
 /**
  * This is a helper function to read parquet row data as a promise.
  * It is a wrapper around the more configurable parquetRead function.
- * @import {BaseParquetReadOptions} from '../src/types.d.ts'
- * @param {BaseParquetReadOptions} options
- * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed.
+ * @param {Omit<ParquetReadOptions, 'onComplete'>} options
+ * @returns {Promise<Parameters<ObjectRowFormat['onComplete']>[0]>} resolves when all requested rows and columns are parsed.
  *   Depending on the rowFormat, this will be an array of arrays or an array of objects. The default is an array of objects.
 */
 export function parquetReadObjects(options) {
   return new Promise((onComplete, reject) => {
     parquetRead({
-      ...options,
       rowFormat: 'object',
+      ...options,
       onComplete,
     }).catch(reject)
   })
