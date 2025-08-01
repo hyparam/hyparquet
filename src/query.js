@@ -8,7 +8,7 @@ import { equals } from './utils.js'
  * Accepts optional filter object to filter the results and orderBy column name to sort the results.
  * Note that using orderBy may SIGNIFICANTLY increase the query time.
  * @param {ParquetReadOptions & { filter?: ParquetQueryFilter, orderBy?: string }} options
- * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
+ * @returns {Promise<Record<string, any>[] | any[][]>} resolves when all requested rows and columns are parsed
  */
 export async function parquetQuery(options) {
   if (!options.file || !(options.file.byteLength >= 0)) {
@@ -44,13 +44,15 @@ export async function parquetQuery(options) {
     for (const group of metadata.row_groups) {
       const groupEnd = groupStart + Number(group.num_rows)
       // TODO: if expected > group size, start fetching next groups
-      const groupData = await parquetReadObjects({
+
+      // eslint-disable-next-line no-extra-parens
+      const groupData = /** @type {Record<string,any>[]} */ (await parquetReadObjects({
         ...options,
         rowFormat: 'object',
         rowStart: groupStart,
         rowEnd: groupEnd,
         columns: relevantColumns,
-      })
+      }))
       for (const row of groupData) {
         if (matchQuery(row, filter)) {
           if (requiresProjection && relevantColumns) {
@@ -69,13 +71,15 @@ export async function parquetQuery(options) {
     return filteredRows.slice(rowStart, rowEnd)
   } else if (filter) {
     // read all rows, sort, and filter
-    const results = await parquetReadObjects({
+
+    // eslint-disable-next-line no-extra-parens
+    const results = /** @type {Record<string,any>[]} */ (await parquetReadObjects({
       ...options,
       rowFormat: 'object',
       rowStart: undefined,
       rowEnd: undefined,
       columns: relevantColumns,
-    })
+    }))
     if (orderBy) results.sort((a, b) => compare(a[orderBy], b[orderBy]))
     const filteredRows = new Array()
     for (const row of results) {
@@ -113,7 +117,7 @@ export async function parquetQuery(options) {
  * Returns a sparse array of rows.
  * @import {ParquetQueryFilter, ParquetReadOptions} from '../src/types.d.ts'
  * @param {ParquetReadOptions & { rows: number[] }} options
- * @returns {Promise<Record<string, any>[]>}
+ * @returns {Promise<Record<string, any>[] | any[][]>}
  */
 async function parquetReadRows(options) {
   const { file, rows } = options
