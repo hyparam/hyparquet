@@ -7,7 +7,7 @@ import { equals } from './utils.js'
  * This is a parquet-aware query engine that can read a subset of rows and columns.
  * Accepts optional filter object to filter the results and orderBy column name to sort the results.
  * Note that using orderBy may SIGNIFICANTLY increase the query time.
-*
+ *
  * @param {ParquetReadOptions & { filter?: ParquetQueryFilter, orderBy?: string }} options
  * @returns {Promise<Record<string, any>[] | any[][]>} resolves when all requested rows and columns are parsed
  */
