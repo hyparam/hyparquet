@@ -11,7 +11,8 @@ export { asyncBufferFromUrl, byteLengthFromUrl, cachedAsyncBuffer, flatten, toJs
  * It is a wrapper around the more configurable parquetRead function.
  *
  * @param {Omit<ParquetReadOptions, 'onComplete'>} options
- * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
+ * @returns {Promise<Record<string, any>[] |any[][]>} resolves when all requested rows and columns are parsed.
+ *   Resolves to an array of arrays if 'rowFormat' is 'array', else to an array of objects (default).
 */
 export function parquetReadObjects(options) {
   return new Promise((onComplete, reject) => {

@@ -15,23 +15,30 @@ export interface MetadataOptions {
   parsers?: ParquetParsers // custom parsers to decode advanced types
 }
 
+interface ArrayRowFormat {
+  rowFormat?: 'array' // format of each row passed to the onComplete function. Can be omitted, as it's the default.
+  onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
+}
+interface ObjectRowFormat {
+  rowFormat: 'object' // format of each row passed to the onComplete function
+  onComplete?: (rows: Record<string, any>[]) => void // called when all requested rows and columns are parsed
+}
+
 /**
  * Parquet query options for reading data
  */
-export interface ParquetReadOptions {
+export type ParquetReadOptions = {
   file: AsyncBuffer // file-like object containing parquet data
   metadata?: FileMetaData // parquet metadata, will be parsed if not provided
   columns?: string[] // columns to read, all columns if undefined
-  rowFormat?: 'object' | 'array' // format of each row passed to the onComplete function
   rowStart?: number // first requested row index (inclusive)
   rowEnd?: number // last requested row index (exclusive)
   onChunk?: (chunk: ColumnData) => void // called when a column chunk is parsed. chunks may contain data outside the requested range.
   onPage?: (chunk: ColumnData) => void // called when a data page is parsed. pages may contain data outside the requested range.
-  onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
   compressors?: Compressors // custom decompressors
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
   parsers?: ParquetParsers // custom parsers to decode advanced types
-}
+} & (ArrayRowFormat | ObjectRowFormat)
 
 /**
  * Parquet query options for filtering data
