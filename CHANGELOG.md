@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.17.2]
+ - Export `ParquetQueryFilter` type (#105)
+ - Remove a circular dependency (#108)
+
 ## [1.17.1]
  - Fix zero row file (#98 thanks @kroche98)
 
