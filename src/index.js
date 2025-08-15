@@ -1,27 +1,8 @@
-import { parquetRead } from './read.js'
-
 export { parquetMetadata, parquetMetadataAsync, parquetSchema } from './metadata.js'
-export { parquetRead }
+export { parquetRead, parquetReadObjects } from './read.js'
 export { parquetQuery } from './query.js'
 export { snappyUncompress } from './snappy.js'
 export { asyncBufferFromUrl, byteLengthFromUrl, cachedAsyncBuffer, flatten, toJson } from './utils.js'
-
-/**
- * This is a helper function to read parquet row data as a promise.
- * It is a wrapper around the more configurable parquetRead function.
- *
- * @param {Omit<ParquetReadOptions, 'onComplete'>} options
- * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
-*/
-export function parquetReadObjects(options) {
-  return new Promise((onComplete, reject) => {
-    parquetRead({
-      rowFormat: 'object',
-      ...options,
-      onComplete,
-    }).catch(reject)
-  })
-}
 
 /**
  * Explicitly export types for use in downstream typescript projects through
