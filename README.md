@@ -218,6 +218,10 @@ await parquetRead({
 
 The `parquetReadObjects` function defaults to `rowFormat: 'object'`.
 
+### Binary columns
+
+Parquet supports binary column types, such as `BYTE_ARRAY` and `UTF8`. As many parquet files in the wild encode strings as `BYTE_ARRAY` instead of `UTF8`, by default, the `BYTE_ARRAY` values are decoded as UTF-8 strings. This behavior can be changed by setting the `utf8` option to `false` in functions such as `parquetRead`. Note that this option does not affect `UTF8` columns, which are always decoded as UTF-8 strings.
+
 ## Supported Parquet Files
 
 The parquet format is known to be a sprawling format which includes options for a wide array of compression schemes, encoding types, and data structures.
