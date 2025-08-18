@@ -1,6 +1,5 @@
-import { parquetReadObjects } from './index.js'
 import { parquetMetadataAsync, parquetSchema } from './metadata.js'
-import { parquetReadColumn } from './read.js'
+import { parquetReadColumn, parquetReadObjects } from './read.js'
 import { equals } from './utils.js'
 
 /**
