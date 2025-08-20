@@ -218,6 +218,14 @@ await parquetRead({
 
 The `parquetReadObjects` function defaults to `rowFormat: 'object'`.
 
+### Binary columns
+
+Parquet supports two binary types: `BYTE_ARRAY` and `FIXED_LEN_BYTE_ARRAY`, and the metadata determines how the data should be decoded using an optional [`LogicalType` annotation](https://github.com/apache/parquet-format/blob/master/LogicalTypes.md) (or a deprecated `ConvertedType` annotation).
+
+Hyparquet [respects](https://parquet.apache.org/docs/file-format/implementationstatus/#logical-types) the logical types, but defaults to decoding binary columns as UTF-8 strings (i.e. `LogicalType=STRING` or `ConvertedType=UTF8`) in the frequent case where the annotation is missing.
+
+This behavior can be changed by setting the `utf8` option to `false` in functions such as `parquetRead`. Note that this option only affects `BYTE_ARRAY` columns without an annotation. Columns with a `STRING`, `ENUM` or `UUID` logical type, for example, will be decoded as expected by the specification.
+
 ## Supported Parquet Files
 
 The parquet format is known to be a sprawling format which includes options for a wide array of compression schemes, encoding types, and data structures.
