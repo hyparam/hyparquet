@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.17.4]
+ - Fix onComplete return type (#104 thanks @supermar1010)
+
+## [1.17.3]
+ - Fix circular import (#111)
+
 ## [1.17.2]
  - Export `ParquetQueryFilter` type (#105)
  - Remove a circular dependency (#108)
