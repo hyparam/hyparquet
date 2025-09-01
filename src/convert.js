@@ -62,7 +62,7 @@ export function convert(data, columnDecoder) {
     const factor = 10 ** -scale
     const arr = new Array(data.length)
     for (let i = 0; i < arr.length; i++) {
-      if (data[0] instanceof Uint8Array) {
+      if (data[i] instanceof Uint8Array) {
         arr[i] = parseDecimal(data[i]) * factor
       } else {
         arr[i] = Number(data[i]) * factor
@@ -155,18 +155,20 @@ export function convert(data, columnDecoder) {
  * @returns {number}
  */
 export function parseDecimal(bytes) {
-  let value = 0
+  if (!bytes.length) return 0
+
+  let value = 0n
   for (const byte of bytes) {
-    value = value * 256 + byte
+    value = value * 256n + BigInt(byte)
   }
 
   // handle signed
   const bits = bytes.length * 8
-  if (value >= 2 ** (bits - 1)) {
-    value -= 2 ** bits
+  if (value >= 2n ** BigInt(bits - 1)) {
+    value -= 2n ** BigInt(bits)
   }
 
-  return value
+  return Number(value)
 }
 
 /**
