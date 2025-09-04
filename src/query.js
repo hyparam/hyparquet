@@ -47,6 +47,7 @@ export async function parquetQuery(options) {
       // TODO: if expected > group size, start fetching next groups
       const groupData = await parquetReadObjects({
         ...options,
+        rowFormat: 'object',
         rowStart: groupStart,
         rowEnd: groupEnd,
         columns: relevantColumns,
@@ -71,6 +72,7 @@ export async function parquetQuery(options) {
     // read all rows, sort, and filter
     const results = await parquetReadObjects({
       ...options,
+      rowFormat: 'object',
       rowStart: undefined,
       rowEnd: undefined,
       columns: relevantColumns,

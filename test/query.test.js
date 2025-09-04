@@ -22,6 +22,18 @@ describe('parquetQuery', () => {
     ])
   })
 
+  it('returns rows in "array" format if asked', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    const rows = await parquetQuery({ file, rowFormat: 'array' })
+    expect(rows).toEqual([
+      [ 'abc', 1, 2, true, [1, 2, 3] ],
+      [ 'abc', 2, 3, true, undefined ],
+      [ 'abc', 3, 4, true, undefined ],
+      [ null, 4, 5, false, [1, 2, 3] ],
+      [ 'abc', 5, 2, true, [1, 2] ],
+    ])
+  })
+
   it('reads data with orderBy', async () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     const rows = await parquetQuery({ file, orderBy: 'c' })
@@ -61,6 +73,18 @@ describe('parquetQuery', () => {
       { a: 'abc', b: 1, c: 2, d: true, e: [ 1, 2, 3 ] },
       { a: 'abc', b: 5, c: 2, d: true, e: [ 1, 2 ] },
     ])
+  })
+
+  it('always returns rows in "object" format if filter is provided', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    const expected = [
+      { a: 'abc', b: 1, c: 2, d: true, e: [ 1, 2, 3 ] },
+      { a: 'abc', b: 5, c: 2, d: true, e: [ 1, 2 ] },
+    ]
+    const filter = { c: { $eq: 2 } }
+    expect(await parquetQuery({ file, filter, rowFormat: 'array' })).toEqual(expected)
+    expect(await parquetQuery({ file, filter, rowFormat: 'object' })).toEqual(expected)
+    expect(await parquetQuery({ file, filter })).toEqual(expected)
   })
 
   it('reads data with filter and rowStart/rowEnd', async () => {
