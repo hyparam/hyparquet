@@ -16,7 +16,8 @@ import { deserializeTCompactProtocol } from './thrift.js'
  * @returns {DecodedArray[]}
  */
 export function readColumn(reader, { groupStart, selectStart, selectEnd }, columnDecoder, onPage) {
-  const { columnName } = columnDecoder
+  const { columnName, schemaPath } = columnDecoder
+  const isFlat = isFlatColumn(schemaPath)
   /** @type {DecodedArray[]} */
   const chunks = []
   /** @type {DecodedArray | undefined} */
@@ -34,7 +35,7 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
     })
   })
 
-  while (rowCount < selectEnd) {
+  while (isFlat ? rowCount < selectEnd : reader.offset < reader.view.byteLength - 1) {
     if (reader.offset >= reader.view.byteLength - 1) break // end of reader
 
     // read page header
