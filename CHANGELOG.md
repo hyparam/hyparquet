@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.17.6]
+ - Fix early page termination for non-flat columns (#119)
+ - Fix a bug in parquetQuery, when rowFormat is 'array' (#118 thanks @severo)
+
+## [1.17.5]
+ - Revert "Fix onComplete return type (#104)" (#117)
+ - Fix high-precision decimal parsing (#116)
+
 ## [1.17.4]
  - Fix onComplete return type (#104 thanks @supermar1010)
 
