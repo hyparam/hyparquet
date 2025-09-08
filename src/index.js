@@ -1,3 +1,4 @@
+export { readColumnIndex, readOffsetIndex } from './indexes.js'
 export { parquetMetadata, parquetMetadataAsync, parquetSchema } from './metadata.js'
 export { parquetRead, parquetReadObjects } from './read.js'
 export { parquetQuery } from './query.js'
