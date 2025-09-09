@@ -4,7 +4,7 @@ import { assembleAsync, asyncGroupToRows, readRowGroup } from './rowgroup.js'
 import { concat, flatten } from './utils.js'
 
 /**
- * @import {AsyncRowGroup, DecodedArray, ParquetReadOptions} from '../src/types.js'
+ * @import {AsyncRowGroup, DecodedArray, ParquetReadOptions, BaseParquetReadOptions} from '../src/types.js'
  */
 /**
  * Read parquet data rows from a file-like object.
@@ -61,17 +61,31 @@ export async function parquetRead(options) {
 
   // onComplete transpose column chunks to rows
   if (onComplete) {
-    /** @type {any[][]} */
-    const rows = []
-    for (const asyncGroup of assembled) {
-      // filter to rows in range
-      const selectStart = Math.max(rowStart - asyncGroup.groupStart, 0)
-      const selectEnd = Math.min((rowEnd ?? Infinity) - asyncGroup.groupStart, asyncGroup.groupRows)
-      // transpose column chunks to rows in output
-      const groupData = await asyncGroupToRows(asyncGroup, selectStart, selectEnd, columns, rowFormat)
-      concat(rows, groupData.slice(selectStart, selectEnd))
+    if (rowFormat === 'object') {
+      /** @type {Record<string, any>[]} */
+      const rows = []
+      for (const asyncGroup of assembled) {
+        // filter to rows in range
+        const selectStart = Math.max(rowStart - asyncGroup.groupStart, 0)
+        const selectEnd = Math.min((rowEnd ?? Infinity) - asyncGroup.groupStart, asyncGroup.groupRows)
+        // transpose column chunks to rows in output
+        const groupData = await asyncGroupToRows(asyncGroup, selectStart, selectEnd, columns, rowFormat)
+        concat(rows, groupData.slice(selectStart, selectEnd))
+      }
+      onComplete(rows)
+    } else {
+      /** @type {any[][]} */
+      const rows = []
+      for (const asyncGroup of assembled) {
+        // filter to rows in range
+        const selectStart = Math.max(rowStart - asyncGroup.groupStart, 0)
+        const selectEnd = Math.min((rowEnd ?? Infinity) - asyncGroup.groupStart, asyncGroup.groupRows)
+        // transpose column chunks to rows in output
+        const groupData = await asyncGroupToRows(asyncGroup, selectStart, selectEnd, columns, rowFormat)
+        concat(rows, groupData.slice(selectStart, selectEnd))
+      }
+      onComplete(rows)
     }
-    onComplete(rows)
   } else {
     // wait for all async groups to finish (complete takes care of this)
     for (const { asyncColumns } of assembled) {
@@ -99,7 +113,7 @@ export function parquetReadAsync(options) {
 /**
  * Reads a single column from a parquet file.
  *
- * @param {ParquetReadOptions} options
+ * @param {BaseParquetReadOptions} options
  * @returns {Promise<DecodedArray>}
  */
 export async function parquetReadColumn(options) {
@@ -127,12 +141,12 @@ export async function parquetReadColumn(options) {
  *
  * @param {Omit<ParquetReadOptions, 'onComplete'>} options
  * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
-*/
+ */
 export function parquetReadObjects(options) {
   return new Promise((onComplete, reject) => {
     parquetRead({
-      rowFormat: 'object',
       ...options,
+      rowFormat: 'object', // force object output
       onComplete,
     }).catch(reject)
   })
