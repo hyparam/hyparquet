@@ -1,11 +1,16 @@
 # Changelog
 
-## [1.17.6]
+## [1.17.8]
+ - Export `readColumnIndex` and `readOffsetIndex` (#122)
+
+## [1.17.7]
  - Fix early page termination for non-flat columns (#119)
  - Fix a bug in parquetQuery, when rowFormat is 'array' (#118 thanks @severo)
 
-## [1.17.5]
+## [1.17.6]
  - Revert "Fix onComplete return type (#104)" (#117)
+
+## [1.17.5]
  - Fix high-precision decimal parsing (#116)
 
 ## [1.17.4]
