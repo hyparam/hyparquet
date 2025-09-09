@@ -6,7 +6,6 @@ import { concat, flatten } from './utils.js'
 /**
  * @import {AsyncRowGroup, DecodedArray, ParquetReadOptions, BaseParquetReadOptions} from '../src/types.js'
  */
-
 /**
  * Read parquet data rows from a file-like object.
  * Reads the minimal number of row groups and columns to satisfy the request.

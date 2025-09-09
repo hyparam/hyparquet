@@ -5,7 +5,6 @@ import { equals } from './utils.js'
 /**
  * @import {ParquetQueryFilter, BaseParquetReadOptions} from '../src/types.js'
  */
-
 /**
  * Wraps parquetRead with filter and orderBy support.
  * This is a parquet-aware query engine that can read a subset of rows and columns.
