@@ -3,7 +3,7 @@ import { parquetReadColumn, parquetReadObjects } from './read.js'
 import { equals } from './utils.js'
 
 /**
- * @import {ParquetQueryFilter, ParquetReadOptions, BaseParquetReadOptions, ArrayRowFormat, ObjectRowFormat} from '../src/types.js'
+ * @import {ParquetQueryFilter, BaseParquetReadOptions} from '../src/types.js'
  */
 
 /**
@@ -12,8 +12,8 @@ import { equals } from './utils.js'
  * Accepts optional filter object to filter the results and orderBy column name to sort the results.
  * Note that using orderBy may SIGNIFICANTLY increase the query time.
  *
- * @param {ParquetReadOptions & { filter?: ParquetQueryFilter, orderBy?: string }} options
- * @returns {Promise<Record<string, any>[] | any[][]>} resolves when all requested rows and columns are parsed
+ * @param {BaseParquetReadOptions & { filter?: ParquetQueryFilter, orderBy?: string }} options
+ * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
  */
 export async function parquetQuery(options) {
   if (!options.file || !(options.file.byteLength >= 0)) {
@@ -52,7 +52,6 @@ export async function parquetQuery(options) {
       // TODO: if expected > group size, start fetching next groups
       const groupData = await parquetReadObjects({
         ...options,
-        rowFormat: 'object',
         rowStart: groupStart,
         rowEnd: groupEnd,
         columns: relevantColumns,
@@ -77,7 +76,6 @@ export async function parquetQuery(options) {
     // read all rows, sort, and filter
     const results = await parquetReadObjects({
       ...options,
-      rowFormat: 'object',
       rowStart: undefined,
       rowEnd: undefined,
       columns: relevantColumns,
@@ -107,35 +105,20 @@ export async function parquetQuery(options) {
       .sort((a, b) => compare(orderColumn[a], orderColumn[b]))
       .slice(rowStart, rowEnd)
 
-    // the condition is only for type narrowing. TODO(SL): add the __index__ field in the return type?
-    const sparseData = options?.rowFormat === 'object' ?
-      await parquetReadRows({ ...options, rows: sortedIndices, rowFormat: 'object' }) :
-      await parquetReadRows({ ...options, rows: sortedIndices, rowFormat: 'array' })
+    const sparseData = await parquetReadRows({ ...options, rows: sortedIndices })
+    // TODO(SL): add the __index__ field in the return type?
     const data = sortedIndices.map(index => sparseData[index])
     return data
   } else {
-    // the condition is only for type narrowing. TODO(SL): add the __index__ field in the return type?
-    return options?.rowFormat === 'object' ?
-      await parquetReadObjects({ ...options, rowFormat: 'object' }) :
-      await parquetReadObjects({ ...options, rowFormat: 'array' })
+    return await parquetReadObjects(options)
   }
 }
 
 /**
- * @overload
- * @param {Omit<BaseParquetReadOptions & { rows: number[] } & ObjectRowFormat, 'onComplete'>} options
- * @returns {Promise<(Record<string, any> & {__index__: number})[]>} resolves when all requested rows and columns are parsed
- */
-/**
- * @overload
- * @param {Omit<BaseParquetReadOptions & { rows: number[] } & ArrayRowFormat, 'onComplete'>} options
- * @returns {Promise<(any[] & {__index__: number})[]>} resolves when all requested rows and columns are parsed
-*/
-/**
  * Reads a list rows from a parquet file, reading only the row groups that contain the rows.
  * Returns a sparse array of rows.
- * @param {Omit<ParquetReadOptions & { rows: number[] }, 'onComplete'>} options
- * @returns {Promise<(Record<string, any> & {__index__: number})[] | (any[] & {__index__: number})[]>}
+ * @param {BaseParquetReadOptions & { rows: number[] }} options
+ * @returns {Promise<(Record<string, any> & {__index__: number})[]>}
  */
 async function parquetReadRows(options) {
   const { file, rows } = options
@@ -173,24 +156,11 @@ async function parquetReadRows(options) {
   }
 
   // Fetch by row group and map to rows
-  if (options?.rowFormat === 'object') {
-    /** @type {(Record<string, any> & {__index__: number})[]} */
-    const sparseData = new Array(Number(options.metadata.num_rows))
-    for (const [rangeStart, rangeEnd] of rowRanges) {
-      // TODO: fetch in parallel
-      const groupData = await parquetReadObjects({ ...options, rowFormat: 'object', rowStart: rangeStart, rowEnd: rangeEnd })
-      for (let i = rangeStart; i < rangeEnd; i++) {
-        sparseData[i] = Object.assign(groupData[i - rangeStart], { __index__: i })
-      }
-    }
-    return sparseData
-  }
-
-  /** @type {(any[] & {__index__: number})[]} */
+  /** @type {(Record<string, any> & {__index__: number})[]} */
   const sparseData = new Array(Number(options.metadata.num_rows))
   for (const [rangeStart, rangeEnd] of rowRanges) {
     // TODO: fetch in parallel
-    const groupData = await parquetReadObjects({ ...options, rowFormat: 'array', rowStart: rangeStart, rowEnd: rangeEnd })
+    const groupData = await parquetReadObjects({ ...options, rowStart: rangeStart, rowEnd: rangeEnd })
     for (let i = rangeStart; i < rangeEnd; i++) {
       sparseData[i] = Object.assign(groupData[i - rangeStart], { __index__: i })
     }

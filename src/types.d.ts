@@ -15,11 +15,11 @@ export interface MetadataOptions {
   parsers?: ParquetParsers // custom parsers to decode advanced types
 }
 
-export interface ArrayRowFormat {
+interface ArrayRowFormat {
   rowFormat?: 'array' // format of each row passed to the onComplete function. Can be omitted, as it's the default.
   onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
 }
-export interface ObjectRowFormat {
+interface ObjectRowFormat {
   rowFormat: 'object' // format of each row passed to the onComplete function
   onComplete?: (rows: Record<string, any>[]) => void // called when all requested rows and columns are parsed
 }
