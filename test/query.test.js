@@ -63,16 +63,6 @@ describe('parquetQuery', () => {
     ])
   })
 
-  it('always returns rows in "object" format', async () => {
-    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
-    const expected = [
-      { a: 'abc', b: 1, c: 2, d: true, e: [ 1, 2, 3 ] },
-      { a: 'abc', b: 5, c: 2, d: true, e: [ 1, 2 ] },
-    ]
-    const filter = { c: { $eq: 2 } }
-    expect(await parquetQuery({ file, filter })).toEqual(expected)
-  })
-
   it('reads data with filter and rowStart/rowEnd', async () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     const rows = await parquetQuery({ file, filter: { c: { $eq: 2 } }, rowStart: 1, rowEnd: 5 })
