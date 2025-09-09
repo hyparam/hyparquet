@@ -15,15 +15,6 @@ export interface MetadataOptions {
   parsers?: ParquetParsers // custom parsers to decode advanced types
 }
 
-interface ArrayRowFormat {
-  rowFormat?: 'array' // format of each row passed to the onComplete function. Can be omitted, as it's the default.
-  onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
-}
-interface ObjectRowFormat {
-  rowFormat: 'object' // format of each row passed to the onComplete function
-  onComplete?: (rows: Record<string, any>[]) => void // called when all requested rows and columns are parsed
-}
-
 /**
  * Parquet query options for reading data
  */
@@ -40,6 +31,14 @@ export interface BaseParquetReadOptions {
   parsers?: ParquetParsers // custom parsers to decode advanced types
 }
 
+interface ArrayRowFormat {
+  rowFormat?: 'array' // format of each row passed to the onComplete function. Can be omitted, as it's the default.
+  onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
+}
+interface ObjectRowFormat {
+  rowFormat: 'object' // format of each row passed to the onComplete function
+  onComplete?: (rows: Record<string, any>[]) => void // called when all requested rows and columns are parsed
+}
 export type ParquetReadOptions = BaseParquetReadOptions & (ArrayRowFormat | ObjectRowFormat)
 
 /**
