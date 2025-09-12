@@ -1,0 +1,53 @@
+{
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [ 30, 10 ],
+            [ 10, 30 ],
+            [ 40, 40 ]
+          ]
+        ],
+        "type": "MultiLineString"
+      },
+      "properties": {
+        "col": 0
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            [ 10, 10 ],
+            [ 20, 20 ],
+            [ 10, 40 ]
+          ],
+          [
+            [ 40, 40 ],
+            [ 30, 30 ],
+            [ 40, 20 ],
+            [ 30, 10 ]
+          ]
+        ],
+        "type": "MultiLineString"
+      },
+      "properties": {
+        "col": 1
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [],
+        "type": "MultiLineString"
+      },
+      "properties": {
+        "col": 2
+      },
+      "type": "Feature"
+    }
+  ],
+  "type": "FeatureCollection"
+}

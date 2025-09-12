@@ -1,0 +1,42 @@
+{
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          [ 30, 10 ]
+        ],
+        "type": "MultiPoint"
+      },
+      "properties": {
+        "col": 0
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [ 10, 40 ],
+          [ 40, 30 ],
+          [ 20, 20 ],
+          [ 30, 10 ]
+        ],
+        "type": "MultiPoint"
+      },
+      "properties": {
+        "col": 1
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [],
+        "type": "MultiPoint"
+      },
+      "properties": {
+        "col": 2
+      },
+      "type": "Feature"
+    }
+  ],
+  "type": "FeatureCollection"
+}
