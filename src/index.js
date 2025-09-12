@@ -3,7 +3,9 @@ export { parquetMetadata, parquetMetadataAsync, parquetSchema } from './metadata
 export { parquetRead, parquetReadObjects } from './read.js'
 export { parquetQuery } from './query.js'
 export { snappyUncompress } from './snappy.js'
+export { toGeoJson } from './toGeoJson.js'
 export { asyncBufferFromUrl, byteLengthFromUrl, cachedAsyncBuffer, flatten, toJson } from './utils.js'
+export { decodeWKB } from './wkb.js'
 
 /**
  * Explicitly export types for use in downstream typescript projects through
