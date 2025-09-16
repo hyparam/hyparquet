@@ -162,9 +162,8 @@ async function parquetReadRows(options) {
     // TODO: fetch in parallel
     const groupData = await parquetReadObjects({ ...options, rowStart: rangeStart, rowEnd: rangeEnd })
     for (let i = rangeStart; i < rangeEnd; i++) {
-      // warning: the index will overwrite a column named __index__ if it existed in the original data.
-      // TODO: should we throw an error instead?
-      sparseData[i] = { ...groupData[i - rangeStart], __index__: i }
+      // warning: if the row contains a column named __index__, it will overwrite the index.
+      sparseData[i] = { __index__: i, ...groupData[i - rangeStart] }
     }
   }
   return sparseData
