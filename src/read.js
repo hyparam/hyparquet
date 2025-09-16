@@ -61,31 +61,20 @@ export async function parquetRead(options) {
 
   // onComplete transpose column chunks to rows
   if (onComplete) {
-    if (rowFormat === 'object') {
-      /** @type {Record<string, any>[]} */
-      const rows = []
-      for (const asyncGroup of assembled) {
-        // filter to rows in range
-        const selectStart = Math.max(rowStart - asyncGroup.groupStart, 0)
-        const selectEnd = Math.min((rowEnd ?? Infinity) - asyncGroup.groupStart, asyncGroup.groupRows)
-        // transpose column chunks to rows in output
-        const groupData = await asyncGroupToRows(asyncGroup, selectStart, selectEnd, columns, rowFormat)
-        concat(rows, groupData)
-      }
-      onComplete(rows)
-    } else {
-      /** @type {any[][]} */
-      const rows = []
-      for (const asyncGroup of assembled) {
-        // filter to rows in range
-        const selectStart = Math.max(rowStart - asyncGroup.groupStart, 0)
-        const selectEnd = Math.min((rowEnd ?? Infinity) - asyncGroup.groupStart, asyncGroup.groupRows)
-        // transpose column chunks to rows in output
-        const groupData = await asyncGroupToRows(asyncGroup, selectStart, selectEnd, columns, rowFormat)
-        concat(rows, groupData)
-      }
-      onComplete(rows)
+    // loosen the types to avoid duplicate code
+    /** @type {any[]} */
+    const rows = []
+    for (const asyncGroup of assembled) {
+      // filter to rows in range
+      const selectStart = Math.max(rowStart - asyncGroup.groupStart, 0)
+      const selectEnd = Math.min((rowEnd ?? Infinity) - asyncGroup.groupStart, asyncGroup.groupRows)
+      // transpose column chunks to rows in output
+      const groupData = rowFormat === 'object' ?
+        await asyncGroupToRows(asyncGroup, selectStart, selectEnd, columns, 'object') :
+        await asyncGroupToRows(asyncGroup, selectStart, selectEnd, columns, 'array')
+      concat(rows, groupData)
     }
+    onComplete(rows)
   } else {
     // wait for all async groups to finish (complete takes care of this)
     for (const { asyncColumns } of assembled) {
