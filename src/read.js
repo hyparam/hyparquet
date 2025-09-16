@@ -70,7 +70,7 @@ export async function parquetRead(options) {
         const selectEnd = Math.min((rowEnd ?? Infinity) - asyncGroup.groupStart, asyncGroup.groupRows)
         // transpose column chunks to rows in output
         const groupData = await asyncGroupToRows(asyncGroup, selectStart, selectEnd, columns, rowFormat)
-        concat(rows, groupData.slice(selectStart, selectEnd))
+        concat(rows, groupData)
       }
       onComplete(rows)
     } else {
@@ -82,7 +82,7 @@ export async function parquetRead(options) {
         const selectEnd = Math.min((rowEnd ?? Infinity) - asyncGroup.groupStart, asyncGroup.groupRows)
         // transpose column chunks to rows in output
         const groupData = await asyncGroupToRows(asyncGroup, selectStart, selectEnd, columns, rowFormat)
-        concat(rows, groupData.slice(selectStart, selectEnd))
+        concat(rows, groupData)
       }
       onComplete(rows)
     }

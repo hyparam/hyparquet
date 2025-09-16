@@ -112,24 +112,27 @@ export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd,
   const columnIndexes = columnOrder.map(name => asyncColumns.findIndex(column => column.pathInSchema[0] === name))
 
   // transpose columns into rows
+  const selectCount = selectEnd - selectStart
   if (rowFormat === 'object') {
     /** @type {Record<string, any>[]} */
-    const groupData = new Array(selectEnd)
-    for (let row = selectStart; row < selectEnd; row++) {
+    const groupData = new Array(selectCount)
+    for (let selectRow = 0; selectRow < selectCount; selectRow++) {
+      const row = selectStart + selectRow
       // return each row as an object
       /** @type {Record<string, any>} */
       const rowData = {}
       for (let i = 0; i < asyncColumns.length; i++) {
         rowData[asyncColumns[i].pathInSchema[0]] = columnDatas[i][row]
       }
-      groupData[row] = rowData
+      groupData[selectRow] = rowData
     }
     return groupData
   }
 
   /** @type {any[][]} */
-  const groupData = new Array(selectEnd)
-  for (let row = selectStart; row < selectEnd; row++) {
+  const groupData = new Array(selectCount)
+  for (let selectRow = 0; selectRow < selectCount; selectRow++) {
+    const row = selectStart + selectRow
     // return each row as an array
     const rowData = new Array(asyncColumns.length)
     for (let i = 0; i < columnOrder.length; i++) {
@@ -137,7 +140,7 @@ export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd,
         rowData[i] = columnDatas[columnIndexes[i]][row]
       }
     }
-    groupData[row] = rowData
+    groupData[selectRow] = rowData
   }
   return groupData
 }
