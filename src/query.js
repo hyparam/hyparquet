@@ -3,12 +3,15 @@ import { parquetReadColumn, parquetReadObjects } from './read.js'
 import { equals } from './utils.js'
 
 /**
+ * @import {ParquetQueryFilter, BaseParquetReadOptions} from '../src/types.js'
+ */
+/**
  * Wraps parquetRead with filter and orderBy support.
  * This is a parquet-aware query engine that can read a subset of rows and columns.
  * Accepts optional filter object to filter the results and orderBy column name to sort the results.
  * Note that using orderBy may SIGNIFICANTLY increase the query time.
  *
- * @param {ParquetReadOptions & { filter?: ParquetQueryFilter, orderBy?: string }} options
+ * @param {BaseParquetReadOptions & { filter?: ParquetQueryFilter, orderBy?: string }} options
  * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
  */
 export async function parquetQuery(options) {
@@ -40,6 +43,7 @@ export async function parquetQuery(options) {
 
   if (filter && !orderBy && rowEnd < metadata.num_rows) {
     // iterate through row groups and filter until we have enough rows
+    /** @type {Record<string, any>[]} */
     const filteredRows = new Array()
     let groupStart = 0
     for (const group of metadata.row_groups) {
@@ -47,7 +51,6 @@ export async function parquetQuery(options) {
       // TODO: if expected > group size, start fetching next groups
       const groupData = await parquetReadObjects({
         ...options,
-        rowFormat: 'object',
         rowStart: groupStart,
         rowEnd: groupEnd,
         columns: relevantColumns,
@@ -72,12 +75,12 @@ export async function parquetQuery(options) {
     // read all rows, sort, and filter
     const results = await parquetReadObjects({
       ...options,
-      rowFormat: 'object',
       rowStart: undefined,
       rowEnd: undefined,
       columns: relevantColumns,
     })
     if (orderBy) results.sort((a, b) => compare(a[orderBy], b[orderBy]))
+    /** @type {Record<string, any>[]} */
     const filteredRows = new Array()
     for (const row of results) {
       if (matchQuery(row, filter)) {
@@ -102,6 +105,8 @@ export async function parquetQuery(options) {
       .slice(rowStart, rowEnd)
 
     const sparseData = await parquetReadRows({ ...options, rows: sortedIndices })
+    // warning: the type Record<string, any> & {__index__: number})[] is simplified into Record<string, any>[]
+    // when returning. The data contains the __index__ property, but it's not exposed as such.
     const data = sortedIndices.map(index => sparseData[index])
     return data
   } else {
@@ -112,9 +117,8 @@ export async function parquetQuery(options) {
 /**
  * Reads a list rows from a parquet file, reading only the row groups that contain the rows.
  * Returns a sparse array of rows.
- * @import {ParquetQueryFilter, ParquetReadOptions} from '../src/types.d.ts'
- * @param {ParquetReadOptions & { rows: number[] }} options
- * @returns {Promise<Record<string, any>[]>}
+ * @param {BaseParquetReadOptions & { rows: number[] }} options
+ * @returns {Promise<(Record<string, any> & {__index__: number})[]>}
  */
 async function parquetReadRows(options) {
   const { file, rows } = options
@@ -152,13 +156,14 @@ async function parquetReadRows(options) {
   }
 
   // Fetch by row group and map to rows
+  /** @type {(Record<string, any> & {__index__: number})[]} */
   const sparseData = new Array(Number(options.metadata.num_rows))
   for (const [rangeStart, rangeEnd] of rowRanges) {
     // TODO: fetch in parallel
     const groupData = await parquetReadObjects({ ...options, rowStart: rangeStart, rowEnd: rangeEnd })
     for (let i = rangeStart; i < rangeEnd; i++) {
-      sparseData[i] = groupData[i - rangeStart]
-      sparseData[i].__index__ = i
+      // warning: if the row contains a column named __index__, it will overwrite the index.
+      sparseData[i] = { __index__: i, ...groupData[i - rangeStart] }
     }
   }
   return sparseData

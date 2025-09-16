@@ -74,16 +74,32 @@ export function readRowGroup(options, { metadata, columns }, groupPlan) {
 }
 
 /**
+ * @overload
+ * @param {AsyncRowGroup} asyncGroup
+ * @param {number} selectStart
+ * @param {number} selectEnd
+ * @param {string[] | undefined} columns
+ * @param {'object'} rowFormat
+ * @returns {Promise<Record<string, any>[]>} resolves to row data
+ */
+/**
+ * @overload
+ * @param {AsyncRowGroup} asyncGroup
+ * @param {number} selectStart
+ * @param {number} selectEnd
+ * @param {string[] | undefined} columns
+ * @param {'array'} [rowFormat]
+ * @returns {Promise<any[][]>} resolves to row data
+ */
+/**
  * @param {AsyncRowGroup} asyncGroup
  * @param {number} selectStart
  * @param {number} selectEnd
  * @param {string[] | undefined} columns
  * @param {'object' | 'array'} [rowFormat]
- * @returns {Promise<Record<string, any>[]>} resolves to row data
+ * @returns {Promise<Record<string, any>[] | any[][]>} resolves to row data
  */
 export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd, columns, rowFormat) {
-  const groupData = new Array(selectEnd)
-
   // columnData[i] for asyncColumns[i]
   // TODO: do it without flatten
   const columnDatas = await Promise.all(asyncColumns.map(({ data }) => data.then(flatten)))
@@ -96,25 +112,35 @@ export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd,
   const columnIndexes = columnOrder.map(name => asyncColumns.findIndex(column => column.pathInSchema[0] === name))
 
   // transpose columns into rows
-  for (let row = selectStart; row < selectEnd; row++) {
-    if (rowFormat === 'object') {
+  const selectCount = selectEnd - selectStart
+  if (rowFormat === 'object') {
+    /** @type {Record<string, any>[]} */
+    const groupData = new Array(selectCount)
+    for (let selectRow = 0; selectRow < selectCount; selectRow++) {
+      const row = selectStart + selectRow
       // return each row as an object
       /** @type {Record<string, any>} */
       const rowData = {}
       for (let i = 0; i < asyncColumns.length; i++) {
         rowData[asyncColumns[i].pathInSchema[0]] = columnDatas[i][row]
       }
-      groupData[row] = rowData
-    } else {
-      // return each row as an array
-      const rowData = new Array(asyncColumns.length)
-      for (let i = 0; i < columnOrder.length; i++) {
-        if (columnIndexes[i] >= 0) {
-          rowData[i] = columnDatas[columnIndexes[i]][row]
-        }
-      }
-      groupData[row] = rowData
+      groupData[selectRow] = rowData
     }
+    return groupData
+  }
+
+  /** @type {any[][]} */
+  const groupData = new Array(selectCount)
+  for (let selectRow = 0; selectRow < selectCount; selectRow++) {
+    const row = selectStart + selectRow
+    // return each row as an array
+    const rowData = new Array(asyncColumns.length)
+    for (let i = 0; i < columnOrder.length; i++) {
+      if (columnIndexes[i] >= 0) {
+        rowData[i] = columnDatas[columnIndexes[i]][row]
+      }
+    }
+    groupData[selectRow] = rowData
   }
   return groupData
 }
