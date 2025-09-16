@@ -105,7 +105,8 @@ export async function parquetQuery(options) {
       .slice(rowStart, rowEnd)
 
     const sparseData = await parquetReadRows({ ...options, rows: sortedIndices })
-    // TODO(SL): add the __index__ field in the return type?
+    // warning: the type Record<string, any> & {__index__: number})[] is simplified into Record<string, any>[]
+    // when returning. The data contains the __index__ property, but it's not exposed as such.
     const data = sortedIndices.map(index => sparseData[index])
     return data
   } else {
@@ -161,7 +162,8 @@ async function parquetReadRows(options) {
     // TODO: fetch in parallel
     const groupData = await parquetReadObjects({ ...options, rowStart: rangeStart, rowEnd: rangeEnd })
     for (let i = rangeStart; i < rangeEnd; i++) {
-      sparseData[i] = Object.assign(groupData[i - rangeStart], { __index__: i })
+      // warning: if the row contains a column named __index__, it will overwrite the index.
+      sparseData[i] = { __index__: i, ...groupData[i - rangeStart] }
     }
   }
   return sparseData
