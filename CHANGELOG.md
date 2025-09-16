@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.18.0]
+ - Refine `onComplete` types for `rowFormat: 'array'` and `rowFormat: 'object'` (#120)
+ - Only object format for `parquetReadObjects` and `parquetQuery` (#120)
+ - Parquet `__index__` column overrides `parquetQuery` index annotation (#120)
+
 ## [1.17.8]
  - Export `readColumnIndex` and `readOffsetIndex` (#122)
 
