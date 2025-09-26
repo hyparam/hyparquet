@@ -1,6 +1,5 @@
 import { parquetMetadataAsync } from './metadata.js'
 import { parquetReadObjects } from './read.js'
-import { decodeWKB } from './wkb.js'
 
 /**
  * Convert a GeoParquet file to GeoJSON.
@@ -15,28 +14,22 @@ import { decodeWKB } from './wkb.js'
  */
 export async function toGeoJson({ file, compressors }) {
   const metadata = await parquetMetadataAsync(file)
-  const geoMetadata = metadata.key_value_metadata?.find(kv => kv.key === 'geo')
-  if (!geoMetadata) {
+  if (!metadata.geo) {
     throw new Error('Invalid GeoParquet file: missing "geo" metadata')
   }
-
-  // Geoparquet metadata
-  const geoSchema = JSON.parse(geoMetadata.value || '{}')
 
   // Read all parquet data
   const data = await parquetReadObjects({ file, metadata, utf8: false, compressors })
 
   /** @type {Feature[]} */
   const features = []
-  const primaryColumn = geoSchema.primary_column || 'geometry'
+  const primaryColumn = metadata.geo.primary_column
   for (const row of data) {
-    const wkb = row[primaryColumn]
-    if (!wkb) {
+    const geometry = row[primaryColumn]
+    if (!geometry) {
       // No geometry
       continue
     }
-
-    const geometry = decodeWKB(wkb)
 
     // Extract properties (all fields except geometry)
     /** @type {Record<string, any>} */

@@ -488,9 +488,9 @@ export interface GeoParquetColumn {
   // Other properties are not parsed (crs, edges, orientation, bbox, epoch, covering)
   // Property "covering" from v1.1.0 is not parsed
 }
-/* Only 1.0.0 and 1.1.0 are supported */
+/* Only 1.0.0, 1.1.0 and 1.2.0-dev are supported */
 export interface GeoParquet {
-  version: "1.0.0" | "1.1.0"
+  version: "1.0.0" | "1.1.0" | "1.2.0-dev"
   primary_column: string
   columns: Record<string, GeoParquetColumn>
 }

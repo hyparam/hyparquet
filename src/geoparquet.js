@@ -83,7 +83,7 @@ export function parseGeoParquet(key_value_metadata, schema) {
   ) {
     throw new Error('Invalid GeoParquet metadata: missing or invalid version')
   }
-  if (geo.version !== '1.0.0' && geo.version !== '1.1.0') {
+  if (geo.version !== '1.0.0' && geo.version !== '1.1.0' && geo.version !== '1.2.0-dev') {
     throw new Error(`Unsupported GeoParquet version: ${geo.version}`)
   }
   const { version } = geo

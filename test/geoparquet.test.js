@@ -142,7 +142,7 @@ describe('geoparquet', () => {
       expect(parseGeoParquet([{ key: 'geo', value: JSON.stringify({ ...value, 'extra': 'field' }) }], schema)).toEqual(value)
     })
 
-    test.for(['1.0.0', '1.1.0'])('supports version %s', (version) => {
+    test.for(['1.0.0', '1.1.0', '1.2.0-dev'])('supports version %s', (version) => {
       const value = {
         version,
         columns: {
