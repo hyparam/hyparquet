@@ -98,6 +98,7 @@ export interface FileMetaData {
   num_rows: bigint
   row_groups: RowGroup[]
   key_value_metadata?: KeyValue[]
+  geo?: GeoParquet // Partial GeoParquet metadata. `geo` will still be present in key_value_metadata
   created_by?: string
   // column_orders?: ColumnOrder[]
   // encryption_algorithm?: EncryptionAlgorithm
@@ -457,6 +458,40 @@ export interface AsyncRowGroup {
   groupStart: number
   groupRows: number
   asyncColumns: AsyncColumn[]
+}
+
+/* Geospatial types */
+
+/**
+ * Parquet metadata included in the geo field.
+ */
+export type GeometryType =
+    | "GeometryCollection"
+    | "Point"
+    | "LineString"
+    | "Polygon"
+    | "MultiPoint"
+    | "MultiLineString"
+    | "MultiPolygon"
+    | "GeometryCollection Z"
+    | "Point Z"
+    | "LineString Z"
+    | "Polygon Z"
+    | "MultiPoint Z"
+    | "MultiLineString Z"
+    | "MultiPolygon Z"
+export interface GeoParquetColumn {
+  encoding: "WKB"
+  // ^ other v1.1.0 encodings are not supported: "point" | "linestring" | "polygon" | "multipoint" | "multilinestring" | "multipolygon"
+  geometry_types: GeometryType[] // Note that the geometries must be unique
+  // Other properties are not parsed (crs, edges, orientation, bbox, epoch, covering)
+  // Property "covering" from v1.1.0 is not parsed
+}
+/* Only 1.0.0 and 1.1.0 are supported */
+export interface GeoParquet {
+  version: "1.0.0" | "1.1.0"
+  primary_column: string
+  columns: Record<string, GeoParquetColumn>
 }
 
 /**

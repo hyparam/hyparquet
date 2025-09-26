@@ -1,5 +1,6 @@
 import { CompressionCodec, ConvertedType, Encoding, FieldRepetitionType, PageType, ParquetType } from './constants.js'
 import { DEFAULT_PARSERS, parseDecimal, parseFloat16 } from './convert.js'
+import { convertGeoParquet } from './geoparquet.js'
 import { getSchemaPath } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
@@ -175,6 +176,7 @@ export function parquetMetadata(arrayBuffer, { parsers } = {}) {
     key: decode(keyValue.field_1),
     value: decode(keyValue.field_2),
   }))
+  const geo = convertGeoParquet(key_value_metadata, schema)
   const created_by = decode(metadata.field_6)
 
   return {
@@ -183,6 +185,7 @@ export function parquetMetadata(arrayBuffer, { parsers } = {}) {
     num_rows,
     row_groups,
     key_value_metadata,
+    geo,
     created_by,
     metadata_length: metadataLength,
   }
@@ -250,7 +253,7 @@ function timeUnit(unit) {
 /**
  * Convert column statistics based on column type.
  *
- * @import {AsyncBuffer, FileMetaData, LogicalType, MetadataOptions, MinMaxType, ParquetParsers, SchemaElement, SchemaTree, Statistics, TimeUnit} from '../src/types.d.ts'
+ * @import {AsyncBuffer, FileMetaData, GeometryType, GeoParquet, KeyValue, LogicalType, MetadataOptions, MinMaxType, ParquetParsers, SchemaElement, SchemaTree, Statistics, TimeUnit} from '../src/types.d.ts'
  * @param {any} stats
  * @param {SchemaElement} schema
  * @param {ParquetParsers} parsers

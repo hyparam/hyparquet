@@ -46,7 +46,7 @@ export default [
       'no-multi-spaces': 'error',
       'no-trailing-spaces': 'error',
       'no-undef': 'error',
-      'no-unused-vars': 'error',
+      'no-unused-vars': ['error', { 'caughtErrors': 'all', 'caughtErrorsIgnorePattern': '^_' }],
       'no-useless-concat': 'error',
       'no-useless-rename': 'error',
       'no-useless-return': 'error',
