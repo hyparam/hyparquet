@@ -124,6 +124,7 @@ export interface SchemaElement {
   precision?: number
   field_id?: number
   logical_type?: LogicalType
+  geospatial?: boolean // if the column contains geospatial data
 }
 
 export type ParquetType =

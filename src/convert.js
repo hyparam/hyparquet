@@ -1,5 +1,7 @@
+import { decodeWKB } from './wkb.js'
+
 /**
- * @import {ColumnDecoder, DecodedArray, Encoding, ParquetParsers, SchemaElement} from '../src/types.d.ts'
+ * @import {ColumnDecoder, DecodedArray, Encoding, ParquetParsers} from '../src/types.d.ts'
  */
 
 /**
@@ -56,7 +58,7 @@ export function convertWithDictionary(data, dictionary, encoding, columnDecoder)
  */
 export function convert(data, columnDecoder) {
   const { element, parsers, utf8 = true } = columnDecoder
-  const { type, converted_type: ctype, logical_type: ltype } = element
+  const { type, converted_type: ctype, logical_type: ltype, geospatial } = element
   if (ctype === 'DECIMAL') {
     const scale = element.scale || 0
     const factor = 10 ** -scale
@@ -107,6 +109,14 @@ export function convert(data, columnDecoder) {
   }
   if (ctype === 'INTERVAL') {
     throw new Error('parquet interval not supported')
+  }
+  if (type === 'BYTE_ARRAY' && geospatial) {
+    const arr = new Array(data.length)
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = decodeWKB(data[i])
+    }
+    return arr
+    // TODO: use custom parquet parser
   }
   if (ctype === 'UTF8' || ltype?.type === 'STRING' || utf8 && type === 'BYTE_ARRAY') {
     const decoder = new TextDecoder()

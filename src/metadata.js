@@ -177,6 +177,15 @@ export function parquetMetadata(arrayBuffer, { parsers } = {}) {
     value: decode(keyValue.field_2),
   }))
   const geo = convertGeoParquet(key_value_metadata, schema)
+  if (geo) {
+    for (const columnName of Object.keys(geo.columns)) {
+      const schemaElement = schema.find(({ name }) => name === columnName)
+      if (!schemaElement) {
+        throw new Error(`Geospatial column ${columnName} not found in the schema`)
+      }
+      schemaElement.geospatial = true
+    }
+  }
   const created_by = decode(metadata.field_6)
 
   return {
