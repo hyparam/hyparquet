@@ -1,0 +1,164 @@
+{
+  "created_by": "parquet-cpp-arrow version 15.0.0",
+  "geo": {
+    "columns": {
+      "geometry": {
+        "encoding": "WKB",
+        "geometry_types": ["LineString", "Point", "Polygon"]
+      }
+    },
+    "primary_column": "geometry",
+    "version": "1.0.0"
+  },
+  "key_value_metadata": [
+    {
+      "key": "pandas",
+      "value": "{\"index_columns\": [{\"kind\": \"range\", \"name\": null, \"start\": 0, \"stop\": 3, \"step\": 1}], \"column_indexes\": [{\"name\": null, \"field_name\": null, \"pandas_type\": \"unicode\", \"numpy_type\": \"object\", \"metadata\": {\"encoding\": \"UTF-8\"}}], \"columns\": [{\"name\": \"prop0\", \"field_name\": \"prop0\", \"pandas_type\": \"unicode\", \"numpy_type\": \"object\", \"metadata\": null}, {\"name\": \"prop1\", \"field_name\": \"prop1\", \"pandas_type\": \"unicode\", \"numpy_type\": \"object\", \"metadata\": null}, {\"name\": \"geometry\", \"field_name\": \"geometry\", \"pandas_type\": \"empty\", \"numpy_type\": \"object\", \"metadata\": null}], \"creator\": {\"library\": \"pyarrow\", \"version\": \"15.0.0\"}, \"pandas_version\": \"2.1.4\"}"
+    },
+    {
+      "key": "geo",
+      "value": "{\"primary_column\": \"geometry\", \"columns\": {\"geometry\": {\"encoding\": \"WKB\", \"crs\": {\"$schema\": \"https://proj.org/schemas/v0.7/projjson.schema.json\", \"type\": \"GeographicCRS\", \"name\": \"WGS 84\", \"datum_ensemble\": {\"name\": \"World Geodetic System 1984 ensemble\", \"members\": [{\"name\": \"World Geodetic System 1984 (Transit)\"}, {\"name\": \"World Geodetic System 1984 (G730)\"}, {\"name\": \"World Geodetic System 1984 (G873)\"}, {\"name\": \"World Geodetic System 1984 (G1150)\"}, {\"name\": \"World Geodetic System 1984 (G1674)\"}, {\"name\": \"World Geodetic System 1984 (G1762)\"}, {\"name\": \"World Geodetic System 1984 (G2139)\"}, {\"name\": \"World Geodetic System 1984 (G2296)\"}], \"ellipsoid\": {\"name\": \"WGS 84\", \"semi_major_axis\": 6378137, \"inverse_flattening\": 298.257223563}, \"accuracy\": \"2.0\", \"id\": {\"authority\": \"EPSG\", \"code\": 6326}}, \"coordinate_system\": {\"subtype\": \"ellipsoidal\", \"axis\": [{\"name\": \"Geodetic latitude\", \"abbreviation\": \"Lat\", \"direction\": \"north\", \"unit\": \"degree\"}, {\"name\": \"Geodetic longitude\", \"abbreviation\": \"Lon\", \"direction\": \"east\", \"unit\": \"degree\"}]}, \"scope\": \"Horizontal component of 3D system.\", \"area\": \"World.\", \"bbox\": {\"south_latitude\": -90, \"west_longitude\": -180, \"north_latitude\": 90, \"east_longitude\": 180}, \"id\": {\"authority\": \"EPSG\", \"code\": 4326}}, \"geometry_types\": [\"LineString\", \"Point\", \"Polygon\"], \"bbox\": [100.0, 0.0, 105.0, 1.0]}}, \"version\": \"1.0.0\", \"creator\": {\"library\": \"geopandas\", \"version\": \"1.0.1\"}}"
+    },
+    {
+      "key": "ARROW:schema",
+      "value": "/////0AQAAAQAAAAAAAKAA4ABgAFAAgACgAAAAABBAAQAAAAAAAKAAwAAAAEAAgACgAAAHwIAAAEAAAAAgAAAMAFAAAEAAAArPD//wgAAAAMAAAAAwAAAGdlbwCfBQAAeyJwcmltYXJ5X2NvbHVtbiI6ICJnZW9tZXRyeSIsICJjb2x1bW5zIjogeyJnZW9tZXRyeSI6IHsiZW5jb2RpbmciOiAiV0tCIiwgImNycyI6IHsiJHNjaGVtYSI6ICJodHRwczovL3Byb2oub3JnL3NjaGVtYXMvdjAuNy9wcm9qanNvbi5zY2hlbWEuanNvbiIsICJ0eXBlIjogIkdlb2dyYXBoaWNDUlMiLCAibmFtZSI6ICJXR1MgODQiLCAiZGF0dW1fZW5zZW1ibGUiOiB7Im5hbWUiOiAiV29ybGQgR2VvZGV0aWMgU3lzdGVtIDE5ODQgZW5zZW1ibGUiLCAibWVtYmVycyI6IFt7Im5hbWUiOiAiV29ybGQgR2VvZGV0aWMgU3lzdGVtIDE5ODQgKFRyYW5zaXQpIn0sIHsibmFtZSI6ICJXb3JsZCBHZW9kZXRpYyBTeXN0ZW0gMTk4NCAoRzczMCkifSwgeyJuYW1lIjogIldvcmxkIEdlb2RldGljIFN5c3RlbSAxOTg0IChHODczKSJ9LCB7Im5hbWUiOiAiV29ybGQgR2VvZGV0aWMgU3lzdGVtIDE5ODQgKEcxMTUwKSJ9LCB7Im5hbWUiOiAiV29ybGQgR2VvZGV0aWMgU3lzdGVtIDE5ODQgKEcxNjc0KSJ9LCB7Im5hbWUiOiAiV29ybGQgR2VvZGV0aWMgU3lzdGVtIDE5ODQgKEcxNzYyKSJ9LCB7Im5hbWUiOiAiV29ybGQgR2VvZGV0aWMgU3lzdGVtIDE5ODQgKEcyMTM5KSJ9LCB7Im5hbWUiOiAiV29ybGQgR2VvZGV0aWMgU3lzdGVtIDE5ODQgKEcyMjk2KSJ9XSwgImVsbGlwc29pZCI6IHsibmFtZSI6ICJXR1MgODQiLCAic2VtaV9tYWpvcl9heGlzIjogNjM3ODEzNywgImludmVyc2VfZmxhdHRlbmluZyI6IDI5OC4yNTcyMjM1NjN9LCAiYWNjdXJhY3kiOiAiMi4wIiwgImlkIjogeyJhdXRob3JpdHkiOiAiRVBTRyIsICJjb2RlIjogNjMyNn19LCAiY29vcmRpbmF0ZV9zeXN0ZW0iOiB7InN1YnR5cGUiOiAiZWxsaXBzb2lkYWwiLCAiYXhpcyI6IFt7Im5hbWUiOiAiR2VvZGV0aWMgbGF0aXR1ZGUiLCAiYWJicmV2aWF0aW9uIjogIkxhdCIsICJkaXJlY3Rpb24iOiAibm9ydGgiLCAidW5pdCI6ICJkZWdyZWUifSwgeyJuYW1lIjogIkdlb2RldGljIGxvbmdpdHVkZSIsICJhYmJyZXZpYXRpb24iOiAiTG9uIiwgImRpcmVjdGlvbiI6ICJlYXN0IiwgInVuaXQiOiAiZGVncmVlIn1dfSwgInNjb3BlIjogIkhvcml6b250YWwgY29tcG9uZW50IG9mIDNEIHN5c3RlbS4iLCAiYXJlYSI6ICJXb3JsZC4iLCAiYmJveCI6IHsic291dGhfbGF0aXR1ZGUiOiAtOTAsICJ3ZXN0X2xvbmdpdHVkZSI6IC0xODAsICJub3J0aF9sYXRpdHVkZSI6IDkwLCAiZWFzdF9sb25naXR1ZGUiOiAxODB9LCAiaWQiOiB7ImF1dGhvcml0eSI6ICJFUFNHIiwgImNvZGUiOiA0MzI2fX0sICJnZW9tZXRyeV90eXBlcyI6IFsiTGluZVN0cmluZyIsICJQb2ludCIsICJQb2x5Z29uIl0sICJiYm94IjogWzEwMC4wLCAwLjAsIDEwNS4wLCAxLjBdfX0sICJ2ZXJzaW9uIjogIjEuMC4wIiwgImNyZWF0b3IiOiB7ImxpYnJhcnkiOiAiZ2VvcGFuZGFzIiwgInZlcnNpb24iOiAiMS4wLjEifX0AZPb//wgAAAAQAAAABgAAAHBhbmRhcwAAkQIAAHsiaW5kZXhfY29sdW1ucyI6IFt7ImtpbmQiOiAicmFuZ2UiLCAibmFtZSI6IG51bGwsICJzdGFydCI6IDAsICJzdG9wIjogMywgInN0ZXAiOiAxfV0sICJjb2x1bW5faW5kZXhlcyI6IFt7Im5hbWUiOiBudWxsLCAiZmllbGRfbmFtZSI6IG51bGwsICJwYW5kYXNfdHlwZSI6ICJ1bmljb2RlIiwgIm51bXB5X3R5cGUiOiAib2JqZWN0IiwgIm1ldGFkYXRhIjogeyJlbmNvZGluZyI6ICJVVEYtOCJ9fV0sICJjb2x1bW5zIjogW3sibmFtZSI6ICJwcm9wMCIsICJmaWVsZF9uYW1lIjogInByb3AwIiwgInBhbmRhc190eXBlIjogInVuaWNvZGUiLCAibnVtcHlfdHlwZSI6ICJvYmplY3QiLCAibWV0YWRhdGEiOiBudWxsfSwgeyJuYW1lIjogInByb3AxIiwgImZpZWxkX25hbWUiOiAicHJvcDEiLCAicGFuZGFzX3R5cGUiOiAidW5pY29kZSIsICJudW1weV90eXBlIjogIm9iamVjdCIsICJtZXRhZGF0YSI6IG51bGx9LCB7Im5hbWUiOiAiZ2VvbWV0cnkiLCAiZmllbGRfbmFtZSI6ICJnZW9tZXRyeSIsICJwYW5kYXNfdHlwZSI6ICJlbXB0eSIsICJudW1weV90eXBlIjogIm9iamVjdCIsICJtZXRhZGF0YSI6IG51bGx9XSwgImNyZWF0b3IiOiB7ImxpYnJhcnkiOiAicHlhcnJvdyIsICJ2ZXJzaW9uIjogIjE1LjAuMCJ9LCAicGFuZGFzX3ZlcnNpb24iOiAiMi4xLjQifQAAAAMAAABoBwAALAcAABgAAAAAABIAGAAIAAYABwAMAAAAEAAUABIAAAAAAAEEFAAAAAAHAAAIAAAAGAAAAAAAAAAIAAAAZ2VvbWV0cnkAAAAAAgAAAKAGAAAEAAAAcPn//wgAAAAkAAAAGAAAAEFSUk9XOmV4dGVuc2lvbjptZXRhZGF0YQAAAABfBgAAeyJjcnMiOiAie1wiJHNjaGVtYVwiOlwiaHR0cHM6Ly9wcm9qLm9yZy9zY2hlbWFzL3YwLjcvcHJvampzb24uc2NoZW1hLmpzb25cIixcInR5cGVcIjpcIkdlb2dyYXBoaWNDUlNcIixcIm5hbWVcIjpcIldHUyA4NFwiLFwiZGF0dW1fZW5zZW1ibGVcIjp7XCJuYW1lXCI6XCJXb3JsZCBHZW9kZXRpYyBTeXN0ZW0gMTk4NCBlbnNlbWJsZVwiLFwibWVtYmVyc1wiOlt7XCJuYW1lXCI6XCJXb3JsZCBHZW9kZXRpYyBTeXN0ZW0gMTk4NCAoVHJhbnNpdClcIixcImlkXCI6e1wiYXV0aG9yaXR5XCI6XCJFUFNHXCIsXCJjb2RlXCI6MTE2Nn19LHtcIm5hbWVcIjpcIldvcmxkIEdlb2RldGljIFN5c3RlbSAxOTg0IChHNzMwKVwiLFwiaWRcIjp7XCJhdXRob3JpdHlcIjpcIkVQU0dcIixcImNvZGVcIjoxMTUyfX0se1wibmFtZVwiOlwiV29ybGQgR2VvZGV0aWMgU3lzdGVtIDE5ODQgKEc4NzMpXCIsXCJpZFwiOntcImF1dGhvcml0eVwiOlwiRVBTR1wiLFwiY29kZVwiOjExNTN9fSx7XCJuYW1lXCI6XCJXb3JsZCBHZW9kZXRpYyBTeXN0ZW0gMTk4NCAoRzExNTApXCIsXCJpZFwiOntcImF1dGhvcml0eVwiOlwiRVBTR1wiLFwiY29kZVwiOjExNTR9fSx7XCJuYW1lXCI6XCJXb3JsZCBHZW9kZXRpYyBTeXN0ZW0gMTk4NCAoRzE2NzQpXCIsXCJpZFwiOntcImF1dGhvcml0eVwiOlwiRVBTR1wiLFwiY29kZVwiOjExNTV9fSx7XCJuYW1lXCI6XCJXb3JsZCBHZW9kZXRpYyBTeXN0ZW0gMTk4NCAoRzE3NjIpXCIsXCJpZFwiOntcImF1dGhvcml0eVwiOlwiRVBTR1wiLFwiY29kZVwiOjExNTZ9fSx7XCJuYW1lXCI6XCJXb3JsZCBHZW9kZXRpYyBTeXN0ZW0gMTk4NCAoRzIxMzkpXCIsXCJpZFwiOntcImF1dGhvcml0eVwiOlwiRVBTR1wiLFwiY29kZVwiOjEzMDl9fSx7XCJuYW1lXCI6XCJXb3JsZCBHZW9kZXRpYyBTeXN0ZW0gMTk4NCAoRzIyOTYpXCIsXCJpZFwiOntcImF1dGhvcml0eVwiOlwiRVBTR1wiLFwiY29kZVwiOjEzODN9fV0sXCJlbGxpcHNvaWRcIjp7XCJuYW1lXCI6XCJXR1MgODRcIixcInNlbWlfbWFqb3JfYXhpc1wiOjYzNzgxMzcsXCJpbnZlcnNlX2ZsYXR0ZW5pbmdcIjoyOTguMjU3MjIzNTYzfSxcImFjY3VyYWN5XCI6XCIyLjBcIixcImlkXCI6e1wiYXV0aG9yaXR5XCI6XCJFUFNHXCIsXCJjb2RlXCI6NjMyNn19LFwiY29vcmRpbmF0ZV9zeXN0ZW1cIjp7XCJzdWJ0eXBlXCI6XCJlbGxpcHNvaWRhbFwiLFwiYXhpc1wiOlt7XCJuYW1lXCI6XCJHZW9kZXRpYyBsYXRpdHVkZVwiLFwiYWJicmV2aWF0aW9uXCI6XCJMYXRcIixcImRpcmVjdGlvblwiOlwibm9ydGhcIixcInVuaXRcIjpcImRlZ3JlZVwifSx7XCJuYW1lXCI6XCJHZW9kZXRpYyBsb25naXR1ZGVcIixcImFiYnJldmlhdGlvblwiOlwiTG9uXCIsXCJkaXJlY3Rpb25cIjpcImVhc3RcIixcInVuaXRcIjpcImRlZ3JlZVwifV19LFwic2NvcGVcIjpcIkhvcml6b250YWwgY29tcG9uZW50IG9mIDNEIHN5c3RlbS5cIixcImFyZWFcIjpcIldvcmxkLlwiLFwiYmJveFwiOntcInNvdXRoX2xhdGl0dWRlXCI6LTkwLFwid2VzdF9sb25naXR1ZGVcIjotMTgwLFwibm9ydGhfbGF0aXR1ZGVcIjo5MCxcImVhc3RfbG9uZ2l0dWRlXCI6MTgwfSxcImlkXCI6e1wiYXV0aG9yaXR5XCI6XCJFUFNHXCIsXCJjb2RlXCI6NDMyNn19In0ACAAMAAQACAAIAAAACAAAACAAAAAUAAAAQVJST1c6ZXh0ZW5zaW9uOm5hbWUAAAAADAAAAGdlb2Fycm93LndrYgAAAACg////2P///wAAAQUQAAAAGAAAAAQAAAAAAAAABQAAAHByb3AxAAAAyP///xAAFAAIAAYABwAMAAAAEAAQAAAAAAABBRAAAAAcAAAABAAAAAAAAAAFAAAAcHJvcDAAAAAEAAQABAAAAA=="
+    }
+  ],
+  "metadata_length": 8161,
+  "num_rows": 3,
+
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 78,
+          "meta_data": {
+            "codec": "SNAPPY",
+            "data_page_offset": 30,
+            "dictionary_page_offset": 4,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "PLAIN",
+                "page_type": "DICTIONARY_PAGE"
+              },
+              {
+                "count": 1,
+                "encoding": "RLE_DICTIONARY",
+                "page_type": "DATA_PAGE"
+              }
+            ],
+            "encodings": ["PLAIN", "RLE", "RLE_DICTIONARY"],
+            "num_values": 3,
+            "path_in_schema": ["prop0"],
+            "statistics": {
+              "max_value": "value0",
+              "min_value": "value0",
+              "null_count": 0
+            },
+            "total_compressed_size": 74,
+            "total_uncompressed_size": 70,
+            "type": "BYTE_ARRAY"
+          }
+        },
+        {
+          "file_offset": 251,
+          "meta_data": {
+            "codec": "SNAPPY",
+            "data_page_offset": 194,
+            "dictionary_page_offset": 149,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "PLAIN",
+                "page_type": "DICTIONARY_PAGE"
+              },
+              {
+                "count": 1,
+                "encoding": "RLE_DICTIONARY",
+                "page_type": "DATA_PAGE"
+              }
+            ],
+            "encodings": ["PLAIN", "RLE", "RLE_DICTIONARY"],
+            "num_values": 3,
+            "path_in_schema": ["prop1"],
+            "statistics": {
+              "max_value": "{ \"this\": \"that\" }",
+              "min_value": "0.0",
+              "null_count": 1
+            },
+            "total_compressed_size": 102,
+            "total_uncompressed_size": 98,
+            "type": "BYTE_ARRAY"
+          }
+        },
+        {
+          "file_offset": 599,
+          "meta_data": {
+            "codec": "SNAPPY",
+            "data_page_offset": 448,
+            "dictionary_page_offset": 333,
+            "encoding_stats": [
+              {
+                "count": 1,
+                "encoding": "PLAIN",
+                "page_type": "DICTIONARY_PAGE"
+              },
+              {
+                "count": 1,
+                "encoding": "RLE_DICTIONARY",
+                "page_type": "DATA_PAGE"
+              }
+            ],
+            "encodings": ["PLAIN", "RLE", "RLE_DICTIONARY"],
+            "num_values": 3,
+            "path_in_schema": ["geometry"],
+            "statistics": {
+              "max_value": "Y@@Y@@Y@�?Y@�?Y@", // remove here
+              "min_value": "�Y@�?", // remove here
+              "null_count": 0
+            },
+            "total_compressed_size": 266,
+            "total_uncompressed_size": 364,
+            "type": "BYTE_ARRAY"
+          }
+        }
+      ],
+      "file_offset": 4,
+      "num_rows": 3,
+      "ordinal": 0,
+      "total_byte_size": 532,
+      "total_compressed_size": 442
+    }
+  ],
+  "schema": [
+    {
+      "name": "schema",
+      "num_children": 3,
+      "repetition_type": "REQUIRED"
+    },
+    {
+      "converted_type": "UTF8",
+      "logical_type": { "type": "STRING" },
+      "name": "prop0",
+      "repetition_type": "OPTIONAL",
+      "type": "BYTE_ARRAY"
+    },
+    {
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      },
+      "name": "prop1",
+      "repetition_type": "OPTIONAL",
+      "type": "BYTE_ARRAY"
+    },
+    {
+      "geospatial": true,
+      "name": "geometry",
+      "repetition_type": "OPTIONAL",
+      "type": "BYTE_ARRAY"
+    }
+  ],
+  "version": 2
+}
