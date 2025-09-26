@@ -1,7 +1,6 @@
 /** @import {GeometryType, GeoParquet, GeoParquetColumn, KeyValue, SchemaElement} from '../src/types.d.ts' */
 
-export const encodings = [
-  'WKB',
+export const unsupportedEncodings = [
   'point',
   'linestring',
   'polygon',
@@ -11,14 +10,16 @@ export const encodings = [
 ]
 
 /** @type GeometryType[] */
-export const geometryTypes = [
-  'GeometryCollection',
+export const supportedGeometryTypes = [
   'Point',
   'LineString',
   'Polygon',
   'MultiPoint',
   'MultiLineString',
   'MultiPolygon',
+]
+export const unsupportedGeometryTypes = [
+  'GeometryCollection',
   'GeometryCollection Z',
   'Point Z',
   'LineString Z',
@@ -146,7 +147,7 @@ export function parseColumn({ columnName, metadata, columnNames, version }) {
   }
   if (
     typeof metadata.encoding !== 'string' ||
-    !encodings.includes(metadata.encoding)
+    !['WKB', ...unsupportedEncodings].includes(metadata.encoding)
   ) {
     throw new Error(`Invalid GeoParquet metadata: column "${columnName}" invalid encoding "${metadata.encoding}"`)
   }
@@ -170,7 +171,10 @@ export function parseColumn({ columnName, metadata, columnNames, version }) {
     throw new Error(`Invalid GeoParquet metadata: column "${columnName}" missing or invalid geometry_types`)
   }
   for (const geometry_type of metadata.geometry_types) {
-    if (!geometryTypes.includes(geometry_type)) {
+    if (unsupportedGeometryTypes.includes(geometry_type)) {
+      throw new Error(`Invalid GeoParquet metadata: column "${columnName}" geometry_type "${geometry_type}" is not supported`)
+    }
+    if (!supportedGeometryTypes.includes(geometry_type)) {
       throw new Error(`Invalid GeoParquet metadata: column "${columnName}" has invalid geometry_type "${geometry_type}"`)
     }
     geometry_types.push(geometry_type)

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { convertGeoParquet, encodings, geometryTypes, parseColumn, parseGeoParquet } from '../src/geoparquet.js'
+import { convertGeoParquet, parseColumn, parseGeoParquet, supportedGeometryTypes, unsupportedEncodings, unsupportedGeometryTypes } from '../src/geoparquet.js'
 
 describe('geoparquet', () => {
   describe('convertGeoParquet', () => {
@@ -23,7 +23,7 @@ describe('geoparquet', () => {
         columns: {
           a: {
             encoding: 'WKB',
-            geometry_types: ['Point', 'LineString Z'],
+            geometry_types: ['Point', 'LineString'],
           },
         },
         primary_column: 'a',
@@ -107,7 +107,7 @@ describe('geoparquet', () => {
         columns: {
           a: {
             encoding: 'WKB',
-            geometry_types: ['Point', 'LineString Z'],
+            geometry_types: ['Point', 'LineString'],
           },
         },
         primary_column,
@@ -120,7 +120,7 @@ describe('geoparquet', () => {
         columns: {
           a: {
             encoding: 'WKB',
-            geometry_types: ['Point', 'LineString Z'],
+            geometry_types: ['Point', 'LineString'],
           },
         },
         primary_column: 'a',
@@ -134,7 +134,7 @@ describe('geoparquet', () => {
         columns: {
           a: {
             encoding: 'WKB',
-            geometry_types: ['Point', 'LineString Z'],
+            geometry_types: ['Point', 'LineString'],
           },
         },
         primary_column: 'a',
@@ -148,7 +148,7 @@ describe('geoparquet', () => {
         columns: {
           a: {
             encoding: 'WKB',
-            geometry_types: ['Point', 'LineString Z'],
+            geometry_types: ['Point', 'LineString'],
           },
         },
         primary_column: 'a',
@@ -162,7 +162,7 @@ describe('geoparquet', () => {
         columns: {
           a: {
             encoding: 'WKB',
-            geometry_types: ['Point', 'LineString Z'],
+            geometry_types: ['Point', 'LineString'],
           },
           b: {
             encoding: 'WKB',
@@ -180,7 +180,7 @@ describe('geoparquet', () => {
       columnName: 'a',
       metadata: {
         encoding: 'WKB',
-        geometry_types: ['Point', 'LineString Z'],
+        geometry_types: ['Point', 'LineString'],
       },
       columnNames: ['a', 'b'],
       version: '1.0.0',
@@ -226,7 +226,7 @@ describe('geoparquet', () => {
       expect(() => parseColumn({ ...options, metadata: { encoding } })).toThrow('must be "WKB"')
     })
 
-    test.for(encodings.filter(d => d !== 'WKB'))('throws for unsupported encoding %s in v1.1.0', (encoding) => {
+    test.for(unsupportedEncodings)('throws for unsupported encoding %s in v1.1.0', (encoding) => {
       expect(() => parseColumn({ ...options, version: '1.1.0', metadata: { encoding } })).toThrow('only "WKB" is supported')
     })
 
@@ -239,13 +239,19 @@ describe('geoparquet', () => {
       expect(() => parseColumn({ ...options, metadata: { encoding: 'WKB', geometry_columns } })).toThrow('missing or invalid geometry_types')
     })
 
+    test.for(
+      unsupportedGeometryTypes
+    )('throws for unsupported geometry_types', (geometry_type) => {
+      expect(() => parseColumn({ ...options, metadata: { encoding: 'WKB', geometry_types: [geometry_type] } })).toThrow('is not supported')
+    })
+
     test.for([
       [0],
       ['unknown'],
       ['Point  Z'],
       ['point'],
       ['Point', 'unknown'],
-      ...geometryTypes.map(d => [d.toLowerCase()]), // case-sensitive match
+      ...supportedGeometryTypes.map(d => [d.toLowerCase()]), // case-sensitive match
     ])('throws for invalid geometry_types', (geometry_types) => {
       expect(() => parseColumn({ ...options, metadata: { encoding: 'WKB', geometry_types } })).toThrow('has invalid geometry_type')
     })
@@ -269,7 +275,7 @@ describe('geoparquet', () => {
       expect(parseColumn({ ...options, metadata: { encoding: 'WKB', geometry_types: [] } })).toEqual({ encoding: 'WKB', geometry_types: [] })
     })
 
-    test.for(geometryTypes)('supports %s geometry_type', (geometry_type) => {
+    test.for(supportedGeometryTypes)('supports %s geometry_type', (geometry_type) => {
       expect(parseColumn({ ...options, metadata: { encoding: 'WKB', geometry_types: [geometry_type] } })).toEqual({ encoding: 'WKB', geometry_types: [geometry_type] })
     })
 
