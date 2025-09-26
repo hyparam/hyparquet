@@ -145,6 +145,24 @@ describe('convert function', () => {
     ])
   })
 
+  it('converts geospatial to GeoJSON', () => {
+    const data = [new Uint8Array([
+      1, // little endian
+      1, 0, 0, 0, // type Point
+      0, 0, 0, 0, 0, 128, 89, 64, // 102
+      0, 0, 0, 0, 0, 0, 224, 63, // 0.5
+    ])]
+    // const data = [1716506900000000n, 1716507000000000n]
+    /** @type {SchemaElement} */
+    const element = { name, type: 'BYTE_ARRAY', geospatial: true }
+    expect(convert(data, { element, parsers })).toEqual([
+      {
+        type: 'Point',
+        coordinates: [102, 0.5],
+      },
+    ])
+  })
+
   it('throws error for BSON conversion', () => {
     const data = [{}]
     /** @type {SchemaElement} */

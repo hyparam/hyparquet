@@ -1,0 +1,276 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "schema",
+      "num_children": 6
+    },
+    {
+      "type": "DOUBLE",
+      "repetition_type": "OPTIONAL",
+      "name": "pop_est"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "continent",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "name",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "iso_a3",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "gdp_md_est"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "geometry",
+      "geospatial": true
+    }
+  ],
+  "num_rows": 5,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 132,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": ["RLE_DICTIONARY", "PLAIN", "RLE"],
+            "path_in_schema": ["pop_est"],
+            "codec": "SNAPPY",
+            "num_values": 5,
+            "total_uncompressed_size": 126,
+            "total_compressed_size": 128,
+            "data_page_offset": 58,
+            "dictionary_page_offset": 4,
+            "statistics": {
+              "max": 328239523,
+              "min": 603253,
+              "null_count": 0,
+              "max_value": 328239523,
+              "min_value": 603253
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 333,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": ["RLE_DICTIONARY", "PLAIN", "RLE"],
+            "path_in_schema": ["continent"],
+            "codec": "SNAPPY",
+            "num_values": 5,
+            "total_uncompressed_size": 100,
+            "total_compressed_size": 104,
+            "data_page_offset": 283,
+            "dictionary_page_offset": 229,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "Oceania",
+              "min_value": "Africa"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 554,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": ["RLE_DICTIONARY", "PLAIN", "RLE"],
+            "path_in_schema": ["name"],
+            "codec": "SNAPPY",
+            "num_values": 5,
+            "total_uncompressed_size": 138,
+            "total_compressed_size": 143,
+            "data_page_offset": 501,
+            "dictionary_page_offset": 411,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "W. Sahara",
+              "min_value": "Canada"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 722,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": ["RLE_DICTIONARY", "PLAIN", "RLE"],
+            "path_in_schema": ["iso_a3"],
+            "codec": "SNAPPY",
+            "num_values": 5,
+            "total_uncompressed_size": 91,
+            "total_compressed_size": 93,
+            "data_page_offset": 678,
+            "dictionary_page_offset": 629,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "USA",
+              "min_value": "CAN"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 913,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": ["RLE_DICTIONARY", "PLAIN", "RLE"],
+            "path_in_schema": ["gdp_md_est"],
+            "codec": "SNAPPY",
+            "num_values": 5,
+            "total_uncompressed_size": 126,
+            "total_compressed_size": 123,
+            "data_page_offset": 839,
+            "dictionary_page_offset": 790,
+            "statistics": {
+              "max": 21433226,
+              "min": 907,
+              "null_count": 0,
+              "max_value": 21433226,
+              "min_value": 907
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ]
+          }
+        },
+        {
+          "file_offset": 21684,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": ["RLE_DICTIONARY", "PLAIN", "RLE"],
+            "path_in_schema": ["geometry"],
+            "codec": "SNAPPY",
+            "num_values": 5,
+            "total_uncompressed_size": 22634,
+            "total_compressed_size": 20669,
+            "data_page_offset": 21186,
+            "dictionary_page_offset": 1015,
+            "statistics": {
+              "null_count": 0,
+              "min_value": "\u0001\u0003\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u001c\u0000\u0000\u0000�_�'�T!�\u0000\f��\u000b�;@��\r2�T!��\u0004�\u0019�;@�w\u001b�i^!�8��|Oe;@�,���_!�,ʂ��9@H5�W�'�K\u00045��9@h8����'�@�7h�_7@�!\u0007���)���`��H7@�Z�a�<*�\u0014��n�6@�6�?��)�$���S5@t�p�^�0����TU5@�[\"�<\u00101�X�����4@@@:�:\u00051����\u001cl5@\f��\u001a�\u00001��\u000b�;�k5@�$�\u001d}�-����S'�5@蹏��B-��Íf�5@�\u001c��<q,��y��fO6@P\u0005H�?�+��ѓ��7@\u0010\"�.~\u0000)�P�&W&�8@\u0000�G��\u000f(�\u0000����\u0007:@H����o'������\u001a:@�D����&�`a�\u0012(�:@h_�\u0016?\u001a%��y-���:@(�w5�`$�\r.��f�:@����~x#�\r.��f�:@`~\u001b�y�\"�\u0000G�]�\u0016;@\u0018\u000f\u0018\t��!�y\u0010*��\u001e;@\u0010\u0005Ae��!�\u0000\f��\u000b�;@�_�'�T!�\u0000\f��\u000b�;@"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ]
+          }
+        }
+      ],
+      "total_byte_size": 23215,
+      "num_rows": 5,
+      "file_offset": 4,
+      "total_compressed_size": 21260,
+      "ordinal": 0
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "geo",
+      "value": "{\"version\": \"1.0.0\", \"primary_column\": \"geometry\", \"columns\": {\"geometry\": {\"encoding\": \"WKB\", \"geometry_types\": [\"Polygon\", \"MultiPolygon\"], \"crs\": {\"$schema\": \"https://proj.org/schemas/v0.6/projjson.schema.json\", \"type\": \"GeographicCRS\", \"name\": \"WGS 84 (CRS84)\", \"datum_ensemble\": {\"name\": \"World Geodetic System 1984 ensemble\", \"members\": [{\"name\": \"World Geodetic System 1984 (Transit)\", \"id\": {\"authority\": \"EPSG\", \"code\": 1166}}, {\"name\": \"World Geodetic System 1984 (G730)\", \"id\": {\"authority\": \"EPSG\", \"code\": 1152}}, {\"name\": \"World Geodetic System 1984 (G873)\", \"id\": {\"authority\": \"EPSG\", \"code\": 1153}}, {\"name\": \"World Geodetic System 1984 (G1150)\", \"id\": {\"authority\": \"EPSG\", \"code\": 1154}}, {\"name\": \"World Geodetic System 1984 (G1674)\", \"id\": {\"authority\": \"EPSG\", \"code\": 1155}}, {\"name\": \"World Geodetic System 1984 (G1762)\", \"id\": {\"authority\": \"EPSG\", \"code\": 1156}}, {\"name\": \"World Geodetic System 1984 (G2139)\", \"id\": {\"authority\": \"EPSG\", \"code\": 1309}}], \"ellipsoid\": {\"name\": \"WGS 84\", \"semi_major_axis\": 6378137, \"inverse_flattening\": 298.257223563}, \"accuracy\": \"2.0\", \"id\": {\"authority\": \"EPSG\", \"code\": 6326}}, \"coordinate_system\": {\"subtype\": \"ellipsoidal\", \"axis\": [{\"name\": \"Geodetic longitude\", \"abbreviation\": \"Lon\", \"direction\": \"east\", \"unit\": \"degree\"}, {\"name\": \"Geodetic latitude\", \"abbreviation\": \"Lat\", \"direction\": \"north\", \"unit\": \"degree\"}]}, \"scope\": \"Not known.\", \"area\": \"World.\", \"bbox\": {\"south_latitude\": -90, \"west_longitude\": -180, \"north_latitude\": 90, \"east_longitude\": 180}, \"id\": {\"authority\": \"OGC\", \"code\": \"CRS84\"}}, \"edges\": \"planar\", \"bbox\": [-180.0, -90.0, 180.0, 83.6451]}}}"
+    },
+    {
+      "key": "ARROW:schema",
+      "value": "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"
+    }
+  ],
+  "geo": {
+    "version": "1.0.0",
+    "primary_column": "geometry",
+    "columns": {
+      "geometry": {
+        "encoding": "WKB",
+        "geometry_types": ["Polygon", "MultiPolygon"]
+      }
+    }
+  },
+  "created_by": "parquet-cpp-arrow version 12.0.0",
+  "metadata_length": 5578
+}
