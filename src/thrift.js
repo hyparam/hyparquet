@@ -77,7 +77,12 @@ function readElement(reader, type) {
     return strBytes
   }
   case CompactType.LIST: {
-    const [elemType, listSize] = readCollectionBegin(reader)
+    const byte = reader.view.getUint8(reader.offset++)
+    const elemType = byte & 0x0f
+    let listSize = byte >> 4
+    if (listSize === 15) {
+      listSize = readVarInt(reader)
+    }
     const boolType = elemType === CompactType.TRUE || elemType === CompactType.FALSE
     const values = new Array(listSize)
     for (let i = 0; i < listSize; i++) {
@@ -88,14 +93,14 @@ function readElement(reader, type) {
   case CompactType.STRUCT: {
     /** @type {ThriftObject} */
     const structValues = {}
-    let structLastFid = 0
+    let lastFid = 0
     while (true) {
-      let structFieldType, structFid
-      [structFieldType, structFid, structLastFid] = readFieldBegin(reader, structLastFid)
-      if (structFieldType === CompactType.STOP) {
+      const [fieldType, fid, newLastFid] = readFieldBegin(reader, lastFid)
+      lastFid = newLastFid
+      if (fieldType === CompactType.STOP) {
         break
       }
-      structValues[`field_${structFid}`] = readElement(reader, structFieldType)
+      structValues[`field_${fid}`] = readElement(reader, fieldType)
     }
     return structValues
   }
@@ -106,8 +111,7 @@ function readElement(reader, type) {
 }
 
 /**
- * Var int, also known as Unsigned LEB128.
- * Var ints take 1 to 5 bytes (int32) or 1 to 10 bytes (int64).
+ * Var int aka Unsigned LEB128.
  * Reads groups of 7 low bits until high bit is 0.
  *
  * @param {DataReader} reader
@@ -172,16 +176,6 @@ export function readZigZagBigInt(reader) {
 }
 
 /**
- * Get thrift type from half a byte
- *
- * @param {number} byte
- * @returns {number}
- */
-function getCompactType(byte) {
-  return byte & 0x0f
-}
-
-/**
  * Read field type and field id
  *
  * @param {DataReader} reader
@@ -189,35 +183,13 @@ function getCompactType(byte) {
  * @returns {[number, number, number]} [type, fid, newLastFid]
  */
 function readFieldBegin(reader, lastFid) {
-  const type = reader.view.getUint8(reader.offset++)
-  if ((type & 0x0f) === CompactType.STOP) {
+  const byte = reader.view.getUint8(reader.offset++)
+  const type = byte & 0x0f
+  if (type === CompactType.STOP) {
     // STOP also ends a struct
     return [0, 0, lastFid]
   }
-  const delta = type >> 4
-  let fid // field id
-  if (delta) {
-    // add delta to last field id
-    fid = lastFid + delta
-  } else {
-    throw new Error('non-delta field id not supported')
-  }
-  return [getCompactType(type), fid, fid]
-}
-
-/**
- * Read collection type and size
- *
- * @param {DataReader} reader
- * @returns {[number, number]} [type, size]
- */
-function readCollectionBegin(reader) {
-  const sizeType = reader.view.getUint8(reader.offset++)
-  const size = sizeType >> 4
-  const type = getCompactType(sizeType)
-  if (size === 15) {
-    const newSize = readVarInt(reader)
-    return [type, newSize]
-  }
-  return [type, size]
+  const delta = byte >> 4
+  const fid = delta ? lastFid + delta : readZigZag(reader)
+  return [type, fid, fid]
 }

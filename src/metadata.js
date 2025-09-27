@@ -233,6 +233,9 @@ function logicalType(logicalType) {
   if (logicalType?.field_13) return { type: 'BSON' }
   if (logicalType?.field_14) return { type: 'UUID' }
   if (logicalType?.field_15) return { type: 'FLOAT16' }
+  if (logicalType?.field_16) return { type: 'VARIANT' }
+  if (logicalType?.field_17) return { type: 'GEOMETRY' }
+  if (logicalType?.field_18) return { type: 'GEOGRAPHY' }
   return logicalType
 }
 
