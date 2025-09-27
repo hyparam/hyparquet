@@ -1,3 +1,4 @@
+
 /**
  * Custom parsers for columns
  */
@@ -127,97 +128,69 @@ export interface SchemaElement {
 }
 
 export type ParquetType =
-  'BOOLEAN' |
-  'INT32' |
-  'INT64' |
-  'INT96' | // deprecated
-  'FLOAT' |
-  'DOUBLE' |
-  'BYTE_ARRAY' |
-  'FIXED_LEN_BYTE_ARRAY'
+  | 'BOOLEAN'
+  | 'INT32'
+  | 'INT64'
+  | 'INT96' // deprecated
+  | 'FLOAT'
+  | 'DOUBLE'
+  | 'BYTE_ARRAY'
+  | 'FIXED_LEN_BYTE_ARRAY'
 
 export type FieldRepetitionType =
-  'REQUIRED' |
-  'OPTIONAL' |
-  'REPEATED'
+  | 'REQUIRED'
+  | 'OPTIONAL'
+  | 'REPEATED'
 
 export type ConvertedType =
-  'UTF8' |
-  'MAP' |
-  'MAP_KEY_VALUE' |
-  'LIST' |
-  'ENUM' |
-  'DECIMAL' |
-  'DATE' |
-  'TIME_MILLIS' |
-  'TIME_MICROS' |
-  'TIMESTAMP_MILLIS' |
-  'TIMESTAMP_MICROS' |
-  'UINT_8' |
-  'UINT_16' |
-  'UINT_32' |
-  'UINT_64' |
-  'INT_8' |
-  'INT_16' |
-  'INT_32' |
-  'INT_64' |
-  'JSON' |
-  'BSON' |
-  'INTERVAL'
-
-type LogicalDecimalType = {
-  type: 'DECIMAL'
-  precision: number
-  scale: number
-}
+  | 'UTF8'
+  | 'MAP'
+  | 'MAP_KEY_VALUE'
+  | 'LIST'
+  | 'ENUM'
+  | 'DECIMAL'
+  | 'DATE'
+  | 'TIME_MILLIS'
+  | 'TIME_MICROS'
+  | 'TIMESTAMP_MILLIS'
+  | 'TIMESTAMP_MICROS'
+  | 'UINT_8'
+  | 'UINT_16'
+  | 'UINT_32'
+  | 'UINT_64'
+  | 'INT_8'
+  | 'INT_16'
+  | 'INT_32'
+  | 'INT_64'
+  | 'JSON'
+  | 'BSON'
+  | 'INTERVAL'
 
 export type TimeUnit = 'MILLIS' | 'MICROS' | 'NANOS'
 
-type LogicalTimeType = {
-  type: 'TIME'
-  isAdjustedToUTC: boolean
-  unit: TimeUnit
-}
-
-type LogicalTimestampType = {
-  type: 'TIMESTAMP'
-  isAdjustedToUTC: boolean
-  unit: TimeUnit
-}
-
-type LogicalIntType = {
-  type: 'INTEGER'
-  bitWidth: number
-  isSigned: boolean
-}
+type EdgeInterpolationAlgorithm = 'SPHERICAL' | 'VINCENTY' | 'THOMAS' | 'ANDOYER' | 'KARNEY'
 
 export type LogicalType =
-  { type: LogicalTypeSimple } |
-  LogicalDecimalType |
-  LogicalTimeType |
-  LogicalTimestampType |
-  LogicalIntType
+  | { type: 'STRING' }
+  | { type: 'MAP' }
+  | { type: 'LIST' }
+  | { type: 'ENUM' }
+  | { type: 'DATE' }
+  | { type: 'INTERVAL' }
+  | { type: 'NULL' }
+  | { type: 'JSON' }
+  | { type: 'BSON' }
+  | { type: 'UUID' }
+  | { type: 'FLOAT16' }
+  | { type: 'VARIANT' }
+  | { type: 'DECIMAL', precision: number, scale: number }
+  | { type: 'TIME', isAdjustedToUTC: boolean, unit: TimeUnit }
+  | { type: 'TIMESTAMP', isAdjustedToUTC: boolean, unit: TimeUnit }
+  | { type: 'INTEGER', bitWidth: number, isSigned: boolean }
+  | { type: 'GEOMETRY', crs?: string }
+  | { type: 'GEOGRAPHY', crs?: string, algorithm?: EdgeInterpolationAlgorithm }
 
-type LogicalTypeSimple =
-  'STRING' |
-  'MAP' |
-  'LIST' |
-  'ENUM' |
-  'DATE' |
-  'INTERVAL' |
-  'NULL' |
-  'JSON' |
-  'BSON' |
-  'UUID' |
-  'FLOAT16' |
-  'VARIANT' |
-  'GEOMETRY' |
-  'GEOGRAPHY'
-
-export type LogicalTypeType = LogicalTypeSimple |
-  'TIME' | // convertedType TIME_MILLIS or TIME_MICROS
-  'TIMESTAMP' | // convertedType TIMESTAMP_MILLIS or TIMESTAMP_MICROS
-  'INTEGER' // convertedType INT or UINT
+export type LogicalTypeType = LogicalType['type']
 
 export interface RowGroup {
   columns: ColumnChunk[]
@@ -263,26 +236,26 @@ export interface ColumnMetaData {
 type ColumnCryptoMetaData = Record<string, never>
 
 export type Encoding =
-  'PLAIN' |
-  'GROUP_VAR_INT' | // deprecated
-  'PLAIN_DICTIONARY' |
-  'RLE' |
-  'BIT_PACKED' | // deprecated
-  'DELTA_BINARY_PACKED' |
-  'DELTA_LENGTH_BYTE_ARRAY' |
-  'DELTA_BYTE_ARRAY' |
-  'RLE_DICTIONARY' |
-  'BYTE_STREAM_SPLIT'
+  | 'PLAIN'
+  | 'GROUP_VAR_INT' // deprecated
+  | 'PLAIN_DICTIONARY'
+  | 'RLE'
+  | 'BIT_PACKED' // deprecated
+  | 'DELTA_BINARY_PACKED'
+  | 'DELTA_LENGTH_BYTE_ARRAY'
+  | 'DELTA_BYTE_ARRAY'
+  | 'RLE_DICTIONARY'
+  | 'BYTE_STREAM_SPLIT'
 
 export type CompressionCodec =
-  'UNCOMPRESSED' |
-  'SNAPPY' |
-  'GZIP' |
-  'LZO' |
-  'BROTLI' |
-  'LZ4' |
-  'ZSTD' |
-  'LZ4_RAW'
+  | 'UNCOMPRESSED'
+  | 'SNAPPY'
+  | 'GZIP'
+  | 'LZO'
+  | 'BROTLI'
+  | 'LZ4'
+  | 'ZSTD'
+  | 'LZ4_RAW'
 
 export type Compressors = {
   [K in CompressionCodec]?: (input: Uint8Array, outputLength: number) => Uint8Array
@@ -376,14 +349,14 @@ interface DataPage {
 }
 
 export type DecodedArray =
-  Uint8Array |
-  Uint32Array |
-  Int32Array |
-  BigInt64Array |
-  BigUint64Array |
-  Float32Array |
-  Float64Array |
-  any[]
+  | Uint8Array
+  | Uint32Array
+  | Int32Array
+  | BigInt64Array
+  | BigUint64Array
+  | Float32Array
+  | Float64Array
+  | any[]
 
 export interface OffsetIndex {
   page_locations: PageLocation[]
