@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.18.1]
+ - Fix geospatial metadata parsing
+ - Custom `stringFromBytes` parser option (#129)
+
 ## [1.18.0]
  - Refine `onComplete` types for `rowFormat: 'array'` and `rowFormat: 'object'` (#120)
  - Only object format for `parquetReadObjects` and `parquetQuery` (#120)
