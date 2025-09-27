@@ -152,6 +152,19 @@ export function parquetMetadata(arrayBuffer, { parsers } = {}) {
           repetition_level_histogram: column.field_3.field_16.field_2,
           definition_level_histogram: column.field_3.field_16.field_3,
         },
+        geospatial_statistics: column.field_3.field_17 && {
+          bbox: column.field_3.field_17.field_1 && {
+            xmin: column.field_3.field_17.field_1.field_1,
+            xmax: column.field_3.field_17.field_1.field_2,
+            ymin: column.field_3.field_17.field_1.field_3,
+            ymax: column.field_3.field_17.field_1.field_4,
+            zmin: column.field_3.field_17.field_1.field_5,
+            zmax: column.field_3.field_17.field_1.field_6,
+            mmin: column.field_3.field_17.field_1.field_7,
+            mmax: column.field_3.field_17.field_1.field_8,
+          },
+          geospatial_types: column.field_3.field_17.field_2,
+        },
       },
       offset_index_offset: column.field_4,
       offset_index_length: column.field_5,
@@ -234,8 +247,15 @@ function logicalType(logicalType) {
   if (logicalType?.field_14) return { type: 'UUID' }
   if (logicalType?.field_15) return { type: 'FLOAT16' }
   if (logicalType?.field_16) return { type: 'VARIANT' }
-  if (logicalType?.field_17) return { type: 'GEOMETRY' }
-  if (logicalType?.field_18) return { type: 'GEOGRAPHY' }
+  if (logicalType?.field_17) return {
+    type: 'GEOMETRY',
+    crs: logicalType.field_17.field_1,
+  }
+  if (logicalType?.field_18) return {
+    type: 'GEOGRAPHY',
+    crs: logicalType.field_18.field_1,
+    algorithm: logicalType.field_18.field_2,
+  }
   return logicalType
 }
 
