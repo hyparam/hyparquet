@@ -1,6 +1,8 @@
 /**
- * @import {ColumnDecoder, DecodedArray, Encoding, ParquetParsers, SchemaElement} from '../src/types.d.ts'
+ * @import {ColumnDecoder, DecodedArray, Encoding, ParquetParsers} from '../src/types.d.ts'
  */
+
+const decoder = new TextDecoder()
 
 /**
  * Default type parsers when no custom ones are given
@@ -19,6 +21,9 @@ export const DEFAULT_PARSERS = {
   dateFromDays(days) {
     const dayInMillis = 86400000
     return new Date(days * dayInMillis)
+  },
+  stringFromBytes(bytes) {
+    return bytes && decoder.decode(bytes)
   },
 }
 
@@ -109,10 +114,10 @@ export function convert(data, columnDecoder) {
     throw new Error('parquet interval not supported')
   }
   if (ctype === 'UTF8' || ltype?.type === 'STRING' || utf8 && type === 'BYTE_ARRAY') {
-    const decoder = new TextDecoder()
     const arr = new Array(data.length)
     for (let i = 0; i < arr.length; i++) {
-      arr[i] = data[i] && decoder.decode(data[i])
+      const value = data[i]
+      arr[i] = value instanceof Uint8Array ? parsers.stringFromBytes(value) : value
     }
     return arr
   }

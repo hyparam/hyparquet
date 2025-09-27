@@ -279,7 +279,7 @@ export function convertMetadata(value, schema, parsers) {
   const { type, converted_type, logical_type } = schema
   if (value === undefined) return value
   if (type === 'BOOLEAN') return value[0] === 1
-  if (type === 'BYTE_ARRAY') return new TextDecoder().decode(value)
+  if (type === 'BYTE_ARRAY') return parsers.stringFromBytes(value)
   const view = new DataView(value.buffer, value.byteOffset, value.byteLength)
   if (type === 'FLOAT' && view.byteLength === 4) return view.getFloat32(0, true)
   if (type === 'DOUBLE' && view.byteLength === 8) return view.getFloat64(0, true)

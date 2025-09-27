@@ -2,10 +2,11 @@
  * Custom parsers for columns
  */
 export interface ParquetParsers {
-  timestampFromMilliseconds(millis: bigint): any;
-  timestampFromMicroseconds(micros: bigint): any;
-  timestampFromNanoseconds(nanos: bigint): any;
-  dateFromDays(days: number): any;
+  timestampFromMilliseconds(millis: bigint): any
+  timestampFromMicroseconds(micros: bigint): any
+  timestampFromNanoseconds(nanos: bigint): any
+  dateFromDays(days: number): any
+  stringFromBytes(bytes: Uint8Array): any
 }
 
 /**

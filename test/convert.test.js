@@ -225,6 +225,24 @@ describe('convert function', () => {
 
     expect(convert(data, columnParser)).toEqual([ 12358656, 12358656 ])
   })
+
+  it('respects custom parsers - stringFromBytes', () => {
+    const encoder = new TextEncoder()
+    const data = [encoder.encode('foo'), undefined]
+    /** @type {SchemaElement} */
+    const element = { name, converted_type: 'UTF8' }
+    const columnParser = {
+      element,
+      parsers: {
+        ...parsers,
+        stringFromBytes(/** @type {Uint8Array} */ bytes) {
+          return `custom-${new TextDecoder().decode(bytes)}`
+        },
+      },
+    }
+
+    expect(convert(data, columnParser)).toEqual(['custom-foo', undefined])
+  })
 })
 
 describe('parseFloat16', () => {
