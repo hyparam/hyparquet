@@ -1,4 +1,6 @@
+import { DEFAULT_PARSERS } from './convert.js'
 import { getMaxDefinitionLevel, isListLike, isMapLike } from './schema.js'
+import { decodeVariantColumn } from './variant.js'
 
 /**
  * Reconstructs a complex nested structure from flat arrays of values and
@@ -105,8 +107,9 @@ export function assembleLists(output, definitionLevels, repetitionLevels, values
  * @param {Map<string, DecodedArray>} subcolumnData
  * @param {SchemaTree} schema top-level schema element
  * @param {number} [depth] depth of nested structure
+ * @param {import('./types.d.ts').ParquetParsers} [parsers]
  */
-export function assembleNested(subcolumnData, schema, depth = 0) {
+export function assembleNested(subcolumnData, schema, depth = 0, parsers = DEFAULT_PARSERS) {
   const path = schema.path.join('.')
   const optional = schema.element.repetition_type === 'OPTIONAL'
   const nextDepth = optional ? depth + 1 : depth
@@ -118,7 +121,7 @@ export function assembleNested(subcolumnData, schema, depth = 0) {
       sublist = sublist.children[0]
       subDepth++
     }
-    assembleNested(subcolumnData, sublist, subDepth)
+    assembleNested(subcolumnData, sublist, subDepth, parsers)
 
     const subcolumn = sublist.path.join('.')
     const values = subcolumnData.get(subcolumn)
@@ -133,8 +136,8 @@ export function assembleNested(subcolumnData, schema, depth = 0) {
     const mapName = schema.children[0].element.name
 
     // Assemble keys and values
-    assembleNested(subcolumnData, schema.children[0].children[0], nextDepth + 1)
-    assembleNested(subcolumnData, schema.children[0].children[1], nextDepth + 1)
+    assembleNested(subcolumnData, schema.children[0].children[0], nextDepth + 1, parsers)
+    assembleNested(subcolumnData, schema.children[0].children[1], nextDepth + 1, parsers)
 
     const keys = subcolumnData.get(`${path}.${mapName}.key`)
     const values = subcolumnData.get(`${path}.${mapName}.value`)
@@ -161,7 +164,7 @@ export function assembleNested(subcolumnData, schema, depth = 0) {
     /** @type {Record<string, any>} */
     const struct = {}
     for (const child of schema.children) {
-      assembleNested(subcolumnData, child, invertDepth)
+      assembleNested(subcolumnData, child, invertDepth, parsers)
       const childData = subcolumnData.get(child.path.join('.'))
       if (!childData) throw new Error('parquet struct missing child data')
       struct[child.element.name] = childData
@@ -171,7 +174,10 @@ export function assembleNested(subcolumnData, schema, depth = 0) {
       subcolumnData.delete(child.path.join('.'))
     }
     // invert struct by depth
-    const inverted = invertStruct(struct, invertDepth)
+    let inverted = invertStruct(struct, invertDepth)
+    if (schema.element.logical_type?.type === 'VARIANT') {
+      inverted = decodeVariantColumn(inverted, parsers)
+    }
     if (optional) flattenAtDepth(inverted, depth)
     subcolumnData.set(path, inverted)
   }

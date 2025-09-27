@@ -100,7 +100,7 @@ export function readRowGroup(options, { metadata }, groupPlan) {
     })
   }
 
-  return { groupStart: groupPlan.groupStart, groupRows: groupPlan.groupRows, asyncColumns }
+  return { groupStart: groupPlan.groupStart, groupRows: groupPlan.groupRows, asyncColumns, parsers }
 }
 
 /**
@@ -191,7 +191,7 @@ export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd,
  * @returns {AsyncRowGroup}
  */
 export function assembleAsync(asyncRowGroup, schemaTree) {
-  const { asyncColumns } = asyncRowGroup
+  const { asyncColumns, parsers } = asyncRowGroup
   /** @type {AsyncColumn[]} */
   const assembled = []
   for (const child of schemaTree.children) {
@@ -208,7 +208,7 @@ export function assembleAsync(asyncRowGroup, schemaTree) {
         })
       })).then(() => {
         // assemble the column
-        assembleNested(flatData, child)
+        assembleNested(flatData, child, 0, parsers)
         const flatColumn = flatData.get(child.path.join('.'))
         if (!flatColumn) throw new Error('parquet column data not assembled')
         return { data: [flatColumn], pageSkip: 0 }
