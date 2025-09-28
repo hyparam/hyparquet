@@ -1,3 +1,5 @@
+import { decodeWKB } from './wkb.js'
+
 /**
  * @import {ColumnDecoder, DecodedArray, Encoding, ParquetParsers} from '../src/types.d.ts'
  */
@@ -24,6 +26,12 @@ export const DEFAULT_PARSERS = {
   },
   stringFromBytes(bytes) {
     return bytes && decoder.decode(bytes)
+  },
+  geometryFromBytes(bytes) {
+    return bytes && decodeWKB({ view: new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), offset: 0 })
+  },
+  geographyFromBytes(bytes) {
+    return bytes && decodeWKB({ view: new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), offset: 0 })
   },
 }
 
@@ -112,6 +120,22 @@ export function convert(data, columnDecoder) {
   }
   if (ctype === 'INTERVAL') {
     throw new Error('parquet interval not supported')
+  }
+  if (ltype?.type === 'GEOMETRY') {
+    const arr = new Array(data.length)
+    for (let i = 0; i < arr.length; i++) {
+      const value = data[i]
+      arr[i] = value instanceof Uint8Array ? parsers.geometryFromBytes(value) : value
+    }
+    return arr
+  }
+  if (ltype?.type === 'GEOGRAPHY') {
+    const arr = new Array(data.length)
+    for (let i = 0; i < arr.length; i++) {
+      const value = data[i]
+      arr[i] = value instanceof Uint8Array ? parsers.geographyFromBytes(value) : value
+    }
+    return arr
   }
   if (ctype === 'UTF8' || ltype?.type === 'STRING' || utf8 && type === 'BYTE_ARRAY') {
     const arr = new Array(data.length)
