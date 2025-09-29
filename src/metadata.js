@@ -1,9 +1,14 @@
-import { CompressionCodec, ConvertedType, Encoding, FieldRepetitionType, PageType, ParquetType } from './constants.js'
+import { CompressionCodec, ConvertedType, EdgeInterpolationAlgorithm, Encoding, FieldRepetitionType, PageType, ParquetType } from './constants.js'
 import { DEFAULT_PARSERS, parseDecimal, parseFloat16 } from './convert.js'
 import { getSchemaPath } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
 export const defaultInitialFetchSize = 1 << 19 // 512kb
+
+const decoder = new TextDecoder()
+function decode(/** @type {Uint8Array} */ value) {
+  return value && decoder.decode(value)
+}
 
 /**
  * Read parquet metadata from an async buffer.
@@ -100,10 +105,6 @@ export function parquetMetadata(arrayBuffer, { parsers } = {}) {
   const metadataOffset = metadataLengthOffset - metadataLength
   const reader = { view, offset: metadataOffset }
   const metadata = deserializeTCompactProtocol(reader)
-  const decoder = new TextDecoder()
-  function decode(/** @type {Uint8Array} */ value) {
-    return value && decoder.decode(value)
-  }
 
   // Parse metadata from thrift data
   const version = metadata.field_1
@@ -249,12 +250,12 @@ function logicalType(logicalType) {
   if (logicalType?.field_16) return { type: 'VARIANT' }
   if (logicalType?.field_17) return {
     type: 'GEOMETRY',
-    crs: logicalType.field_17.field_1,
+    crs: decode(logicalType.field_17.field_1),
   }
   if (logicalType?.field_18) return {
     type: 'GEOGRAPHY',
-    crs: logicalType.field_18.field_1,
-    algorithm: logicalType.field_18.field_2,
+    crs: decode(logicalType.field_18.field_1),
+    algorithm: EdgeInterpolationAlgorithm[logicalType.field_18.field_2],
   }
   return logicalType
 }

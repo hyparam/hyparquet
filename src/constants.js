@@ -83,3 +83,12 @@ export const BoundaryOrder = [
   'ASCENDING',
   'DESCENDING',
 ]
+
+/** @type {import('../src/types.d.ts').EdgeInterpolationAlgorithm[]} */
+export const EdgeInterpolationAlgorithm = [
+  'SPHERICAL',
+  'VINCENTY',
+  'THOMAS',
+  'ANDOYER',
+  'KARNEY',
+]
