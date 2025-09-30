@@ -1,7 +1,7 @@
-import { decodeWKB } from './wkb.js'
+import { wkbToGeojson } from './wkb.js'
 
 /**
- * @import {ColumnDecoder, DecodedArray, Encoding, ParquetParsers} from '../src/types.d.ts'
+ * @import {ColumnDecoder, DecodedArray, Encoding, ParquetParsers} from '../src/types.js'
  */
 
 const decoder = new TextDecoder()
@@ -21,17 +21,16 @@ export const DEFAULT_PARSERS = {
     return new Date(Number(nanos / 1000000n))
   },
   dateFromDays(days) {
-    const dayInMillis = 86400000
-    return new Date(days * dayInMillis)
+    return new Date(days * 86400000)
   },
   stringFromBytes(bytes) {
     return bytes && decoder.decode(bytes)
   },
   geometryFromBytes(bytes) {
-    return bytes && decodeWKB({ view: new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), offset: 0 })
+    return bytes && wkbToGeojson({ view: new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), offset: 0 })
   },
   geographyFromBytes(bytes) {
-    return bytes && decodeWKB({ view: new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), offset: 0 })
+    return bytes && wkbToGeojson({ view: new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), offset: 0 })
   },
 }
 
@@ -84,35 +83,18 @@ export function convert(data, columnDecoder) {
     return arr
   }
   if (!ctype && type === 'INT96') {
-    const arr = new Array(data.length)
-    for (let i = 0; i < arr.length; i++) {
-      arr[i] = parsers.timestampFromNanoseconds(parseInt96Nanos(data[i]))
-    }
-    return arr
+    return Array.from(data).map(v => parsers.timestampFromNanoseconds(parseInt96Nanos(v)))
   }
   if (ctype === 'DATE') {
-    const arr = new Array(data.length)
-    for (let i = 0; i < arr.length; i++) {
-      arr[i] = parsers.dateFromDays(data[i])
-    }
-    return arr
+    return Array.from(data).map(v => parsers.dateFromDays(v))
   }
   if (ctype === 'TIMESTAMP_MILLIS') {
-    const arr = new Array(data.length)
-    for (let i = 0; i < arr.length; i++) {
-      arr[i] = parsers.timestampFromMilliseconds(data[i])
-    }
-    return arr
+    return Array.from(data).map(v => parsers.timestampFromMilliseconds(v))
   }
   if (ctype === 'TIMESTAMP_MICROS') {
-    const arr = new Array(data.length)
-    for (let i = 0; i < arr.length; i++) {
-      arr[i] = parsers.timestampFromMicroseconds(data[i])
-    }
-    return arr
+    return Array.from(data).map(v => parsers.timestampFromMicroseconds(v))
   }
   if (ctype === 'JSON') {
-    const decoder = new TextDecoder()
     return data.map(v => JSON.parse(decoder.decode(v)))
   }
   if (ctype === 'BSON') {
@@ -122,28 +104,13 @@ export function convert(data, columnDecoder) {
     throw new Error('parquet interval not supported')
   }
   if (ltype?.type === 'GEOMETRY') {
-    const arr = new Array(data.length)
-    for (let i = 0; i < arr.length; i++) {
-      const value = data[i]
-      arr[i] = value instanceof Uint8Array ? parsers.geometryFromBytes(value) : value
-    }
-    return arr
+    return data.map(v => parsers.geometryFromBytes(v))
   }
   if (ltype?.type === 'GEOGRAPHY') {
-    const arr = new Array(data.length)
-    for (let i = 0; i < arr.length; i++) {
-      const value = data[i]
-      arr[i] = value instanceof Uint8Array ? parsers.geographyFromBytes(value) : value
-    }
-    return arr
+    return data.map(v => parsers.geographyFromBytes(v))
   }
   if (ctype === 'UTF8' || ltype?.type === 'STRING' || utf8 && type === 'BYTE_ARRAY') {
-    const arr = new Array(data.length)
-    for (let i = 0; i < arr.length; i++) {
-      const value = data[i]
-      arr[i] = value instanceof Uint8Array ? parsers.stringFromBytes(value) : value
-    }
-    return arr
+    return data.map(v => parsers.stringFromBytes(v))
   }
   if (ctype === 'UINT_64' || ltype?.type === 'INTEGER' && ltype.bitWidth === 64 && !ltype.isSigned) {
     if (data instanceof BigInt64Array) {

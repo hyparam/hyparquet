@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { decodeWKB } from '../src/wkb.js'
+import { wkbToGeojson } from '../src/wkb.js'
 
 /**
  * @param {Uint8Array} buffer
@@ -19,7 +19,7 @@ describe('decodeWKB', () => {
       63,
     ])
 
-    expect(decodeWKB(makeReader(buffer))).toEqual({
+    expect(wkbToGeojson(makeReader(buffer))).toEqual({
       type: 'Point',
       coordinates: [102, 0.5],
     })
@@ -32,7 +32,7 @@ describe('decodeWKB', () => {
       0,
     ])
 
-    expect(decodeWKB(makeReader(buffer))).toEqual({
+    expect(wkbToGeojson(makeReader(buffer))).toEqual({
       type: 'LineString',
       coordinates: [
         [1.5, -3.5],
@@ -49,7 +49,7 @@ describe('decodeWKB', () => {
       63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ])
 
-    expect(decodeWKB(makeReader(buffer))).toEqual({
+    expect(wkbToGeojson(makeReader(buffer))).toEqual({
       type: 'Polygon',
       coordinates: [
         [
@@ -71,7 +71,7 @@ describe('decodeWKB', () => {
       0, 16, 64, 0, 0, 0, 0, 0, 0, 16, 64,
     ])
 
-    expect(decodeWKB(makeReader(buffer))).toEqual({
+    expect(wkbToGeojson(makeReader(buffer))).toEqual({
       type: 'MultiLineString',
       coordinates: [
         [
@@ -93,7 +93,7 @@ describe('decodeWKB', () => {
       0, 0, 0, 63, 224, 0, 0, 0, 0, 0, 0,
     ])
 
-    expect(decodeWKB(makeReader(buffer))).toEqual({
+    expect(wkbToGeojson(makeReader(buffer))).toEqual({
       type: 'MultiPoint',
       coordinates: [
         [2, 3],
@@ -111,7 +111,7 @@ describe('decodeWKB', () => {
       0, 0, 0, 0, 0, 0,
     ])
 
-    expect(decodeWKB(makeReader(buffer))).toEqual({
+    expect(wkbToGeojson(makeReader(buffer))).toEqual({
       type: 'MultiPolygon',
       coordinates: [
         [
@@ -134,7 +134,7 @@ describe('decodeWKB', () => {
       64, 24, 0, 0, 0, 0, 0, 0,
     ])
 
-    expect(decodeWKB(makeReader(buffer))).toEqual({
+    expect(wkbToGeojson(makeReader(buffer))).toEqual({
       type: 'GeometryCollection',
       geometries: [
         { type: 'Point', coordinates: [1, 2] },
@@ -155,7 +155,7 @@ describe('decodeWKB', () => {
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ])
 
-    expect(() => decodeWKB(makeReader(buffer))).toThrowError('Expected Point in MultiPoint, got 2')
+    expect(() => wkbToGeojson(makeReader(buffer))).toThrowError('Expected Point in MultiPoint, got 2')
   })
 
   it('throws when MultiPolygon contains non-polygon geometry', () => {
@@ -163,7 +163,7 @@ describe('decodeWKB', () => {
       1, 6, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0, 0,
     ])
 
-    expect(() => decodeWKB(makeReader(buffer))).toThrowError('Expected Polygon in MultiPolygon, got 4')
+    expect(() => wkbToGeojson(makeReader(buffer))).toThrowError('Expected Polygon in MultiPolygon, got 4')
   })
 
   it('throws when MultiLineString contains non-linestring geometry', () => {
@@ -171,7 +171,7 @@ describe('decodeWKB', () => {
       1, 5, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 0, 0,
     ])
 
-    expect(() => decodeWKB(makeReader(buffer))).toThrowError('Expected LineString in MultiLineString, got 3')
+    expect(() => wkbToGeojson(makeReader(buffer))).toThrowError('Expected LineString in MultiLineString, got 3')
   })
 
   it('throws on unsupported geometry type', () => {
@@ -179,7 +179,7 @@ describe('decodeWKB', () => {
       1, 99, 0, 0, 0,
     ])
 
-    expect(() => decodeWKB(makeReader(buffer))).toThrowError('Unsupported geometry type: 99')
+    expect(() => wkbToGeojson(makeReader(buffer))).toThrowError('Unsupported geometry type: 99')
   })
 
   it('decodes EWKB Point with SRID and Z/M flags', () => {
@@ -189,7 +189,7 @@ describe('decodeWKB', () => {
       0, 0, 0, 16, 64,
     ])
 
-    expect(decodeWKB(makeReader(buffer))).toEqual({
+    expect(wkbToGeojson(makeReader(buffer))).toEqual({
       type: 'Point',
       coordinates: [1, 2, 3, 4],
     })
@@ -201,7 +201,7 @@ describe('decodeWKB', () => {
       0, 24, 64, 0, 0, 0, 0, 0, 0, 28, 64, 0, 0, 0, 0, 0, 0, 32, 64,
     ])
 
-    expect(decodeWKB(makeReader(buffer))).toEqual({
+    expect(wkbToGeojson(makeReader(buffer))).toEqual({
       type: 'Point',
       coordinates: [5, 6, 7, 8],
     })
@@ -213,7 +213,7 @@ describe('decodeWKB', () => {
       0, 36, 64, 0, 0, 0, 0, 0, 0, 38, 64,
     ])
 
-    expect(decodeWKB(makeReader(buffer))).toEqual({
+    expect(wkbToGeojson(makeReader(buffer))).toEqual({
       type: 'Point',
       coordinates: [9, 10, 11],
     })
@@ -225,7 +225,7 @@ describe('decodeWKB', () => {
       0, 42, 64, 0, 0, 0, 0, 0, 0, 44, 64,
     ])
 
-    expect(decodeWKB(makeReader(buffer))).toEqual({
+    expect(wkbToGeojson(makeReader(buffer))).toEqual({
       type: 'Point',
       coordinates: [12, 13, 14],
     })
@@ -237,7 +237,7 @@ describe('decodeWKB', () => {
       0, 0, 0, 0, 0, 38, 64, 0, 0, 0, 0, 0, 0, 54, 64,
     ])
 
-    expect(decodeWKB(makeReader(mpBuffer))).toEqual({
+    expect(wkbToGeojson(makeReader(mpBuffer))).toEqual({
       type: 'MultiPoint',
       coordinates: [[11, 22]],
     })
@@ -248,7 +248,7 @@ describe('decodeWKB', () => {
       0, 0, 0, 0, 0, 0, 8, 64, 0, 0, 0, 0, 0, 0, 16, 64,
     ])
 
-    expect(decodeWKB(makeReader(mlBuffer))).toEqual({
+    expect(wkbToGeojson(makeReader(mlBuffer))).toEqual({
       type: 'MultiLineString',
       coordinates: [
         [
@@ -266,7 +266,7 @@ describe('decodeWKB', () => {
       240, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ])
 
-    expect(decodeWKB(makeReader(mpBuffer2))).toEqual({
+    expect(wkbToGeojson(makeReader(mpBuffer2))).toEqual({
       type: 'MultiPolygon',
       coordinates: [
         [

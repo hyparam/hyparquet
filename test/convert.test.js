@@ -262,7 +262,7 @@ describe('convert function', () => {
       parsers: {
         ...parsers,
         stringFromBytes(/** @type {Uint8Array} */ bytes) {
-          return `custom-${new TextDecoder().decode(bytes)}`
+          return bytes && `custom-${new TextDecoder().decode(bytes)}`
         },
       },
     }
@@ -283,11 +283,11 @@ describe('convert function', () => {
       element,
       parsers: {
         ...parsers,
-        geometryFromBytes: () => 'custom-geography',
+        geometryFromBytes: () => 'custom-geometry',
       },
     }
 
-    expect(convert(data, columnParser)).toEqual(['custom-geography'])
+    expect(convert(data, columnParser)).toEqual(['custom-geometry'])
   })
 
   it('respects custom parsers - geographyFromBytes', () => {

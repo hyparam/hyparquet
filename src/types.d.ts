@@ -451,7 +451,7 @@ export type Geometry =
  * Position is an array of at least two numbers.
  * The order should be [longitude, latitude] with optional properties (eg- altitude).
  */
-export type Position = [number, number] | number[]
+export type Position = number[]
 
 export interface Point {
   type: 'Point'

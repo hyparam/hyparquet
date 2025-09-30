@@ -1,12 +1,11 @@
 /**
  * WKB (Well-Known Binary) decoder for geometry objects.
  *
- * @import {DataReader} from '../src/types.d.ts'
- * @import {Geometry} from '../src/types.js'
+ * @import {DataReader, Geometry} from '../src/types.js'
  * @param {DataReader} reader
  * @returns {Geometry} geometry object
  */
-export function decodeWKB(reader) {
+export function wkbToGeojson(reader) {
   const { view } = reader
   const isLittleEndian = view.getUint8(reader.offset++) === 1
 
@@ -20,13 +19,13 @@ export function decodeWKB(reader) {
   }
 
   if (geometryType === 1) { // Point
-    return { type: 'Point', coordinates: readPoint(reader, isLittleEndian, hasZ, hasM) }
+    return { type: 'Point', coordinates: readPosition(reader, isLittleEndian, hasZ, hasM) }
   } else if (geometryType === 2) { // LineString
     const numPoints = view.getUint32(reader.offset, isLittleEndian)
     reader.offset += 4
     const coords = new Array(numPoints)
     for (let i = 0; i < numPoints; i++) {
-      coords[i] = readPoint(reader, isLittleEndian, hasZ, hasM)
+      coords[i] = readPosition(reader, isLittleEndian, hasZ, hasM)
     }
     return { type: 'LineString', coordinates: coords }
   } else if (geometryType === 3) { // Polygon
@@ -38,7 +37,7 @@ export function decodeWKB(reader) {
       reader.offset += 4
       const ring = new Array(numPoints)
       for (let p = 0; p < numPoints; p++) {
-        ring[p] = readPoint(reader, isLittleEndian, hasZ, hasM)
+        ring[p] = readPosition(reader, isLittleEndian, hasZ, hasM)
       }
       coords[r] = ring
     }
@@ -61,7 +60,7 @@ export function decodeWKB(reader) {
         throw new Error(`Expected Point in MultiPoint, got ${rawPointType}`)
       }
 
-      points[i] = readPoint(reader, pointIsLittleEndian, pointHasZ, pointHasM)
+      points[i] = readPosition(reader, pointIsLittleEndian, pointHasZ, pointHasM)
     }
     return { type: 'MultiPoint', coordinates: points }
   } else if (geometryType === 5) { // MultiLineString
@@ -85,7 +84,7 @@ export function decodeWKB(reader) {
       reader.offset += 4
       const coords = new Array(numPoints)
       for (let p = 0; p < numPoints; p++) {
-        coords[p] = readPoint(reader, lineIsLittleEndian, lineHasZ, lineHasM)
+        coords[p] = readPosition(reader, lineIsLittleEndian, lineHasZ, lineHasM)
       }
       lineStrings[i] = coords
     }
@@ -117,7 +116,7 @@ export function decodeWKB(reader) {
         reader.offset += 4
         const ring = new Array(numPoints)
         for (let p = 0; p < numPoints; p++) {
-          ring[p] = readPoint(reader, polyIsLittleEndian, polyHasZ, polyHasM)
+          ring[p] = readPosition(reader, polyIsLittleEndian, polyHasZ, polyHasM)
         }
         pgCoords[r] = ring
       }
@@ -129,7 +128,7 @@ export function decodeWKB(reader) {
     reader.offset += 4
     const geometries = new Array(numGeometries)
     for (let i = 0; i < numGeometries; i++) {
-      geometries[i] = decodeWKB(reader)
+      geometries[i] = wkbToGeojson(reader)
     }
     return { type: 'GeometryCollection', geometries }
   } else {
@@ -174,15 +173,13 @@ function getFlags(type) {
 }
 
 /**
- * Read point coordinates, optionally including Z and M ordinates.
- *
  * @param {DataReader} reader
  * @param {boolean} isLittleEndian
  * @param {boolean} hasZ
  * @param {boolean} hasM
  * @returns {number[]}
  */
-function readPoint(reader, isLittleEndian, hasZ, hasM) {
+function readPosition(reader, isLittleEndian, hasZ, hasM) {
   const { view } = reader
   const x = view.getFloat64(reader.offset, isLittleEndian)
   reader.offset += 8
