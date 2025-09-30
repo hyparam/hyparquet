@@ -1,0 +1,221 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "schema",
+      "num_children": 3
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "group",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "wkt",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "geometry",
+      "logical_type": {
+        "type": "GEOMETRY"
+      }
+    }
+  ],
+  "num_rows": 28,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "group"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 28,
+            "total_uncompressed_size": 61,
+            "total_compressed_size": 61,
+            "data_page_offset": 25,
+            "dictionary_page_offset": 4,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "all",
+              "min_value": "all"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 84,
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                28
+              ]
+            }
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "wkt"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 28,
+            "total_uncompressed_size": 2841,
+            "total_compressed_size": 2841,
+            "data_page_offset": 2536,
+            "dictionary_page_offset": 65,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "POLYGON ZM ((30 10 40 300, 40 40 80 1600, 20 40 60 800, 10 20 30 200, 30 10 40 300))",
+              "min_value": "GEOMETRYCOLLECTION (POINT (30 10), LINESTRING (30 10, 10 30, 40 40), POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10)), MULTIPOINT ((30 10)), MULTILINESTRING ((30 10, 10 30, 40 40)), MULTIPOLYGON (((30 10, 40 40, 20 40, 10 20, 30 10))))"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 2343,
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                28
+              ]
+            }
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "geometry"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 28,
+            "total_uncompressed_size": 4315,
+            "total_compressed_size": 4315,
+            "data_page_offset": 7174,
+            "dictionary_page_offset": 2906,
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 4140,
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                28
+              ]
+            },
+            "geospatial_statistics": {
+              "bbox": {
+                "xmin": 10,
+                "xmax": 40,
+                "ymin": 10,
+                "ymax": 40,
+                "zmin": 30,
+                "zmax": 80,
+                "mmin": 200,
+                "mmax": 1600
+              },
+              "geospatial_types": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                1001,
+                1002,
+                1003,
+                1004,
+                1005,
+                1006,
+                1007,
+                2001,
+                2002,
+                2003,
+                2004,
+                2005,
+                2006,
+                2007,
+                3001,
+                3002,
+                3003,
+                3004,
+                3005,
+                3006,
+                3007
+              ]
+            }
+          }
+        }
+      ],
+      "total_byte_size": 7217,
+      "num_rows": 28,
+      "file_offset": 4,
+      "total_compressed_size": 7217
+    }
+  ],
+  "created_by": "parquet-cpp-arrow version 21.0.0",
+  "metadata_length": 787
+}
