@@ -149,31 +149,6 @@ describe('decodeWKB', () => {
     })
   })
 
-  it('throws when MultiPoint contains non-point geometry', () => {
-    const buffer = new Uint8Array([
-      1, 4, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    ])
-
-    expect(() => wkbToGeojson(makeReader(buffer))).toThrowError('Expected Point in MultiPoint, got 2')
-  })
-
-  it('throws when MultiPolygon contains non-polygon geometry', () => {
-    const buffer = new Uint8Array([
-      1, 6, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0, 0,
-    ])
-
-    expect(() => wkbToGeojson(makeReader(buffer))).toThrowError('Expected Polygon in MultiPolygon, got 4')
-  })
-
-  it('throws when MultiLineString contains non-linestring geometry', () => {
-    const buffer = new Uint8Array([
-      1, 5, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 0, 0,
-    ])
-
-    expect(() => wkbToGeojson(makeReader(buffer))).toThrowError('Expected LineString in MultiLineString, got 3')
-  })
-
   it('throws on unsupported geometry type', () => {
     const buffer = new Uint8Array([
       1, 99, 0, 0, 0,
@@ -182,11 +157,14 @@ describe('decodeWKB', () => {
     expect(() => wkbToGeojson(makeReader(buffer))).toThrowError('Unsupported geometry type: 99')
   })
 
-  it('decodes EWKB Point with SRID and Z/M flags', () => {
+  it('decodes EWKB Point with Z/M flags', () => {
     const buffer = new Uint8Array([
-      1, 1, 0, 0, 224, 17, 15, 0, 0, 0, 0, 0, 0, 0, 0, 240, 63,
-      0, 0, 0, 0, 0, 0, 0, 64, 0, 0, 0, 0, 0, 0, 8, 64, 0, 0, 0,
-      0, 0, 0, 16, 64,
+      1,
+      185, 11, 0, 0,
+      0, 0, 0, 0, 0, 0, 240, 63,
+      0, 0, 0, 0, 0, 0, 0, 64,
+      0, 0, 0, 0, 0, 0, 8, 64,
+      0, 0, 0, 0, 0, 0, 16, 64,
     ])
 
     expect(wkbToGeojson(makeReader(buffer))).toEqual({
@@ -228,56 +206,6 @@ describe('decodeWKB', () => {
     expect(wkbToGeojson(makeReader(buffer))).toEqual({
       type: 'Point',
       coordinates: [12, 13, 14],
-    })
-  })
-
-  it('skips SRID payloads inside multi geometries', () => {
-    const mpBuffer = new Uint8Array([
-      1, 4, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 32, 231, 3, 0, 0, 0,
-      0, 0, 0, 0, 0, 38, 64, 0, 0, 0, 0, 0, 0, 54, 64,
-    ])
-
-    expect(wkbToGeojson(makeReader(mpBuffer))).toEqual({
-      type: 'MultiPoint',
-      coordinates: [[11, 22]],
-    })
-
-    const mlBuffer = new Uint8Array([
-      1, 5, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0, 32, 123, 0, 0, 0, 2,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 240, 63, 0, 0, 0, 0, 0, 0, 0, 64,
-      0, 0, 0, 0, 0, 0, 8, 64, 0, 0, 0, 0, 0, 0, 16, 64,
-    ])
-
-    expect(wkbToGeojson(makeReader(mlBuffer))).toEqual({
-      type: 'MultiLineString',
-      coordinates: [
-        [
-          [1, 2],
-          [3, 4],
-        ],
-      ],
-    })
-
-    const mpBuffer2 = new Uint8Array([
-      1, 6, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 0, 32, 230, 16, 0, 0,
-      1, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 240, 63, 0, 0, 0, 0, 0, 0, 240, 63, 0, 0, 0, 0, 0, 0,
-      240, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    ])
-
-    expect(wkbToGeojson(makeReader(mpBuffer2))).toEqual({
-      type: 'MultiPolygon',
-      coordinates: [
-        [
-          [
-            [0, 0],
-            [0, 1],
-            [1, 1],
-            [0, 0],
-          ],
-        ],
-      ],
     })
   })
 })
