@@ -12,7 +12,7 @@ function makeReader(buffer) {
   }
 }
 
-describe('decodeWKB', () => {
+describe('wkbToGeojson', () => {
   it('decodes little-endian Point', () => {
     const buffer = new Uint8Array([
       1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 128, 89, 64, 0, 0, 0, 0, 0, 0, 224,
@@ -157,7 +157,7 @@ describe('decodeWKB', () => {
     expect(() => wkbToGeojson(makeReader(buffer))).toThrowError('Unsupported geometry type: 99')
   })
 
-  it('decodes EWKB Point with Z/M flags', () => {
+  it('decodes ISO WKB Point with Z/M flags', () => {
     const buffer = new Uint8Array([
       1,
       185, 11, 0, 0,

@@ -10,9 +10,7 @@ export function wkbToGeojson(reader) {
 
   if (flags.type === 1) { // Point
     return { type: 'Point', coordinates: readPosition(reader, flags) }
-  }
-
-  if (flags.type === 2) { // LineString
+  } else if (flags.type === 2) { // LineString
     return { type: 'LineString', coordinates: readLine(reader, flags) }
   } else if (flags.type === 3) { // Polygon
     return { type: 'Polygon', coordinates: readPolygon(reader, flags) }
