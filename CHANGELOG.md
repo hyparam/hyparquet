@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.19.0]
+ - Parse geometry and geography data types to geojson geometry objects (#131)
+
 ## [1.18.1]
  - Fix geospatial metadata parsing
  - Custom `stringFromBytes` parser option (#129)
