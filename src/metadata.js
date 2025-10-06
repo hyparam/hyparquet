@@ -2,6 +2,7 @@ import { CompressionCodec, ConvertedType, EdgeInterpolationAlgorithm, Encoding, 
 import { DEFAULT_PARSERS, parseDecimal, parseFloat16 } from './convert.js'
 import { getSchemaPath } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
+import { getGeoParquetColumns } from './geoparquet.js'
 
 export const defaultInitialFetchSize = 1 << 19 // 512kb
 
@@ -34,7 +35,7 @@ function decode(/** @type {Uint8Array} */ value) {
  * @param {MetadataOptions & { initialFetchSize?: number }} options initial fetch size in bytes (default 512kb)
  * @returns {Promise<FileMetaData>} parquet metadata object
  */
-export async function parquetMetadataAsync(asyncBuffer, { parsers, initialFetchSize = defaultInitialFetchSize } = {}) {
+export async function parquetMetadataAsync(asyncBuffer, { parsers, initialFetchSize = defaultInitialFetchSize, geoparquet = true } = {}) {
   if (!asyncBuffer || !(asyncBuffer.byteLength >= 0)) throw new Error('parquet expected AsyncBuffer')
 
   // fetch last bytes (footer) of the file
@@ -64,10 +65,10 @@ export async function parquetMetadataAsync(asyncBuffer, { parsers, initialFetchS
     const combinedView = new Uint8Array(combinedBuffer)
     combinedView.set(new Uint8Array(metadataBuffer))
     combinedView.set(new Uint8Array(footerBuffer), footerOffset - metadataOffset)
-    return parquetMetadata(combinedBuffer, { parsers })
+    return parquetMetadata(combinedBuffer, { parsers, geoparquet })
   } else {
     // parse metadata from the footer
-    return parquetMetadata(footerBuffer, { parsers })
+    return parquetMetadata(footerBuffer, { parsers, geoparquet })
   }
 }
 
@@ -78,7 +79,7 @@ export async function parquetMetadataAsync(asyncBuffer, { parsers, initialFetchS
  * @param {MetadataOptions} options metadata parsing options
  * @returns {FileMetaData} parquet metadata object
  */
-export function parquetMetadata(arrayBuffer, { parsers } = {}) {
+export function parquetMetadata(arrayBuffer, { parsers, geoparquet = true } = {}) {
   if (!(arrayBuffer instanceof ArrayBuffer)) throw new Error('parquet expected ArrayBuffer')
   const view = new DataView(arrayBuffer)
 
@@ -185,11 +186,22 @@ export function parquetMetadata(arrayBuffer, { parsers } = {}) {
     total_compressed_size: rowGroup.field_6,
     ordinal: rowGroup.field_7,
   }))
+  /** @type {{ key: string; value: string }[] | undefined} */
   const key_value_metadata = metadata.field_5?.map((/** @type {any} */ keyValue) => ({
     key: decode(keyValue.field_1),
     value: decode(keyValue.field_2),
   }))
   const created_by = decode(metadata.field_6)
+
+  if (geoparquet) {
+    const columns = getGeoParquetColumns(key_value_metadata)
+    for (const column of columns ?? []) {
+      const schemaElement = schema.find(({ name }) => name === column.name)
+      if (schemaElement?.type === 'BYTE_ARRAY' && schemaElement?.logical_type === undefined) {
+        schemaElement.logical_type = column.logical_type // mark column as geometry/geography
+      }
+    }
+  }
 
   return {
     version,
