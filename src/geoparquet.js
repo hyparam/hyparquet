@@ -1,22 +1,15 @@
 /**
- * @typedef {import('../src/types.d.ts').SchemaElement} SchemaElement
- * @typedef {import('../src/types.d.ts').LogicalType} LogicalType
- */
-
-/**
- *
- * @param {{ key: string; value: string }[] | undefined} key_value_metadata
- * @returns {{ name: string; logical_type: LogicalType }[] | undefined}
+ * @import {KeyValue, LogicalType} from '../src/types.d.ts'
+ * @param {KeyValue[] | undefined} key_value_metadata
+ * @returns {{ name: string; logical_type: LogicalType }[]}
  */
 export function getGeoParquetColumns(key_value_metadata) {
-  const geo = key_value_metadata?.find(({ key }) => key === 'geo')?.value
-  if (!geo) {
-    return
-  }
   /** @type {{ name: string; logical_type: LogicalType }[]} */
   const columns = []
-  for (const [name, column] of Object.entries(JSON.parse(geo)?.columns)) {
-    const { encoding, edges } = column
+
+  const geo = key_value_metadata?.find(({ key }) => key === 'geo')?.value
+  const decodedColumns = (geo && JSON.parse(geo)?.columns) ?? {}
+  for (const [name, { encoding, edges }] of Object.entries(decodedColumns)) {
     if (encoding !== 'WKB') {
       continue
     }
