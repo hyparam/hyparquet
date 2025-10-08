@@ -15,7 +15,7 @@ export function getGeoParquetColumns(key_value_metadata) {
     }
     const type = column.edges === 'spherical' ? 'GEOGRAPHY' : 'GEOMETRY'
     const crs = convertCrs(column.crs)
-    /* Note: we can't infer GEOGRAPHY's algorithm from GeoParquet */
+    // Note: we can't infer GEOGRAPHY's algorithm from GeoParquet
     columns.push({ name, logical_type: { type, crs } })
   }
   return columns
