@@ -2,7 +2,7 @@ import { CompressionCodec, ConvertedType, EdgeInterpolationAlgorithm, Encoding, 
 import { DEFAULT_PARSERS, parseDecimal, parseFloat16 } from './convert.js'
 import { getSchemaPath } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
-import { getGeoParquetColumns } from './geoparquet.js'
+import { markGeoColumns } from './geoparquet.js'
 
 export const defaultInitialFetchSize = 1 << 19 // 512kb
 
@@ -75,6 +75,7 @@ export async function parquetMetadataAsync(asyncBuffer, { parsers, initialFetchS
 /**
  * Read parquet metadata from a buffer synchronously.
  *
+ * @import {KeyValue} from '../src/types.d.ts'
  * @param {ArrayBuffer} arrayBuffer parquet file footer
  * @param {MetadataOptions} options metadata parsing options
  * @returns {FileMetaData} parquet metadata object
@@ -186,7 +187,7 @@ export function parquetMetadata(arrayBuffer, { parsers, geoparquet = true } = {}
     total_compressed_size: rowGroup.field_6,
     ordinal: rowGroup.field_7,
   }))
-  /** @type {{ key: string; value: string }[] | undefined} */
+  /** @type {KeyValue[] | undefined} */
   const key_value_metadata = metadata.field_5?.map((/** @type {any} */ keyValue) => ({
     key: decode(keyValue.field_1),
     value: decode(keyValue.field_2),
@@ -194,13 +195,7 @@ export function parquetMetadata(arrayBuffer, { parsers, geoparquet = true } = {}
   const created_by = decode(metadata.field_6)
 
   if (geoparquet) {
-    const columns = getGeoParquetColumns(key_value_metadata)
-    for (const column of columns ?? []) {
-      const schemaElement = schema.find(({ name }) => name === column.name)
-      if (schemaElement?.type === 'BYTE_ARRAY' && schemaElement?.logical_type === undefined) {
-        schemaElement.logical_type = column.logical_type // mark column as geometry/geography
-      }
-    }
+    markGeoColumns(schema, key_value_metadata)
   }
 
   return {
