@@ -226,7 +226,7 @@ Hyparquet [respects](https://parquet.apache.org/docs/file-format/implementations
 
 This behavior can be changed by setting the `utf8` option to `false` in functions such as `parquetRead`. Note that this option only affects `BYTE_ARRAY` columns without an annotation. Columns with a `STRING`, `ENUM` or `UUID` logical type, for example, will be decoded as expected by the specification.
 
-Note also that hyparquet checks by default if the metadata contains a `geo` key to detect [GeoParquet](https://geoparquet.org/). If so, any geometry columns will be decoded as WKB binary data to GeoJSON geometries (by setting the column logical type) regardless of the `utf8` option. Set the `geoparquet` option to `false` to disable this behavior.
+Note also that hyparquet checks by default if the metadata contains a `geo` key to detect [GeoParquet](https://geoparquet.org/). If so, any geospatial column will be marked with the GEOMETRY or GEOGRAPHY logical type and decoded as WKB binary data to GeoJSON geometries, regardless of the `utf8` option. Set the `geoparquet` option to `false` to disable this behavior.
 
 ## Supported Parquet Files
 
