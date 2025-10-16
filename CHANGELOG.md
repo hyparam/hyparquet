@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.20.0]
+ - Mark geospatial columns in GeoParquet with geometry or geography data type (#133)
+ - Add `geoparquet` option to opt out marking GeoParquet columns (#133)
+
 ## [1.19.0]
  - Parse geometry and geography data types to geojson geometry objects (#131)
 
