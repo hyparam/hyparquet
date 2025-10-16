@@ -17,6 +17,7 @@ export interface ParquetParsers {
  */
 export interface MetadataOptions {
   parsers?: ParquetParsers // custom parsers to decode advanced types
+  geoparquet?: boolean // parse geoparquet metadata and set logical type to geometry/geography for geospatial columns (default true)
 }
 
 /**
@@ -33,6 +34,7 @@ export interface BaseParquetReadOptions {
   compressors?: Compressors // custom decompressors
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
   parsers?: ParquetParsers // custom parsers to decode advanced types
+  geoparquet?: boolean // parse geoparquet metadata and set logical type to geometry/geography for geospatial columns (default true)
 }
 
 interface ArrayRowFormat {
