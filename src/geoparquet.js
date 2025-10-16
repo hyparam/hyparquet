@@ -23,11 +23,9 @@ export function markGeoColumns(schema, key_value_metadata) {
 
   // Mark schema elements with logical type
   // Only look at root-level columns of type BYTE_ARRAY without existing logical_type
-  let i = 1 // skip root
-  while (i < schema.length) {
+  for (let i = 1; i < schema.length; i++) { // skip root
     const element = schema[i]
     const { logical_type, name, num_children, repetition_type, type } = element
-    i++
     if (num_children) {
       i += num_children
       continue // skip the element and its children
