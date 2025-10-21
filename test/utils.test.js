@@ -56,13 +56,21 @@ describe('byteLengthFromUrl', () => {
     await expect(byteLengthFromUrl('https://example.com')).rejects.toThrow('fetch head failed 404')
   })
 
-  it('throws an error if Content-Length header is missing', async () => {
-    global.fetch = vi.fn().mockResolvedValueOnce({
-      ok: true,
-      headers: new Map(),
-    })
+  it('falls back to GET with range if Content-Length header is missing from HEAD', async () => {
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        headers: new Map(),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 206,
+        headers: new Map([['Content-Range', 'bytes 0-0/2048']]),
+      })
 
-    await expect(byteLengthFromUrl('https://example.com')).rejects.toThrow('missing content length')
+    const result = await byteLengthFromUrl('https://example.com')
+    expect(result).toBe(2048)
+    expect(fetch).toHaveBeenCalledTimes(2)
   })
 
 
@@ -111,11 +119,12 @@ describe('byteLengthFromUrl', () => {
     expect(fetch).toHaveBeenNthCalledWith(1, 'https://example.com', { method: 'HEAD' })
   })
 
-  it('fallback throws error if Content-Range header is missing', async () => {
+  it('fallback throws error if Content-Range header is missing on 206 response', async () => {
     global.fetch = vi.fn()
       .mockResolvedValueOnce({ ok: false, status: 403 })
       .mockResolvedValueOnce({
         ok: true,
+        status: 206,
         headers: new Map(),
       })
 
@@ -127,6 +136,7 @@ describe('byteLengthFromUrl', () => {
       .mockResolvedValueOnce({ ok: false, status: 403 })
       .mockResolvedValueOnce({
         ok: true,
+        status: 206,
         headers: new Map([['Content-Range', 'invalid format']]),
       })
 
@@ -134,9 +144,7 @@ describe('byteLengthFromUrl', () => {
   })
 
   it('fallback uses Content-Length when server returns 200 (Range not supported)', async () => {
-    const mockBody = {
-      cancel: vi.fn().mockResolvedValue(undefined),
-    }
+    const mockArrayBuffer = new ArrayBuffer(5242880)
 
     global.fetch = vi.fn()
       .mockResolvedValueOnce({ ok: false, status: 403 })
@@ -144,12 +152,11 @@ describe('byteLengthFromUrl', () => {
         ok: true,
         status: 200,
         headers: new Map([['Content-Length', '5242880']]),
-        body: mockBody,
+        arrayBuffer: () => Promise.resolve(mockArrayBuffer),
       })
 
     const result = await byteLengthFromUrl('https://example.com')
     expect(result).toBe(5242880)
-    expect(mockBody.cancel).toHaveBeenCalled()
   })
 
   it('fallback throws error when server returns 200 without Content-Length', async () => {
