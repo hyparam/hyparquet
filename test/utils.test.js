@@ -132,6 +132,40 @@ describe('byteLengthFromUrl', () => {
 
     await expect(byteLengthFromUrl('https://example.com')).rejects.toThrow('invalid content-range header')
   })
+
+  it('fallback uses Content-Length when server returns 200 (Range not supported)', async () => {
+    const mockBody = {
+      cancel: vi.fn().mockResolvedValue(undefined),
+    }
+
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: false, status: 403 })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        headers: new Map([['Content-Length', '5242880']]),
+        body: mockBody,
+      })
+
+    const result = await byteLengthFromUrl('https://example.com')
+    expect(result).toBe(5242880)
+    expect(mockBody.cancel).toHaveBeenCalled()
+  })
+
+  it('fallback throws error when server returns 200 without Content-Length', async () => {
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: false, status: 403 })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        headers: new Map(),
+        body: null,
+      })
+
+    await expect(byteLengthFromUrl('https://example.com')).rejects.toThrow(
+      'server does not support range requests and missing content-length'
+    )
+  })
 })
 
 describe('asyncBufferFromUrl', () => {

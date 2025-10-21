@@ -70,6 +70,26 @@ async function byteLengthFromUrlUsingGet(url, requestInit, customFetch) {
   const res = await fetch(url, { ...requestInit, headers })
   if (!res.ok) throw new Error(`fetch with range failed ${res.status}`)
 
+  // If server ignored Range and returned whole file (200 instead of 206)
+  if (res.status === 200) {
+    const contentLength = res.headers.get('Content-Length')
+    if (!contentLength) {
+      throw new Error('server does not support range requests and missing content-length')
+    }
+
+    // Cancel the response body to avoid downloading the entire file
+    if (res.body) {
+      try {
+        await res.body.cancel()
+      } catch {
+        // Ignore errors during cancellation
+      }
+    }
+
+    return parseInt(contentLength)
+  }
+
+  // Server supports Range requests (206 Partial Content)
   const contentRange = res.headers.get('Content-Range')
   if (!contentRange) throw new Error('missing content-range header')
 
