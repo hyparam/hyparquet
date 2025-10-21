@@ -95,6 +95,43 @@ describe('byteLengthFromUrl', () => {
     expect(result).toBe(2048)
     expect(customFetch).toHaveBeenCalledWith('https://example.com', { ...requestInit, method: 'HEAD' })
   })
+
+  it('falls back to ranged GET when HEAD returns 403', async () => {
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: false, status: 403 })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 206,
+        headers: new Map([['Content-Range', 'bytes 0-0/9446073']]),
+      })
+
+    const result = await byteLengthFromUrl('https://example.com')
+    expect(result).toBe(9446073)
+    expect(fetch).toHaveBeenCalledTimes(2)
+    expect(fetch).toHaveBeenNthCalledWith(1, 'https://example.com', { method: 'HEAD' })
+  })
+
+  it('fallback throws error if Content-Range header is missing', async () => {
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: false, status: 403 })
+      .mockResolvedValueOnce({
+        ok: true,
+        headers: new Map(),
+      })
+
+    await expect(byteLengthFromUrl('https://example.com')).rejects.toThrow('missing content-range header')
+  })
+
+  it('fallback throws error if Content-Range header is invalid', async () => {
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: false, status: 403 })
+      .mockResolvedValueOnce({
+        ok: true,
+        headers: new Map([['Content-Range', 'invalid format']]),
+      })
+
+    await expect(byteLengthFromUrl('https://example.com')).rejects.toThrow('invalid content-range header')
+  })
 })
 
 describe('asyncBufferFromUrl', () => {

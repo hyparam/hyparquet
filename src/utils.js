@@ -54,7 +54,35 @@ export function equals(a, b) {
 }
 
 /**
+ * Get the byte length of a URL using a ranged GET request.
+ * This is used as a fallback when HEAD requests are not allowed (e.g., signed S3 URLs).
+ *
+ * @param {string} url
+ * @param {RequestInit} [requestInit] fetch options
+ * @param {typeof globalThis.fetch} [customFetch] fetch function to use
+ * @returns {Promise<number>}
+ */
+async function byteLengthFromUrlUsingGet(url, requestInit, customFetch) {
+  const fetch = customFetch ?? globalThis.fetch
+  const headers = new Headers(requestInit?.headers)
+  headers.set('Range', 'bytes=0-0')
+
+  const res = await fetch(url, { ...requestInit, headers })
+  if (!res.ok) throw new Error(`fetch with range failed ${res.status}`)
+
+  const contentRange = res.headers.get('Content-Range')
+  if (!contentRange) throw new Error('missing content-range header')
+
+  // Parse "bytes 0-0/9446073" to get total length
+  const match = contentRange.match(/bytes \d+-\d+\/(\d+)/)
+  if (!match) throw new Error(`invalid content-range header: ${contentRange}`)
+
+  return parseInt(match[1])
+}
+
+/**
  * Get the byte length of a URL using a HEAD request.
+ * If HEAD fails with 403 (e.g., with signed S3 URLs), falls back to a ranged GET request.
  * If requestInit is provided, it will be passed to fetch.
  *
  * @param {string} url
@@ -64,13 +92,17 @@ export function equals(a, b) {
  */
 export async function byteLengthFromUrl(url, requestInit, customFetch) {
   const fetch = customFetch ?? globalThis.fetch
-  return await fetch(url, { ...requestInit, method: 'HEAD' })
-    .then(res => {
-      if (!res.ok) throw new Error(`fetch head failed ${res.status}`)
-      const length = res.headers.get('Content-Length')
-      if (!length) throw new Error('missing content length')
-      return parseInt(length)
-    })
+  const res = await fetch(url, { ...requestInit, method: 'HEAD' })
+
+  // If HEAD request is forbidden (common with signed S3 URLs), try GET with range
+  if (res.status === 403) {
+    return byteLengthFromUrlUsingGet(url, requestInit, fetch)
+  }
+
+  if (!res.ok) throw new Error(`fetch head failed ${res.status}`)
+  const length = res.headers.get('Content-Length')
+  if (!length) throw new Error('missing content length')
+  return parseInt(length)
 }
 
 /**
