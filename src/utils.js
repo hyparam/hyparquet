@@ -56,15 +56,13 @@ export function equals(a, b) {
 /**
  * Get the byte length of a URL using a ranged GET request.
  * This is used as a fallback when HEAD requests are not allowed (e.g., signed S3 URLs).
- * If the server doesn't support range requests and returns the full file,
- * caches it for later use (similar to asyncBufferFromUrl behavior).
  *
  * @param {string} url
  * @param {RequestInit} [requestInit] fetch options
  * @param {typeof globalThis.fetch} [customFetch] fetch function to use
- * @returns {Promise<{ byteLength: number, buffer?: Promise<ArrayBuffer> }>}
+ * @returns {Promise<number>}
  */
-async function byteLengthFromUrlUsingGetWithCache(url, requestInit, customFetch) {
+async function byteLengthFromUrlUsingGet(url, requestInit, customFetch) {
   const fetch = customFetch ?? globalThis.fetch
   const headers = new Headers(requestInit?.headers)
   headers.set('Range', 'bytes=0-0')
@@ -81,20 +79,16 @@ async function byteLengthFromUrlUsingGetWithCache(url, requestInit, customFetch)
     const match = contentRange.match(/bytes \d+-\d+\/(\d+)/)
     if (!match) throw new Error(`invalid content-range header: ${contentRange}`)
 
-    return { byteLength: parseInt(match[1]) }
+    return parseInt(match[1])
   }
 
-  // Server ignored Range and returned whole file (200)
-  // Check Content-Length first, then cache the response
-  const contentLength = res.headers.get('Content-Length')
-  if (!contentLength) {
-    throw new Error('server does not support range requests and missing content-length')
+  // Server ignored Range and returned 200 - try Content-Length
+  if (res.status === 200) {
+    const contentLength = res.headers.get('Content-Length')
+    if (contentLength) return parseInt(contentLength)
   }
 
-  // Cache the downloaded content for later use (similar to asyncBufferFromUrl behavior)
-  const buffer = res.arrayBuffer()
-
-  return { byteLength: parseInt(contentLength), buffer }
+  throw new Error('server does not support range requests and missing content-length')
 }
 
 /**
@@ -109,35 +103,21 @@ async function byteLengthFromUrlUsingGetWithCache(url, requestInit, customFetch)
  * @returns {Promise<number>}
  */
 export async function byteLengthFromUrl(url, requestInit, customFetch) {
-  const result = await byteLengthFromUrlWithCache(url, requestInit, customFetch)
-  return result.byteLength
-}
-
-/**
- * Internal function to get byte length with optional buffer caching.
- * Returns both byteLength and cached buffer (if server doesn't support Range).
- *
- * @param {string} url
- * @param {RequestInit} [requestInit] fetch options
- * @param {typeof globalThis.fetch} [customFetch] fetch function to use
- * @returns {Promise<{ byteLength: number, buffer?: Promise<ArrayBuffer> }>}
- */
-async function byteLengthFromUrlWithCache(url, requestInit, customFetch) {
   const fetch = customFetch ?? globalThis.fetch
   const res = await fetch(url, { ...requestInit, method: 'HEAD' })
 
   // If HEAD request is forbidden (common with signed S3 URLs), try GET with range
   if (res.status === 403) {
-    return byteLengthFromUrlUsingGetWithCache(url, requestInit, fetch)
+    return byteLengthFromUrlUsingGet(url, requestInit, fetch)
   }
 
   if (!res.ok) throw new Error(`fetch head failed ${res.status}`)
   const length = res.headers.get('Content-Length')
   // If Content-Length is missing from HEAD, fallback to GET with range
   if (!length) {
-    return byteLengthFromUrlUsingGetWithCache(url, requestInit, fetch)
+    return byteLengthFromUrlUsingGet(url, requestInit, fetch)
   }
-  return { byteLength: parseInt(length) }
+  return parseInt(length)
 }
 
 /**
@@ -156,20 +136,14 @@ async function byteLengthFromUrlWithCache(url, requestInit, customFetch) {
 export async function asyncBufferFromUrl({ url, byteLength, requestInit, fetch: customFetch }) {
   if (!url) throw new Error('missing url')
   const fetch = customFetch ?? globalThis.fetch
+  // byte length from HEAD request
+  byteLength ||= await byteLengthFromUrl(url, requestInit, fetch)
 
   /**
    * A promise for the whole buffer, if range requests are not supported.
    * @type {Promise<ArrayBuffer>|undefined}
    */
   let buffer = undefined
-
-  // Get byte length from HEAD request if not provided
-  if (!byteLength) {
-    const result = await byteLengthFromUrlWithCache(url, requestInit, fetch)
-    // If the server doesn't support range requests, the fallback may have cached the full content
-    ;({ byteLength, buffer } = result)
-  }
-
   const init = requestInit || {}
 
   return {
