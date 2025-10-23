@@ -84,6 +84,7 @@ async function byteLengthFromUrlUsingGet(url, requestInit, customFetch) {
 
   // Server ignored Range and returned 200 - try Content-Length
   if (res.status === 200) {
+    // TODO: Investigate cancelling the request if we can save network I/O.
     const contentLength = res.headers.get('Content-Length')
     if (contentLength) return parseInt(contentLength)
   }
