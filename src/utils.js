@@ -54,16 +54,82 @@ export function equals(a, b) {
 }
 
 /**
- * Get the byte length of a URL using a ranged GET request.
- * This is used as a fallback when HEAD requests are not allowed (e.g., signed S3 URLs).
+ * Get the byte length using XMLHttpRequest with abort capability.
+ * Aborts immediately if server returns 200 (full content) instead of 206 (partial).
  *
  * @param {string} url
  * @param {RequestInit} [requestInit] fetch options
- * @param {typeof globalThis.fetch} [customFetch] fetch function to use
  * @returns {Promise<number>}
  */
-async function byteLengthFromUrlUsingGet(url, requestInit, customFetch) {
-  const fetch = customFetch ?? globalThis.fetch
+function byteLengthFromUrlUsingXhr(url, requestInit) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open('GET', url)
+
+    // Set request headers
+    if (requestInit?.headers) {
+      const headers = new Headers(requestInit.headers)
+      headers.forEach((value, key) => {
+        xhr.setRequestHeader(key, value)
+      })
+    }
+    xhr.setRequestHeader('Range', 'bytes=0-0')
+
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === 2) { // HEADERS_RECEIVED
+        if (xhr.status === 200) {
+          // Server doesn't support range requests, returning full content.
+          // Abort immediately to prevent downloading the entire file.
+          const contentLength = xhr.getResponseHeader('Content-Length')
+          xhr.abort()
+
+          if (contentLength) {
+            resolve(parseInt(contentLength))
+          } else {
+            reject(new Error('server does not support range requests and missing content-length'))
+          }
+        }
+        // For 206, let the request complete so we can get the Content-Range.
+      } else if (xhr.readyState === 4) { // DONE
+        if (xhr.status === 206) {
+          const contentRange = xhr.getResponseHeader('Content-Range')
+          if (!contentRange) {
+            reject(new Error('missing content-range header'))
+            return
+          }
+
+          // Parse "bytes 0-0/9446073" to get total length
+          const match = contentRange.match(/bytes \d+-\d+\/(\d+)/)
+          if (!match) {
+            reject(new Error(`invalid content-range header: ${contentRange}`))
+            return
+          }
+
+          resolve(parseInt(match[1]))
+        } else if (xhr.status >= 400) {
+          reject(new Error(`fetch with range failed ${xhr.status}`))
+        }
+      }
+    }
+
+    xhr.onerror = () => {
+      reject(new Error('network error during range request'))
+    }
+
+    xhr.send()
+  })
+}
+
+/**
+ * Get the byte length using fetch with a ranged GET request.
+ * Cannot abort early if server returns 200 instead of 206.
+ *
+ * @param {string} url
+ * @param {RequestInit} [requestInit] fetch options
+ * @param {typeof globalThis.fetch} fetch fetch function to use
+ * @returns {Promise<number>}
+ */
+async function byteLengthFromUrlUsingFetch(url, requestInit, fetch) {
   const headers = new Headers(requestInit?.headers)
   headers.set('Range', 'bytes=0-0')
 
@@ -84,12 +150,29 @@ async function byteLengthFromUrlUsingGet(url, requestInit, customFetch) {
 
   // Server ignored Range and returned 200 - try Content-Length
   if (res.status === 200) {
-    // TODO: Investigate cancelling the request if we can save network I/O.
     const contentLength = res.headers.get('Content-Length')
     if (contentLength) return parseInt(contentLength)
   }
 
   throw new Error('server does not support range requests and missing content-length')
+}
+
+/**
+ * Get the byte length of a URL using a ranged GET request.
+ * This is used as a fallback when HEAD requests are not allowed (e.g., signed S3 URLs).
+ *
+ * @param {string} url
+ * @param {RequestInit} [requestInit] fetch options
+ * @param {typeof globalThis.fetch} [customFetch] fetch function to use
+ * @returns {Promise<number>}
+ */
+function byteLengthFromUrlUsingGet(url, requestInit, customFetch) {
+  // Use custom fetch if provided, otherwise use XMLHttpRequest for abort capability
+  if (customFetch) {
+    return byteLengthFromUrlUsingFetch(url, requestInit, customFetch)
+  } else {
+    return byteLengthFromUrlUsingXhr(url, requestInit)
+  }
 }
 
 /**
@@ -109,14 +192,14 @@ export async function byteLengthFromUrl(url, requestInit, customFetch) {
 
   // If HEAD request is forbidden (common with signed S3 URLs), try GET with range
   if (res.status === 403) {
-    return byteLengthFromUrlUsingGet(url, requestInit, fetch)
+    return byteLengthFromUrlUsingGet(url, requestInit, customFetch)
   }
 
   if (!res.ok) throw new Error(`fetch head failed ${res.status}`)
   const length = res.headers.get('Content-Length')
   // If Content-Length is missing from HEAD, fallback to GET with range
   if (!length) {
-    return byteLengthFromUrlUsingGet(url, requestInit, fetch)
+    return byteLengthFromUrlUsingGet(url, requestInit, customFetch)
   }
   return parseInt(length)
 }
