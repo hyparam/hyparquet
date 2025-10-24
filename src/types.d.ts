@@ -186,11 +186,11 @@ export type LogicalType =
   | { type: 'BSON' }
   | { type: 'UUID' }
   | { type: 'FLOAT16' }
-  | { type: 'VARIANT' }
   | { type: 'DECIMAL', precision: number, scale: number }
   | { type: 'TIME', isAdjustedToUTC: boolean, unit: TimeUnit }
   | { type: 'TIMESTAMP', isAdjustedToUTC: boolean, unit: TimeUnit }
   | { type: 'INTEGER', bitWidth: number, isSigned: boolean }
+  | { type: 'VARIANT', specification_version?: number }
   | { type: 'GEOMETRY', crs?: string }
   | { type: 'GEOGRAPHY', crs?: string, algorithm?: EdgeInterpolationAlgorithm }
 
@@ -235,6 +235,7 @@ export interface ColumnMetaData {
   bloom_filter_offset?: bigint
   bloom_filter_length?: number
   size_statistics?: SizeStatistics
+  geospatial_statistics?: GeospatialStatistics
 }
 
 type ColumnCryptoMetaData = Record<string, never>
@@ -287,6 +288,22 @@ interface SizeStatistics {
   unencoded_byte_array_data_bytes?: bigint
   repetition_level_histogram?: bigint[]
   definition_level_histogram?: bigint[]
+}
+
+export interface GeospatialStatistics {
+  bbox?: BoundingBox
+  geospatial_types?: number[]
+}
+
+export interface BoundingBox {
+  xmin: number
+  xmax: number
+  ymin: number
+  ymax: number
+  zmin?: number
+  zmax?: number
+  mmin?: number
+  mmax?: number
 }
 
 interface PageEncodingStats {

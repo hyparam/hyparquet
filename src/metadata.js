@@ -138,7 +138,10 @@ export function parquetMetadata(arrayBuffer, { parsers, geoparquet = true } = {}
         num_values: column.field_3.field_5,
         total_uncompressed_size: column.field_3.field_6,
         total_compressed_size: column.field_3.field_7,
-        key_value_metadata: column.field_3.field_8,
+        key_value_metadata: column.field_3.field_8?.map((/** @type {any} */ kv) => ({
+          key: decode(kv.field_1),
+          value: decode(kv.field_2),
+        })),
         data_page_offset: column.field_3.field_9,
         index_page_offset: column.field_3.field_10,
         dictionary_page_offset: column.field_3.field_11,
@@ -188,9 +191,9 @@ export function parquetMetadata(arrayBuffer, { parsers, geoparquet = true } = {}
     ordinal: rowGroup.field_7,
   }))
   /** @type {KeyValue[] | undefined} */
-  const key_value_metadata = metadata.field_5?.map((/** @type {any} */ keyValue) => ({
-    key: decode(keyValue.field_1),
-    value: decode(keyValue.field_2),
+  const key_value_metadata = metadata.field_5?.map((/** @type {any} */ kv) => ({
+    key: decode(kv.field_1),
+    value: decode(kv.field_2),
   }))
   const created_by = decode(metadata.field_6)
 
@@ -254,7 +257,10 @@ function logicalType(logicalType) {
   if (logicalType?.field_13) return { type: 'BSON' }
   if (logicalType?.field_14) return { type: 'UUID' }
   if (logicalType?.field_15) return { type: 'FLOAT16' }
-  if (logicalType?.field_16) return { type: 'VARIANT' }
+  if (logicalType?.field_16) return {
+    type: 'VARIANT',
+    specification_version: logicalType.field_16.field_1,
+  }
   if (logicalType?.field_17) return {
     type: 'GEOMETRY',
     crs: decode(logicalType.field_17.field_1),
