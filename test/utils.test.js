@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { asyncBufferFromUrl, byteLengthFromUrl, toJson } from '../src/utils.js'
 
 describe('toJson', () => {
@@ -174,198 +174,77 @@ describe('byteLengthFromUrl', () => {
     )
   })
 
-  describe('using XMLHttpRequest (no custom fetch)', () => {
-    let xhrMock
-
-    beforeEach(() => {
-      // Mock XMLHttpRequest
-      xhrMock = {
-        open: vi.fn(),
-        send: vi.fn(),
-        setRequestHeader: vi.fn(),
-        abort: vi.fn(),
-        getResponseHeader: vi.fn(),
-        readyState: 0,
-        status: 0,
-        onreadystatechange: null,
-        onerror: null,
+  describe('fetch with body cancellation', () => {
+    it('cancels response body when server returns 200 with Content-Length', async () => {
+      const mockBody = {
+        cancel: vi.fn().mockResolvedValue(undefined),
       }
-      global.XMLHttpRequest = vi.fn(() => xhrMock)
-    })
 
-    it('aborts immediately when server returns 200 with Content-Length', async () => {
-      global.fetch = vi.fn()
-        .mockResolvedValueOnce({ ok: false, status: 403 })
+      const customFetch = vi.fn()
+        .mockResolvedValueOnce({ ok: false, status: 403 }) // HEAD fails
+        .mockResolvedValueOnce({ // GET returns 200
+          ok: true,
+          status: 200,
+          headers: new Map([['Content-Length', '5242880']]),
+          body: mockBody,
+        })
 
-      const promise = byteLengthFromUrl('https://example.com')
-
-      // Wait for XHR to be initialized
-      await vi.waitFor(() => expect(xhrMock.onreadystatechange).not.toBeNull())
-
-      // Simulate HEADERS_RECEIVED with 200 response
-      xhrMock.readyState = 2
-      xhrMock.status = 200
-      xhrMock.getResponseHeader.mockReturnValue('5242880')
-      xhrMock.onreadystatechange()
-
-      const result = await promise
+      const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
       expect(result).toBe(5242880)
-      expect(xhrMock.abort).toHaveBeenCalledOnce()
-      expect(xhrMock.getResponseHeader).toHaveBeenCalledWith('Content-Length')
+      expect(mockBody.cancel).toHaveBeenCalledOnce()
     })
 
-    it('rejects when server returns 200 without Content-Length', async () => {
-      global.fetch = vi.fn()
-        .mockResolvedValueOnce({ ok: false, status: 403 })
+    it('handles missing body gracefully when server returns 200', async () => {
+      const customFetch = vi.fn()
+        .mockResolvedValueOnce({ ok: false, status: 403 }) // HEAD fails
+        .mockResolvedValueOnce({ // GET returns 200 with no body
+          ok: true,
+          status: 200,
+          headers: new Map([['Content-Length', '5242880']]),
+          body: null,
+        })
 
-      const promise = byteLengthFromUrl('https://example.com')
-
-      // Wait for XHR to be initialized
-      await vi.waitFor(() => expect(xhrMock.onreadystatechange).not.toBeNull())
-
-      // Simulate HEADERS_RECEIVED with 200 response but no Content-Length
-      xhrMock.readyState = 2
-      xhrMock.status = 200
-      xhrMock.getResponseHeader.mockReturnValue(null)
-      xhrMock.onreadystatechange()
-
-      await expect(promise).rejects.toThrow(
-        'server does not support range requests and missing content-length'
-      )
-      expect(xhrMock.abort).toHaveBeenCalledOnce()
+      const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
+      expect(result).toBe(5242880)
     })
 
-    it('gets byte length from Content-Range when server returns 206', async () => {
-      global.fetch = vi.fn()
-        .mockResolvedValueOnce({ ok: false, status: 403 })
+    it('does not cancel body when server returns 206', async () => {
+      const mockBody = {
+        cancel: vi.fn().mockResolvedValue(undefined),
+      }
 
-      const promise = byteLengthFromUrl('https://example.com')
+      const customFetch = vi.fn()
+        .mockResolvedValueOnce({ ok: false, status: 403 }) // HEAD fails
+        .mockResolvedValueOnce({ // GET returns 206
+          ok: true,
+          status: 206,
+          headers: new Map([['Content-Range', 'bytes 0-0/9446073']]),
+          body: mockBody,
+        })
 
-      // Wait for XHR to be initialized
-      await vi.waitFor(() => expect(xhrMock.onreadystatechange).not.toBeNull())
-
-      // Simulate HEADERS_RECEIVED with 206 response (don't abort)
-      xhrMock.readyState = 2
-      xhrMock.status = 206
-      xhrMock.onreadystatechange()
-
-      // Simulate DONE
-      xhrMock.readyState = 4
-      xhrMock.status = 206
-      xhrMock.getResponseHeader.mockReturnValue('bytes 0-0/9446073')
-      xhrMock.onreadystatechange()
-
-      const result = await promise
+      const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
       expect(result).toBe(9446073)
-      expect(xhrMock.abort).not.toHaveBeenCalled()
-      expect(xhrMock.getResponseHeader).toHaveBeenCalledWith('Content-Range')
+      expect(mockBody.cancel).not.toHaveBeenCalled()
     })
 
-    it('rejects when Content-Range header is missing on 206 response', async () => {
-      global.fetch = vi.fn()
-        .mockResolvedValueOnce({ ok: false, status: 403 })
+    it('ignores cancel errors', async () => {
+      const mockBody = {
+        cancel: vi.fn().mockRejectedValue(new Error('cancel failed')),
+      }
 
-      const promise = byteLengthFromUrl('https://example.com')
+      const customFetch = vi.fn()
+        .mockResolvedValueOnce({ ok: false, status: 403 }) // HEAD fails
+        .mockResolvedValueOnce({ // GET returns 200
+          ok: true,
+          status: 200,
+          headers: new Map([['Content-Length', '1024']]),
+          body: mockBody,
+        })
 
-      // Wait for XHR to be initialized
-      await vi.waitFor(() => expect(xhrMock.onreadystatechange).not.toBeNull())
-
-      // Simulate HEADERS_RECEIVED with 206
-      xhrMock.readyState = 2
-      xhrMock.status = 206
-      xhrMock.onreadystatechange()
-
-      // Simulate DONE with missing Content-Range
-      xhrMock.readyState = 4
-      xhrMock.status = 206
-      xhrMock.getResponseHeader.mockReturnValue(null)
-      xhrMock.onreadystatechange()
-
-      await expect(promise).rejects.toThrow('missing content-range header')
-    })
-
-    it('rejects when Content-Range header is invalid', async () => {
-      global.fetch = vi.fn()
-        .mockResolvedValueOnce({ ok: false, status: 403 })
-
-      const promise = byteLengthFromUrl('https://example.com')
-
-      // Wait for XHR to be initialized
-      await vi.waitFor(() => expect(xhrMock.onreadystatechange).not.toBeNull())
-
-      // Simulate HEADERS_RECEIVED with 206
-      xhrMock.readyState = 2
-      xhrMock.status = 206
-      xhrMock.onreadystatechange()
-
-      // Simulate DONE with invalid Content-Range
-      xhrMock.readyState = 4
-      xhrMock.status = 206
-      xhrMock.getResponseHeader.mockReturnValue('invalid format')
-      xhrMock.onreadystatechange()
-
-      await expect(promise).rejects.toThrow('invalid content-range header: invalid format')
-    })
-
-    it('rejects on network error', async () => {
-      global.fetch = vi.fn()
-        .mockResolvedValueOnce({ ok: false, status: 403 })
-
-      const promise = byteLengthFromUrl('https://example.com')
-
-      // Wait for XHR to be initialized
-      await vi.waitFor(() => expect(xhrMock.onerror).not.toBeNull())
-
-      // Simulate network error
-      xhrMock.onerror()
-
-      await expect(promise).rejects.toThrow('network error during range request')
-    })
-
-    it('rejects when server returns error status', async () => {
-      global.fetch = vi.fn()
-        .mockResolvedValueOnce({ ok: false, status: 403 })
-
-      const promise = byteLengthFromUrl('https://example.com')
-
-      // Wait for XHR to be initialized
-      await vi.waitFor(() => expect(xhrMock.onreadystatechange).not.toBeNull())
-
-      // Simulate HEADERS_RECEIVED with error
-      xhrMock.readyState = 2
-      xhrMock.status = 404
-      xhrMock.onreadystatechange()
-
-      // Simulate DONE
-      xhrMock.readyState = 4
-      xhrMock.status = 404
-      xhrMock.onreadystatechange()
-
-      await expect(promise).rejects.toThrow('fetch with range failed 404')
-    })
-
-    it('passes authentication headers to XMLHttpRequest', async () => {
-      global.fetch = vi.fn()
-        .mockResolvedValueOnce({ ok: false, status: 403 })
-
-      const promise = byteLengthFromUrl('https://example.com', {
-        headers: { Authorization: 'Bearer token' },
-      })
-
-      // Wait for XHR to be initialized
-      await vi.waitFor(() => expect(xhrMock.onreadystatechange).not.toBeNull())
-
-      // Headers are normalized to lowercase by the Headers object
-      expect(xhrMock.setRequestHeader).toHaveBeenCalledWith('authorization', 'Bearer token')
-      expect(xhrMock.setRequestHeader).toHaveBeenCalledWith('Range', 'bytes=0-0')
-
-      // Complete the request
-      xhrMock.readyState = 2
-      xhrMock.status = 200
-      xhrMock.getResponseHeader.mockReturnValue('1024')
-      xhrMock.onreadystatechange()
-
-      await promise
+      // Should still succeed even if cancel throws
+      const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
+      expect(result).toBe(1024)
+      expect(mockBody.cancel).toHaveBeenCalledOnce()
     })
   })
 })
