@@ -56,13 +56,21 @@ describe('byteLengthFromUrl', () => {
     await expect(byteLengthFromUrl('https://example.com')).rejects.toThrow('fetch head failed 404')
   })
 
-  it('throws an error if Content-Length header is missing', async () => {
-    global.fetch = vi.fn().mockResolvedValueOnce({
-      ok: true,
-      headers: new Map(),
-    })
+  it('falls back to GET with range if Content-Length header is missing from HEAD', async () => {
+    const customFetch = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        headers: new Map(),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 206,
+        headers: new Map([['Content-Range', 'bytes 0-0/2048']]),
+      })
 
-    await expect(byteLengthFromUrl('https://example.com')).rejects.toThrow('missing content length')
+    const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
+    expect(result).toBe(2048)
+    expect(customFetch).toHaveBeenCalledTimes(2)
   })
 
 
@@ -94,6 +102,137 @@ describe('byteLengthFromUrl', () => {
     const result = await byteLengthFromUrl('https://example.com', requestInit, customFetch)
     expect(result).toBe(2048)
     expect(customFetch).toHaveBeenCalledWith('https://example.com', { ...requestInit, method: 'HEAD' })
+  })
+
+  it('falls back to ranged GET when HEAD returns 403', async () => {
+    const customFetch = vi.fn()
+      .mockResolvedValueOnce({ ok: false, status: 403 })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 206,
+        headers: new Map([['Content-Range', 'bytes 0-0/9446073']]),
+      })
+
+    const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
+    expect(result).toBe(9446073)
+    expect(customFetch).toHaveBeenCalledTimes(2)
+    expect(customFetch).toHaveBeenNthCalledWith(1, 'https://example.com', { method: 'HEAD' })
+  })
+
+  it('fallback throws error if Content-Range header is missing on 206 response', async () => {
+    const customFetch = vi.fn()
+      .mockResolvedValueOnce({ ok: false, status: 403 })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 206,
+        headers: new Map(),
+      })
+
+    await expect(byteLengthFromUrl('https://example.com', undefined, customFetch)).rejects.toThrow('missing content-range header')
+  })
+
+  it('fallback throws error if Content-Range header is invalid', async () => {
+    const customFetch = vi.fn()
+      .mockResolvedValueOnce({ ok: false, status: 403 })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 206,
+        headers: new Map([['Content-Range', 'invalid format']]),
+      })
+
+    await expect(byteLengthFromUrl('https://example.com', undefined, customFetch)).rejects.toThrow('invalid content-range header')
+  })
+
+  it('fallback uses Content-Length when server returns 200 (Range not supported)', async () => {
+    const mockArrayBuffer = new ArrayBuffer(5242880)
+
+    const customFetch = vi.fn()
+      .mockResolvedValueOnce({ ok: false, status: 403 })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        headers: new Map([['Content-Length', '5242880']]),
+        arrayBuffer: () => Promise.resolve(mockArrayBuffer),
+      })
+
+    const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
+    expect(result).toBe(5242880)
+  })
+
+  it('fallback throws error when server returns 200 without Content-Length', async () => {
+    const customFetch = vi.fn()
+      .mockResolvedValueOnce({ ok: false, status: 403 })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        headers: new Map(),
+        body: null,
+      })
+
+    await expect(byteLengthFromUrl('https://example.com', undefined, customFetch)).rejects.toThrow(
+      'server does not support range requests and missing content-length'
+    )
+  })
+
+  describe('fetch with AbortController', () => {
+    it('aborts request when server returns 200 with Content-Length', async () => {
+      let capturedSignal = null
+
+      const customFetch = vi.fn()
+        .mockResolvedValueOnce({ ok: false, status: 403 }) // HEAD fails
+        .mockImplementation((url, options) => { // GET returns 200
+          capturedSignal = options.signal
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            headers: new Map([['Content-Length', '5242880']]),
+          })
+        })
+
+      const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
+      expect(result).toBe(5242880)
+      expect(capturedSignal).toBeDefined()
+      // @ts-ignore - capturedSignal is assigned in the mock
+      expect(capturedSignal.aborted).toBe(true)
+    })
+
+    it('does not abort when server returns 206', async () => {
+      let capturedSignal = null
+
+      const customFetch = vi.fn()
+        .mockResolvedValueOnce({ ok: false, status: 403 }) // HEAD fails
+        .mockImplementation((url, options) => { // GET returns 206
+          capturedSignal = options.signal
+          return Promise.resolve({
+            ok: true,
+            status: 206,
+            headers: new Map([['Content-Range', 'bytes 0-0/9446073']]),
+          })
+        })
+
+      const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
+      expect(result).toBe(9446073)
+      expect(capturedSignal).toBeDefined()
+      // @ts-ignore - capturedSignal is assigned in the mock
+      expect(capturedSignal.aborted).toBe(false)
+    })
+
+    it('passes abort signal to fetch', async () => {
+      const customFetch = vi.fn()
+        .mockResolvedValueOnce({ ok: false, status: 403 }) // HEAD fails
+        .mockResolvedValueOnce({ // GET returns 206
+          ok: true,
+          status: 206,
+          headers: new Map([['Content-Range', 'bytes 0-0/1024']]),
+        })
+
+      await byteLengthFromUrl('https://example.com', undefined, customFetch)
+
+      // Check second call (the GET with range)
+      const secondCallArgs = customFetch.mock.calls[1]
+      expect(secondCallArgs[1]).toHaveProperty('signal')
+      expect(secondCallArgs[1].signal).toBeInstanceOf(AbortSignal)
+    })
   })
 })
 
