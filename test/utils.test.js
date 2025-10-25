@@ -174,77 +174,60 @@ describe('byteLengthFromUrl', () => {
     )
   })
 
-  describe('fetch with body cancellation', () => {
-    it('cancels response body when server returns 200 with Content-Length', async () => {
-      const mockBody = {
-        cancel: vi.fn().mockResolvedValue(undefined),
-      }
+  describe('fetch with AbortController', () => {
+    it('aborts request when server returns 200 with Content-Length', async () => {
+      let capturedSignal
 
       const customFetch = vi.fn()
         .mockResolvedValueOnce({ ok: false, status: 403 }) // HEAD fails
-        .mockResolvedValueOnce({ // GET returns 200
-          ok: true,
-          status: 200,
-          headers: new Map([['Content-Length', '5242880']]),
-          body: mockBody,
+        .mockImplementation((url, options) => { // GET returns 200
+          capturedSignal = options.signal
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            headers: new Map([['Content-Length', '5242880']]),
+          })
         })
 
       const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
       expect(result).toBe(5242880)
-      expect(mockBody.cancel).toHaveBeenCalledOnce()
+      expect(capturedSignal.aborted).toBe(true)
     })
 
-    it('handles missing body gracefully when server returns 200', async () => {
+    it('does not abort when server returns 206', async () => {
+      let capturedSignal
+
       const customFetch = vi.fn()
         .mockResolvedValueOnce({ ok: false, status: 403 }) // HEAD fails
-        .mockResolvedValueOnce({ // GET returns 200 with no body
-          ok: true,
-          status: 200,
-          headers: new Map([['Content-Length', '5242880']]),
-          body: null,
+        .mockImplementation((url, options) => { // GET returns 206
+          capturedSignal = options.signal
+          return Promise.resolve({
+            ok: true,
+            status: 206,
+            headers: new Map([['Content-Range', 'bytes 0-0/9446073']]),
+          })
         })
 
       const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
-      expect(result).toBe(5242880)
+      expect(result).toBe(9446073)
+      expect(capturedSignal.aborted).toBe(false)
     })
 
-    it('does not cancel body when server returns 206', async () => {
-      const mockBody = {
-        cancel: vi.fn().mockResolvedValue(undefined),
-      }
-
+    it('passes abort signal to fetch', async () => {
       const customFetch = vi.fn()
         .mockResolvedValueOnce({ ok: false, status: 403 }) // HEAD fails
         .mockResolvedValueOnce({ // GET returns 206
           ok: true,
           status: 206,
-          headers: new Map([['Content-Range', 'bytes 0-0/9446073']]),
-          body: mockBody,
+          headers: new Map([['Content-Range', 'bytes 0-0/1024']]),
         })
 
-      const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
-      expect(result).toBe(9446073)
-      expect(mockBody.cancel).not.toHaveBeenCalled()
-    })
+      await byteLengthFromUrl('https://example.com', undefined, customFetch)
 
-    it('ignores cancel errors', async () => {
-      const mockBody = {
-        cancel: vi.fn().mockRejectedValue(new Error('cancel failed')),
-      }
-
-      const customFetch = vi.fn()
-        .mockResolvedValueOnce({ ok: false, status: 403 }) // HEAD fails
-        .mockResolvedValueOnce({ // GET returns 200
-          ok: true,
-          status: 200,
-          headers: new Map([['Content-Length', '1024']]),
-          body: mockBody,
-        })
-
-      // Should still succeed even if cancel throws
-      const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
-      expect(result).toBe(1024)
-      expect(mockBody.cancel).toHaveBeenCalledOnce()
+      // Check second call (the GET with range)
+      const secondCallArgs = customFetch.mock.calls[1]
+      expect(secondCallArgs[1]).toHaveProperty('signal')
+      expect(secondCallArgs[1].signal).toBeInstanceOf(AbortSignal)
     })
   })
 })

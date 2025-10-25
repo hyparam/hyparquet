@@ -55,18 +55,24 @@ export function equals(a, b) {
 
 /**
  * Get the byte length using fetch with a ranged GET request.
- * Cancels the response body stream if server returns 200 instead of 206.
+ * Aborts the request if server returns 200 instead of 206.
  *
  * @param {string} url
  * @param {RequestInit} [requestInit] fetch options
- * @param {typeof globalThis.fetch} [fetch] fetch function to use
+ * @param {typeof globalThis.fetch} [fetchFn] fetch function to use
  * @returns {Promise<number>}
  */
-async function byteLengthFromUrlUsingFetch(url, requestInit, fetch = globalThis.fetch) {
-  const headers = new Headers(requestInit?.headers)
+async function byteLengthFromUrlUsingFetch(url, requestInit = {}, fetchFn = globalThis.fetch) {
+  const controller = new AbortController()
+  const headers = new Headers(requestInit.headers)
   headers.set('Range', 'bytes=0-0')
 
-  const res = await fetch(url, { ...requestInit, headers })
+  const res = await fetchFn(url, {
+    ...requestInit,
+    headers,
+    signal: controller.signal,
+  })
+
   if (!res.ok) throw new Error(`fetch with range failed ${res.status}`)
 
   // Server supports Range requests (206 Partial Content)
@@ -81,18 +87,12 @@ async function byteLengthFromUrlUsingFetch(url, requestInit, fetch = globalThis.
     return parseInt(match[1])
   }
 
-  // Server ignored Range and returned 200 - get Content-Length and cancel body
+  // Server ignored Range and returned 200 - get Content-Length and abort request
   if (res.status === 200) {
     const contentLength = res.headers.get('Content-Length')
 
-    // Cancel the response body stream to prevent downloading the full content
-    if (res.body) {
-      try {
-        await res.body.cancel()
-      } catch {
-        // Ignore cancel errors - body might already be consumed or not cancelable
-      }
-    }
+    // Abort the request to stop any ongoing download
+    controller.abort()
 
     if (contentLength) return parseInt(contentLength)
   }
