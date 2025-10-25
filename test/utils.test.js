@@ -176,7 +176,7 @@ describe('byteLengthFromUrl', () => {
 
   describe('fetch with AbortController', () => {
     it('aborts request when server returns 200 with Content-Length', async () => {
-      let capturedSignal
+      let capturedSignal = null
 
       const customFetch = vi.fn()
         .mockResolvedValueOnce({ ok: false, status: 403 }) // HEAD fails
@@ -191,11 +191,12 @@ describe('byteLengthFromUrl', () => {
 
       const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
       expect(result).toBe(5242880)
+      expect(capturedSignal).toBeDefined()
       expect(capturedSignal.aborted).toBe(true)
     })
 
     it('does not abort when server returns 206', async () => {
-      let capturedSignal
+      let capturedSignal = null
 
       const customFetch = vi.fn()
         .mockResolvedValueOnce({ ok: false, status: 403 }) // HEAD fails
@@ -210,6 +211,7 @@ describe('byteLengthFromUrl', () => {
 
       const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
       expect(result).toBe(9446073)
+      expect(capturedSignal).toBeDefined()
       expect(capturedSignal.aborted).toBe(false)
     })
 
