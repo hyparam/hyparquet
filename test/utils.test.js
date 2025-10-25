@@ -192,6 +192,7 @@ describe('byteLengthFromUrl', () => {
       const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
       expect(result).toBe(5242880)
       expect(capturedSignal).toBeDefined()
+      // @ts-ignore - capturedSignal is assigned in the mock
       expect(capturedSignal.aborted).toBe(true)
     })
 
@@ -212,6 +213,7 @@ describe('byteLengthFromUrl', () => {
       const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
       expect(result).toBe(9446073)
       expect(capturedSignal).toBeDefined()
+      // @ts-ignore - capturedSignal is assigned in the mock
       expect(capturedSignal.aborted).toBe(false)
     })
 
