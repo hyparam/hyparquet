@@ -32,6 +32,8 @@ export { asyncBufferFromUrl, byteLengthFromUrl, cachedAsyncBuffer, flatten, toJs
  * @typedef {import('../src/types.d.ts').Compressors} Compressors
  * @typedef {import('../src/types.d.ts').KeyValue} KeyValue
  * @typedef {import('../src/types.d.ts').Statistics} Statistics
+ * @typedef {import('../src/types.d.ts').GeospatialStatistics} GeospatialStatistics
+ * @typedef {import('../src/types.d.ts').BoundingBox} BoundingBox
  * @typedef {import('../src/types.d.ts').PageType} PageType
  * @typedef {import('../src/types.d.ts').PageHeader} PageHeader
  * @typedef {import('../src/types.d.ts').DataPageHeader} DataPageHeader

@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.20.2]
+ - Support S3 presigned URLs in `asyncBufferFromUrl` (#137 thanks @EpsilonPrime)
+
+## [1.20.1]
+ - Update geospatial and variant metadata
+
 ## [1.20.0]
  - Mark geospatial columns in GeoParquet with geometry or geography data type (#133)
  - Add `geoparquet` option to opt out marking GeoParquet columns (#133)
