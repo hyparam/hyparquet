@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.21.0]
+ - Adds optional `filter` parameter for pushdown row group filtering (#141)
+
+## [1.20.3]
+ - Fix extra fetch on the boundary of row groups
+
 ## [1.20.2]
  - Support S3 presigned URLs in `asyncBufferFromUrl` (#137 thanks @EpsilonPrime)
 
