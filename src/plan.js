@@ -1,3 +1,6 @@
+import { canSkipRowGroup } from './filter.js'
+import { parquetSchema } from './metadata.js'
+import { getPhysicalColumns } from './schema.js'
 import { concat } from './utils.js'
 
 // Combine column chunks into a single byte range if less than 32mb
@@ -13,12 +16,13 @@ const columnChunkAggregation = 1 << 25 // 32mb
  * @param {ParquetReadOptions} options
  * @returns {QueryPlan}
  */
-export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns }) {
+export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns, filter }) {
   if (!metadata) throw new Error('parquetPlan requires metadata')
   /** @type {GroupPlan[]} */
   const groups = []
   /** @type {ByteRange[]} */
   const fetches = []
+  const physicalColumns = getPhysicalColumns(parquetSchema(metadata))
 
   // find which row groups to read
   let groupStart = 0 // first row index of the current group
@@ -26,7 +30,7 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
     const groupRows = Number(rowGroup.num_rows)
     const groupEnd = groupStart + groupRows
     // if row group overlaps with row range, add it to the plan
-    if (groupRows > 0 && groupEnd > rowStart && groupStart < rowEnd) {
+    if (groupRows > 0 && groupEnd > rowStart && groupStart < rowEnd && !canSkipRowGroup(filter, rowGroup, physicalColumns)) {
       /** @type {ByteRange[]} */
       const ranges = []
       // loop through each column chunk

@@ -45,6 +45,29 @@ export function getSchemaPath(schema, name) {
 }
 
 /**
+ * Get all physical (leaf) column names.
+ *
+ * @param {SchemaTree} schemaTree
+ * @returns {string[]} list of physical column names
+ */
+export function getPhysicalColumns(schemaTree) {
+  /** @type {string[]} */
+  const columns = []
+  /** @param {SchemaTree} node */
+  function traverse(node) {
+    if (node.children.length) {
+      for (const child of node.children) {
+        traverse(child)
+      }
+    } else {
+      columns.push(node.element.name)
+    }
+  }
+  traverse(schemaTree)
+  return columns
+}
+
+/**
  * Get the max repetition level for a given schema path.
  *
  * @param {SchemaTree[]} schemaPath

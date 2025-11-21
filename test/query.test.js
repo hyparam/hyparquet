@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { parquetQuery } from '../src/query.js'
 import { asyncBufferFromFile } from '../src/node.js'
+import { parquetMetadataAsync } from '../src/metadata.js'
 import { countingBuffer } from './helpers.js'
 
 describe('parquetQuery', () => {
@@ -200,17 +201,27 @@ describe('parquetQuery', () => {
   })
 
   it('reads data efficiently with filter', async () => {
-    const file = countingBuffer(await asyncBufferFromFile('test/files/page_indexed.parquet'))
-    const rows = await parquetQuery({ file, filter: { quality: { $eq: 'good' } }, rowStart: 1, rowEnd: 5 } )
-    expect(rows).toEqual([
-      { row: 10n, quality: 'good' },
-      { row: 29n, quality: 'good' },
-      { row: 32n, quality: 'good' },
-      { row: 37n, quality: 'good' },
-    ])
-    // if we weren't streaming row groups, this would be 3:
-    expect(file.fetches).toBe(2) // 1 metadata, 1 row group
-    expect(file.bytes).toBe(5261)
+    const originalFile = await asyncBufferFromFile('test/files/alpha.parquet')
+    // don't count metadata reads
+    const metadata = await parquetMetadataAsync(originalFile)
+    const file = countingBuffer(await asyncBufferFromFile('test/files/alpha.parquet'))
+    // Query for rows where id = 'kk'
+    const rows = await parquetQuery({ file, metadata, filter: { id: { $eq: 'kk' } } })
+    expect(rows).toEqual([{ id: 'kk' }])
+    // if we weren't skipping row groups, this would be higher
+    expect(file.fetches).toBe(1) // 1 row group
+    expect(file.bytes).toBe(437) // 3rd row group
+  })
+
+  it('reads data efficiently with filter and sort', async () => {
+    const originalFile = await asyncBufferFromFile('test/files/alpha.parquet')
+    // don't count metadata reads
+    const metadata = await parquetMetadataAsync(originalFile)
+    const file = countingBuffer(await asyncBufferFromFile('test/files/alpha.parquet'))
+    const rows = await parquetQuery({ file, metadata, filter: { id: { $gt: 'xx' } }, orderBy: 'id' } )
+    expect(rows[0]).toEqual({ id: 'xy' })
+    expect(file.fetches).toBe(1) // 1 row group
+    expect(file.bytes).toBe(335)
   })
 
   it('filter on columns that are not selected', async () => {
