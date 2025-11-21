@@ -20,7 +20,7 @@ describe('parquetRead', () => {
       .rejects.toThrow('parquet expected AsyncBuffer')
   })
 
-  it('filter by row', async () => {
+  it('read row range', async () => {
     const file = await asyncBufferFromFile('test/files/rowgroups.parquet')
     await parquetRead({
       file,
@@ -32,7 +32,7 @@ describe('parquetRead', () => {
     })
   })
 
-  it('filter by row overestimate', async () => {
+  it('row range overestimate', async () => {
     const file = await asyncBufferFromFile('test/files/rowgroups.parquet')
     await parquetRead({
       file,
@@ -181,6 +181,20 @@ describe('parquetRead', () => {
     })
     expect(rows).toEqual([{ row: 90n, quality: 'bad' }])
     expect(convertWithDictionary).toHaveBeenCalledTimes(4)
+  })
+
+  it('reads only required row groups on the boundary', async () => {
+    const originalFile = await asyncBufferFromFile('test/files/alpha.parquet')
+    const metadata = await parquetMetadataAsync(originalFile)
+    const file = countingBuffer(originalFile)
+    await parquetReadObjects({
+      file,
+      metadata,
+      rowStart: 100,
+      rowEnd: 200,
+    })
+    expect(file.fetches).toBe(1) // 1 rowgroup
+    expect(file.bytes).toBe(441) // bytes for 2nd rowgroup
   })
 
   it('reads individual pages', async () => {
