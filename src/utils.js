@@ -146,7 +146,7 @@ export async function asyncBufferFromUrl({ url, byteLength, requestInit, fetch: 
   if (!url) throw new Error('missing url')
   const fetch = customFetch ?? globalThis.fetch
   // byte length from HEAD request
-  byteLength ||= await byteLengthFromUrl(url, requestInit, fetch)
+  byteLength ??= await byteLengthFromUrl(url, requestInit, fetch)
 
   /**
    * A promise for the whole buffer, if range requests are not supported.

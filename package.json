@@ -56,11 +56,11 @@
   },
   "devDependencies": {
     "@types/node": "24.10.1",
-    "@vitest/coverage-v8": "4.0.12",
+    "@vitest/coverage-v8": "4.0.14",
     "eslint": "9.39.1",
-    "eslint-plugin-jsdoc": "61.4.0",
+    "eslint-plugin-jsdoc": "61.4.1",
     "hyparquet-compressors": "1.1.1",
     "typescript": "5.9.3",
-    "vitest": "4.0.12"
+    "vitest": "4.0.14"
   }
 }

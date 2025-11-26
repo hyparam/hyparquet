@@ -123,7 +123,7 @@ export async function parquetQuery(options) {
  */
 async function parquetReadRows(options) {
   const { file, rows } = options
-  options.metadata ||= await parquetMetadataAsync(file, options)
+  options.metadata ??= await parquetMetadataAsync(file, options)
   const { row_groups: rowGroups } = options.metadata
   // Compute row groups to fetch
   const groupIncluded = Array(rowGroups.length).fill(false)

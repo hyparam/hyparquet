@@ -57,7 +57,7 @@ export type ParquetQueryFilter =
   | { $or: ParquetQueryFilter[] }
   | { $nor: ParquetQueryFilter[] }
 type ParquetQueryColumnsFilter = { [key: string]: ParquetQueryOperator }
-export type ParquetQueryValue = string | number | boolean | object | null | undefined
+export type ParquetQueryValue = string | number | bigint | boolean | object | null | undefined
 export type ParquetQueryOperator = {
   $gt?: ParquetQueryValue
   $gte?: ParquetQueryValue
