@@ -1,4 +1,4 @@
-import { CompressionCodec, ConvertedType, EdgeInterpolationAlgorithm, Encoding, FieldRepetitionType, PageType, ParquetType } from './constants.js'
+import { CompressionCodecs, ConvertedTypes, EdgeInterpolationAlgorithms, Encodings, FieldRepetitionTypes, PageTypes, ParquetTypes } from './constants.js'
 import { DEFAULT_PARSERS, parseDecimal, parseFloat16 } from './convert.js'
 import { getSchemaPath } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
@@ -112,12 +112,12 @@ export function parquetMetadata(arrayBuffer, { parsers, geoparquet = true } = {}
   const version = metadata.field_1
   /** @type {SchemaElement[]} */
   const schema = metadata.field_2.map((/** @type {any} */ field) => ({
-    type: ParquetType[field.field_1],
+    type: ParquetTypes[field.field_1],
     type_length: field.field_2,
-    repetition_type: FieldRepetitionType[field.field_3],
+    repetition_type: FieldRepetitionTypes[field.field_3],
     name: decode(field.field_4),
     num_children: field.field_5,
-    converted_type: ConvertedType[field.field_6],
+    converted_type: ConvertedTypes[field.field_6],
     scale: field.field_7,
     precision: field.field_8,
     field_id: field.field_9,
@@ -131,10 +131,10 @@ export function parquetMetadata(arrayBuffer, { parsers, geoparquet = true } = {}
       file_path: decode(column.field_1),
       file_offset: column.field_2,
       meta_data: column.field_3 && {
-        type: ParquetType[column.field_3.field_1],
-        encodings: column.field_3.field_2?.map((/** @type {number} */ e) => Encoding[e]),
+        type: ParquetTypes[column.field_3.field_1],
+        encodings: column.field_3.field_2?.map((/** @type {number} */ e) => Encodings[e]),
         path_in_schema: column.field_3.field_3.map(decode),
-        codec: CompressionCodec[column.field_3.field_4],
+        codec: CompressionCodecs[column.field_3.field_4],
         num_values: column.field_3.field_5,
         total_uncompressed_size: column.field_3.field_6,
         total_compressed_size: column.field_3.field_7,
@@ -147,8 +147,8 @@ export function parquetMetadata(arrayBuffer, { parsers, geoparquet = true } = {}
         dictionary_page_offset: column.field_3.field_11,
         statistics: convertStats(column.field_3.field_12, columnSchema[columnIndex], parsers),
         encoding_stats: column.field_3.field_13?.map((/** @type {any} */ encodingStat) => ({
-          page_type: PageType[encodingStat.field_1],
-          encoding: Encoding[encodingStat.field_2],
+          page_type: PageTypes[encodingStat.field_1],
+          encoding: Encodings[encodingStat.field_2],
           count: encodingStat.field_3,
         })),
         bloom_filter_offset: column.field_3.field_14,
@@ -268,7 +268,7 @@ function logicalType(logicalType) {
   if (logicalType?.field_18) return {
     type: 'GEOGRAPHY',
     crs: decode(logicalType.field_18.field_1),
-    algorithm: EdgeInterpolationAlgorithm[logicalType.field_18.field_2],
+    algorithm: EdgeInterpolationAlgorithms[logicalType.field_18.field_2],
   }
   return logicalType
 }

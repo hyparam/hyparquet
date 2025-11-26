@@ -1,4 +1,4 @@
-import { BoundaryOrder } from './constants.js'
+import { BoundaryOrders } from './constants.js'
 import { DEFAULT_PARSERS } from './convert.js'
 import { convertMetadata } from './metadata.js'
 import { deserializeTCompactProtocol } from './thrift.js'
@@ -17,7 +17,7 @@ export function readColumnIndex(reader, schema, parsers = undefined) {
     null_pages: thrift.field_1,
     min_values: thrift.field_2.map((/** @type {any} */ m) => convertMetadata(m, schema, parsers)),
     max_values: thrift.field_3.map((/** @type {any} */ m) => convertMetadata(m, schema, parsers)),
-    boundary_order: BoundaryOrder[thrift.field_4],
+    boundary_order: BoundaryOrders[thrift.field_4],
     null_counts: thrift.field_5,
     repetition_level_histograms: thrift.field_6,
     definition_level_histograms: thrift.field_7,
