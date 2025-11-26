@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.22.0]
+ - Rename constants to plural, and remove LogicalTypeType
+
 ## [1.21.1]
  - Add bigint to ParquetQueryValue type
 
