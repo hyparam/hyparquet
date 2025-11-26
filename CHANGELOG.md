@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.21.1]
+ - Add bigint to ParquetQueryValue type
+
 ## [1.21.0]
  - Adds optional `filter` parameter for pushdown row group filtering (#141)
 
