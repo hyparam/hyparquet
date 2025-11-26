@@ -195,8 +195,6 @@ export type LogicalType =
   | { type: 'GEOMETRY', crs?: string }
   | { type: 'GEOGRAPHY', crs?: string, algorithm?: EdgeInterpolationAlgorithm }
 
-export type LogicalTypeType = LogicalType['type']
-
 export interface RowGroup {
   columns: ColumnChunk[]
   total_byte_size: bigint

@@ -23,7 +23,6 @@ export { asyncBufferFromUrl, byteLengthFromUrl, cachedAsyncBuffer, flatten, toJs
  * @typedef {import('../src/types.d.ts').ConvertedType} ConvertedType
  * @typedef {import('../src/types.d.ts').TimeUnit} TimeUnit
  * @typedef {import('../src/types.d.ts').LogicalType} LogicalType
- * @typedef {import('../src/types.d.ts').LogicalTypeType} LogicalTypeType
  * @typedef {import('../src/types.d.ts').RowGroup} RowGroup
  * @typedef {import('../src/types.d.ts').ColumnChunk} ColumnChunk
  * @typedef {import('../src/types.d.ts').ColumnMetaData} ColumnMetaData
