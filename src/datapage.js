@@ -193,7 +193,7 @@ export function readDataPageV2(compressedBytes, ph, columnDecoder) {
     dataPage = new Array(nValues)
     deltaByteArray(pageReader, nValues, dataPage)
   } else if (daph2.encoding === 'BYTE_STREAM_SPLIT') {
-    dataPage = byteStreamSplit(reader, nValues, type, element.type_length)
+    dataPage = byteStreamSplit(pageReader, nValues, type, element.type_length)
   } else {
     throw new Error(`parquet unsupported encoding: ${daph2.encoding}`)
   }

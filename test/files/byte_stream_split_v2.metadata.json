@@ -1,0 +1,121 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "schema",
+      "num_children": 2
+    },
+    {
+      "type": "DOUBLE",
+      "repetition_type": "OPTIONAL",
+      "name": "float_col"
+    },
+    {
+      "type": "DOUBLE",
+      "repetition_type": "OPTIONAL",
+      "name": "double_col"
+    }
+  ],
+  "num_rows": 5,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "BYTE_STREAM_SPLIT"
+            ],
+            "path_in_schema": [
+              "float_col"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 5,
+            "total_uncompressed_size": 110,
+            "total_compressed_size": 87,
+            "data_page_offset": 4,
+            "statistics": {
+              "max": 5.5,
+              "min": 1.5,
+              "null_count": 0,
+              "max_value": 5.5,
+              "min_value": 1.5,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "BYTE_STREAM_SPLIT",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                5
+              ]
+            }
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "BYTE_STREAM_SPLIT"
+            ],
+            "path_in_schema": [
+              "double_col"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 5,
+            "total_uncompressed_size": 110,
+            "total_compressed_size": 97,
+            "data_page_offset": 91,
+            "statistics": {
+              "max": 50.5,
+              "min": 10.1,
+              "null_count": 0,
+              "max_value": 50.5,
+              "min_value": 10.1,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "BYTE_STREAM_SPLIT",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                5
+              ]
+            }
+          }
+        }
+      ],
+      "total_byte_size": 220,
+      "num_rows": 5,
+      "file_offset": 4,
+      "total_compressed_size": 184
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "ARROW:schema",
+      "value": "/////7AAAAAQAAAAAAAKAAwABgAFAAgACgAAAAABBAAMAAAACAAIAAAABAAIAAAABAAAAAIAAABIAAAABAAAAND///8AAAEDEAAAABwAAAAEAAAAAAAAAAoAAABkb3VibGVfY29sAADC////AAACABAAFAAIAAYABwAMAAAAEAAQAAAAAAABAxAAAAAgAAAABAAAAAAAAAAJAAAAZmxvYXRfY29sAAYACAAGAAYAAAAAAAIAAAAAAA=="
+    }
+  ],
+  "created_by": "parquet-cpp-arrow version 22.0.0",
+  "metadata_length": 576
+}
