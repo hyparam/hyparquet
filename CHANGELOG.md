@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.0]
+ - Rename `parquetMetadata` to `parquetMetadataSync`
+ - Previous `parquetMetadata` is now `import { parquetMetadataSync } from 'hyparquet/src/metadata.js'`
+
 ## [1.23.3]
  - Fix `readColumn` truncation in struct columns (#148)
 

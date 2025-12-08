@@ -65,10 +65,10 @@ export async function parquetMetadataAsync(asyncBuffer, { parsers, initialFetchS
     const combinedView = new Uint8Array(combinedBuffer)
     combinedView.set(new Uint8Array(metadataBuffer))
     combinedView.set(new Uint8Array(footerBuffer), footerOffset - metadataOffset)
-    return parquetMetadata(combinedBuffer, { parsers, geoparquet })
+    return parquetMetadataSync(combinedBuffer, { parsers, geoparquet })
   } else {
     // parse metadata from the footer
-    return parquetMetadata(footerBuffer, { parsers, geoparquet })
+    return parquetMetadataSync(footerBuffer, { parsers, geoparquet })
   }
 }
 
@@ -80,7 +80,7 @@ export async function parquetMetadataAsync(asyncBuffer, { parsers, initialFetchS
  * @param {MetadataOptions} options metadata parsing options
  * @returns {FileMetaData} parquet metadata object
  */
-export function parquetMetadata(arrayBuffer, { parsers, geoparquet = true } = {}) {
+export function parquetMetadataSync(arrayBuffer, { parsers, geoparquet = true } = {}) {
   if (!(arrayBuffer instanceof ArrayBuffer)) throw new Error('parquet expected ArrayBuffer')
   const view = new DataView(arrayBuffer)
 

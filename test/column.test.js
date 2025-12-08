@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readColumn } from '../src/column.js'
 import { DEFAULT_PARSERS } from '../src/convert.js'
-import { parquetMetadata } from '../src/index.js'
+import { parquetMetadataAsync } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { getSchemaPath } from '../src/schema.js'
 
@@ -16,7 +16,7 @@ describe('readColumn', () => {
     const testFile = 'test/files/float16_nonzeros_and_nans.parquet'
     const file = await asyncBufferFromFile(testFile)
     const arrayBuffer = await file.slice(0)
-    const metadata = parquetMetadata(arrayBuffer)
+    const metadata = await parquetMetadataAsync(arrayBuffer)
 
     const column = metadata.row_groups[0].columns[0]
     if (!column.meta_data) throw new Error(`No column metadata for ${testFile}`)
@@ -47,7 +47,7 @@ describe('readColumn', () => {
     const testFile = 'test/files/datapage_v2.snappy.parquet'
     const file = await asyncBufferFromFile(testFile)
     const arrayBuffer = await file.slice(0)
-    const metadata = parquetMetadata(arrayBuffer)
+    const metadata = await parquetMetadataAsync(arrayBuffer)
 
     const column = metadata.row_groups[0].columns[1] // second column
     if (!column.meta_data) throw new Error(`No column metadata for ${testFile}`)
