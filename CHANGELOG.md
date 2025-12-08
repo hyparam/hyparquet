@@ -3,6 +3,8 @@
 ## [2.0.0]
  - Rename `parquetMetadataAsync` to `parquetMetadata`
  - Previous `parquetMetadata` is now `import { parquetMetadataSync } from 'hyparquet/src/metadata.js'`
+ - Rename `onPage.columnName: string` to `onPage.pathInSchema: string[]`
+ - Remove `rowFormat` and always return rows as objects
 
 ## [1.23.3]
  - Fix `readColumn` truncation in struct columns (#148)

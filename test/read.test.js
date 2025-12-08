@@ -26,7 +26,7 @@ describe('parquetRead', () => {
       rowStart: 2,
       rowEnd: 4,
       onComplete(rows) {
-        expect(rows).toEqual([[3n], [4n]])
+        expect(rows).toEqual([{ numbers: 3n }, { numbers: 4n }])
       },
     })
   })
@@ -38,7 +38,9 @@ describe('parquetRead', () => {
       rowEnd: 100,
       onComplete(rows) {
         expect(rows).toEqual([
-          [1n], [2n], [3n], [4n], [5n], [6n], [7n], [8n], [9n], [10n], [11n], [12n], [13n], [14n], [15n],
+          { numbers: 1n }, { numbers: 2n }, { numbers: 3n }, { numbers: 4n }, { numbers: 5n },
+          { numbers: 6n }, { numbers: 7n }, { numbers: 8n }, { numbers: 9n }, { numbers: 10n },
+          { numbers: 11n }, { numbers: 12n }, { numbers: 13n }, { numbers: 14n }, { numbers: 15n },
         ])
       },
     })
@@ -76,11 +78,11 @@ describe('parquetRead', () => {
       },
       onComplete(rows) {
         expect(rows).toEqual([
-          [[1, 2, 3]],
-          [undefined],
-          [undefined],
-          [[1, 2, 3]],
-          [[1, 2]],
+          { e: [1, 2, 3] },
+          { e: undefined },
+          { e: undefined },
+          { e: [1, 2, 3] },
+          { e: [1, 2] },
         ])
       },
     })
@@ -109,24 +111,23 @@ describe('parquetRead', () => {
       },
       onComplete(rows) {
         expect(rows).toEqual([
-          [{ k1: 1, k2: 100 }],
-          [{ k1: 2, k2: null }],
-          [{ }],
-          [{ }],
-          [{ }],
-          [undefined],
-          [{ k1: null, k3: null }],
+          { int_map: { k1: 1, k2: 100 } },
+          { int_map: { k1: 2, k2: null } },
+          { int_map: { } },
+          { int_map: { } },
+          { int_map: { } },
+          { int_map: undefined },
+          { int_map: { k1: null, k3: null } },
         ])
       },
     })
   })
 
-  it('format row as object', async () => {
+  it('read single column as objects', async () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     await parquetRead({
       file,
       columns: ['c'],
-      rowFormat: 'object',
       onComplete(rows) {
         expect(rows).toEqual([
           { c: 2 },
@@ -139,18 +140,18 @@ describe('parquetRead', () => {
     })
   })
 
-  it('read columns out of order', async () => {
+  it('read selected columns', async () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     await parquetRead({
       file,
-      columns: ['c', 'missing', 'b', 'c'],
+      columns: ['c', 'b'],
       onComplete(rows) {
         expect(rows).toEqual([
-          [2, undefined, 1, 2],
-          [3, undefined, 2, 3],
-          [4, undefined, 3, 4],
-          [5, undefined, 4, 5],
-          [2, undefined, 5, 2],
+          { b: 1, c: 2 },
+          { b: 2, c: 3 },
+          { b: 3, c: 4 },
+          { b: 4, c: 5 },
+          { b: 5, c: 2 },
         ])
       },
     })
@@ -281,7 +282,6 @@ describe('parquetRead', () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     await parquetRead({
       file,
-      rowFormat: 'object',
       filter: { b: { $gt: 2 } },
       onComplete(rows) {
         expect(rows).toEqual([

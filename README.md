@@ -171,22 +171,6 @@ await parquetRead({
 })
 ```
 
-### Returned row format
-
-By default, the `onComplete` function returns an **array** of values for each row: `[value]`. If you would prefer each row to be an **object**:  `{ columnName: value }`, set the option `rowFormat` to `'object'`.
-
-```javascript
-import { parquetRead } from 'hyparquet'
-
-await parquetRead({
-  file,
-  rowFormat: 'object',
-  onComplete: data => console.log(data),
-})
-```
-
-The `parquetReadObjects` function defaults to `rowFormat: 'object'`.
-
 ### Binary columns
 
 Hyparquet defaults to decoding binary columns as utf8 text strings. A parquet `BYTE_ARRAY` column may contain arbitrary binary data or utf8 encoded text data. In theory, a column should be annotated as [LogicalType](https://github.com/apache/parquet-format/blob/master/LogicalTypes.md) STRING if it contains utf8 text. But in practice, many parquet files omit this annotation. Hyparquet's default decoding behavior can be disabled by setting the `utf8` option to `false`. The `utf8` option only affects `BYTE_ARRAY` columns _without_ an annotation.
