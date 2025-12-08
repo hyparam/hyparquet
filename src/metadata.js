@@ -31,16 +31,15 @@ function decode(/** @type {Uint8Array} */ value) {
  * This ensures that we either make one 512kb initial request for the metadata,
  * or a second request for up to the metadata size.
  *
- * @param {AsyncBuffer} asyncBuffer parquet file contents
- * @param {MetadataOptions & { initialFetchSize?: number }} options initial fetch size in bytes (default 512kb)
+ * @param {MetadataOptions & { file: AsyncBuffer, initialFetchSize?: number }} options parquet file and metadata options
  * @returns {Promise<FileMetaData>} parquet metadata object
  */
-export async function parquetMetadata(asyncBuffer, { parsers, initialFetchSize = defaultInitialFetchSize, geoparquet = true } = {}) {
-  if (!asyncBuffer || !(asyncBuffer.byteLength >= 0)) throw new Error('parquet expected AsyncBuffer')
+export async function parquetMetadata({ file, parsers, initialFetchSize = defaultInitialFetchSize, geoparquet = true }) {
+  if (!file || !(file.byteLength >= 0)) throw new Error('parquet expected AsyncBuffer')
 
   // fetch last bytes (footer) of the file
-  const footerOffset = Math.max(0, asyncBuffer.byteLength - initialFetchSize)
-  const footerBuffer = await asyncBuffer.slice(footerOffset, asyncBuffer.byteLength)
+  const footerOffset = Math.max(0, file.byteLength - initialFetchSize)
+  const footerBuffer = await file.slice(footerOffset, file.byteLength)
 
   // Check for parquet magic number "PAR1"
   const footerView = new DataView(footerBuffer)
@@ -51,38 +50,36 @@ export async function parquetMetadata(asyncBuffer, { parsers, initialFetchSize =
   // Parquet files store metadata at the end of the file
   // Metadata length is 4 bytes before the last PAR1
   const metadataLength = footerView.getUint32(footerBuffer.byteLength - 8, true)
-  if (metadataLength > asyncBuffer.byteLength - 8) {
-    throw new Error(`parquet metadata length ${metadataLength} exceeds available buffer ${asyncBuffer.byteLength - 8}`)
+  if (metadataLength > file.byteLength - 8) {
+    throw new Error(`parquet metadata length ${metadataLength} exceeds available buffer ${file.byteLength - 8}`)
   }
 
   // check if metadata size fits inside the initial fetch
   if (metadataLength + 8 > initialFetchSize) {
     // fetch the rest of the metadata
-    const metadataOffset = asyncBuffer.byteLength - metadataLength - 8
-    const metadataBuffer = await asyncBuffer.slice(metadataOffset, footerOffset)
+    const metadataOffset = file.byteLength - metadataLength - 8
+    const metadataBuffer = await file.slice(metadataOffset, footerOffset)
     // combine initial fetch with the new slice
     const combinedBuffer = new ArrayBuffer(metadataLength + 8)
     const combinedView = new Uint8Array(combinedBuffer)
     combinedView.set(new Uint8Array(metadataBuffer))
     combinedView.set(new Uint8Array(footerBuffer), footerOffset - metadataOffset)
-    return parquetMetadataSync(combinedBuffer, { parsers, geoparquet })
+    return parquetMetadataSync({ file: combinedBuffer, parsers, geoparquet })
   } else {
     // parse metadata from the footer
-    return parquetMetadataSync(footerBuffer, { parsers, geoparquet })
+    return parquetMetadataSync({ file: footerBuffer, parsers, geoparquet })
   }
 }
 
 /**
  * Read parquet metadata from a buffer synchronously.
  *
- * @import {KeyValue} from '../src/types.d.ts'
- * @param {ArrayBuffer} arrayBuffer parquet file footer
- * @param {MetadataOptions} options metadata parsing options
+ * @param {MetadataOptions & { file: ArrayBuffer }} options parquet file and metadata options
  * @returns {FileMetaData} parquet metadata object
  */
-export function parquetMetadataSync(arrayBuffer, { parsers, geoparquet = true } = {}) {
-  if (!(arrayBuffer instanceof ArrayBuffer)) throw new Error('parquet expected ArrayBuffer')
-  const view = new DataView(arrayBuffer)
+export function parquetMetadataSync({ file, parsers, geoparquet = true }) {
+  if (!(file instanceof ArrayBuffer)) throw new Error('parquet expected ArrayBuffer')
+  const view = new DataView(file)
 
   // Use default parsers if not given
   parsers = { ...DEFAULT_PARSERS, ...parsers }
@@ -287,7 +284,7 @@ function timeUnit(unit) {
 /**
  * Convert column statistics based on column type.
  *
- * @import {AsyncBuffer, FileMetaData, LogicalType, MetadataOptions, MinMaxType, ParquetParsers, SchemaElement, SchemaTree, Statistics, TimeUnit} from '../src/types.d.ts'
+ * @import {AsyncBuffer, FileMetaData, KeyValue, LogicalType, MetadataOptions, MinMaxType, ParquetParsers, SchemaElement, SchemaTree, Statistics, TimeUnit} from '../src/types.d.ts'
  * @param {any} stats
  * @param {SchemaElement} schema
  * @param {ParquetParsers} parsers

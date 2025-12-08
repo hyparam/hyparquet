@@ -4,8 +4,8 @@ import { asyncBufferFromFile } from '../src/node.js'
 
 describe('parquetSchema', () => {
   it('parse schema tree from rowgroups.parquet', async () => {
-    const arrayBuffer = await asyncBufferFromFile('test/files/rowgroups.parquet')
-    const metadata = await parquetMetadata(arrayBuffer)
+    const file = await asyncBufferFromFile('test/files/rowgroups.parquet')
+    const metadata = await parquetMetadata({ file })
     const schemaTree = parquetSchema(metadata)
     expect(schemaTree).toEqual(rowgroupsSchema)
   })

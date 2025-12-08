@@ -74,7 +74,7 @@ You can read just the metadata, including schema and data statistics using the `
 import { parquetMetadata, parquetSchema } from 'hyparquet'
 
 const file = await asyncBufferFromUrl({ url })
-const metadata = await parquetMetadata(file)
+const metadata = await parquetMetadata({ file })
 // Get total number of rows (convert bigint to number)
 const numRows = Number(metadata.num_rows)
 // Get nested table schema

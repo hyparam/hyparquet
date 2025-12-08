@@ -172,7 +172,7 @@ describe('parquetRead', () => {
 
   it('skips converting unnecessary pages', async () => {
     const file = await asyncBufferFromFile('test/files/page_indexed.parquet')
-    const metadata = await parquetMetadata(file)
+    const metadata = await parquetMetadata({ file })
     vi.mocked(convertWithDictionary).mockClear()
     const rows = await parquetReadObjects({
       file,
@@ -186,7 +186,7 @@ describe('parquetRead', () => {
 
   it('reads only required row groups on the boundary', async () => {
     const originalFile = await asyncBufferFromFile('test/files/alpha.parquet')
-    const metadata = await parquetMetadata(originalFile)
+    const metadata = await parquetMetadata({ file: originalFile })
     const file = countingBuffer(originalFile)
     await parquetReadObjects({
       file,

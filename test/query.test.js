@@ -203,7 +203,7 @@ describe('parquetQuery', () => {
   it('reads data efficiently with filter', async () => {
     const originalFile = await asyncBufferFromFile('test/files/alpha.parquet')
     // don't count metadata reads
-    const metadata = await parquetMetadata(originalFile)
+    const metadata = await parquetMetadata({ file: originalFile })
     const file = countingBuffer(await asyncBufferFromFile('test/files/alpha.parquet'))
     // Query for rows where id = 'kk'
     const rows = await parquetQuery({ file, metadata, filter: { id: { $eq: 'kk' } } })
@@ -216,7 +216,7 @@ describe('parquetQuery', () => {
   it('reads data efficiently with filter and sort', async () => {
     const originalFile = await asyncBufferFromFile('test/files/alpha.parquet')
     // don't count metadata reads
-    const metadata = await parquetMetadata(originalFile)
+    const metadata = await parquetMetadata({ file: originalFile })
     const file = countingBuffer(await asyncBufferFromFile('test/files/alpha.parquet'))
     const rows = await parquetQuery({ file, metadata, filter: { id: { $gt: 'xx' } }, orderBy: 'id' } )
     expect(rows[0]).toEqual({ id: 'xy' })

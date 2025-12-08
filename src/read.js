@@ -20,7 +20,7 @@ import { concat, flatten } from './utils.js'
  */
 export async function parquetRead(options) {
   // load metadata if not provided
-  options.metadata ??= await parquetMetadata(options.file, options)
+  options.metadata ??= await parquetMetadata(options)
 
   // read row groups
   const asyncGroups = parquetReadAsync(options)
@@ -106,7 +106,7 @@ export async function parquetReadColumn(options) {
   if (options.columns?.length !== 1) {
     throw new Error('parquetReadColumn expected columns: [columnName]')
   }
-  options.metadata ??= await parquetMetadata(options.file, options)
+  options.metadata ??= await parquetMetadata(options)
   const asyncGroups = parquetReadAsync(options)
 
   // assemble struct columns

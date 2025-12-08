@@ -10,16 +10,16 @@ describe('readColumnIndex', () => {
   const columnIndexesFiles = fs.readdirSync('test/files').filter(f => f.endsWith('.column_indexes.json'))
   const parquetFiles = columnIndexesFiles.map(f => f.replace(/.column_indexes.json$/i, '.parquet'))
 
-  parquetFiles.forEach((file, i) => {
-    it(`parse column indexes from ${file}`, async () => {
-      const arrayBuffer = await readFileToArrayBuffer(`test/files/${file}`)
-      const metadata = await parquetMetadata(arrayBuffer)
+  parquetFiles.forEach((parquetFile, i) => {
+    it(`parse column indexes from ${parquetFile}`, async () => {
+      const file = await readFileToArrayBuffer(`test/files/${parquetFile}`)
+      const metadata = await parquetMetadata({ file })
 
       const result = metadata.row_groups.map((rowGroup) => rowGroup.columns.map((column) => {
         if (column.column_index_offset === undefined || column.column_index_length === undefined) return null
         const columnIndexOffset = Number(column.column_index_offset)
         const columnIndexLength = Number(column.column_index_length)
-        const columnIndexArrayBuffer = arrayBuffer.slice(columnIndexOffset, columnIndexOffset + columnIndexLength)
+        const columnIndexArrayBuffer = file.slice(columnIndexOffset, columnIndexOffset + columnIndexLength)
         const columnIndexReader = { view: new DataView(columnIndexArrayBuffer), offset: 0 }
         const schemaPath = getSchemaPath(metadata.schema, column.meta_data?.path_in_schema ?? [])
         return readColumnIndex(columnIndexReader, schemaPath.at(-1)?.element || { name: '' })
@@ -34,16 +34,16 @@ describe('readOffsetIndex', () => {
   const offsetIndexesFiles = fs.readdirSync('test/files').filter(f => f.endsWith('.offset_indexes.json'))
   const parquetFiles = offsetIndexesFiles.map(f => f.replace(/.offset_indexes.json$/i, '.parquet'))
 
-  parquetFiles.forEach((file, i) => {
-    it(`parse offset indexes from ${file}`, async () => {
-      const arrayBuffer = await readFileToArrayBuffer(`test/files/${file}`)
-      const metadata = await parquetMetadata(arrayBuffer)
+  parquetFiles.forEach((parquetFile, i) => {
+    it(`parse offset indexes from ${parquetFile}`, async () => {
+      const file = await readFileToArrayBuffer(`test/files/${parquetFile}`)
+      const metadata = await parquetMetadata({ file })
 
       const result = metadata.row_groups.map((rowGroup) => rowGroup.columns.map((column) => {
         if (column.offset_index_offset === undefined || column.offset_index_length === undefined) return null
         const offsetIndexOffset = Number(column.offset_index_offset)
         const offsetIndexLength = Number(column.offset_index_length)
-        const offsetIndexArrayBuffer = arrayBuffer.slice(offsetIndexOffset, offsetIndexOffset + offsetIndexLength)
+        const offsetIndexArrayBuffer = file.slice(offsetIndexOffset, offsetIndexOffset + offsetIndexLength)
         const offsetIndexReader = { view: new DataView(offsetIndexArrayBuffer), offset: 0 }
         return readOffsetIndex(offsetIndexReader)
       }))
