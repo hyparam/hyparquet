@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { convertWithDictionary } from '../src/convert.js'
-import { parquetMetadataAsync, parquetRead, parquetReadObjects } from '../src/index.js'
+import { parquetMetadata, parquetRead, parquetReadObjects } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { countingBuffer } from './helpers.js'
 
@@ -171,7 +171,7 @@ describe('parquetRead', () => {
 
   it('skips converting unnecessary pages', async () => {
     const file = await asyncBufferFromFile('test/files/page_indexed.parquet')
-    const metadata = await parquetMetadataAsync(file)
+    const metadata = await parquetMetadata(file)
     vi.mocked(convertWithDictionary).mockClear()
     const rows = await parquetReadObjects({
       file,
@@ -185,7 +185,7 @@ describe('parquetRead', () => {
 
   it('reads only required row groups on the boundary', async () => {
     const originalFile = await asyncBufferFromFile('test/files/alpha.parquet')
-    const metadata = await parquetMetadataAsync(originalFile)
+    const metadata = await parquetMetadata(originalFile)
     const file = countingBuffer(originalFile)
     await parquetReadObjects({
       file,

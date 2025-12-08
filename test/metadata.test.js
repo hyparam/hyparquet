@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { describe, expect, it } from 'vitest'
 import { toJson } from '../src/index.js'
-import { parquetMetadataAsync, parquetMetadataSync } from '../src/metadata.js'
+import { parquetMetadata, parquetMetadataSync } from '../src/metadata.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { fileToJson } from './helpers.js'
 
@@ -56,7 +56,7 @@ describe('parquetMetadataAsync', () => {
   files.forEach(file => {
     it(`parse metadata async from ${file}`, async () => {
       const asyncBuffer = await asyncBufferFromFile(`test/files/${file}`)
-      const result = await parquetMetadataAsync(asyncBuffer)
+      const result = await parquetMetadata(asyncBuffer)
       const base = file.replace('.parquet', '')
       const expected = fileToJson(`test/files/${base}.metadata.json`)
       expect(toJson(result)).toEqual(expected)
@@ -66,19 +66,19 @@ describe('parquetMetadataAsync', () => {
   it('throws for asyncBuffer undefined', async () => {
     const arrayBuffer = undefined
     // @ts-expect-error testing invalid input
-    await expect(parquetMetadataAsync(arrayBuffer)).rejects
+    await expect(parquetMetadata(arrayBuffer)).rejects
       .toThrow('parquet expected AsyncBuffer')
   })
 
   it('throws for invalid magic number', async () => {
     const { buffer } = new Uint8Array([255, 255, 255, 255, 255, 255, 255, 255])
-    await expect(parquetMetadataAsync(buffer)).rejects
+    await expect(parquetMetadata(buffer)).rejects
       .toThrow('parquet file invalid (footer != PAR1)')
   })
 
   it('throws for invalid metadata length', async () => {
     const { buffer } = new Uint8Array([255, 255, 255, 255, 80, 65, 82, 49])
-    await expect(parquetMetadataAsync(buffer)).rejects
+    await expect(parquetMetadata(buffer)).rejects
       .toThrow('parquet metadata length 4294967295 exceeds available buffer 0')
   })
 })
