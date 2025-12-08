@@ -1,5 +1,5 @@
 export { readColumnIndex, readOffsetIndex } from './indexes.js'
-export { parquetMetadataAsync, parquetSchema } from './metadata.js'
+export { parquetMetadata, parquetSchema } from './metadata.js'
 export { parquetRead, parquetReadObjects } from './read.js'
 export { parquetQuery } from './query.js'
 export { snappyUncompress } from './snappy.js'

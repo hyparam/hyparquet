@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { parquetQuery } from '../src/query.js'
 import { asyncBufferFromFile } from '../src/node.js'
-import { parquetMetadataAsync } from '../src/metadata.js'
+import { parquetMetadata } from '../src/metadata.js'
 import { countingBuffer } from './helpers.js'
 
 describe('parquetQuery', () => {
@@ -203,7 +203,7 @@ describe('parquetQuery', () => {
   it('reads data efficiently with filter', async () => {
     const originalFile = await asyncBufferFromFile('test/files/alpha.parquet')
     // don't count metadata reads
-    const metadata = await parquetMetadataAsync(originalFile)
+    const metadata = await parquetMetadata(originalFile)
     const file = countingBuffer(await asyncBufferFromFile('test/files/alpha.parquet'))
     // Query for rows where id = 'kk'
     const rows = await parquetQuery({ file, metadata, filter: { id: { $eq: 'kk' } } })
@@ -216,7 +216,7 @@ describe('parquetQuery', () => {
   it('reads data efficiently with filter and sort', async () => {
     const originalFile = await asyncBufferFromFile('test/files/alpha.parquet')
     // don't count metadata reads
-    const metadata = await parquetMetadataAsync(originalFile)
+    const metadata = await parquetMetadata(originalFile)
     const file = countingBuffer(await asyncBufferFromFile('test/files/alpha.parquet'))
     const rows = await parquetQuery({ file, metadata, filter: { id: { $gt: 'xx' } }, orderBy: 'id' } )
     expect(rows[0]).toEqual({ id: 'xy' })

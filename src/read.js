@@ -1,5 +1,5 @@
 import { columnsNeededForFilter, matchFilter } from './filter.js'
-import { parquetMetadataAsync, parquetSchema } from './metadata.js'
+import { parquetMetadata, parquetSchema } from './metadata.js'
 import { parquetPlan, prefetchAsyncBuffer } from './plan.js'
 import { assembleAsync, asyncGroupToRows, readRowGroup } from './rowgroup.js'
 import { concat, flatten } from './utils.js'
@@ -21,7 +21,7 @@ import { concat, flatten } from './utils.js'
  */
 export async function parquetRead(options) {
   // load metadata if not provided
-  options.metadata ??= await parquetMetadataAsync(options.file, options)
+  options.metadata ??= await parquetMetadata(options.file, options)
 
   const { rowStart = 0, rowEnd, columns, onChunk, onComplete, rowFormat, filter, filterStrict = true } = options
 
@@ -151,7 +151,7 @@ export async function parquetReadColumn(options) {
   if (options.columns?.length !== 1) {
     throw new Error('parquetReadColumn expected columns: [columnName]')
   }
-  options.metadata ??= await parquetMetadataAsync(options.file, options)
+  options.metadata ??= await parquetMetadata(options.file, options)
   const asyncGroups = parquetReadAsync(options)
 
   // assemble struct columns

@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { compressors } from 'hyparquet-compressors'
 import { describe, expect, it } from 'vitest'
-import { parquetMetadataAsync, parquetRead, toJson } from '../src/index.js'
+import { parquetMetadata, parquetRead, toJson } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { fileToJson } from './helpers.js'
 
@@ -26,7 +26,7 @@ describe('parquetRead test files', () => {
     it(`read the last row from ${filename}`, async () => {
       // this exercises some of the page-skipping optimizations
       const file = await asyncBufferFromFile(`test/files/${filename}`)
-      const metadata = await parquetMetadataAsync(file)
+      const metadata = await parquetMetadata(file)
       let numRows = Number(metadata.num_rows)
       // repeated_no_annotation has wrong num_rows in metadata:
       if (filename === 'repeated_no_annotation.parquet') numRows = 6

@@ -35,7 +35,7 @@ function decode(/** @type {Uint8Array} */ value) {
  * @param {MetadataOptions & { initialFetchSize?: number }} options initial fetch size in bytes (default 512kb)
  * @returns {Promise<FileMetaData>} parquet metadata object
  */
-export async function parquetMetadataAsync(asyncBuffer, { parsers, initialFetchSize = defaultInitialFetchSize, geoparquet = true } = {}) {
+export async function parquetMetadata(asyncBuffer, { parsers, initialFetchSize = defaultInitialFetchSize, geoparquet = true } = {}) {
   if (!asyncBuffer || !(asyncBuffer.byteLength >= 0)) throw new Error('parquet expected AsyncBuffer')
 
   // fetch last bytes (footer) of the file

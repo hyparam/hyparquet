@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { parquetMetadataAsync } from '../src/index.js'
+import { parquetMetadata } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { parquetPlan } from '../src/plan.js'
 
 describe('parquetPlan', () => {
   it('generates a query plan', async () => {
     const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
-    const metadata = await parquetMetadataAsync(file)
+    const metadata = await parquetMetadata(file)
     const plan = parquetPlan({ file, metadata })
     expect(plan).toMatchObject({
       metadata,

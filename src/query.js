@@ -1,4 +1,4 @@
-import { parquetMetadataAsync, parquetSchema } from './metadata.js'
+import { parquetMetadata, parquetSchema } from './metadata.js'
 import { parquetReadColumn, parquetReadObjects } from './read.js'
 
 /**
@@ -17,7 +17,7 @@ export async function parquetQuery(options) {
   if (!options.file || !(options.file.byteLength >= 0)) {
     throw new Error('parquet expected AsyncBuffer')
   }
-  options.metadata ??= await parquetMetadataAsync(options.file, options)
+  options.metadata ??= await parquetMetadata(options.file, options)
 
   const { metadata, rowStart = 0, columns, orderBy, filter } = options
   if (rowStart < 0) throw new Error('parquet rowStart must be positive')
@@ -103,7 +103,7 @@ export async function parquetQuery(options) {
  */
 async function parquetReadRows(options) {
   const { file, rows } = options
-  options.metadata ??= await parquetMetadataAsync(file, options)
+  options.metadata ??= await parquetMetadata(file, options)
   const { row_groups: rowGroups } = options.metadata
   // Compute row groups to fetch
   const groupIncluded = Array(rowGroups.length).fill(false)
