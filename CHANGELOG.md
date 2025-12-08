@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.0]
+ - Rename `parquetMetadata` to `parquetMetadataSync`
+ - Previous `parquetMetadata` is now `import { parquetMetadataSync } from 'hyparquet/src/metadata.js'`
+
 ## [1.23.0]
  - Replace `columnName: string` with `pathInSchema: string[]` in `onPage` callback (#144)
 

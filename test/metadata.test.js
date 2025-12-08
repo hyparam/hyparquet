@@ -1,6 +1,7 @@
 import fs from 'fs'
 import { describe, expect, it } from 'vitest'
-import { parquetMetadata, parquetMetadataAsync, toJson } from '../src/index.js'
+import { toJson } from '../src/index.js'
+import { parquetMetadataAsync, parquetMetadataSync } from '../src/metadata.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { fileToJson } from './helpers.js'
 
@@ -11,7 +12,7 @@ describe('parquetMetadata', () => {
     it(`parse metadata from ${file}`, async () => {
       const asyncBuffer = await asyncBufferFromFile(`test/files/${file}`)
       const arrayBuffer = await asyncBuffer.slice(0)
-      const result = toJson(parquetMetadata(arrayBuffer))
+      const result = toJson(parquetMetadataSync(arrayBuffer))
       const base = file.replace('.parquet', '')
       const expected = fileToJson(`test/files/${base}.metadata.json`)
       expect(result, JSON.stringify(result, null, 2)).toEqual(expected)
@@ -20,12 +21,12 @@ describe('parquetMetadata', () => {
 
   it('throws for arrayBuffer undefined', () => {
     // @ts-expect-error testing invalid input
-    expect(() => parquetMetadata(undefined)).toThrow('parquet expected ArrayBuffer')
+    expect(() => parquetMetadataSync(undefined)).toThrow('parquet expected ArrayBuffer')
   })
 
   it('throws for a too short file', () => {
     const arrayBuffer = new ArrayBuffer(0)
-    expect(() => parquetMetadata(arrayBuffer)).toThrow('parquet file is too short')
+    expect(() => parquetMetadataSync(arrayBuffer)).toThrow('parquet file is too short')
   })
 
   it('throws for invalid metadata length', () => {
@@ -34,19 +35,19 @@ describe('parquetMetadata', () => {
     view.setUint32(0, 0x31524150, true) // magic number PAR1
     view.setUint32(4, 1000, true) // 1000 bytes exceeds buffer
     view.setUint32(8, 0x31524150, true) // magic number PAR1
-    expect(() => parquetMetadata(arrayBuffer))
+    expect(() => parquetMetadataSync(arrayBuffer))
       .toThrow('parquet metadata length 1000 exceeds available buffer 4')
   })
 
   it('throws for invalid magic number', () => {
     const arrayBuffer = new ArrayBuffer(8)
-    expect(() => parquetMetadata(arrayBuffer))
+    expect(() => parquetMetadataSync(arrayBuffer))
       .toThrow('parquet file invalid (footer != PAR1)')
   })
 
   it('throws for invalid metadata length', () => {
     const { buffer } = new Uint8Array([255, 255, 255, 255, 80, 65, 82, 49])
-    expect(() => parquetMetadata(buffer))
+    expect(() => parquetMetadataSync(buffer))
       .toThrow('parquet metadata length 4294967295 exceeds available buffer 0')
   })
 })

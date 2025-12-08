@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { describe, expect, it } from 'vitest'
-import { parquetMetadata, toJson } from '../src/index.js'
+import { parquetMetadataAsync, toJson } from '../src/index.js'
 import { readColumnIndex, readOffsetIndex } from '../src/indexes.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { getSchemaPath } from '../src/schema.js'
@@ -13,7 +13,7 @@ describe('readColumnIndex', () => {
   parquetFiles.forEach((file, i) => {
     it(`parse column indexes from ${file}`, async () => {
       const arrayBuffer = await readFileToArrayBuffer(`test/files/${file}`)
-      const metadata = parquetMetadata(arrayBuffer)
+      const metadata = await parquetMetadataAsync(arrayBuffer)
 
       const result = metadata.row_groups.map((rowGroup) => rowGroup.columns.map((column) => {
         if (column.column_index_offset === undefined || column.column_index_length === undefined) return null
@@ -37,7 +37,7 @@ describe('readOffsetIndex', () => {
   parquetFiles.forEach((file, i) => {
     it(`parse offset indexes from ${file}`, async () => {
       const arrayBuffer = await readFileToArrayBuffer(`test/files/${file}`)
-      const metadata = parquetMetadata(arrayBuffer)
+      const metadata = await parquetMetadataAsync(arrayBuffer)
 
       const result = metadata.row_groups.map((rowGroup) => rowGroup.columns.map((column) => {
         if (column.offset_index_offset === undefined || column.offset_index_length === undefined) return null
