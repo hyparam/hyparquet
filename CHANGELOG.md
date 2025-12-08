@@ -6,6 +6,7 @@
  - Rename `onPage.columnName: string` to `onPage.pathInSchema: string[]`
  - Remove `rowFormat` and always return rows as objects
  - Change `byteLengthFromUrl` to accept options object
+ - Move `file` parameter to options object in `parquetMetadata`
 
 ## [1.23.3]
  - Fix `readColumn` truncation in struct columns (#148)

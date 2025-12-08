@@ -6,7 +6,7 @@ import { parquetPlan } from '../src/plan.js'
 describe('parquetPlan', () => {
   it('generates a query plan', async () => {
     const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
-    const metadata = await parquetMetadata(file)
+    const metadata = await parquetMetadata({ file })
     const plan = parquetPlan({ file, metadata })
     expect(plan).toMatchObject({
       metadata,

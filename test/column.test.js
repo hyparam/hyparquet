@@ -16,7 +16,7 @@ describe('readColumn', () => {
     const testFile = 'test/files/float16_nonzeros_and_nans.parquet'
     const file = await asyncBufferFromFile(testFile)
     const arrayBuffer = await file.slice(0)
-    const metadata = await parquetMetadata(arrayBuffer)
+    const metadata = await parquetMetadata({ file })
 
     const column = metadata.row_groups[0].columns[0]
     if (!column.meta_data) throw new Error(`No column metadata for ${testFile}`)
@@ -47,7 +47,7 @@ describe('readColumn', () => {
     const testFile = 'test/files/datapage_v2.snappy.parquet'
     const file = await asyncBufferFromFile(testFile)
     const arrayBuffer = await file.slice(0)
-    const metadata = await parquetMetadata(arrayBuffer)
+    const metadata = await parquetMetadata({ file })
 
     const column = metadata.row_groups[0].columns[1] // second column
     if (!column.meta_data) throw new Error(`No column metadata for ${testFile}`)

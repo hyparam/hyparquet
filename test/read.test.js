@@ -171,7 +171,7 @@ describe('parquetRead', () => {
 
   it('does not use OffsetIndex by default', async () => {
     const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
-    const metadata = await parquetMetadata(file)
+    const metadata = await parquetMetadata({ file })
     const counting = countingBuffer(file)
     const rows = await parquetReadObjects({
       file: counting,
@@ -188,7 +188,7 @@ describe('parquetRead', () => {
 
   it('uses OffsetIndex to skip pages', async () => {
     const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
-    const metadata = await parquetMetadata(file)
+    const metadata = await parquetMetadata({ file })
     const counting = countingBuffer(file)
     const rows = await parquetReadObjects({
       file: counting,
@@ -206,7 +206,7 @@ describe('parquetRead', () => {
 
   it('reads only required row groups on the boundary', async () => {
     const originalFile = await asyncBufferFromFile('test/files/alpha.parquet')
-    const metadata = await parquetMetadata(originalFile)
+    const metadata = await parquetMetadata({ file: originalFile })
     const file = countingBuffer(originalFile)
     await parquetReadObjects({
       file,
@@ -220,7 +220,7 @@ describe('parquetRead', () => {
 
   it('groups column chunks', async () => {
     const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
-    const metadata = await parquetMetadata(file)
+    const metadata = await parquetMetadata({ file })
     const counting = countingBuffer(file)
 
     // check onPage callback
@@ -237,7 +237,7 @@ describe('parquetRead', () => {
 
   it('does not groups column chunks when columns are specified', async () => {
     const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
-    const metadata = await parquetMetadata(file)
+    const metadata = await parquetMetadata({ file })
     const counting = countingBuffer(file)
 
     // check onPage callback
@@ -255,7 +255,7 @@ describe('parquetRead', () => {
 
   it('reads individual pages', async () => {
     const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
-    const metadata = await parquetMetadata(file)
+    const metadata = await parquetMetadata({ file })
     const counting = countingBuffer(file)
     /** @type {import('../src/types.js').SubColumnData[]} */
     const pages = []
