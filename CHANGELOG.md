@@ -5,6 +5,7 @@
  - Previous `parquetMetadata` is now `import { parquetMetadataSync } from 'hyparquet/src/metadata.js'`
  - Rename `onPage.columnName: string` to `onPage.pathInSchema: string[]`
  - Remove `rowFormat` and always return rows as objects
+ - Change `byteLengthFromUrl` to accept options object
 
 ## [1.23.0]
  - Replace `columnName: string` with `pathInSchema: string[]` in `onPage` callback (#144)
