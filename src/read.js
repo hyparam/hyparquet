@@ -25,7 +25,7 @@ export async function parquetRead(options) {
   // read row groups
   const asyncGroups = parquetReadAsync(options)
 
-  const { rowStart = 0, rowEnd, columns, onChunk, onComplete, rowFormat } = options
+  const { rowStart = 0, rowEnd, columns, onChunk, onComplete } = options
 
   // skip assembly if no onComplete or onChunk, but wait for reading to finish
   if (!onComplete && !onChunk) {
@@ -61,17 +61,14 @@ export async function parquetRead(options) {
 
   // onComplete transpose column chunks to rows
   if (onComplete) {
-    // loosen the types to avoid duplicate code
-    /** @type {any[]} */
+    /** @type {Record<string, any>[]} */
     const rows = []
     for (const asyncGroup of assembled) {
       // filter to rows in range
       const selectStart = Math.max(rowStart - asyncGroup.groupStart, 0)
       const selectEnd = Math.min((rowEnd ?? Infinity) - asyncGroup.groupStart, asyncGroup.groupRows)
       // transpose column chunks to rows in output
-      const groupData = rowFormat === 'object' ?
-        await asyncGroupToRows(asyncGroup, selectStart, selectEnd, columns, 'object') :
-        await asyncGroupToRows(asyncGroup, selectStart, selectEnd, columns, 'array')
+      const groupData = await asyncGroupToRows(asyncGroup, selectStart, selectEnd, columns)
       concat(rows, groupData)
     }
     onComplete(rows)
@@ -135,7 +132,6 @@ export function parquetReadObjects(options) {
   return new Promise((onComplete, reject) => {
     parquetRead({
       ...options,
-      rowFormat: 'object', // force object output
       onComplete,
     }).catch(reject)
   })

@@ -5,6 +5,15 @@ import { parquetMetadata, parquetRead, toJson } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { fileToJson } from './helpers.js'
 
+/**
+ * Convert object rows to array rows for comparison with legacy JSON test files.
+ * @param {Record<string, any>[]} rows
+ * @returns {any[][]}
+ */
+function toArrays(rows) {
+  return rows.map(row => Object.values(row))
+}
+
 describe('parquetRead test files', () => {
   const files = fs.readdirSync('test/files').filter(f => f.endsWith('.parquet'))
 
@@ -18,7 +27,7 @@ describe('parquetRead test files', () => {
           const base = filename.replace('.parquet', '')
           const expected = fileToJson(`test/files/${base}.json`)
           // stringify and parse to make legal json (NaN, -0, etc)
-          expect(JSON.parse(JSON.stringify(toJson(rows)))).toEqual(expected)
+          expect(JSON.parse(JSON.stringify(toJson(toArrays(rows))))).toEqual(expected)
         },
       })
     })
@@ -39,7 +48,7 @@ describe('parquetRead test files', () => {
           const base = filename.replace('.parquet', '')
           if (rows.length) {
             const expected = [fileToJson(`test/files/${base}.json`).at(-1)]
-            expect(toJson(rows)).toEqual(expected)
+            expect(toJson(toArrays(rows))).toEqual(expected)
           }
         },
       })
