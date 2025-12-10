@@ -26,7 +26,7 @@ describe('readColumn', () => {
     const schemaPath = getSchemaPath(metadata.schema, column.meta_data?.path_in_schema ?? [])
     const reader = { view: new DataView(columnArrayBuffer), offset: 0 }
     const columnDecoder = {
-      columnName: column.meta_data.path_in_schema.join('.'),
+      pathInSchema: column.meta_data.path_in_schema,
       type: column.meta_data.type,
       element: schemaPath[schemaPath.length - 1].element,
       schemaPath,
@@ -57,7 +57,7 @@ describe('readColumn', () => {
     const schemaPath = getSchemaPath(metadata.schema, column.meta_data?.path_in_schema ?? [])
     const reader = { view: new DataView(columnArrayBuffer), offset: 0 }
     const columnDecoder = {
-      columnName: column.meta_data.path_in_schema.join('.'),
+      pathInSchema: column.meta_data.path_in_schema,
       type: column.meta_data.type,
       element: schemaPath[schemaPath.length - 1].element,
       schemaPath,

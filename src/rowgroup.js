@@ -54,9 +54,8 @@ export function readRowGroup(options, { metadata, columns }, groupPlan) {
       data: buffer.then(arrayBuffer => {
         const schemaPath = getSchemaPath(metadata.schema, meta_data.path_in_schema)
         const reader = { view: new DataView(arrayBuffer), offset: 0 }
-        const subcolumn = meta_data.path_in_schema.join('.')
         const columnDecoder = {
-          columnName: subcolumn,
+          pathInSchema: meta_data.path_in_schema,
           type: meta_data.type,
           element: schemaPath[schemaPath.length - 1].element,
           schemaPath,
