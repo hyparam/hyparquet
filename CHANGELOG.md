@@ -1,10 +1,16 @@
 # Changelog
 
+## [1.23.0]
+ - Replace `columnName: string` with `pathInSchema: string[]` in `onPage` callback (#144)
+
+## [1.22.1]
+ - Fix `BYTE_STREAM_SPLIT` with data page v2 and compression
+
 ## [1.22.0]
  - Rename constants to plural, and remove LogicalTypeType
 
 ## [1.21.1]
- - Add bigint to ParquetQueryValue type
+ - Add bigint to `ParquetQueryValue` type
 
 ## [1.21.0]
  - Adds optional `filter` parameter for pushdown row group filtering (#141)
