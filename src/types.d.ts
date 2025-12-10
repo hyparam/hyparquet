@@ -37,6 +37,7 @@ export interface ParquetReadOptions {
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
   parsers?: ParquetParsers // custom parsers to decode advanced types
   geoparquet?: boolean // parse geoparquet metadata and set logical type to geometry/geography for geospatial columns (default true)
+  prefetch?: boolean // prefetch byte ranges for all row groups upfront (default true)
 }
 
 export type BaseParquetReadOptions = ParquetReadOptions
@@ -445,11 +446,21 @@ export interface RowGroupSelect {
   groupRows: number
 }
 
-export interface AsyncColumn {
+export interface AsyncSubColumn {
   pathInSchema: string[]
-  data: Promise<DecodedArray[]>
+  data: AsyncGenerator<DecodedArray>
 }
 export interface AsyncRowGroup {
+  groupStart: number
+  groupRows: number
+  asyncColumns: AsyncSubColumn[]
+}
+
+export interface AsyncColumn {
+  columnName: string
+  data: AsyncGenerator<DecodedArray>
+}
+export interface AsyncRowGroupAssembled {
   groupStart: number
   groupRows: number
   asyncColumns: AsyncColumn[]

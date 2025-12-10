@@ -1,6 +1,6 @@
 export { readColumnIndex, readOffsetIndex } from './indexes.js'
 export { parquetMetadata, parquetSchema } from './metadata.js'
-export { parquetRead, parquetReadObjects } from './read.js'
+export { parquetReadAsync, parquetReadObjects } from './read.js'
 export { parquetQuery } from './query.js'
 export { snappyUncompress } from './snappy.js'
 export { asyncBufferFromUrl, byteLengthFromUrl, cachedAsyncBuffer, flatten, toJson } from './utils.js'
@@ -42,6 +42,7 @@ export { asyncBufferFromUrl, byteLengthFromUrl, cachedAsyncBuffer, flatten, toJs
  * @typedef {import('../src/types.d.ts').ColumnIndex} ColumnIndex
  * @typedef {import('../src/types.d.ts').BoundaryOrder} BoundaryOrder
  * @typedef {import('../src/types.d.ts').ColumnData} ColumnData
+ * @typedef {import('../src/types.d.ts').SubColumnData} SubColumnData
  * @typedef {import('../src/types.d.ts').ParquetReadOptions} ParquetReadOptions
  * @typedef {import('../src/types.d.ts').MetadataOptions} MetadataOptions
  * @typedef {import('../src/types.d.ts').ParquetParsers} ParquetParsers

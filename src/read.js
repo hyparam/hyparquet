@@ -1,11 +1,12 @@
 import { parquetMetadata, parquetSchema } from './metadata.js'
 import { parquetPlan, prefetchAsyncBuffer } from './plan.js'
-import { assembleAsync, asyncGroupToRows, readRowGroup } from './rowgroup.js'
-import { concat, flatten } from './utils.js'
+import { assembleAsync, readRowGroup, transposeColumnsToRows } from './rowgroup.js'
+import { concat, flatten, flattenAsync } from './utils.js'
 
 /**
- * @import {AsyncRowGroup, DecodedArray, ParquetReadOptions, BaseParquetReadOptions} from '../src/types.js'
+ * @import {AsyncRowGroup, DecodedArray, ParquetReadOptions, BaseParquetReadOptions, SubColumnData, AsyncRowGroupAssembled, ColumnData} from '../src/types.js'
  */
+
 /**
  * Read parquet data rows from a file-like object.
  * Reads the minimal number of row groups and columns to satisfy the request.
@@ -21,79 +22,53 @@ import { concat, flatten } from './utils.js'
 export async function parquetRead(options) {
   // load metadata if not provided
   options.metadata ??= await parquetMetadata(options)
+  const { rowStart = 0, rowEnd = Infinity, onComplete } = options
 
   // read row groups
   const asyncGroups = parquetReadAsync(options)
 
-  const { rowStart = 0, rowEnd, columns, onChunk, onComplete } = options
-
-  // skip assembly if no onComplete or onChunk, but wait for reading to finish
-  if (!onComplete && !onChunk) {
-    for (const { asyncColumns } of asyncGroups) {
-      for (const { data } of asyncColumns) await data
-    }
-    return
-  }
-
   // assemble struct columns
   const schemaTree = parquetSchema(options.metadata)
-  const assembled = asyncGroups.map(arg => assembleAsync(arg, schemaTree))
-
-  // onChunk emit all chunks (don't await)
-  if (onChunk) {
-    for (const asyncGroup of assembled) {
-      for (const asyncColumn of asyncGroup.asyncColumns) {
-        asyncColumn.data.then(columnDatas => {
-          let rowStart = asyncGroup.groupStart
-          for (const columnData of columnDatas) {
-            onChunk({
-              columnName: asyncColumn.pathInSchema[0],
-              columnData,
-              rowStart,
-              rowEnd: rowStart + columnData.length,
-            })
-            rowStart += columnData.length
-          }
-        })
-      }
-    }
-  }
 
   // onComplete transpose column chunks to rows
   if (onComplete) {
     /** @type {Record<string, any>[]} */
     const rows = []
-    for (const asyncGroup of assembled) {
+    for await (const rowGroup of asyncGroups) {
       // filter to rows in range
-      const selectStart = Math.max(rowStart - asyncGroup.groupStart, 0)
-      const selectEnd = Math.min((rowEnd ?? Infinity) - asyncGroup.groupStart, asyncGroup.groupRows)
-      // transpose column chunks to rows in output
-      const groupData = await asyncGroupToRows(asyncGroup, selectStart, selectEnd, columns)
-      concat(rows, groupData)
+      const selectStart = Math.max(rowStart - rowGroup.groupStart, 0)
+      const selectEnd = Math.min(rowEnd - rowGroup.groupStart, rowGroup.groupRows)
+      const emitted = emitPages(rowGroup, options.onPage)
+      const assembled = await assembleAsync(emitted, schemaTree, options.onChunk)
+      const columnDatas = await Promise.all(assembled.asyncColumns.map(flattenAsync))
+      const transposed = transposeColumnsToRows(assembled.asyncColumns, columnDatas, selectStart, selectEnd, options.columns)
+      concat(rows, transposed)
     }
     onComplete(rows)
-  } else {
-    // wait for all async groups to finish (complete takes care of this)
-    for (const { asyncColumns } of assembled) {
-      for (const { data } of asyncColumns) await data
-    }
   }
 }
 
 /**
+ * Asynchronously read parquet data according to options.
+ *
  * @param {ParquetReadOptions} options read options
- * @returns {AsyncRowGroup[]}
+ * @yields {AsyncRowGroup}
  */
-export function parquetReadAsync(options) {
-  if (!options.metadata) throw new Error('parquet requires metadata')
+export async function* parquetReadAsync(options) {
+  // load metadata if not provided
+  options.metadata ??= await parquetMetadata(options)
   // TODO: validate options (start, end, columns, etc)
 
   // prefetch byte ranges
   const plan = parquetPlan(options)
-  options.file = prefetchAsyncBuffer(options.file, plan)
+  if (options.prefetch !== false) {
+    options.file = prefetchAsyncBuffer(options.file, plan)
+  }
 
   // read row groups
-  return plan.groups.map(groupPlan => readRowGroup(options, plan, groupPlan))
+  for (const groupPlan of plan.groups) {
+    yield readRowGroup(options, plan, groupPlan)
+  }
 }
 
 /**
@@ -106,17 +81,11 @@ export async function parquetReadColumn(options) {
   if (options.columns?.length !== 1) {
     throw new Error('parquetReadColumn expected columns: [columnName]')
   }
-  options.metadata ??= await parquetMetadata(options)
-  const asyncGroups = parquetReadAsync(options)
-
-  // assemble struct columns
-  const schemaTree = parquetSchema(options.metadata)
-  const assembled = asyncGroups.map(arg => assembleAsync(arg, schemaTree))
 
   /** @type {DecodedArray[]} */
   const columnData = []
-  for (const rg of assembled) {
-    columnData.push(flatten(await rg.asyncColumns[0].data))
+  for await (const rg of parquetReadAsync(options)) {
+    columnData.push(await flattenAsync(rg.asyncColumns[0]))
   }
   return flatten(columnData)
 }
@@ -125,7 +94,7 @@ export async function parquetReadColumn(options) {
  * This is a helper function to read parquet row data as a promise.
  * It is a wrapper around the more configurable parquetRead function.
  *
- * @param {Omit<ParquetReadOptions, 'onComplete'>} options
+ * @param {ParquetReadOptions} options
  * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
  */
 export function parquetReadObjects(options) {
@@ -135,4 +104,30 @@ export function parquetReadObjects(options) {
       onComplete,
     }).catch(reject)
   })
+}
+
+/**
+ * @param {AsyncRowGroup} rowGroup
+ * @param {((page: SubColumnData) => void) | undefined} onPage
+ * @returns {AsyncRowGroup}
+ */
+function emitPages(rowGroup, onPage) {
+  if (!onPage) return rowGroup
+  return {
+    ...rowGroup,
+    asyncColumns: rowGroup.asyncColumns.map(col => ({
+      ...col,
+      data: (async function* () {
+        for await (const columnData of col.data) {
+          onPage({
+            pathInSchema: col.pathInSchema,
+            columnData,
+            rowStart: rowGroup.groupStart,
+            rowEnd: rowGroup.groupStart + rowGroup.groupRows,
+          })
+          yield columnData
+        }
+      })(),
+    })),
+  }
 }

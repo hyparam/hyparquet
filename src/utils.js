@@ -266,3 +266,19 @@ export function flatten(chunks) {
   }
   return output
 }
+
+/**
+ * Flatten an async list of lists into a single list.
+ *
+ * @param {object} options
+ * @param {AsyncGenerator<DecodedArray>} options.data
+ * @returns {Promise<DecodedArray>}
+ */
+export async function flattenAsync({ data }) {
+  /** @type {any[]} */
+  const output = []
+  for await (const chunk of data) {
+    concat(output, chunk)
+  }
+  return output
+}

@@ -13,13 +13,11 @@ import { deserializeTCompactProtocol } from './thrift.js'
  * @param {RowGroupSelect} rowGroupSelect row group selection
  * @param {ColumnDecoder} columnDecoder column decoder params
  * @param {(chunk: SubColumnData) => void} [onPage] callback for each page
- * @returns {DecodedArray[]}
+ * @yields {DecodedArray}
  */
-export function readColumn(reader, { groupStart, selectStart, selectEnd }, columnDecoder, onPage) {
+export async function* readColumn(reader, { groupStart, selectStart, selectEnd }, columnDecoder, onPage) {
   const { pathInSchema, schemaPath } = columnDecoder
   const isFlat = isFlatColumn(schemaPath)
-  /** @type {DecodedArray[]} */
-  const chunks = []
   /** @type {DecodedArray | undefined} */
   let dictionary = undefined
   /** @type {DecodedArray | undefined} */
@@ -51,20 +49,25 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
         // continued from previous page
         rowCount += values.length - lastChunkLength
       } else {
-        emitLastChunk?.()
-        chunks.push(values)
+        if (lastChunk) {
+          emitLastChunk?.()
+          yield lastChunk
+        }
         rowCount += values.length
         lastChunk = values
       }
     }
   }
-  emitLastChunk?.()
-  // assert(rowCount >= selectEnd)
-  if (rowCount > selectEnd && lastChunk) {
-    // truncate last chunk to row limit
-    chunks[chunks.length - 1] = lastChunk.slice(0, selectEnd - (rowCount - lastChunk.length))
+  if (lastChunk) {
+    // emit last page before truncation
+    emitLastChunk?.()
+    // truncate last chunk to row limit if needed
+    // assert(rowCount >= selectEnd)
+    if (rowCount > selectEnd) {
+      lastChunk = lastChunk.slice(0, selectEnd - (rowCount - lastChunk.length))
+    }
+    yield lastChunk
   }
-  return chunks
 }
 
 /**

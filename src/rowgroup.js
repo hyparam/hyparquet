@@ -6,7 +6,7 @@ import { getSchemaPath } from './schema.js'
 import { flatten } from './utils.js'
 
 /**
- * @import {AsyncColumn, AsyncRowGroup, DecodedArray, GroupPlan, ParquetParsers, ParquetReadOptions, QueryPlan, RowGroup, SchemaTree} from './types.js'
+ * @import {AsyncColumn, AsyncRowGroupAssembled, AsyncSubColumn, AsyncRowGroup, DecodedArray, GroupPlan, ParquetParsers, ParquetReadOptions, QueryPlan, RowGroup, SchemaTree, ColumnData} from '../src/types.js'
  */
 /**
  * Read a row group from a file-like object.
@@ -19,7 +19,7 @@ import { flatten } from './utils.js'
 export function readRowGroup(options, { metadata, columns }, groupPlan) {
   const { file, compressors, utf8 } = options
 
-  /** @type {AsyncColumn[]} */
+  /** @type {AsyncSubColumn[]} */
   const asyncColumns = []
   /** @type {ParquetParsers} */
   const parsers = { ...DEFAULT_PARSERS, ...options.parsers }
@@ -51,7 +51,8 @@ export function readRowGroup(options, { metadata, columns }, groupPlan) {
     // read column data async
     asyncColumns.push({
       pathInSchema: meta_data.path_in_schema,
-      data: buffer.then(arrayBuffer => {
+      data: (async function* () {
+        const arrayBuffer = await buffer
         const schemaPath = getSchemaPath(metadata.schema, meta_data.path_in_schema)
         const reader = { view: new DataView(arrayBuffer), offset: 0 }
         const columnDecoder = {
@@ -64,8 +65,8 @@ export function readRowGroup(options, { metadata, columns }, groupPlan) {
           compressors,
           utf8,
         }
-        return readColumn(reader, groupPlan, columnDecoder, options.onPage)
-      }),
+        yield* readColumn(reader, groupPlan, columnDecoder, options.onPage)
+      })(),
     })
   }
 
@@ -73,20 +74,17 @@ export function readRowGroup(options, { metadata, columns }, groupPlan) {
 }
 
 /**
- * @param {AsyncRowGroup} asyncGroup
+ * @param {AsyncColumn[]} asyncColumns
+ * @param {DecodedArray[]} columnDatas
  * @param {number} selectStart
  * @param {number} selectEnd
  * @param {string[] | undefined} columns
- * @returns {Promise<Record<string, any>[]>} resolves to row data
+ * @returns {Record<string, any>[]} row data
  */
-export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd, columns) {
-  // columnData[i] for asyncColumns[i]
-  // TODO: do it without flatten
-  const columnDatas = await Promise.all(asyncColumns.map(({ data }) => data.then(flatten)))
-
+export function transposeColumnsToRows(asyncColumns, columnDatas, selectStart, selectEnd, columns) {
   // filter columns
   const filteredColumns = columns
-    ? asyncColumns.filter(column => columns.includes(column.pathInSchema[0]))
+    ? asyncColumns.filter(column => columns.includes(column.columnName))
     : asyncColumns
 
   // transpose columns into rows
@@ -99,7 +97,7 @@ export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd,
     const rowData = {}
     for (let i = 0; i < filteredColumns.length; i++) {
       const columnIndex = asyncColumns.indexOf(filteredColumns[i])
-      rowData[filteredColumns[i].pathInSchema[0]] = columnDatas[columnIndex][row]
+      rowData[filteredColumns[i].columnName] = columnDatas[columnIndex][row]
     }
     groupData[selectRow] = rowData
   }
@@ -111,9 +109,10 @@ export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd,
  *
  * @param {AsyncRowGroup} asyncRowGroup
  * @param {SchemaTree} schemaTree
- * @returns {AsyncRowGroup}
+ * @param {((page: ColumnData) => void) | undefined} onChunk
+ * @returns {AsyncRowGroupAssembled}
  */
-export function assembleAsync(asyncRowGroup, schemaTree) {
+export function assembleAsync(asyncRowGroup, schemaTree, onChunk) {
   const { asyncColumns } = asyncRowGroup
   /** @type {AsyncColumn[]} */
   const assembled = []
@@ -122,27 +121,40 @@ export function assembleAsync(asyncRowGroup, schemaTree) {
       const childColumns = asyncColumns.filter(column => column.pathInSchema[0] === child.element.name)
       if (!childColumns.length) continue
 
-      // wait for all child columns to be read
       /** @type {Map<string, DecodedArray>} */
       const flatData = new Map()
-      const data = Promise.all(childColumns.map(column => {
-        return column.data.then(columnData => {
+      /** @type {AsyncGenerator<DecodedArray>} */
+      const data = (async function* () {
+        // wait for all child columns to be read
+        await Promise.all(childColumns.map(async column => {
+          const columnData = new Array()
+          for await (const chunk of column.data) {
+            columnData.push(chunk)
+          }
           flatData.set(column.pathInSchema.join('.'), flatten(columnData))
-        })
-      })).then(() => {
+        }))
         // assemble the column
         assembleNested(flatData, child)
-        const flatColumn = flatData.get(child.path.join('.'))
+        const flatColumn = flatData.get(child.path[0])
         if (!flatColumn) throw new Error('parquet column data not assembled')
-        return [flatColumn]
-      })
 
-      assembled.push({ pathInSchema: child.path, data })
+        // emit chunks
+        onChunk?.({
+          columnName: child.path[0],
+          columnData: flatColumn,
+          rowStart: asyncRowGroup.groupStart,
+          rowEnd: asyncRowGroup.groupStart + flatColumn.length,
+        })
+
+        yield flatColumn
+      })()
+
+      assembled.push({ columnName: child.path[0], data })
     } else {
       // leaf node, return the column
       const asyncColumn = asyncColumns.find(column => column.pathInSchema[0] === child.element.name)
       if (asyncColumn) {
-        assembled.push(asyncColumn)
+        assembled.push({ columnName: child.path[0], data: asyncColumn.data })
       }
     }
   }
