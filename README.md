@@ -68,13 +68,13 @@ To create parquet files from javascript, check out the [hyparquet-writer](https:
 
 ### Reading Metadata
 
-You can read just the metadata, including schema and data statistics using the `parquetMetadataAsync` function. This is useful for getting the schema, number of rows, and column names without reading the entire file.
+You can read just the metadata, including schema and data statistics using the `parquetMetadata` function. This is useful for getting the schema, number of rows, and column names without reading the entire file.
 
 ```javascript
-import { parquetMetadataAsync, parquetSchema } from 'hyparquet'
+import { parquetMetadata, parquetSchema } from 'hyparquet'
 
 const file = await asyncBufferFromUrl({ url })
-const metadata = await parquetMetadataAsync(file)
+const metadata = await parquetMetadata({ file })
 // Get total number of rows (convert bigint to number)
 const numRows = Number(metadata.num_rows)
 // Get nested table schema
@@ -170,22 +170,6 @@ await parquetRead({
   },
 })
 ```
-
-### Returned row format
-
-By default, the `onComplete` function returns an **array** of values for each row: `[value]`. If you would prefer each row to be an **object**:  `{ columnName: value }`, set the option `rowFormat` to `'object'`.
-
-```javascript
-import { parquetRead } from 'hyparquet'
-
-await parquetRead({
-  file,
-  rowFormat: 'object',
-  onComplete: data => console.log(data),
-})
-```
-
-The `parquetReadObjects` function defaults to `rowFormat: 'object'`.
 
 ### Binary columns
 
