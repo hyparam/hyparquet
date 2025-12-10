@@ -31,7 +31,7 @@ export interface BaseParquetReadOptions {
   rowStart?: number // first requested row index (inclusive)
   rowEnd?: number // last requested row index (exclusive)
   onChunk?: (chunk: ColumnData) => void // called when a column chunk is parsed. chunks may contain data outside the requested range.
-  onPage?: (chunk: ColumnData) => void // called when a data page is parsed. pages may contain data outside the requested range.
+  onPage?: (chunk: SubColumnData) => void // called when a data page is parsed. pages may contain data outside the requested range.
   compressors?: Compressors // custom decompressors
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
   parsers?: ParquetParsers // custom parsers to decode advanced types
@@ -75,6 +75,15 @@ export type ParquetQueryOperator = {
  */
 export interface ColumnData {
   columnName: string
+  columnData: DecodedArray
+  rowStart: number
+  rowEnd: number // exclusive
+}
+/**
+ * A run of sub-column data (pre-assembly)
+ */
+export interface SubColumnData {
+  pathInSchema: string[]
   columnData: DecodedArray
   rowStart: number
   rowEnd: number // exclusive
@@ -426,7 +435,7 @@ interface GroupPlan {
 }
 
 export interface ColumnDecoder {
-  columnName: string
+  pathInSchema: string[]
   type: ParquetType
   element: SchemaElement
   schemaPath: SchemaTree[]

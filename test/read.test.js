@@ -199,7 +199,7 @@ describe('parquetRead', () => {
 
   it('reads individual pages', async () => {
     const file = countingBuffer(await asyncBufferFromFile('test/files/page_indexed.parquet'))
-    /** @type {import('../src/types.js').ColumnData[]} */
+    /** @type {import('../src/types.js').SubColumnData[]} */
     const pages = []
 
     // check onPage callback
@@ -212,13 +212,13 @@ describe('parquetRead', () => {
 
     const expectedPages = [
       {
-        columnName: 'row',
+        pathInSchema: ['row'],
         columnData: Array.from({ length: 100 }, (_, i) => BigInt(i)),
         rowStart: 0,
         rowEnd: 100,
       },
       {
-        columnName: 'quality',
+        pathInSchema: ['quality'],
         columnData: [
           'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'good', 'bad', 'bad', 'bad',
           'good', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad',
@@ -235,13 +235,13 @@ describe('parquetRead', () => {
         rowEnd: 100,
       },
       {
-        columnName: 'row',
+        pathInSchema: ['row'],
         columnData: Array.from({ length: 100 }, (_, i) => BigInt(i + 100)),
         rowStart: 100,
         rowEnd: 200,
       },
       {
-        columnName: 'quality',
+        pathInSchema: ['quality'],
         columnData: [
           'good', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'good',
           'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad', 'bad',
@@ -261,7 +261,7 @@ describe('parquetRead', () => {
 
     // expect each page to exist in expected
     for (const expected of expectedPages) {
-      const page = pages.find(p => p.columnName === expected.columnName && p.rowStart === expected.rowStart)
+      const page = pages.find(p => p.pathInSchema[0] === expected.pathInSchema[0] && p.rowStart === expected.rowStart)
       expect(page).toEqual(expected)
     }
     expect(file.fetches).toBe(3) // 1 metadata, 2 rowgroups

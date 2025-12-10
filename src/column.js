@@ -12,11 +12,11 @@ import { deserializeTCompactProtocol } from './thrift.js'
  * @param {DataReader} reader
  * @param {RowGroupSelect} rowGroupSelect row group selection
  * @param {ColumnDecoder} columnDecoder column decoder params
- * @param {(chunk: ColumnData) => void} [onPage] callback for each page
+ * @param {(chunk: SubColumnData) => void} [onPage] callback for each page
  * @returns {DecodedArray[]}
  */
 export function readColumn(reader, { groupStart, selectStart, selectEnd }, columnDecoder, onPage) {
-  const { columnName, schemaPath } = columnDecoder
+  const { pathInSchema, schemaPath } = columnDecoder
   const isFlat = isFlatColumn(schemaPath)
   /** @type {DecodedArray[]} */
   const chunks = []
@@ -28,7 +28,7 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
 
   const emitLastChunk = onPage && (() => {
     lastChunk && onPage({
-      columnName,
+      pathInSchema,
       columnData: lastChunk,
       rowStart: groupStart + rowCount - lastChunk.length,
       rowEnd: groupStart + rowCount,
@@ -148,7 +148,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
 /**
  * Read parquet header from a buffer.
  *
- * @import {ColumnData, ColumnDecoder, DataReader, DecodedArray, PageHeader, RowGroupSelect} from '../src/types.d.ts'
+ * @import {ColumnDecoder, DataReader, DecodedArray, PageHeader, RowGroupSelect, SubColumnData} from '../src/types.d.ts'
  * @param {DataReader} reader
  * @returns {PageHeader}
  */
