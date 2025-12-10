@@ -39,6 +39,7 @@ export interface ParquetReadOptions {
   parsers?: ParquetParsers // custom parsers to decode advanced types
   geoparquet?: boolean // parse geoparquet metadata and set logical type to geometry/geography for geospatial columns (default true)
   useOffsetIndex?: boolean // use offset index to limit column chunk reads when available (default false)
+  prefetch?: boolean // prefetch byte ranges for all row groups upfront (default true)
 }
 
 export type BaseParquetReadOptions = ParquetReadOptions
@@ -460,18 +461,38 @@ export interface RowGroupSelect {
   groupRows: number
 }
 
-export interface AsyncRowGroup {
-  groupStart: number
-  groupRows: number
-  asyncColumns: AsyncColumn[]
+// Page data with skip information
+export interface AsyncPages {
+  data: AsyncGenerator<DecodedArray> // page stream
+  pageSkip: number // number of rows skipped via offset index
 }
-export interface AsyncColumn {
+
+// Resolved (flattened) page data
+export interface ResolvedPages {
+  data: DecodedArray // flattened column data
+  pageSkip: number // number of rows skipped via offset index
+}
+
+// Unassembled row group
+export interface AsyncSubColumn {
   pathInSchema: string[]
   data: Promise<AsyncPages>
 }
-interface AsyncPages {
-  pageSkip: number // rows skipped from groupStart to first row of this column data
-  data: DecodedArray[]
+export interface AsyncRowGroup {
+  groupStart: number
+  groupRows: number
+  asyncColumns: AsyncSubColumn[]
+}
+
+// Assembled row group
+export interface AsyncColumn {
+  columnName: string
+  data: Promise<AsyncPages>
+}
+export interface AsyncRowGroupAssembled {
+  groupStart: number
+  groupRows: number
+  asyncColumns: AsyncColumn[]
 }
 
 /**

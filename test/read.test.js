@@ -1,49 +1,46 @@
 import { describe, expect, it, vi } from 'vitest'
-import { parquetMetadata, parquetRead, parquetReadObjects } from '../src/index.js'
+import { parquetMetadata } from '../src/metadata.js'
 import { asyncBufferFromFile } from '../src/node.js'
+import { parquetRead, parquetReadAsync, parquetReadObjects } from '../src/read.js'
 import { countingBuffer } from './helpers.js'
 
 vi.mock('../src/convert.js', { spy: true })
 
-describe('parquetRead', () => {
+describe('parquetReadObjects', () => {
   it('throws error for undefined file', async () => {
     // @ts-expect-error testing invalid input
-    await expect(parquetRead({ file: undefined }))
+    await expect(parquetReadObjects({ file: undefined }))
       .rejects.toThrow('parquet expected AsyncBuffer')
   })
 
   it('throws error for undefined byteLength', async () => {
     const file = { byteLength: undefined, slice: () => new ArrayBuffer(0) }
     // @ts-expect-error testing invalid input
-    await expect(parquetRead({ file }))
+    await expect(parquetReadObjects({ file }))
       .rejects.toThrow('parquet expected AsyncBuffer')
   })
 
   it('read row range', async () => {
     const file = await asyncBufferFromFile('test/files/rowgroups.parquet')
-    await parquetRead({
+    const rows = await parquetReadObjects({
       file,
       rowStart: 2,
       rowEnd: 4,
-      onComplete(rows) {
-        expect(rows).toEqual([{ numbers: 3n }, { numbers: 4n }])
-      },
     })
+    expect(rows).toEqual([{ numbers: 3n }, { numbers: 4n }])
   })
 
   it('row range overestimate', async () => {
     const file = await asyncBufferFromFile('test/files/rowgroups.parquet')
-    await parquetRead({
+    const rows = await parquetReadObjects({
       file,
       rowEnd: 100,
-      onComplete(rows) {
-        expect(rows).toEqual([
-          { numbers: 1n }, { numbers: 2n }, { numbers: 3n }, { numbers: 4n }, { numbers: 5n },
-          { numbers: 6n }, { numbers: 7n }, { numbers: 8n }, { numbers: 9n }, { numbers: 10n },
-          { numbers: 11n }, { numbers: 12n }, { numbers: 13n }, { numbers: 14n }, { numbers: 15n },
-        ])
-      },
     })
+    expect(rows).toEqual([
+      { numbers: 1n }, { numbers: 2n }, { numbers: 3n }, { numbers: 4n }, { numbers: 5n },
+      { numbers: 6n }, { numbers: 7n }, { numbers: 8n }, { numbers: 9n }, { numbers: 10n },
+      { numbers: 11n }, { numbers: 12n }, { numbers: 13n }, { numbers: 14n }, { numbers: 15n },
+    ])
   })
 
   it('read a single column as typed array', async () => {
@@ -90,71 +87,49 @@ describe('parquetRead', () => {
 
   it('read a map-like column', async () => {
     const file = await asyncBufferFromFile('test/files/nullable.impala.parquet')
-    await parquetRead({
+    const rows = await parquetReadObjects({
       file,
       columns: ['int_map'],
-      onChunk(chunk) {
-        expect(chunk).toEqual({
-          columnName: 'int_map',
-          columnData: [
-            { k1: 1, k2: 100 },
-            { k1: 2, k2: null },
-            { },
-            { },
-            { },
-            undefined,
-            { k1: null, k3: null },
-          ],
-          rowStart: 0,
-          rowEnd: 7,
-        })
-      },
-      onComplete(rows) {
-        expect(rows).toEqual([
-          { int_map: { k1: 1, k2: 100 } },
-          { int_map: { k1: 2, k2: null } },
-          { int_map: { } },
-          { int_map: { } },
-          { int_map: { } },
-          { int_map: undefined },
-          { int_map: { k1: null, k3: null } },
-        ])
-      },
     })
+    expect(rows).toEqual([
+      { int_map: { k1: 1, k2: 100 } },
+      { int_map: { k1: 2, k2: null } },
+      { int_map: { } },
+      { int_map: { } },
+      { int_map: { } },
+      { int_map: undefined },
+      { int_map: { k1: null, k3: null } },
+    ])
   })
 
   it('read single column as objects', async () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
-    await parquetRead({
+    const rows = await parquetReadObjects({
       file,
       columns: ['c'],
-      onComplete(rows) {
-        expect(rows).toEqual([
-          { c: 2 },
-          { c: 3 },
-          { c: 4 },
-          { c: 5 },
-          { c: 2 },
-        ])
-      },
     })
+    expect(rows).toEqual([
+      { c: 2 },
+      { c: 3 },
+      { c: 4 },
+      { c: 5 },
+      { c: 2 },
+    ])
   })
 
   it('read selected columns', async () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
-    await parquetRead({
+    const rows = await parquetReadObjects({
       file,
       columns: ['c', 'b'],
-      onComplete(rows) {
-        expect(rows).toEqual([
-          { b: 1, c: 2 },
-          { b: 2, c: 3 },
-          { b: 3, c: 4 },
-          { b: 4, c: 5 },
-          { b: 5, c: 2 },
-        ])
-      },
     })
+    expect(rows).toEqual([
+      { b: 1, c: 2 },
+      { b: 2, c: 3 },
+      { b: 3, c: 4 },
+      { b: 4, c: 5 },
+      { b: 5, c: 2 },
+    ])
   })
 
   it('read objects and return a promise', async () => {
@@ -261,7 +236,7 @@ describe('parquetRead', () => {
     const pages = []
 
     // check onPage callback
-    await parquetRead({
+    const gen = parquetReadAsync({
       file: counting,
       metadata,
       rowStart: 25,
@@ -271,6 +246,14 @@ describe('parquetRead', () => {
         pages.push(page)
       },
     })
+    // consume the generators
+    for await (const rg of gen) {
+      for (const col of rg.asyncColumns) {
+        const { data } = await col.data
+        // eslint-disable-next-line no-unused-vars
+        for await (const _ of data) { /* consume */ }
+      }
+    }
 
     // TODO: should be 2 but we emit an empty page when skipping pages
     expect(pages.length).toBe(3) // 3 pages read

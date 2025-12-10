@@ -279,3 +279,21 @@ export function flatten(chunks) {
   }
   return output
 }
+
+/**
+ * Flatten an async list of lists into a single list.
+ *
+ * @import {AsyncPages, ResolvedPages} from '../src/types.d.ts'
+ * @param {object} options
+ * @param {Promise<AsyncPages>} options.data
+ * @returns {Promise<ResolvedPages>}
+ */
+export async function flattenAsync({ data }) {
+  const { data: asyncData, pageSkip } = await data
+  /** @type {any[]} */
+  const output = []
+  for await (const chunk of asyncData) {
+    concat(output, chunk)
+  }
+  return { data: output, pageSkip }
+}

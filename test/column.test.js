@@ -39,7 +39,11 @@ describe('readColumn', () => {
       groupRows: expected.length,
     }
 
-    const result = readColumn(reader, rowGroupSelect, columnDecoder)
+    const columnGenerator = readColumn(reader, rowGroupSelect, columnDecoder)
+    const result = []
+    for await (const chunk of columnGenerator) {
+      result.push(chunk)
+    }
     expect(result).toEqual(expected)
   })
 
@@ -71,7 +75,8 @@ describe('readColumn', () => {
     }
 
     const columnData = readColumn(reader, rowGroupSelect, columnDecoder)
-    expect(columnData[0]).toBeInstanceOf(Int32Array)
+    const firstChunk = await columnData.next()
+    expect(firstChunk.value).toBeInstanceOf(Int32Array)
   })
 })
 

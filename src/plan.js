@@ -6,17 +6,16 @@ import { getPhysicalColumns } from './schema.js'
 const runLimit = 1 << 21 // 2mb
 
 /**
- * @import {AsyncBuffer, ByteRange, ChunkPlan, GroupPlan, ParquetReadOptions, QueryPlan} from '../src/types.js'
+ * @import {AsyncBuffer, ByteRange, ChunkPlan, FileMetaData, GroupPlan, ParquetReadOptions, QueryPlan} from '../src/types.js'
  */
 /**
  * Plan which byte ranges to read to satisfy a read request.
  * Metadata must be non-null.
  *
- * @param {ParquetReadOptions} options
+ * @param {ParquetReadOptions & { metadata: FileMetaData }} options
  * @returns {QueryPlan}
  */
 export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns, filter, filterStrict = true, useOffsetIndex = false }) {
-  if (!metadata) throw new Error('parquetPlan requires metadata')
   /** @type {GroupPlan[]} */
   const groups = []
   /** @type {ByteRange[]} */
