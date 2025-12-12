@@ -20,7 +20,7 @@ export async function parquetQuery(options) {
   }
   options.metadata ??= await parquetMetadataAsync(options.file, options)
 
-  const { metadata, rowStart = 0, columns, orderBy, filter } = options
+  const { metadata, rowStart = 0, columns, orderBy, filter, filterStrict = true } = options
   if (rowStart < 0) throw new Error('parquet rowStart must be positive')
   const rowEnd = options.rowEnd ?? Number(metadata.num_rows)
 
@@ -54,7 +54,7 @@ export async function parquetQuery(options) {
       })
       // filter and project rows
       for (const row of groupData) {
-        if (matchFilter(row, filter)) {
+        if (matchFilter(row, filter, filterStrict)) {
           if (requiresProjection && relevantColumns) {
             for (const column of relevantColumns) {
               if (columns && !columns.includes(column)) {
@@ -82,7 +82,7 @@ export async function parquetQuery(options) {
     /** @type {Record<string, any>[]} */
     const filteredRows = new Array()
     for (const row of results) {
-      if (matchFilter(row, filter)) {
+      if (matchFilter(row, filter, filterStrict)) {
         if (requiresProjection && relevantColumns) {
           for (const column of relevantColumns) {
             if (columns && !columns.includes(column)) {

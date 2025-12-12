@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { asyncBufferFromUrl, byteLengthFromUrl, toJson } from '../src/utils.js'
+import { asyncBufferFromUrl, byteLengthFromUrl, cachedAsyncBuffer, concat, equals, flatten, toJson } from '../src/utils.js'
 
 describe('toJson', () => {
   it('convert undefined to null', () => {
@@ -296,6 +296,13 @@ describe('asyncBufferFromUrl', () => {
     await expect(buffer.slice(0, 100)).rejects.toThrow('fetch failed 404')
   })
 
+  it('slice method throws an error for unexpected status code', async () => {
+    global.fetch = vi.fn().mockResolvedValueOnce({ ok: true, body: {}, status: 204 })
+
+    const buffer = await asyncBufferFromUrl({ url: 'https://example.com', byteLength: 1024 })
+    await expect(buffer.slice(0, 100)).rejects.toThrow('fetch received unexpected status code 204')
+  })
+
   it('passes authentication headers to get the byteLength', async () => {
     global.fetch = vi.fn().mockImplementation((_url, options) => {
       if (new Headers(options.headers).get('Authorization') !== 'Bearer token') {
@@ -415,5 +422,106 @@ describe('asyncBufferFromUrl', () => {
       expect(result).toBe(mockArrayBuffer)
       expect(customFetch).toHaveBeenCalledWith('https://example.com', { headers: new Headers({ ...requestInit.headers, Range: 'bytes=50-84' }) })
     })
+  })
+})
+
+describe('concat', () => {
+  it('concatenates arrays in chunks', () => {
+    const aaa = [1, 2, 3]
+    const bbb = new Array(25000).fill(0)
+    concat(aaa, bbb)
+    expect(aaa.length).toBe(25003)
+  })
+})
+
+describe('equals', () => {
+  it('compares primitives with strict equality', () => {
+    expect(equals(1, 1, true)).toBe(true)
+    expect(equals(1, '1', true)).toBe(false)
+    expect(equals(1, '1', false)).toBe(true)
+  })
+
+  it('compares Uint8Arrays', () => {
+    expect(equals(new Uint8Array([1, 2]), new Uint8Array([1, 2]), true)).toBe(true)
+    expect(equals(new Uint8Array([1]), new Uint8Array([2]), true)).toBe(false)
+  })
+
+  it('returns false for null/undefined comparisons', () => {
+    expect(equals(null, {}, true)).toBe(false)
+    expect(equals({}, null, true)).toBe(false)
+  })
+
+  it('compares arrays', () => {
+    expect(equals([1, 2], [1, 2], true)).toBe(true)
+    expect(equals([1, 2], [1, 3], true)).toBe(false)
+    expect(equals([1], [1, 2], true)).toBe(false)
+  })
+
+  it('returns false for different primitive types', () => {
+    expect(equals(1, 'a', true)).toBe(false)
+  })
+
+  it('compares objects', () => {
+    expect(equals({ a: 1 }, { a: 1 }, true)).toBe(true)
+    expect(equals({ a: 1 }, { a: 2 }, true)).toBe(false)
+    expect(equals({ a: 1 }, { a: 1, b: 2 }, true)).toBe(false)
+  })
+})
+
+describe('cachedAsyncBuffer', () => {
+  it('caches whole file when small', async () => {
+    let sliceCalls = 0
+    const buffer = cachedAsyncBuffer({
+      byteLength: 100,
+      slice(start, end = 100) {
+        sliceCalls++
+        return new ArrayBuffer(end - start)
+      },
+    }, { minSize: 200 })
+
+    await buffer.slice(0, 10)
+    await buffer.slice(0, 10)
+    expect(sliceCalls).toBe(1)
+  })
+
+  it('caches slices for large files', async () => {
+    let sliceCalls = 0
+    const buffer = cachedAsyncBuffer({
+      byteLength: 1000,
+      slice(start, end) {
+        sliceCalls++
+        return new ArrayBuffer((end ?? 1000) - start)
+      },
+    }, { minSize: 100 })
+
+    await buffer.slice(0, 10)
+    await buffer.slice(0, 10)
+    await buffer.slice(10, 20)
+    expect(sliceCalls).toBe(2)
+  })
+
+  it('handles suffix ranges and undefined end', async () => {
+    const buffer = cachedAsyncBuffer({
+      byteLength: 1000,
+      slice() { return new ArrayBuffer(10) },
+    }, { minSize: 100 })
+
+    await buffer.slice(-10)
+    await buffer.slice(100)
+    expect(buffer.byteLength).toBe(1000)
+  })
+})
+
+describe('flatten', () => {
+  it('returns empty array for undefined', () => {
+    expect(flatten(undefined)).toEqual([])
+  })
+
+  it('returns single chunk unwrapped', () => {
+    expect(flatten([[1, 2, 3]])).toEqual([1, 2, 3])
+  })
+
+  it('flattens multiple chunks', () => {
+    expect(flatten([[1, 2], [3, 4]])).toEqual([1, 2, 3, 4])
   })
 })

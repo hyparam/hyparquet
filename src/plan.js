@@ -16,7 +16,7 @@ const columnChunkAggregation = 1 << 25 // 32mb
  * @param {ParquetReadOptions} options
  * @returns {QueryPlan}
  */
-export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns, filter }) {
+export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns, filter, filterStrict = true }) {
   if (!metadata) throw new Error('parquetPlan requires metadata')
   /** @type {GroupPlan[]} */
   const groups = []
@@ -30,7 +30,7 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
     const groupRows = Number(rowGroup.num_rows)
     const groupEnd = groupStart + groupRows
     // if row group overlaps with row range, add it to the plan
-    if (groupRows > 0 && groupEnd > rowStart && groupStart < rowEnd && !canSkipRowGroup(filter, rowGroup, physicalColumns)) {
+    if (groupRows > 0 && groupEnd > rowStart && groupStart < rowEnd && !canSkipRowGroup({ rowGroup, physicalColumns, filter, strict: filterStrict })) {
       /** @type {ByteRange[]} */
       const ranges = []
       // loop through each column chunk

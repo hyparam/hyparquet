@@ -60,7 +60,7 @@ export function getPhysicalColumns(schemaTree) {
         traverse(child)
       }
     } else {
-      columns.push(node.element.name)
+      columns.push(node.path.join('.'))
     }
   }
   traverse(schemaTree)

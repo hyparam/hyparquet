@@ -28,6 +28,7 @@ export interface BaseParquetReadOptions {
   metadata?: FileMetaData // parquet metadata, will be parsed if not provided
   columns?: string[] // columns to read, all columns if undefined
   filter?: ParquetQueryFilter // best-effort pushdown filter, NOT GUARANTEED to be applied
+  filterStrict?: boolean // if true filtering uses strict equality (default true)
   rowStart?: number // first requested row index (inclusive)
   rowEnd?: number // last requested row index (exclusive)
   onChunk?: (chunk: ColumnData) => void // called when a column chunk is parsed. chunks may contain data outside the requested range.
