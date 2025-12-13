@@ -27,8 +27,8 @@ export function toJson(obj) {
 /**
  * Concatenate two arrays fast.
  *
- * @param {any[]} aaa first array
- * @param {DecodedArray} bbb second array
+ * @param {any[]} aaa
+ * @param {DecodedArray} bbb
  */
 export function concat(aaa, bbb) {
   const chunk = 10000
@@ -38,19 +38,32 @@ export function concat(aaa, bbb) {
 }
 
 /**
- * Deep equality comparison
+ * Deep equality.
  *
- * @param {any} a First object to compare
- * @param {any} b Second object to compare
- * @returns {boolean} true if objects are equal
+ * @param {any} a
+ * @param {any} b
+ * @param {boolean} [strict]
+ * @returns {boolean}
  */
-export function equals(a, b) {
-  if (a === b) return true
-  if (a instanceof Uint8Array && b instanceof Uint8Array) return equals(Array.from(a), Array.from(b))
+export function equals(a, b, strict = true) {
+  // eslint-disable-next-line eqeqeq
+  if (strict ? a === b : a == b) return true
+  if (a instanceof Uint8Array && b instanceof Uint8Array) return equals(Array.from(a), Array.from(b), strict)
   if (!a || !b || typeof a !== typeof b) return false
-  return Array.isArray(a) && Array.isArray(b)
-    ? a.length === b.length && a.every((v, i) => equals(v, b[i]))
-    : typeof a === 'object' && Object.keys(a).length === Object.keys(b).length && Object.keys(a).every(k => equals(a[k], b[k]))
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false
+    for (let i = 0; i < a.length; i++) {
+      if (!equals(a[i], b[i], strict)) return false
+    }
+    return true
+  }
+  if (typeof a !== 'object') return false
+  const aKeys = Object.keys(a)
+  if (aKeys.length !== Object.keys(b).length) return false
+  for (const k of aKeys) {
+    if (!equals(a[k], b[k], strict)) return false
+  }
+  return true
 }
 
 /**
