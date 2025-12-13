@@ -45,7 +45,7 @@ describe('byteLengthFromUrl', () => {
       headers: new Map([['Content-Length', '1024']]),
     })
 
-    const result = await byteLengthFromUrl('https://example.com')
+    const result = await byteLengthFromUrl({ url: 'https://example.com' })
     expect(result).toBe(1024)
     expect(fetch).toHaveBeenCalledWith('https://example.com', { method: 'HEAD' })
   })
@@ -53,7 +53,7 @@ describe('byteLengthFromUrl', () => {
   it('throws an error if the response is not ok', async () => {
     global.fetch = vi.fn().mockResolvedValueOnce({ ok: false, status: 404 })
 
-    await expect(byteLengthFromUrl('https://example.com')).rejects.toThrow('fetch head failed 404')
+    await expect(byteLengthFromUrl({ url: 'https://example.com' })).rejects.toThrow('fetch head failed 404')
   })
 
   it('falls back to GET with range if Content-Length header is missing from HEAD', async () => {
@@ -68,7 +68,7 @@ describe('byteLengthFromUrl', () => {
         headers: new Map([['Content-Range', 'bytes 0-0/2048']]),
       })
 
-    const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
+    const result = await byteLengthFromUrl({ url: 'https://example.com', fetch: customFetch })
     expect(result).toBe(2048)
     expect(customFetch).toHaveBeenCalledTimes(2)
   })
@@ -85,11 +85,11 @@ describe('byteLengthFromUrl', () => {
 
     })
 
-    const result = await byteLengthFromUrl('https://example.com', { headers: { Authorization: 'Bearer token' } } )
+    const result = await byteLengthFromUrl({ url: 'https://example.com', requestInit: { headers: { Authorization: 'Bearer token' } } })
     expect(result).toBe(1024)
     expect(fetch).toHaveBeenCalledWith('https://example.com', { method: 'HEAD', headers: { Authorization: 'Bearer token' } })
 
-    await expect(byteLengthFromUrl('https://example.com')).rejects.toThrow('fetch head failed 401')
+    await expect(byteLengthFromUrl({ url: 'https://example.com' })).rejects.toThrow('fetch head failed 401')
   })
 
   it ('uses the provided fetch function, along with requestInit if passed', async () => {
@@ -99,7 +99,7 @@ describe('byteLengthFromUrl', () => {
     })
 
     const requestInit = { headers: { authorization: 'Bearer token' } }
-    const result = await byteLengthFromUrl('https://example.com', requestInit, customFetch)
+    const result = await byteLengthFromUrl({ url: 'https://example.com', requestInit, fetch: customFetch })
     expect(result).toBe(2048)
     expect(customFetch).toHaveBeenCalledWith('https://example.com', { ...requestInit, method: 'HEAD' })
   })
@@ -113,7 +113,7 @@ describe('byteLengthFromUrl', () => {
         headers: new Map([['Content-Range', 'bytes 0-0/9446073']]),
       })
 
-    const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
+    const result = await byteLengthFromUrl({ url: 'https://example.com', fetch: customFetch })
     expect(result).toBe(9446073)
     expect(customFetch).toHaveBeenCalledTimes(2)
     expect(customFetch).toHaveBeenNthCalledWith(1, 'https://example.com', { method: 'HEAD' })
@@ -128,7 +128,7 @@ describe('byteLengthFromUrl', () => {
         headers: new Map(),
       })
 
-    await expect(byteLengthFromUrl('https://example.com', undefined, customFetch)).rejects.toThrow('missing content-range header')
+    await expect(byteLengthFromUrl({ url: 'https://example.com', fetch: customFetch })).rejects.toThrow('missing content-range header')
   })
 
   it('fallback throws error if Content-Range header is invalid', async () => {
@@ -140,7 +140,7 @@ describe('byteLengthFromUrl', () => {
         headers: new Map([['Content-Range', 'invalid format']]),
       })
 
-    await expect(byteLengthFromUrl('https://example.com', undefined, customFetch)).rejects.toThrow('invalid content-range header')
+    await expect(byteLengthFromUrl({ url: 'https://example.com', fetch: customFetch })).rejects.toThrow('invalid content-range header')
   })
 
   it('fallback uses Content-Length when server returns 200 (Range not supported)', async () => {
@@ -155,7 +155,7 @@ describe('byteLengthFromUrl', () => {
         arrayBuffer: () => Promise.resolve(mockArrayBuffer),
       })
 
-    const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
+    const result = await byteLengthFromUrl({ url: 'https://example.com', fetch: customFetch })
     expect(result).toBe(5242880)
   })
 
@@ -169,7 +169,7 @@ describe('byteLengthFromUrl', () => {
         body: null,
       })
 
-    await expect(byteLengthFromUrl('https://example.com', undefined, customFetch)).rejects.toThrow(
+    await expect(byteLengthFromUrl({ url: 'https://example.com', fetch: customFetch })).rejects.toThrow(
       'server does not support range requests and missing content-length'
     )
   })
@@ -189,7 +189,7 @@ describe('byteLengthFromUrl', () => {
           })
         })
 
-      const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
+      const result = await byteLengthFromUrl({ url: 'https://example.com', fetch: customFetch })
       expect(result).toBe(5242880)
       expect(capturedSignal).toBeDefined()
       // @ts-ignore - capturedSignal is assigned in the mock
@@ -210,7 +210,7 @@ describe('byteLengthFromUrl', () => {
           })
         })
 
-      const result = await byteLengthFromUrl('https://example.com', undefined, customFetch)
+      const result = await byteLengthFromUrl({ url: 'https://example.com', fetch: customFetch })
       expect(result).toBe(9446073)
       expect(capturedSignal).toBeDefined()
       // @ts-ignore - capturedSignal is assigned in the mock
@@ -226,7 +226,7 @@ describe('byteLengthFromUrl', () => {
           headers: new Map([['Content-Range', 'bytes 0-0/1024']]),
         })
 
-      await byteLengthFromUrl('https://example.com', undefined, customFetch)
+      await byteLengthFromUrl({ url: 'https://example.com', fetch: customFetch })
 
       // Check second call (the GET with range)
       const secondCallArgs = customFetch.mock.calls[1]
