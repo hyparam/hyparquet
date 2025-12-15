@@ -5,7 +5,7 @@ import { parquetPlan } from '../src/plan.js'
 
 describe('parquetPlan', () => {
   it('generates a query plan', async () => {
-    const file = await asyncBufferFromFile('test/files/page_indexed.parquet')
+    const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
     const metadata = await parquetMetadataAsync(file)
     const plan = parquetPlan({ file, metadata })
     expect(plan).toMatchObject({
@@ -13,24 +13,24 @@ describe('parquetPlan', () => {
       rowStart: 0,
       rowEnd: 200,
       fetches: [
-        { startByte: 4, endByte: 1166 },
-        { startByte: 1166, endByte: 2326 },
+        { startByte: 4, endByte: 14772 },
+        { startByte: 14772, endByte: 29507 },
       ],
       groups: [
         {
           groupRows: 100,
           groupStart: 0,
           ranges: [
-            { startByte: 4, endByte: 832 },
-            { startByte: 832, endByte: 1166 },
+            { startByte: 4, endByte: 438 },
+            { startByte: 438, endByte: 14772 },
           ],
         },
         {
           groupRows: 100,
           groupStart: 100,
           ranges: [
-            { startByte: 1166, endByte: 1998 },
-            { startByte: 1998, endByte: 2326 },
+            { startByte: 14772, endByte: 15208 },
+            { startByte: 15208, endByte: 29507 },
           ],
         },
       ],

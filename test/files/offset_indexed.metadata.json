@@ -1,0 +1,129 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "name": "root",
+      "num_children": 2
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "REQUIRED",
+      "name": "id"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "content",
+      "converted_type": "UTF8"
+    }
+  ],
+  "num_rows": 200,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "id"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 100,
+            "total_uncompressed_size": 434,
+            "total_compressed_size": 434,
+            "data_page_offset": 4,
+            "statistics": {
+              "null_count": 0,
+              "max_value": 100,
+              "min_value": 1
+            }
+          }
+        },
+        {
+          "file_offset": 438,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "content"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 100,
+            "total_uncompressed_size": 14334,
+            "total_compressed_size": 14334,
+            "data_page_offset": 438,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "the dolor the ju",
+              "min_value": "adipiscing adipi"
+            }
+          },
+          "offset_index_offset": 29507,
+          "offset_index_length": 62
+        }
+      ],
+      "total_byte_size": 14768,
+      "num_rows": 100
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 14772,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "id"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 100,
+            "total_uncompressed_size": 436,
+            "total_compressed_size": 436,
+            "data_page_offset": 14772,
+            "statistics": {
+              "null_count": 0,
+              "max_value": 200,
+              "min_value": 101
+            }
+          }
+        },
+        {
+          "file_offset": 15208,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "content"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 100,
+            "total_uncompressed_size": 14299,
+            "total_compressed_size": 14299,
+            "data_page_offset": 15208,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "the storage over",
+              "min_value": "adipiscing encod"
+            }
+          },
+          "offset_index_offset": 29569,
+          "offset_index_length": 65
+        }
+      ],
+      "total_byte_size": 14735,
+      "num_rows": 100
+    }
+  ],
+  "created_by": "hyparquet",
+  "metadata_length": 352
+}

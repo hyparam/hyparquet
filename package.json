@@ -55,9 +55,9 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@types/node": "24.10.2",
+    "@types/node": "25.0.2",
     "@vitest/coverage-v8": "4.0.15",
-    "eslint": "9.39.1",
+    "eslint": "9.39.2",
     "eslint-plugin-jsdoc": "61.5.0",
     "hyparquet-compressors": "1.1.1",
     "typescript": "5.9.3",

@@ -51,6 +51,7 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
         // continued from previous page
         rowCount += values.length - lastChunkLength
       } else {
+        // TODO: don't emit empty chunks
         emitLastChunk?.()
         chunks.push(values)
         rowCount += values.length
