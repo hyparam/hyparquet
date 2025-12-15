@@ -20,17 +20,17 @@ describe('parquetPlan', () => {
         {
           groupRows: 100,
           groupStart: 0,
-          ranges: [
-            { startByte: 4, endByte: 438 },
-            { startByte: 438, endByte: 14772 },
+          chunks: [
+            { range: { startByte: 4, endByte: 438 } },
+            { range: { startByte: 438, endByte: 14772 } },
           ],
         },
         {
           groupRows: 100,
           groupStart: 100,
-          ranges: [
-            { startByte: 14772, endByte: 15208 },
-            { startByte: 15208, endByte: 29507 },
+          chunks: [
+            { range: { startByte: 14772, endByte: 15208 } },
+            { range: { startByte: 15208, endByte: 29507 } },
           ],
         },
       ],

@@ -3,7 +3,6 @@ import { readColumn } from '../src/column.js'
 import { DEFAULT_PARSERS } from '../src/convert.js'
 import { parquetMetadata } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
-import { getColumnRange } from '../src/plan.js'
 import { getSchemaPath } from '../src/schema.js'
 
 const values = [null, 1, -2, NaN, 0, -1, -0, 2]
@@ -21,7 +20,7 @@ describe('readColumn', () => {
 
     const column = metadata.row_groups[0].columns[0]
     if (!column.meta_data) throw new Error(`No column metadata for ${testFile}`)
-    const { startByte, endByte } = getColumnRange(column.meta_data)
+    const { startByte, endByte } = getChunkPlan(column.meta_data)
     const columnArrayBuffer = arrayBuffer.slice(startByte, endByte)
     const schemaPath = getSchemaPath(metadata.schema, column.meta_data?.path_in_schema ?? [])
     const reader = { view: new DataView(columnArrayBuffer), offset: 0 }
@@ -52,7 +51,7 @@ describe('readColumn', () => {
 
     const column = metadata.row_groups[0].columns[1] // second column
     if (!column.meta_data) throw new Error(`No column metadata for ${testFile}`)
-    const { startByte, endByte } = getColumnRange(column.meta_data)
+    const { startByte, endByte } = getChunkPlan(column.meta_data)
     const columnArrayBuffer = arrayBuffer.slice(startByte, endByte)
     const schemaPath = getSchemaPath(metadata.schema, column.meta_data?.path_in_schema ?? [])
     const reader = { view: new DataView(columnArrayBuffer), offset: 0 }
@@ -75,3 +74,16 @@ describe('readColumn', () => {
     expect(columnData[0]).toBeInstanceOf(Int32Array)
   })
 })
+
+/**
+ * @import {ByteRange, ColumnMetaData} from '../src/types.js'
+ * @param {ColumnMetaData} meta
+ * @returns {ByteRange}
+ */
+function getChunkPlan(meta) {
+  const columnOffset = meta.dictionary_page_offset || meta.data_page_offset
+  return {
+    startByte: Number(columnOffset),
+    endByte: Number(columnOffset + meta.total_compressed_size),
+  }
+}

@@ -427,12 +427,17 @@ export interface QueryPlan {
 }
 // Plan for one group
 interface GroupPlan {
-  ranges: ByteRange[]
+  chunks: ChunkPlan[]
   rowGroup: RowGroup // row group metadata
   groupStart: number // row index of the first row in the group
   selectStart: number // row index in the group to start reading
   selectEnd: number // row index in the group to stop reading
-  groupRows: number
+  groupRows: number // number of rows in the group
+}
+// Plan for one column within a row group
+interface ChunkPlan {
+  columnMetadata: ColumnMetaData
+  range: ByteRange
 }
 
 export interface ColumnDecoder {
@@ -453,14 +458,14 @@ export interface RowGroupSelect {
   groupRows: number
 }
 
-export interface AsyncColumn {
-  pathInSchema: string[]
-  data: Promise<DecodedArray[]>
-}
 export interface AsyncRowGroup {
   groupStart: number
   groupRows: number
   asyncColumns: AsyncColumn[]
+}
+export interface AsyncColumn {
+  pathInSchema: string[]
+  data: Promise<DecodedArray[]>
 }
 
 /**

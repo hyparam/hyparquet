@@ -1,7 +1,6 @@
 import { assembleNested } from './assemble.js'
 import { readColumn } from './column.js'
 import { DEFAULT_PARSERS } from './convert.js'
-import { getColumnRange } from './plan.js'
 import { getSchemaPath } from './schema.js'
 import { flatten } from './utils.js'
 
@@ -16,7 +15,7 @@ import { flatten } from './utils.js'
  * @param {GroupPlan} groupPlan
  * @returns {AsyncRowGroup} resolves to column data
  */
-export function readRowGroup(options, { metadata, columns }, groupPlan) {
+export function readRowGroup(options, { metadata }, groupPlan) {
   const { file, compressors, utf8 } = options
 
   /** @type {AsyncColumn[]} */
@@ -25,41 +24,33 @@ export function readRowGroup(options, { metadata, columns }, groupPlan) {
   const parsers = { ...DEFAULT_PARSERS, ...options.parsers }
 
   // read column data
-  for (const { file_path, meta_data } of groupPlan.rowGroup.columns) {
-    if (file_path) throw new Error('parquet file_path not supported')
-    if (!meta_data) throw new Error('parquet column metadata is undefined')
-
-    // skip columns that are not requested
-    const columnName = meta_data.path_in_schema[0]
-    if (columns && !columns.includes(columnName)) continue
-
-    const { startByte, endByte } = getColumnRange(meta_data)
-    const columnBytes = endByte - startByte
+  for (const { columnMetadata, range } of groupPlan.chunks) {
+    const columnBytes = range.endByte - range.startByte
 
     // skip columns larger than 1gb
     // TODO: stream process the data, returning only the requested rows
     if (columnBytes > 1 << 30) {
-      console.warn(`parquet skipping huge column "${meta_data.path_in_schema}" ${columnBytes} bytes`)
+      console.warn(`parquet skipping huge column "${columnMetadata.path_in_schema}" ${columnBytes} bytes`)
       // TODO: set column to new Error('parquet column too large')
       continue
     }
 
     // wrap awaitable to ensure it's a promise
     /** @type {Promise<ArrayBuffer>} */
-    const buffer = Promise.resolve(file.slice(startByte, endByte))
+    const buffer = Promise.resolve(file.slice(range.startByte, range.endByte))
 
     // read column data async
     asyncColumns.push({
-      pathInSchema: meta_data.path_in_schema,
+      pathInSchema: columnMetadata.path_in_schema,
       data: buffer.then(arrayBuffer => {
-        const schemaPath = getSchemaPath(metadata.schema, meta_data.path_in_schema)
+        const schemaPath = getSchemaPath(metadata.schema, columnMetadata.path_in_schema)
         const reader = { view: new DataView(arrayBuffer), offset: 0 }
         const columnDecoder = {
-          pathInSchema: meta_data.path_in_schema,
-          type: meta_data.type,
+          pathInSchema: columnMetadata.path_in_schema,
+          type: columnMetadata.type,
           element: schemaPath[schemaPath.length - 1].element,
           schemaPath,
-          codec: meta_data.codec,
+          codec: columnMetadata.codec,
           parsers,
           compressors,
           utf8,
@@ -114,7 +105,7 @@ export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd,
   const selectCount = selectEnd - selectStart
   if (rowFormat === 'object') {
     /** @type {Record<string, any>[]} */
-    const groupData = new Array(selectCount)
+    const groupData = Array(selectCount)
     for (let selectRow = 0; selectRow < selectCount; selectRow++) {
       const row = selectStart + selectRow
       // return each row as an object
@@ -129,11 +120,11 @@ export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd,
   }
 
   /** @type {any[][]} */
-  const groupData = new Array(selectCount)
+  const groupData = Array(selectCount)
   for (let selectRow = 0; selectRow < selectCount; selectRow++) {
     const row = selectStart + selectRow
     // return each row as an array
-    const rowData = new Array(asyncColumns.length)
+    const rowData = Array(asyncColumns.length)
     for (let i = 0; i < columnOrder.length; i++) {
       if (columnIndexes[i] >= 0) {
         rowData[i] = columnDatas[columnIndexes[i]][row]

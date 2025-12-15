@@ -6,7 +6,7 @@ import { getPhysicalColumns } from './schema.js'
 const runLimit = 1 << 21 // 2mb
 
 /**
- * @import {AsyncBuffer, ByteRange, ColumnMetaData, GroupPlan, ParquetReadOptions, QueryPlan} from '../src/types.js'
+ * @import {AsyncBuffer, ByteRange, ColumnMetaData, ChunkPlan, GroupPlan, ParquetReadOptions, QueryPlan} from '../src/types.js'
  */
 /**
  * Plan which byte ranges to read to satisfy a read request.
@@ -30,25 +30,33 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
     const groupEnd = groupStart + groupRows
     // if row group overlaps with row range, add it to the plan
     if (groupRows > 0 && groupEnd > rowStart && groupStart < rowEnd && !canSkipRowGroup({ rowGroup, physicalColumns, filter, strict: filterStrict })) {
-      /** @type {ByteRange[]} */
-      const ranges = []
+      /** @type {ChunkPlan[]} */
+      const chunks = []
       // loop through each column chunk
-      for (const { file_path, meta_data } of rowGroup.columns) {
-        if (file_path) throw new Error('parquet file_path not supported')
-        if (!meta_data) throw new Error('parquet column metadata is undefined')
-        // add included columns to the plan
-        if (!columns || columns.includes(meta_data.path_in_schema[0])) {
-          ranges.push(getColumnRange(meta_data))
+      for (const chunk of rowGroup.columns) {
+        const meta = chunk.meta_data
+        if (chunk.file_path) throw new Error('parquet file_path not supported')
+        if (!meta) throw new Error('parquet column metadata is undefined')
+        // add included column chunks to the plan
+        if (!columns || columns.includes(meta.path_in_schema[0])) {
+          const columnOffset = meta.dictionary_page_offset || meta.data_page_offset
+          chunks.push({
+            columnMetadata: meta,
+            range: {
+              startByte: Number(columnOffset),
+              endByte: Number(columnOffset + meta.total_compressed_size),
+            },
+          })
         }
       }
       const selectStart = Math.max(rowStart - groupStart, 0)
       const selectEnd = Math.min(rowEnd - groupStart, groupRows)
-      groups.push({ ranges, rowGroup, groupStart, groupRows, selectStart, selectEnd })
+      groups.push({ chunks, rowGroup, groupStart, groupRows, selectStart, selectEnd })
 
       // combine runs of column chunks
       /** @type {ByteRange | undefined} */
       let run
-      for (const range of ranges) {
+      for (const { range } of chunks) {
         if (columns) {
           fetches.push(range)
         } else if (run && range.endByte - run.startByte <= runLimit) {
@@ -68,18 +76,6 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
   if (!isFinite(rowEnd)) rowEnd = groupStart
 
   return { metadata, rowStart, rowEnd, columns, fetches, groups }
-}
-
-/**
- * @param {ColumnMetaData} columnMetadata
- * @returns {ByteRange}
- */
-export function getColumnRange({ dictionary_page_offset, data_page_offset, total_compressed_size }) {
-  const columnOffset = dictionary_page_offset || data_page_offset
-  return {
-    startByte: Number(columnOffset),
-    endByte: Number(columnOffset + total_compressed_size),
-  }
 }
 
 /**
