@@ -1,11 +1,12 @@
 import { assembleNested } from './assemble.js'
 import { readColumn } from './column.js'
 import { DEFAULT_PARSERS } from './convert.js'
+import { readOffsetIndex } from './indexes.js'
 import { getSchemaPath } from './schema.js'
 import { flatten } from './utils.js'
 
 /**
- * @import {AsyncColumn, AsyncRowGroup, DecodedArray, GroupPlan, ParquetParsers, ParquetReadOptions, QueryPlan, RowGroup, SchemaTree} from './types.js'
+ * @import {AsyncColumn, AsyncRowGroup, DecodedArray, GroupPlan, ParquetParsers, ParquetReadOptions, QueryPlan, SchemaTree} from './types.js'
  */
 /**
  * Read a row group from a file-like object.
@@ -24,39 +25,78 @@ export function readRowGroup(options, { metadata }, groupPlan) {
   const parsers = { ...DEFAULT_PARSERS, ...options.parsers }
 
   // read column data
-  for (const { columnMetadata, range } of groupPlan.chunks) {
-    const columnBytes = range.endByte - range.startByte
+  for (const chunkPlan of groupPlan.chunks) {
+    const { columnMetadata } = chunkPlan
+    const schemaPath = getSchemaPath(metadata.schema, columnMetadata.path_in_schema)
+    const columnDecoder = {
+      pathInSchema: columnMetadata.path_in_schema,
+      type: columnMetadata.type,
+      element: schemaPath[schemaPath.length - 1].element,
+      schemaPath,
+      codec: columnMetadata.codec,
+      parsers,
+      compressors,
+      utf8,
+    }
 
-    // skip columns larger than 1gb
-    // TODO: stream process the data, returning only the requested rows
-    if (columnBytes > 1 << 30) {
-      console.warn(`parquet skipping huge column "${columnMetadata.path_in_schema}" ${columnBytes} bytes`)
-      // TODO: set column to new Error('parquet column too large')
+    // non-offset-index case
+    if (!('offsetIndex' in chunkPlan)) {
+      asyncColumns.push({
+        pathInSchema: columnMetadata.path_in_schema,
+        data: Promise.resolve(file.slice(chunkPlan.range.startByte, chunkPlan.range.endByte))
+          .then(buffer => {
+            const reader = { view: new DataView(buffer), offset: 0 }
+            return {
+              pageSkip: 0,
+              data: readColumn(reader, groupPlan, columnDecoder, options.onPage),
+            }
+          }),
+      })
       continue
     }
 
-    // wrap awaitable to ensure it's a promise
-    /** @type {Promise<ArrayBuffer>} */
-    const buffer = Promise.resolve(file.slice(range.startByte, range.endByte))
-
-    // read column data async
+    // offset-index case
     asyncColumns.push({
       pathInSchema: columnMetadata.path_in_schema,
-      data: buffer.then(arrayBuffer => {
-        const schemaPath = getSchemaPath(metadata.schema, columnMetadata.path_in_schema)
-        const reader = { view: new DataView(arrayBuffer), offset: 0 }
-        const columnDecoder = {
-          pathInSchema: columnMetadata.path_in_schema,
-          type: columnMetadata.type,
-          element: schemaPath[schemaPath.length - 1].element,
-          schemaPath,
-          codec: columnMetadata.codec,
-          parsers,
-          compressors,
-          utf8,
-        }
-        return readColumn(reader, groupPlan, columnDecoder, options.onPage)
-      }),
+      // fetch offset index
+      data: Promise.resolve(file.slice(chunkPlan.offsetIndex.startByte, chunkPlan.offsetIndex.endByte))
+        .then(async arrayBuffer => {
+          const offsetIndex = readOffsetIndex({ view: new DataView(arrayBuffer), offset: 0 })
+          // use offset index to read only necessary pages
+          const { selectStart, selectEnd } = groupPlan
+          const pages = offsetIndex.page_locations
+          let startByte = NaN
+          let endByte = NaN
+          let pageSkip = 0
+          for (let i = 0; i < pages.length; i++) {
+            const page = pages[i]
+            const pageStart = Number(page.first_row_index)
+            const pageEnd = i + 1 < pages.length
+              ? Number(pages[i + 1].first_row_index)
+              : groupPlan.groupRows // last page extends to end of row group
+            // check if page overlaps with [selectStart, selectEnd)
+            if (pageStart < selectEnd && pageEnd > selectStart) {
+              if (Number.isNaN(startByte)) {
+                startByte = Number(page.offset)
+                pageSkip = pageStart
+              }
+              endByte = Number(page.offset) + page.compressed_page_size
+            }
+          }
+          const buffer = await file.slice(startByte, endByte)
+          const reader = { view: new DataView(buffer), offset: 0 }
+          // adjust row selection for skipped pages
+          const adjustedGroupPlan = pageSkip ? {
+            ...groupPlan,
+            groupStart: groupPlan.groupStart + pageSkip,
+            selectStart: groupPlan.selectStart - pageSkip,
+            selectEnd: groupPlan.selectEnd - pageSkip,
+          } : groupPlan
+          return {
+            data: readColumn(reader, adjustedGroupPlan, columnDecoder, options.onPage),
+            pageSkip,
+          }
+        }),
     })
   }
 
@@ -90,9 +130,14 @@ export function readRowGroup(options, { metadata }, groupPlan) {
  * @returns {Promise<Record<string, any>[] | any[][]>} resolves to row data
  */
 export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd, columns, rowFormat) {
-  // columnData[i] for asyncColumns[i]
   // TODO: do it without flatten
-  const columnDatas = await Promise.all(asyncColumns.map(({ data }) => data.then(flatten)))
+  const asyncPages = await Promise.all(asyncColumns.map(async ({ data }) => {
+    const pages = await data
+    return {
+      ...pages,
+      data: flatten(pages.data),
+    }
+  }))
 
   // careful mapping of column order for rowFormat: array
   const includedColumnNames = asyncColumns
@@ -112,7 +157,8 @@ export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd,
       /** @type {Record<string, any>} */
       const rowData = {}
       for (let i = 0; i < asyncColumns.length; i++) {
-        rowData[asyncColumns[i].pathInSchema[0]] = columnDatas[i][row]
+        const { data, pageSkip } = asyncPages[i]
+        rowData[asyncColumns[i].pathInSchema[0]] = data[row - pageSkip]
       }
       groupData[selectRow] = rowData
     }
@@ -126,8 +172,10 @@ export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd,
     // return each row as an array
     const rowData = Array(asyncColumns.length)
     for (let i = 0; i < columnOrder.length; i++) {
-      if (columnIndexes[i] >= 0) {
-        rowData[i] = columnDatas[columnIndexes[i]][row]
+      const colIdx = columnIndexes[i]
+      if (colIdx >= 0) {
+        const { data, pageSkip } = asyncPages[colIdx]
+        rowData[i] = data[row - pageSkip]
       }
     }
     groupData[selectRow] = rowData
@@ -155,15 +203,15 @@ export function assembleAsync(asyncRowGroup, schemaTree) {
       /** @type {Map<string, DecodedArray>} */
       const flatData = new Map()
       const data = Promise.all(childColumns.map(column => {
-        return column.data.then(columnData => {
-          flatData.set(column.pathInSchema.join('.'), flatten(columnData))
+        return column.data.then(({ data }) => {
+          flatData.set(column.pathInSchema.join('.'), flatten(data))
         })
       })).then(() => {
         // assemble the column
         assembleNested(flatData, child)
         const flatColumn = flatData.get(child.path.join('.'))
         if (!flatColumn) throw new Error('parquet column data not assembled')
-        return [flatColumn]
+        return { data: [flatColumn], pageSkip: 0 }
       })
 
       assembled.push({ pathInSchema: child.path, data })

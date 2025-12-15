@@ -37,6 +37,7 @@ export interface BaseParquetReadOptions {
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
   parsers?: ParquetParsers // custom parsers to decode advanced types
   geoparquet?: boolean // parse geoparquet metadata and set logical type to geometry/geography for geospatial columns (default true)
+  useOffsetIndex?: boolean // use offset index to limit column chunk reads when available (default false)
 }
 
 interface ArrayRowFormat {
@@ -435,9 +436,17 @@ interface GroupPlan {
   groupRows: number // number of rows in the group
 }
 // Plan for one column within a row group
-interface ChunkPlan {
+type ChunkPlan = ChunkFull | ChunkOffsetIndexed
+// full column chunk
+interface ChunkFull {
   columnMetadata: ColumnMetaData
   range: ByteRange
+}
+// column chunk with offset index pending
+interface ChunkOffsetIndexed {
+  columnMetadata: ColumnMetaData
+  offsetIndex: ByteRange
+  bounds: ByteRange
 }
 
 export interface ColumnDecoder {
@@ -465,7 +474,11 @@ export interface AsyncRowGroup {
 }
 export interface AsyncColumn {
   pathInSchema: string[]
-  data: Promise<DecodedArray[]>
+  data: Promise<AsyncPages>
+}
+interface AsyncPages {
+  pageSkip: number // rows skipped from groupStart to first row of this column data
+  data: DecodedArray[]
 }
 
 /**

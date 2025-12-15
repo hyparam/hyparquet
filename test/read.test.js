@@ -185,6 +185,24 @@ describe('parquetRead', () => {
     expect(counting.bytes).toBe(14334)
   })
 
+  it('uses OffsetIndex to skip pages', async () => {
+    const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
+    const metadata = await parquetMetadataAsync(file)
+    const counting = countingBuffer(file)
+    const rows = await parquetReadObjects({
+      file: counting,
+      metadata,
+      rowStart: 97,
+      rowEnd: 98,
+      columns: ['content'],
+      useOffsetIndex: true,
+    })
+    // much less data, one extra fetch for the offset index
+    expect(rows[0].content).toMatch(/^brown data sit fox/)
+    expect(counting.fetches).toBe(2) // 1 offset index + 1 page
+    expect(counting.bytes).toBe(892)
+  })
+
   it('reads only required row groups on the boundary', async () => {
     const originalFile = await asyncBufferFromFile('test/files/alpha.parquet')
     const metadata = await parquetMetadataAsync(originalFile)
