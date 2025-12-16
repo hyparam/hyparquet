@@ -27,7 +27,7 @@ export interface BaseParquetReadOptions {
   file: AsyncBuffer // file-like object containing parquet data
   metadata?: FileMetaData // parquet metadata, will be parsed if not provided
   columns?: string[] // columns to read, all columns if undefined
-  filter?: ParquetQueryFilter // best-effort pushdown filter, NOT GUARANTEED to be applied
+  filter?: ParquetQueryFilter // filter applied to rows (requires rowFormat: 'object', onChunk is not filtered)
   filterStrict?: boolean // if true filtering uses strict equality (default true)
   rowStart?: number // first requested row index (inclusive)
   rowEnd?: number // last requested row index (exclusive)

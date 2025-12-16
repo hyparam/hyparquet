@@ -1,9 +1,8 @@
-import { matchFilter } from './filter.js'
 import { parquetMetadataAsync, parquetSchema } from './metadata.js'
 import { parquetReadColumn, parquetReadObjects } from './read.js'
 
 /**
- * @import {ParquetQueryFilter, BaseParquetReadOptions} from '../src/types.js'
+ * @import {BaseParquetReadOptions} from '../src/types.js'
  */
 /**
  * Wraps parquetRead with orderBy support.
@@ -20,80 +19,61 @@ export async function parquetQuery(options) {
   }
   options.metadata ??= await parquetMetadataAsync(options.file, options)
 
-  const { metadata, rowStart = 0, columns, orderBy, filter, filterStrict = true } = options
+  const { metadata, rowStart = 0, columns, orderBy, filter } = options
   if (rowStart < 0) throw new Error('parquet rowStart must be positive')
   const rowEnd = options.rowEnd ?? Number(metadata.num_rows)
 
-  // Collect columns needed for the query
-  const filterColumns = columnsNeededForFilter(filter)
-  const allColumns = parquetSchema(options.metadata).children.map(c => c.element.name)
-  // Check if all filter columns exist
-  const missingColumns = filterColumns.filter(column => !allColumns.includes(column))
-  if (missingColumns.length) {
-    throw new Error(`parquet filter columns not found: ${missingColumns.join(', ')}`)
+  // Validate orderBy column exists
+  if (orderBy) {
+    const allColumns = parquetSchema(options.metadata).children.map(c => c.element.name)
+    if (!allColumns.includes(orderBy)) {
+      throw new Error(`parquet orderBy column not found: ${orderBy}`)
+    }
   }
-  if (orderBy && !allColumns.includes(orderBy)) {
-    throw new Error(`parquet orderBy column not found: ${orderBy}`)
-  }
-  const relevantColumns = columns ? allColumns.filter(column =>
-    columns.includes(column) || filterColumns.includes(column) || column === orderBy
-  ) : undefined
-  // Is the output a subset of the relevant columns?
-  const requiresProjection = columns && relevantColumns ? columns.length < relevantColumns.length : false
 
   if (filter && !orderBy && rowEnd < metadata.num_rows) {
     // iterate through row groups and filter until we have enough rows
     /** @type {Record<string, any>[]} */
-    const filteredRows = new Array()
+    const filteredRows = []
     let groupStart = 0
     for (const group of metadata.row_groups) {
       const groupEnd = groupStart + Number(group.num_rows)
       // TODO: if expected > group size, start fetching next groups
       const groupData = await parquetReadObjects({
-        ...options, rowStart: groupStart, rowEnd: groupEnd, columns: relevantColumns,
+        ...options, rowStart: groupStart, rowEnd: groupEnd,
       })
-      // filter and project rows
-      for (const row of groupData) {
-        if (matchFilter(row, filter, filterStrict)) {
-          if (requiresProjection && relevantColumns) {
-            for (const column of relevantColumns) {
-              if (columns && !columns.includes(column)) {
-                delete row[column] // remove columns not in the projection
-              }
-            }
-          }
-          filteredRows.push(row)
-        }
-      }
+      filteredRows.push(...groupData)
       if (filteredRows.length >= rowEnd) break
       groupStart = groupEnd
     }
     return filteredRows.slice(rowStart, rowEnd)
-  } else if (filter) {
-    // read all rows, sort, and filter
+  } else if (filter && orderBy) {
+    // read all rows with orderBy column included for sorting
+    const readColumns = columns && !columns.includes(orderBy)
+      ? [...columns, orderBy]
+      : columns
+
     const results = await parquetReadObjects({
-      ...options, rowStart: undefined, rowEnd: undefined, columns: relevantColumns,
+      ...options, rowStart: undefined, rowEnd: undefined, columns: readColumns,
     })
 
-    // sort
-    if (orderBy) results.sort((a, b) => compare(a[orderBy], b[orderBy]))
+    // sort by orderBy column
+    results.sort((a, b) => compare(a[orderBy], b[orderBy]))
 
-    // filter and project rows
-    /** @type {Record<string, any>[]} */
-    const filteredRows = new Array()
-    for (const row of results) {
-      if (matchFilter(row, filter, filterStrict)) {
-        if (requiresProjection && relevantColumns) {
-          for (const column of relevantColumns) {
-            if (columns && !columns.includes(column)) {
-              delete row[column] // remove columns not in the projection
-            }
-          }
-        }
-        filteredRows.push(row)
+    // project out orderBy column if not originally requested
+    if (readColumns !== columns) {
+      for (const row of results) {
+        delete row[orderBy]
       }
     }
-    return filteredRows.slice(rowStart, rowEnd)
+
+    return results.slice(rowStart, rowEnd)
+  } else if (filter) {
+    // filter without orderBy, read all matching rows
+    const results = await parquetReadObjects({
+      ...options, rowStart: undefined, rowEnd: undefined,
+    })
+    return results.slice(rowStart, rowEnd)
   } else if (typeof orderBy === 'string') {
     // sorted but unfiltered: fetch orderBy column first
     const orderColumn = await parquetReadColumn({
@@ -158,7 +138,7 @@ async function parquetReadRows(options) {
 
   // Fetch by row group and map to rows
   /** @type {(Record<string, any> & {__index__: number})[]} */
-  const sparseData = new Array(Number(options.metadata.num_rows))
+  const sparseData = Array(Number(options.metadata.num_rows))
   for (const [rangeStart, rangeEnd] of rowRanges) {
     // TODO: fetch in parallel
     const groupData = await parquetReadObjects({ ...options, rowStart: rangeStart, rowEnd: rangeEnd })
@@ -179,27 +159,4 @@ function compare(a, b) {
   if (a < b) return -1
   if (a > b) return 1
   return 0 // TODO: null handling
-}
-
-/**
- * Returns an array of column names that are needed to evaluate the mongo filter.
- *
- * @param {ParquetQueryFilter} [filter]
- * @returns {string[]}
- */
-function columnsNeededForFilter(filter) {
-  if (!filter) return []
-  /** @type {string[]} */
-  const columns = []
-  if ('$and' in filter && Array.isArray(filter.$and)) {
-    columns.push(...filter.$and.flatMap(columnsNeededForFilter))
-  } else if ('$or' in filter && Array.isArray(filter.$or)) {
-    columns.push(...filter.$or.flatMap(columnsNeededForFilter))
-  } else if ('$nor' in filter && Array.isArray(filter.$nor)) {
-    columns.push(...filter.$nor.flatMap(columnsNeededForFilter))
-  } else {
-    // Column filters
-    columns.push(...Object.keys(filter))
-  }
-  return columns
 }

@@ -1,3 +1,4 @@
+import { columnsNeededForFilter, matchFilter } from './filter.js'
 import { parquetMetadataAsync, parquetSchema } from './metadata.js'
 import { parquetPlan, prefetchAsyncBuffer } from './plan.js'
 import { assembleAsync, asyncGroupToRows, readRowGroup } from './rowgroup.js'
@@ -22,10 +23,35 @@ export async function parquetRead(options) {
   // load metadata if not provided
   options.metadata ??= await parquetMetadataAsync(options.file, options)
 
-  // read row groups
-  const asyncGroups = parquetReadAsync(options)
+  const { rowStart = 0, rowEnd, columns, onChunk, onComplete, rowFormat, filter, filterStrict = true } = options
 
-  const { rowStart = 0, rowEnd, columns, onChunk, onComplete, rowFormat } = options
+  // Filter requires object format to match column names
+  if (filter && rowFormat !== 'object') {
+    throw new Error('parquet filter requires rowFormat: "object"')
+  }
+
+  // Include filter columns in the read plan
+  const filterColumns = columnsNeededForFilter(filter)
+  if (filterColumns.length) {
+    const schemaColumns = parquetSchema(options.metadata).children.map(c => c.element.name)
+    const missingColumns = filterColumns.filter(c => !schemaColumns.includes(c))
+    if (missingColumns.length) {
+      throw new Error(`parquet filter columns not found: ${missingColumns.join(', ')}`)
+    }
+  }
+  let readColumns = columns
+  let requiresProjection = false
+  if (columns && filter) {
+    const missingFilterColumns = filterColumns.filter(c => !columns.includes(c))
+    if (missingFilterColumns.length) {
+      readColumns = [...columns, ...missingFilterColumns]
+      requiresProjection = true
+    }
+  }
+
+  // read row groups with expanded columns
+  const readOptions = readColumns !== columns ? { ...options, columns: readColumns } : options
+  const asyncGroups = parquetReadAsync(readOptions)
 
   // skip assembly if no onComplete or onChunk, but wait for reading to finish
   if (!onComplete && !onChunk) {
@@ -70,9 +96,25 @@ export async function parquetRead(options) {
       const selectEnd = Math.min((rowEnd ?? Infinity) - asyncGroup.groupStart, asyncGroup.groupRows)
       // transpose column chunks to rows in output
       const groupData = rowFormat === 'object' ?
-        await asyncGroupToRows(asyncGroup, selectStart, selectEnd, columns, 'object') :
+        await asyncGroupToRows(asyncGroup, selectStart, selectEnd, readColumns, 'object') :
         await asyncGroupToRows(asyncGroup, selectStart, selectEnd, columns, 'array')
-      concat(rows, groupData)
+
+      // Apply filter and projection
+      if (filter) {
+        // eslint-disable-next-line no-extra-parens
+        for (const row of /** @type {Record<string, any>[]} */ (groupData)) {
+          if (matchFilter(row, filter, filterStrict)) {
+            if (requiresProjection && columns) {
+              for (const col of filterColumns) {
+                if (!columns.includes(col)) delete row[col]
+              }
+            }
+            rows.push(row)
+          }
+        }
+      } else {
+        concat(rows, groupData)
+      }
     }
     onComplete(rows)
   } else {

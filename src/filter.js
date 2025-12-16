@@ -1,6 +1,32 @@
 import { equals } from './utils.js'
 
 /**
+ * @import {ParquetQueryFilter, RowGroup} from '../src/types.js'
+ */
+
+/**
+ * Returns an array of column names needed to evaluate the filter.
+ *
+ * @param {ParquetQueryFilter} [filter]
+ * @returns {string[]}
+ */
+export function columnsNeededForFilter(filter) {
+  if (!filter) return []
+  /** @type {string[]} */
+  const columns = []
+  if ('$and' in filter && Array.isArray(filter.$and)) {
+    columns.push(...filter.$and.flatMap(columnsNeededForFilter))
+  } else if ('$or' in filter && Array.isArray(filter.$or)) {
+    columns.push(...filter.$or.flatMap(columnsNeededForFilter))
+  } else if ('$nor' in filter && Array.isArray(filter.$nor)) {
+    columns.push(...filter.$nor.flatMap(columnsNeededForFilter))
+  } else {
+    columns.push(...Object.keys(filter))
+  }
+  return columns
+}
+
+/**
  * Match a record against a query filter
  *
  * @param {Record<string, any>} record
@@ -45,7 +71,6 @@ export function matchFilter(record, filter, strict = true) {
 /**
  * Check if a row group can be skipped based on filter and column statistics.
  *
- * @import {ParquetQueryFilter, RowGroup} from '../src/types.js'
  * @param {object} options
  * @param {RowGroup} options.rowGroup
  * @param {string[]} options.physicalColumns

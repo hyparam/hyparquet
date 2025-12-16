@@ -223,4 +223,46 @@ describe('parquetRead', () => {
     expect(counting.fetches).toBe(1) // 1 column chunk
     expect(counting.bytes).toBe(14334)
   })
+
+  it('filter rows with parquetRead', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    await parquetRead({
+      file,
+      rowFormat: 'object',
+      filter: { b: { $gt: 2 } },
+      onComplete(rows) {
+        expect(rows).toEqual([
+          { a: 'abc', b: 3, c: 4, d: true },
+          { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
+          { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
+        ])
+      },
+    })
+  })
+
+  it('filter rows with parquetReadObjects', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    const rows = await parquetReadObjects({
+      file,
+      filter: { b: { $lte: 2 } },
+    })
+    expect(rows).toEqual([
+      { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
+      { a: 'abc', b: 2, c: 3, d: true },
+    ])
+  })
+
+  it('filter with column projection', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    // Select columns a and d, but filter on b
+    const rows = await parquetReadObjects({
+      file,
+      columns: ['a', 'd'],
+      filter: { b: { $eq: 3 } },
+    })
+    // Result should only have a and d columns, not b
+    expect(rows).toEqual([
+      { a: 'abc', d: true },
+    ])
+  })
 })
