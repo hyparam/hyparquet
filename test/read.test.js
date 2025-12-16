@@ -199,6 +199,41 @@ describe('parquetRead', () => {
     expect(file.bytes).toBe(441) // bytes for 2nd rowgroup
   })
 
+  it('groups column chunks', async () => {
+    const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
+    const metadata = await parquetMetadataAsync(file)
+    const counting = countingBuffer(file)
+
+    // check onPage callback
+    const [row] = await parquetReadObjects({
+      file: counting,
+      metadata,
+      rowStart: 25,
+      rowEnd: 26,
+    })
+    expect(row).toEqual({ id: 26n, content: expect.any(String) })
+    expect(counting.fetches).toBe(1) // 1 column chunk run
+    expect(counting.bytes).toBe(14768)
+  })
+
+  it('does not groups column chunks when columns are specified', async () => {
+    const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
+    const metadata = await parquetMetadataAsync(file)
+    const counting = countingBuffer(file)
+
+    // check onPage callback
+    const [row] = await parquetReadObjects({
+      file: counting,
+      metadata,
+      rowStart: 25,
+      rowEnd: 26,
+      columns: ['id', 'content'],
+    })
+    expect(row).toEqual({ id: 26n, content: expect.any(String) })
+    expect(counting.fetches).toBe(2) // 2 column chunks
+    expect(counting.bytes).toBe(14768)
+  })
+
   it('reads individual pages', async () => {
     const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
     const metadata = await parquetMetadataAsync(file)

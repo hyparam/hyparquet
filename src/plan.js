@@ -1,10 +1,9 @@
 import { canSkipRowGroup } from './filter.js'
 import { parquetSchema } from './metadata.js'
 import { getPhysicalColumns } from './schema.js'
-import { concat } from './utils.js'
 
-// Combine column chunks into a single byte range if less than 32mb
-const columnChunkAggregation = 1 << 25 // 32mb
+// Combine column chunks if less than 2mb
+const runLimit = 1 << 21 // 2mb
 
 /**
  * @import {AsyncBuffer, ByteRange, ColumnMetaData, GroupPlan, ParquetReadOptions, QueryPlan} from '../src/types.js'
@@ -46,19 +45,22 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
       const selectEnd = Math.min(rowEnd - groupStart, groupRows)
       groups.push({ ranges, rowGroup, groupStart, groupRows, selectStart, selectEnd })
 
-      // map group plan to ranges
-      const groupSize = ranges[ranges.length - 1]?.endByte - ranges[0]?.startByte
-      if (!columns && groupSize < columnChunkAggregation) {
-        // full row group
-        fetches.push({
-          startByte: ranges[0].startByte,
-          endByte: ranges[ranges.length - 1].endByte,
-        })
-      } else if (ranges.length) {
-        concat(fetches, ranges)
-      } else if (columns?.length) {
-        throw new Error(`parquet columns not found: ${columns.join(', ')}`)
+      // combine runs of column chunks
+      /** @type {ByteRange | undefined} */
+      let run
+      for (const range of ranges) {
+        if (columns) {
+          fetches.push(range)
+        } else if (run && range.endByte - run.startByte <= runLimit) {
+          // extend range
+          run.endByte = range.endByte
+        } else {
+          // new range
+          if (run) fetches.push(run)
+          run = { ...range }
+        }
       }
+      if (run) fetches.push(run)
     }
 
     groupStart = groupEnd
