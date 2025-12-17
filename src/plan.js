@@ -6,7 +6,7 @@ import { getPhysicalColumns } from './schema.js'
 const runLimit = 1 << 21 // 2mb
 
 /**
- * @import {AsyncBuffer, ByteRange, ColumnMetaData, ChunkPlan, GroupPlan, ParquetReadOptions, QueryPlan} from '../src/types.js'
+ * @import {AsyncBuffer, ByteRange, ChunkPlan, GroupPlan, ParquetReadOptions, QueryPlan} from '../src/types.js'
  */
 /**
  * Plan which byte ranges to read to satisfy a read request.
@@ -15,12 +15,14 @@ const runLimit = 1 << 21 // 2mb
  * @param {ParquetReadOptions} options
  * @returns {QueryPlan}
  */
-export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns, filter, filterStrict = true }) {
+export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns, filter, filterStrict = true, useOffsetIndex = false }) {
   if (!metadata) throw new Error('parquetPlan requires metadata')
   /** @type {GroupPlan[]} */
   const groups = []
   /** @type {ByteRange[]} */
   const fetches = []
+  /** @type {ByteRange[]} */
+  const indexes = []
   const physicalColumns = getPhysicalColumns(parquetSchema(metadata))
 
   // find which row groups to read
@@ -32,6 +34,8 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
     if (groupRows > 0 && groupEnd > rowStart && groupStart < rowEnd && !canSkipRowGroup({ rowGroup, physicalColumns, filter, strict: filterStrict })) {
       /** @type {ChunkPlan[]} */
       const chunks = []
+      let groupStartByte = Infinity
+      let groupEndByte = -Infinity
       // loop through each column chunk
       for (const chunk of rowGroup.columns) {
         const meta = chunk.meta_data
@@ -39,14 +43,31 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
         if (!meta) throw new Error('parquet column metadata is undefined')
         // add included column chunks to the plan
         if (!columns || columns.includes(meta.path_in_schema[0])) {
+          // full column chunk
           const columnOffset = meta.dictionary_page_offset || meta.data_page_offset
-          chunks.push({
-            columnMetadata: meta,
-            range: {
-              startByte: Number(columnOffset),
-              endByte: Number(columnOffset + meta.total_compressed_size),
-            },
-          })
+          const startByte = Number(columnOffset)
+          const endByte = Number(columnOffset + meta.total_compressed_size)
+          // update group byte range
+          if (startByte < groupStartByte) groupStartByte = startByte
+          if (endByte > groupEndByte) groupEndByte = endByte
+
+          if (useOffsetIndex && chunk.offset_index_offset && chunk.offset_index_length) {
+            const offsetIndexStart = Number(chunk.offset_index_offset)
+            chunks.push({
+              columnMetadata: meta,
+              offsetIndex: {
+                startByte: offsetIndexStart,
+                endByte: offsetIndexStart + chunk.offset_index_length,
+              },
+              bounds: { startByte, endByte },
+            })
+          } else {
+            chunks.push({
+              columnMetadata: meta,
+              range: { startByte, endByte },
+            })
+          }
+
         }
       }
       const selectStart = Math.max(rowStart - groupStart, 0)
@@ -56,16 +77,21 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
       // combine runs of column chunks
       /** @type {ByteRange | undefined} */
       let run
-      for (const { range } of chunks) {
-        if (columns) {
-          fetches.push(range)
-        } else if (run && range.endByte - run.startByte <= runLimit) {
-          // extend range
-          run.endByte = range.endByte
+      for (const chunk of chunks) {
+        if ('offsetIndex' in chunk) {
+          indexes.push(chunk.offsetIndex)
         } else {
-          // new range
-          if (run) fetches.push(run)
-          run = { ...range }
+          const { range } = chunk
+          if (columns) {
+            fetches.push(range)
+          } else if (run && range.endByte - run.startByte <= runLimit) {
+            // extend range
+            run.endByte = range.endByte
+          } else {
+            // new range
+            if (run) fetches.push(run)
+            run = { ...range }
+          }
         }
       }
       if (run) fetches.push(run)
@@ -74,6 +100,7 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
     groupStart = groupEnd
   }
   if (!isFinite(rowEnd)) rowEnd = groupStart
+  fetches.push(...indexes)
 
   return { metadata, rowStart, rowEnd, columns, fetches, groups }
 }
@@ -93,7 +120,10 @@ export function prefetchAsyncBuffer(file, { fetches }) {
     slice(start, end = file.byteLength) {
       // find matching slice
       const index = fetches.findIndex(({ startByte, endByte }) => startByte <= start && end <= endByte)
-      if (index < 0) throw new Error(`no prefetch for range [${start}, ${end}]`)
+      if (index < 0) {
+        // fallback to direct read
+        return file.slice(start, end)
+      }
       if (fetches[index].startByte !== start || fetches[index].endByte !== end) {
         // slice a subrange of the prefetch
         const startOffset = start - fetches[index].startByte
