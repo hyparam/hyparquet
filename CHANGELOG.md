@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.23.2]
+ - Add option `useOffsetIndex` to control use of offset index for page filtering (#146)
+
+## [1.23.1]
+ - Add option `filterStrict` to control strictness of filter equality (#145)
+ - Apply `filter` not just best-effort
+ - Combine runs of smaller column chunks when prefetching
+
 ## [1.23.0]
  - Replace `columnName: string` with `pathInSchema: string[]` in `onPage` callback (#144)
 
