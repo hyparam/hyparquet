@@ -229,13 +229,20 @@ function assembleMaps(keys, values, depth) {
  */
 function invertStruct(struct, depth) {
   const keys = Object.keys(struct)
-  const length = struct[keys[0]]?.length
+  // Find minimum length across all struct children to handle page alignment issues
+  // when different children have different numbers of data pages
+  let length = Infinity
+  for (const key of keys) {
+    if (struct[key]?.length < length) {
+      length = struct[key].length
+    }
+  }
+  if (length === Infinity) length = 0
   const out = []
   for (let i = 0; i < length; i++) {
     /** @type {Record<string, any>} */
     const obj = {}
     for (const key of keys) {
-      if (struct[key].length !== length) throw new Error('parquet struct parsing error')
       obj[key] = struct[key][i]
     }
     if (depth) {
