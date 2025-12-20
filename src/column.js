@@ -60,11 +60,7 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
     }
   }
   emitLastChunk?.()
-  // assert(rowCount >= selectEnd)
-  if (rowCount > selectEnd && lastChunk) {
-    // truncate last chunk to row limit
-    chunks[chunks.length - 1] = lastChunk.slice(0, selectEnd - (rowCount - lastChunk.length))
-  }
+
   return chunks
 }
 

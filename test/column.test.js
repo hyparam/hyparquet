@@ -10,7 +10,7 @@ const values = [null, 1, -2, NaN, 0, -1, -0, 2]
 describe('readColumn', () => {
   it.for([
     { selectEnd: Infinity, expected: [values] },
-    { selectEnd: 2, expected: [values.slice(0, 2)] },
+    { selectEnd: 2, expected: [values] }, // readColumn does not truncate
     { selectEnd: 0, expected: [] },
   ])('readColumn with rowGroupEnd %p', async ({ selectEnd, expected }) => {
     const testFile = 'test/files/float16_nonzeros_and_nans.parquet'
