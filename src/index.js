@@ -14,6 +14,7 @@ export { asyncBufferFromUrl, byteLengthFromUrl, cachedAsyncBuffer, flatten, toJs
  */
 /**
  * @typedef {import('../src/types.d.ts').AsyncBuffer} AsyncBuffer
+ * @typedef {import('../src/types.d.ts').AsyncRowGroup} AsyncRowGroup
  * @typedef {import('../src/types.d.ts').DataReader} DataReader
  * @typedef {import('../src/types.d.ts').FileMetaData} FileMetaData
  * @typedef {import('../src/types.d.ts').SchemaTree} SchemaTree
@@ -42,6 +43,7 @@ export { asyncBufferFromUrl, byteLengthFromUrl, cachedAsyncBuffer, flatten, toJs
  * @typedef {import('../src/types.d.ts').ColumnIndex} ColumnIndex
  * @typedef {import('../src/types.d.ts').BoundaryOrder} BoundaryOrder
  * @typedef {import('../src/types.d.ts').ColumnData} ColumnData
+ * @typedef {import('../src/types.d.ts').SubColumnData} SubColumnData
  * @typedef {import('../src/types.d.ts').ParquetReadOptions} ParquetReadOptions
  * @typedef {import('../src/types.d.ts').MetadataOptions} MetadataOptions
  * @typedef {import('../src/types.d.ts').ParquetParsers} ParquetParsers

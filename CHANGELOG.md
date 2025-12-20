@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.23.3]
+ - Fix `readColumn` truncation in struct columns (#148)
+
 ## [1.23.2]
  - Add option `useOffsetIndex` to control use of offset index for page filtering (#146)
 
