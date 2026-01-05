@@ -70,17 +70,18 @@ export function equals(a, b, strict = true) {
  * Get the byte length using fetch with a ranged GET request.
  * Aborts the request if server returns 200 instead of 206.
  *
- * @param {string} url
- * @param {RequestInit} [requestInit] fetch options
- * @param {typeof globalThis.fetch} [fetchFn] fetch function to use
+ * @param {object} options
+ * @param {string} options.url
+ * @param {RequestInit} [options.requestInit] fetch options
+ * @param {typeof globalThis.fetch} [options.fetch] fetch function to use
  * @returns {Promise<number>}
  */
-async function byteLengthFromUrlUsingFetch(url, requestInit = {}, fetchFn = globalThis.fetch) {
+async function byteLengthFromUrlUsingFetch({ url, requestInit = {}, fetch = globalThis.fetch }) {
   const controller = new AbortController()
   const headers = new Headers(requestInit.headers)
   headers.set('Range', 'bytes=0-0')
 
-  const res = await fetchFn(url, {
+  const res = await fetch(url, {
     ...requestInit,
     headers,
     signal: controller.signal,
@@ -119,25 +120,26 @@ async function byteLengthFromUrlUsingFetch(url, requestInit = {}, fetchFn = glob
  * If HEAD succeeds but Content-Length is missing, falls back to GET with range.
  * If requestInit is provided, it will be passed to fetch.
  *
- * @param {string} url
- * @param {RequestInit} [requestInit] fetch options
- * @param {typeof globalThis.fetch} [customFetch] fetch function to use
+ * @param {object} options
+ * @param {string} options.url
+ * @param {RequestInit} [options.requestInit] fetch options
+ * @param {typeof globalThis.fetch} [options.fetch] fetch function to use
  * @returns {Promise<number>}
  */
-export async function byteLengthFromUrl(url, requestInit, customFetch) {
+export async function byteLengthFromUrl({ url, requestInit, fetch: customFetch }) {
   const fetch = customFetch ?? globalThis.fetch
   const res = await fetch(url, { ...requestInit, method: 'HEAD' })
 
   // If HEAD request is forbidden (common with signed S3 URLs), try GET with range
   if (res.status === 403) {
-    return byteLengthFromUrlUsingFetch(url, requestInit, fetch)
+    return byteLengthFromUrlUsingFetch({ url, requestInit, fetch })
   }
 
   if (!res.ok) throw new Error(`fetch head failed ${res.status}`)
   const length = res.headers.get('Content-Length')
   // If Content-Length is missing from HEAD, fallback to GET with range
   if (!length) {
-    return byteLengthFromUrlUsingFetch(url, requestInit, fetch)
+    return byteLengthFromUrlUsingFetch({ url, requestInit, fetch })
   }
   return parseInt(length)
 }
@@ -159,7 +161,7 @@ export async function asyncBufferFromUrl({ url, byteLength, requestInit, fetch: 
   if (!url) throw new Error('missing url')
   const fetch = customFetch ?? globalThis.fetch
   // byte length from HEAD request
-  byteLength ??= await byteLengthFromUrl(url, requestInit, fetch)
+  byteLength ??= await byteLengthFromUrl({ url, requestInit, fetch })
 
   /**
    * A promise for the whole buffer, if range requests are not supported.

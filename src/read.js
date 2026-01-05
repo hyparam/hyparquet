@@ -1,5 +1,5 @@
 import { columnsNeededForFilter, matchFilter } from './filter.js'
-import { parquetMetadataAsync, parquetSchema } from './metadata.js'
+import { parquetMetadata, parquetSchema } from './metadata.js'
 import { parquetPlan, prefetchAsyncBuffer } from './plan.js'
 import { assembleAsync, asyncGroupToRows, readRowGroup } from './rowgroup.js'
 import { concat, flatten } from './utils.js'
@@ -21,14 +21,9 @@ import { concat, flatten } from './utils.js'
  */
 export async function parquetRead(options) {
   // load metadata if not provided
-  options.metadata ??= await parquetMetadataAsync(options.file, options)
+  options.metadata ??= await parquetMetadata(options)
 
-  const { rowStart = 0, rowEnd, columns, onChunk, onComplete, rowFormat, filter, filterStrict = true } = options
-
-  // Filter requires object format to match column names
-  if (filter && rowFormat !== 'object') {
-    throw new Error('parquet filter requires rowFormat: "object"')
-  }
+  const { rowStart = 0, rowEnd, columns, onChunk, onComplete, filter, filterStrict = true } = options
 
   // Include filter columns in the read plan
   const filterColumns = columnsNeededForFilter(filter)
@@ -87,17 +82,14 @@ export async function parquetRead(options) {
 
   // onComplete transpose column chunks to rows
   if (onComplete) {
-    // loosen the types to avoid duplicate code
-    /** @type {any[]} */
+    /** @type {Record<string, any>[]} */
     const rows = []
     for (const asyncGroup of assembled) {
       // filter to rows in range
       const selectStart = Math.max(rowStart - asyncGroup.groupStart, 0)
       const selectEnd = Math.min((rowEnd ?? Infinity) - asyncGroup.groupStart, asyncGroup.groupRows)
       // transpose column chunks to rows in output
-      const groupData = rowFormat === 'object' ?
-        await asyncGroupToRows(asyncGroup, selectStart, selectEnd, readColumns, 'object') :
-        await asyncGroupToRows(asyncGroup, selectStart, selectEnd, columns, 'array')
+      const groupData = await asyncGroupToRows(asyncGroup, selectStart, selectEnd, readColumns)
 
       // Apply filter and projection
       if (filter) {
@@ -151,7 +143,7 @@ export async function parquetReadColumn(options) {
   if (options.columns?.length !== 1) {
     throw new Error('parquetReadColumn expected columns: [columnName]')
   }
-  options.metadata ??= await parquetMetadataAsync(options.file, options)
+  options.metadata ??= await parquetMetadata(options)
   const asyncGroups = parquetReadAsync(options)
 
   // assemble struct columns
@@ -177,7 +169,6 @@ export function parquetReadObjects(options) {
   return new Promise((onComplete, reject) => {
     parquetRead({
       ...options,
-      rowFormat: 'object', // force object output
       onComplete,
     }).catch(reject)
   })
