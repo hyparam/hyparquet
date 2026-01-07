@@ -1,8 +1,8 @@
 import { DEFAULT_PARSERS } from './convert.js'
 
-/** @import {ParquetParsers, VariantMetadata} from './types.d.ts' */
+/** @import {DataReader, ParquetParsers, VariantMetadata} from './types.d.ts' */
 
-const variantStringDecoder = new TextDecoder()
+const decoder = new TextDecoder()
 /** @type {WeakMap<object, Map<string, VariantMetadata>>} */
 const metadataCache = new WeakMap()
 
@@ -17,33 +17,72 @@ export function decodeVariantColumn(value, parsers = DEFAULT_PARSERS) {
   if (Array.isArray(value)) {
     return value.map(entry => decodeVariantColumn(entry, parsers))
   }
-  if (!value || typeof value !== 'object') return value
+  if (typeof value !== 'object') return value
 
   if ('metadata' in value) {
-    const metadataBytes = value.metadata
-    const valueBytes = value.value
-    if (!(metadataBytes instanceof Uint8Array)) return undefined
-    if (!(valueBytes instanceof Uint8Array)) return undefined
-    const metadata = parseVariantMetadata(metadataBytes)
-    return decodeVariantValue(metadata, valueBytes, parsers)
+    const metadata = parseVariantMetadata(value.metadata)
+
+    // Decode shredded fields from typed_value
+    const shreddedFields = value.typed_value && decodeTypedValue(value.typed_value, metadata, parsers)
+
+    // Decode binary value (may contain additional fields for partially shredded objects)
+    const binaryValue = value.value && readVariant(makeReader(value.value), metadata, parsers)
+
+    // Merge shredded and binary values for partially shredded objects
+    if (shreddedFields && binaryValue) {
+      return { ...binaryValue, ...shreddedFields }
+    }
+    return shreddedFields ?? binaryValue
   }
 
   return value
 }
 
 /**
- * Decode a single variant value.
+ * Decode a shredded variant typed_value field.
  *
+ * @param {any} typedValue
  * @param {VariantMetadata} metadata
- * @param {Uint8Array} bytes
  * @param {ParquetParsers} parsers
  * @returns {any}
  */
-function decodeVariantValue(metadata, bytes, parsers) {
-  if (!bytes.length) return undefined
-  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
-  const reader = { view, offset: 0 }
-  return readVariant(reader, metadata, parsers)
+function decodeTypedValue(typedValue, metadata, parsers) {
+  // Handle {typed_value, value} wrapper - unwrap and recurse
+  if (typedValue && typeof typedValue === 'object' && !Array.isArray(typedValue) && !(typedValue instanceof Uint8Array)) {
+    if ('typed_value' in typedValue) {
+      return decodeTypedValue(typedValue.typed_value, metadata, parsers)
+    }
+    if ('value' in typedValue && typedValue.value instanceof Uint8Array) {
+      return readVariant(makeReader(typedValue.value), metadata, parsers)
+    }
+    // Shredded object: each field value gets decoded
+    /** @type {Record<string, any>} */
+    const result = {}
+    for (const [key, field] of Object.entries(typedValue)) {
+      result[key] = decodeTypedValue(field, metadata, parsers)
+    }
+    return result
+  }
+
+  // Uint8Array: decode as binary variant
+  if (typedValue instanceof Uint8Array) {
+    return readVariant(makeReader(typedValue), metadata, parsers)
+  }
+
+  // Arrays
+  if (Array.isArray(typedValue)) {
+    return typedValue.map(element => decodeTypedValue(element, metadata, parsers))
+  }
+
+  return typedValue
+}
+
+/**
+ * @param {Uint8Array} bytes
+ * @returns {DataReader}
+ */
+function makeReader(bytes) {
+  return { view: new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), offset: 0 }
 }
 
 /**
@@ -53,47 +92,39 @@ function decodeVariantValue(metadata, bytes, parsers) {
  * @returns {VariantMetadata}
  */
 function parseVariantMetadata(bytes) {
-  if (bytes.byteLength === 0) {
-    return { dictionary: [], sorted: true }
-  }
-  let safeBytes = bytes
-  if (!(safeBytes.buffer instanceof ArrayBuffer)) {
-    safeBytes = safeBytes.slice()
-  }
-  let bufferCache = metadataCache.get(safeBytes.buffer)
+  let bufferCache = metadataCache.get(bytes.buffer)
   if (!bufferCache) {
     bufferCache = new Map()
-    metadataCache.set(safeBytes.buffer, bufferCache)
+    metadataCache.set(bytes.buffer, bufferCache)
   }
-  const key = `${safeBytes.byteOffset}:${safeBytes.byteLength}`
+  const key = `${bytes.byteOffset}:${bytes.byteLength}`
   const cached = bufferCache.get(key)
   if (cached) return cached
 
-  const view = new DataView(safeBytes.buffer, safeBytes.byteOffset, safeBytes.byteLength)
-  let offset = 0
-  const header = view.getUint8(offset++)
+  const reader = {
+    view: new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
+    offset: 0,
+  }
+  const header = reader.view.getUint8(reader.offset++)
   const version = header & 0x0f
   if (version !== 1) throw new Error(`parquet unsupported variant metadata version: ${version}`)
   const sorted = (header >> 4 & 0x1) === 1
   const offsetSize = (header >> 6 & 0x3) + 1
 
-  const dictionarySize = readUnsigned(view, offset, offsetSize)
-  offset += offsetSize
+  const dictionarySize = readUnsigned(reader, offsetSize)
 
   const offsets = new Array(dictionarySize + 1)
   for (let i = 0; i < offsets.length; i++) {
-    offsets[i] = readUnsigned(view, offset, offsetSize)
-    offset += offsetSize
+    offsets[i] = readUnsigned(reader, offsetSize)
   }
 
-  const base = offset
+  const base = reader.offset
   const dictionary = new Array(dictionarySize)
   for (let i = 0; i < dictionarySize; i++) {
     const start = offsets[i]
     const end = offsets[i + 1]
-    const length = end - start
-    const strBytes = new Uint8Array(safeBytes.buffer, safeBytes.byteOffset + base + start, length)
-    dictionary[i] = variantStringDecoder.decode(strBytes)
+    const strBytes = new Uint8Array(bytes.buffer, bytes.byteOffset + base + start, end - start)
+    dictionary[i] = decoder.decode(strBytes)
   }
 
   const metadata = { dictionary, sorted }
@@ -102,43 +133,40 @@ function parseVariantMetadata(bytes) {
 }
 
 /**
- * Read an unsigned little-endian integer from a DataView without advancing the offset.
- *
- * @param {DataView} view
- * @param {number} offset
+ * @param {DataReader} reader
  * @param {number} byteWidth
  * @returns {number}
  */
-function readUnsigned(view, offset, byteWidth) {
+function readUnsigned(reader, byteWidth) {
   let value = 0
   for (let i = 0; i < byteWidth; i++) {
-    value |= view.getUint8(offset + i) << i * 8
+    value |= reader.view.getUint8(reader.offset + i) << i * 8
   }
+  reader.offset += byteWidth
   return value
 }
 
 /**
- * @param {{ view: DataView, offset: number }} reader
+ * @param {DataReader} reader
  * @param {VariantMetadata} metadata
  * @param {ParquetParsers} parsers
  * @returns {any}
  */
 function readVariant(reader, metadata, parsers) {
-  if (reader.offset >= reader.view.byteLength) {
-    throw new Error('parquet variant truncated value')
-  }
   const typeByte = reader.view.getUint8(reader.offset++)
   const basicType = typeByte & 0x3
   const header = typeByte >> 2
   if (basicType === 0) return readVariantPrimitive(reader, header, parsers)
-  if (basicType === 1) return readVariantShortString(reader, header)
   if (basicType === 2) return readVariantObject(reader, header, metadata, parsers)
   if (basicType === 3) return readVariantArray(reader, header, metadata, parsers)
-  throw new Error(`parquet unsupported variant basic type: ${basicType}`)
+  // else short string
+  const bytes = new Uint8Array(reader.view.buffer, reader.view.byteOffset + reader.offset, header)
+  reader.offset += header
+  return decoder.decode(bytes)
 }
 
 /**
- * @param {{ view: DataView, offset: number }} reader
+ * @param {DataReader} reader
  * @param {number} typeId
  * @param {ParquetParsers} parsers
  * @returns {any}
@@ -197,8 +225,10 @@ function readVariantPrimitive(reader, typeId, parsers) {
   }
   case 15:
     return readVariantBinary(reader)
-  case 16:
-    return readVariantString(reader)
+  case 16: {
+    const bytes = readVariantBinary(reader)
+    return decoder.decode(bytes)
+  }
   case 17: {
     // time: microseconds since midnight
     const value = reader.view.getBigInt64(reader.offset, true)
@@ -211,74 +241,58 @@ function readVariantPrimitive(reader, typeId, parsers) {
     reader.offset += 8
     return parsers.timestampFromNanoseconds(value)
   }
-  case 20:
-    return readVariantUuid(reader)
+  case 20: {
+    const bytes = new Uint8Array(reader.view.buffer, reader.view.byteOffset + reader.offset, 16)
+    reader.offset += 16
+    const hex = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('')
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
+  }
   default:
     throw new Error(`parquet unsupported variant primitive type: ${typeId}`)
   }
 }
 
 /**
- * @param {{ view: DataView, offset: number }} reader
- * @param {number} length
- * @returns {string}
- */
-function readVariantShortString(reader, length) {
-  const bytes = new Uint8Array(reader.view.buffer, reader.view.byteOffset + reader.offset, length)
-  reader.offset += length
-  return variantStringDecoder.decode(bytes)
-}
-
-/**
- * @param {{ view: DataView, offset: number }} reader
+ * @param {DataReader} reader
  * @param {number} header
  * @param {VariantMetadata} metadata
  * @param {ParquetParsers} parsers
  * @returns {Record<string, any>}
  */
 function readVariantObject(reader, header, metadata, parsers) {
-  const fieldOffsetSize = header & 0x3
-  const fieldIdSize = header >> 2 & 0x3
+  const offsetWidth = (header & 0x3) + 1
+  const idWidth = (header >> 2 & 0x3) + 1
   const isLarge = header >> 4 & 0x1
-  const offsetWidth = fieldOffsetSize + 1
-  const idWidth = fieldIdSize + 1
-  const numElements = isLarge ? readUnsigned(reader.view, reader.offset, 4) : reader.view.getUint8(reader.offset)
-  reader.offset += isLarge ? 4 : 1
+  const numElements = isLarge ? readUnsigned(reader, 4) : reader.view.getUint8(reader.offset++)
 
   /** @type {number[]} */
   const fieldIds = new Array(numElements)
   for (let i = 0; i < numElements; i++) {
-    fieldIds[i] = readUnsigned(reader.view, reader.offset, idWidth)
-    reader.offset += idWidth
+    fieldIds[i] = readUnsigned(reader, idWidth)
   }
 
   const offsets = new Array(numElements + 1)
   for (let i = 0; i < offsets.length; i++) {
-    offsets[i] = readUnsigned(reader.view, reader.offset, offsetWidth)
-    reader.offset += offsetWidth
+    offsets[i] = readUnsigned(reader, offsetWidth)
   }
 
-  const valuesStart = reader.offset
-  const base = reader.view.byteOffset + valuesStart
   /** @type {Record<string, any>} */
   const out = {}
   for (let i = 0; i < numElements; i++) {
     const key = metadata.dictionary[fieldIds[i]]
-    if (key === undefined) {
-      throw new Error('parquet variant field id out of range')
+    // Read value at the given offset
+    const valueReader = {
+      view: reader.view,
+      offset: reader.offset + offsets[i],
     }
-    const start = offsets[i]
-    const end = offsets[i + 1]
-    const length = end - start
-    const slice = new Uint8Array(reader.view.buffer, base + start, length)
-    out[key] = decodeVariantValue(metadata, slice, parsers)
+    out[key] = readVariant(valueReader, metadata, parsers)
   }
-  reader.offset = valuesStart + offsets[offsets.length - 1]
+  reader.offset += offsets[offsets.length - 1]
   return out
 }
 
 /**
- * @param {{ view: DataView, offset: number }} reader
+ * @param {DataReader} reader
  * @param {number} header
  * @param {VariantMetadata} metadata
  * @param {ParquetParsers} parsers
@@ -288,31 +302,28 @@ function readVariantArray(reader, header, metadata, parsers) {
   const fieldOffsetSize = header & 0x3
   const isLarge = header >> 2 & 0x1
   const offsetWidth = fieldOffsetSize + 1
-  const numElements = isLarge ? readUnsigned(reader.view, reader.offset, 4) : reader.view.getUint8(reader.offset)
-  reader.offset += isLarge ? 4 : 1
+  const numElements = readUnsigned(reader, isLarge ? 4 : 1)
 
   const offsets = new Array(numElements + 1)
   for (let i = 0; i < offsets.length; i++) {
-    offsets[i] = readUnsigned(reader.view, reader.offset, offsetWidth)
-    reader.offset += offsetWidth
+    offsets[i] = readUnsigned(reader, offsetWidth)
   }
 
   const valuesStart = reader.offset
-  const base = reader.view.byteOffset + valuesStart
   const result = new Array(numElements)
   for (let i = 0; i < numElements; i++) {
-    const start = offsets[i]
-    const end = offsets[i + 1]
-    const length = end - start
-    const slice = new Uint8Array(reader.view.buffer, base + start, length)
-    result[i] = decodeVariantValue(metadata, slice, parsers)
+    const valueReader = {
+      view: reader.view,
+      offset: valuesStart + offsets[i],
+    }
+    result[i] = readVariant(valueReader, metadata, parsers)
   }
   reader.offset = valuesStart + offsets[offsets.length - 1]
   return result
 }
 
 /**
- * @param {{ view: DataView, offset: number }} reader
+ * @param {DataReader} reader
  * @param {number} width
  * @returns {number}
  */
@@ -327,14 +338,17 @@ function readVariantDecimal(reader, width) {
     unscaled = reader.view.getBigInt64(reader.offset, true)
     reader.offset += 8
   } else {
-    unscaled = readLittleEndianBigInt(reader, 16)
+    const low = reader.view.getBigUint64(reader.offset, true)
+    const high = reader.view.getBigInt64(reader.offset + 8, true)
+    unscaled = high << 64n | low
+    reader.offset += 16
   }
 
   return Number(unscaled) * 10 ** -scale
 }
 
 /**
- * @param {{ view: DataView, offset: number }} reader
+ * @param {DataReader} reader
  * @returns {Uint8Array}
  */
 function readVariantBinary(reader) {
@@ -343,47 +357,4 @@ function readVariantBinary(reader) {
   const bytes = new Uint8Array(reader.view.buffer, reader.view.byteOffset + reader.offset, length)
   reader.offset += length
   return bytes
-}
-
-/**
- * @param {{ view: DataView, offset: number }} reader
- * @returns {string}
- */
-function readVariantString(reader) {
-  const bytes = readVariantBinary(reader)
-  return variantStringDecoder.decode(bytes)
-}
-
-/**
- * @param {{ view: DataView, offset: number }} reader
- * @returns {string}
- */
-function readVariantUuid(reader) {
-  const bytes = new Uint8Array(reader.view.buffer, reader.view.byteOffset + reader.offset, 16)
-  reader.offset += 16
-  let hex = ''
-  for (const byte of bytes) {
-    hex += byte.toString(16).padStart(2, '0')
-  }
-  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
-}
-
-/**
- * Read little-endian signed bigint of given width.
- *
- * @param {{ view: DataView, offset: number }} reader
- * @param {number} width
- * @returns {bigint}
- */
-function readLittleEndianBigInt(reader, width) {
-  let value = 0n
-  for (let i = 0; i < width; i++) {
-    value |= BigInt(reader.view.getUint8(reader.offset + i)) << BigInt(i * 8)
-  }
-  const signBit = 1n << BigInt(width * 8 - 1)
-  if (value & signBit) {
-    value -= 1n << BigInt(width * 8)
-  }
-  reader.offset += width
-  return value
 }

@@ -476,7 +476,6 @@ export interface AsyncRowGroup {
   groupStart: number
   groupRows: number
   asyncColumns: AsyncColumn[]
-  parsers: ParquetParsers
 }
 export interface AsyncColumn {
   pathInSchema: string[]

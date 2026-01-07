@@ -2,6 +2,8 @@ import fs from 'fs'
 import { describe, expect, it } from 'vitest'
 import { assembleNested } from '../src/assemble.js'
 import { DEFAULT_PARSERS } from '../src/convert.js'
+import { parquetReadObjects } from '../src/index.js'
+import { asyncBufferFromFile } from '../src/node.js'
 
 /** @import {SchemaTree} from '../src/types.d.ts' */
 
@@ -56,7 +58,7 @@ function decodeFixture(name) {
   subcolumnData.set('variant.metadata', [metadataBytes])
   subcolumnData.set('variant.value', [valueBytes])
 
-  assembleNested(subcolumnData, variantSchema, 0, DEFAULT_PARSERS)
+  assembleNested(subcolumnData, variantSchema, DEFAULT_PARSERS)
   return subcolumnData.get('variant')?.[0]
 }
 
@@ -69,7 +71,7 @@ describe('variant decoding', () => {
     subcolumnData.set('variant.metadata', [metadata])
     subcolumnData.set('variant.value', [value])
 
-    assembleNested(subcolumnData, variantSchema, 0, DEFAULT_PARSERS)
+    assembleNested(subcolumnData, variantSchema, DEFAULT_PARSERS)
 
     expect(subcolumnData.has('variant.metadata')).toBe(false)
     expect(subcolumnData.has('variant.value')).toBe(false)
@@ -100,7 +102,7 @@ describe('variant decoding', () => {
     subcolumnData.set('variant.metadata', [metadata, Uint8Array.from(metadata)])
     subcolumnData.set('variant.value', [stringValue, arrayValue])
 
-    assembleNested(subcolumnData, variantSchema, 0, DEFAULT_PARSERS)
+    assembleNested(subcolumnData, variantSchema, DEFAULT_PARSERS)
 
     expect(subcolumnData.get('variant')).toEqual(['hi', [1, 'foo']])
   })
@@ -135,6 +137,77 @@ describe('variant binary encoding', () => {
     expect(decodeFixture('array_primitive')).toEqual([2, 1, 5, 9])
   })
 
-  // TODO: object_primitive test - the fixture uses a different binary format
-  // that needs investigation (offsets are not monotonically increasing)
+  it('decodes object_primitive', () => {
+    const result = decodeFixture('object_primitive')
+    expect(result).toHaveProperty('int_field', 1)
+    expect(result).toHaveProperty('double_field')
+    expect(result).toHaveProperty('boolean_true_field', true)
+    expect(result).toHaveProperty('boolean_false_field', false)
+    expect(result).toHaveProperty('string_field', 'Apache Parquet')
+    expect(result).toHaveProperty('null_field', null)
+    expect(result).toHaveProperty('timestamp_field')
+  })
+
+  it('decodes object_nested', () => {
+    const result = decodeFixture('object_nested')
+    expect(result).toHaveProperty('id', 1)
+    expect(result).toHaveProperty('species')
+    expect(result.species).toHaveProperty('name', 'lava monster')
+    expect(result.species).toHaveProperty('population', 6789)
+    expect(result).toHaveProperty('observation')
+    expect(result.observation).toHaveProperty('location', 'In the Volcano')
+  })
+})
+
+describe('shredded variant', () => {
+  it('reads shredded boolean variant', async () => {
+    const file = await asyncBufferFromFile('test/files/shredded-bool.parquet')
+    const rows = await parquetReadObjects({ file })
+    expect(rows.length).toBe(1)
+    expect(rows[0].var).toBe(true)
+  })
+
+  it('reads shredded int32 variant', async () => {
+    const file = await asyncBufferFromFile('test/files/shredded-int.parquet')
+    const rows = await parquetReadObjects({ file })
+    expect(rows.length).toBe(1)
+    expect(rows[0].var).toBe(12345)
+  })
+
+  it('reads shredded string array variant', async () => {
+    const file = await asyncBufferFromFile('test/files/shredded-array.parquet')
+    const rows = await parquetReadObjects({ file })
+    expect(rows.length).toBe(1)
+    expect(rows[0].var).toEqual(['comedy', 'drama'])
+  })
+
+  it('reads shredded object variant', async () => {
+    // case-046: testShreddedObject
+    const file = await asyncBufferFromFile('test/files/shredded-object.parquet')
+    const rows = await parquetReadObjects({ file })
+    expect(rows.length).toBe(1)
+    expect(rows[0].var).toEqual({ a: null, b: '' })
+  })
+
+  it('reads nested shredded object variant', async () => {
+    // case-044: testShreddedObjectWithinShreddedObject
+    const file = await asyncBufferFromFile('test/files/shredded-nested-object.parquet')
+    const rows = await parquetReadObjects({ file })
+    expect(rows.length).toBe(1)
+    expect(rows[0].var).toEqual({
+      c: { a: 34, b: 'iceberg' },
+      d: -0,
+    })
+  })
+
+  it('reads partially shredded object variant', async () => {
+    // case-134: testPartiallyShreddedObject
+    const file = await asyncBufferFromFile('test/files/shredded-partial-object.parquet')
+    const rows = await parquetReadObjects({ file })
+    expect(rows.length).toBe(1)
+    expect(rows[0].var.a).toBe(null)
+    expect(rows[0].var.b).toBe('iceberg')
+    expect(rows[0].var.d).toBeInstanceOf(Date)
+    expect(rows[0].var.d.getTime()).toBe(new Date('2024-01-30').getTime())
+  })
 })

@@ -1,0 +1,229 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "name": "table",
+      "num_children": 2
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "REQUIRED",
+      "name": "id",
+      "field_id": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "var",
+      "num_children": 3,
+      "field_id": 2,
+      "logical_type": {
+        "type": "VARIANT",
+        "specification_version": 1
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "metadata"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value"
+    },
+    {
+      "type": "BOOLEAN",
+      "repetition_type": "OPTIONAL",
+      "name": "typed_value"
+    }
+  ],
+  "num_rows": 1,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN",
+              "BIT_PACKED"
+            ],
+            "path_in_schema": [
+              "id"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 27,
+            "total_compressed_size": 27,
+            "data_page_offset": 4,
+            "statistics": {
+              "max": 1,
+              "min": 1,
+              "null_count": 0,
+              "max_value": 1,
+              "min_value": 1
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {}
+          },
+          "offset_index_offset": 214,
+          "offset_index_length": 10,
+          "column_index_offset": 128,
+          "column_index_length": 23
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "BIT_PACKED"
+            ],
+            "path_in_schema": [
+              "var",
+              "metadata"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 36,
+            "total_compressed_size": 36,
+            "data_page_offset": 31,
+            "statistics": {
+              "max": "\u0001\u0000\u0000",
+              "min": "\u0001\u0000\u0000",
+              "null_count": 0,
+              "max_value": "\u0001\u0000\u0000",
+              "min_value": "\u0001\u0000\u0000"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 3
+            }
+          },
+          "offset_index_offset": 224,
+          "offset_index_length": 13,
+          "column_index_offset": 151,
+          "column_index_length": 21
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "BIT_PACKED"
+            ],
+            "path_in_schema": [
+              "var",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 30,
+            "total_compressed_size": 30,
+            "data_page_offset": 67,
+            "statistics": {
+              "null_count": 1
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 0,
+              "definition_level_histogram": [
+                0,
+                1,
+                0
+              ]
+            }
+          },
+          "offset_index_offset": 237,
+          "offset_index_length": 14,
+          "column_index_offset": 172,
+          "column_index_length": 20
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BOOLEAN",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "BIT_PACKED"
+            ],
+            "path_in_schema": [
+              "var",
+              "typed_value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 31,
+            "total_compressed_size": 31,
+            "data_page_offset": 97,
+            "statistics": {
+              "max": true,
+              "min": true,
+              "null_count": 0,
+              "max_value": true,
+              "min_value": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "definition_level_histogram": [
+                0,
+                0,
+                1
+              ]
+            }
+          },
+          "offset_index_offset": 251,
+          "offset_index_length": 11,
+          "column_index_offset": 192,
+          "column_index_length": 22
+        }
+      ],
+      "total_byte_size": 124,
+      "num_rows": 1,
+      "file_offset": 4,
+      "total_compressed_size": 124,
+      "ordinal": 0
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "parquet.avro.schema",
+      "value": "{\"type\":\"record\",\"name\":\"table\",\"fields\":[{\"name\":\"id\",\"type\":\"int\"},{\"name\":\"var\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"var\",\"fields\":[{\"name\":\"metadata\",\"type\":\"bytes\"},{\"name\":\"value\",\"type\":[\"null\",\"bytes\"],\"default\":null},{\"name\":\"typed_value\",\"type\":[\"null\",\"boolean\"],\"default\":null}]}],\"default\":null}]}"
+    },
+    {
+      "key": "writer.model.name",
+      "value": "avro"
+    }
+  ],
+  "created_by": "parquet-mr version 1.16.0-SNAPSHOT (build ee34713e4d906d61f95d2b09145945638b2e2296)",
+  "metadata_length": 883
+}

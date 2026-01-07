@@ -63,7 +63,7 @@ export async function parquetRead(options) {
 
   // assemble struct columns
   const schemaTree = parquetSchema(options.metadata)
-  const assembled = asyncGroups.map(arg => assembleAsync(arg, schemaTree))
+  const assembled = asyncGroups.map(arg => assembleAsync(arg, schemaTree, options.parsers))
 
   // onChunk emit all chunks (don't await)
   if (onChunk) {
@@ -156,7 +156,7 @@ export async function parquetReadColumn(options) {
 
   // assemble struct columns
   const schemaTree = parquetSchema(options.metadata)
-  const assembled = asyncGroups.map(arg => assembleAsync(arg, schemaTree))
+  const assembled = asyncGroups.map(arg => assembleAsync(arg, schemaTree, options.parsers))
 
   /** @type {DecodedArray[]} */
   const columnData = []
