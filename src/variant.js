@@ -101,10 +101,7 @@ function parseVariantMetadata(bytes) {
   const cached = bufferCache.get(key)
   if (cached) return cached
 
-  const reader = {
-    view: new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
-    offset: 0,
-  }
+  const reader = makeReader(bytes)
   const header = reader.view.getUint8(reader.offset++)
   const version = header & 0x0f
   if (version !== 1) throw new Error(`parquet unsupported variant metadata version: ${version}`)
