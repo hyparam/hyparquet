@@ -76,7 +76,7 @@ export function equals(a, b, strict = true) {
  * @param {typeof globalThis.fetch} [fetchFn] fetch function to use
  * @returns {Promise<number>}
  */
-async function byteLengthFromUrlUsingFetch(url, requestInit = {}, fetchFn = globalThis.fetch) {
+async function byteLengthFromUrlUsingGet(url, requestInit = {}, fetchFn = globalThis.fetch) {
   const controller = new AbortController()
   const headers = new Headers(requestInit.headers)
   headers.set('Range', 'bytes=0-0')
@@ -131,14 +131,14 @@ export async function byteLengthFromUrl(url, requestInit, customFetch) {
 
   // If HEAD request is forbidden (common with signed S3 URLs), try GET with range
   if (res.status === 403) {
-    return byteLengthFromUrlUsingFetch(url, requestInit, fetch)
+    return byteLengthFromUrlUsingGet(url, requestInit, fetch)
   }
 
   if (!res.ok) throw new Error(`fetch head failed ${res.status}`)
   const length = res.headers.get('Content-Length')
   // If Content-Length is missing from HEAD, fallback to GET with range
   if (!length) {
-    return byteLengthFromUrlUsingFetch(url, requestInit, fetch)
+    return byteLengthFromUrlUsingGet(url, requestInit, fetch)
   }
   return parseInt(length)
 }
