@@ -188,10 +188,12 @@ export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd,
  *
  * @param {AsyncRowGroup} asyncRowGroup
  * @param {SchemaTree} schemaTree
+ * @param {ParquetParsers} [parsers]
  * @returns {AsyncRowGroup}
  */
-export function assembleAsync(asyncRowGroup, schemaTree) {
+export function assembleAsync(asyncRowGroup, schemaTree, parsers) {
   const { asyncColumns } = asyncRowGroup
+  parsers = { ...DEFAULT_PARSERS, ...parsers }
   /** @type {AsyncColumn[]} */
   const assembled = []
   for (const child of schemaTree.children) {
@@ -208,7 +210,7 @@ export function assembleAsync(asyncRowGroup, schemaTree) {
         })
       })).then(() => {
         // assemble the column
-        assembleNested(flatData, child)
+        assembleNested(flatData, child, parsers)
         const flatColumn = flatData.get(child.path.join('.'))
         if (!flatColumn) throw new Error('parquet column data not assembled')
         return { data: [flatColumn], pageSkip: 0 }

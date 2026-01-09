@@ -9,6 +9,7 @@ import { defaultInitialFetchSize } from './metadata.js'
 export function toJson(obj) {
   if (obj === undefined) return null
   if (typeof obj === 'bigint') return Number(obj)
+  if (Object.is(obj, -0)) return 0
   if (Array.isArray(obj)) return obj.map(toJson)
   if (obj instanceof Uint8Array) return Array.from(obj)
   if (obj instanceof Date) return obj.toISOString()

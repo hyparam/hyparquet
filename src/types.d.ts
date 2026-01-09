@@ -412,6 +412,11 @@ export interface ColumnIndex {
 
 export type BoundaryOrder = 'UNORDERED' | 'ASCENDING' | 'DESCENDING'
 
+export interface VariantMetadata {
+  dictionary: string[]
+  sorted: boolean
+}
+
 export type ThriftObject = { [ key: `field_${number}` ]: ThriftType }
 export type ThriftType = boolean | number | bigint | Uint8Array | ThriftType[] | ThriftObject
 

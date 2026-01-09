@@ -63,12 +63,18 @@ export function convertWithDictionary(data, dictionary, encoding, columnDecoder)
  * Convert known types from primitive to rich.
  *
  * @param {DecodedArray} data series of primitive types
- * @param {Pick<ColumnDecoder, "element" | "utf8" | "parsers">} columnDecoder
+ * @param {ColumnDecoder} columnDecoder
  * @returns {DecodedArray} series of rich types
  */
 export function convert(data, columnDecoder) {
-  const { element, parsers, utf8 = true } = columnDecoder
+  const { element, parsers, utf8 = true, schemaPath } = columnDecoder
   const { type, converted_type: ctype, logical_type: ltype } = element
+
+  // Skip utf8 conversion for plain BYTE_ARRAY inside VARIANT
+  const isVariant = schemaPath?.some(s => s.element.logical_type?.type === 'VARIANT')
+  if (isVariant && type === 'BYTE_ARRAY' && ctype !== 'UTF8' && ltype?.type !== 'STRING') {
+    return data
+  }
   if (ctype === 'DECIMAL') {
     const scale = element.scale || 0
     const factor = 10 ** -scale

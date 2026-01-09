@@ -1,0 +1,405 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "name": "table",
+      "num_children": 2
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "REQUIRED",
+      "name": "id",
+      "field_id": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "var",
+      "num_children": 3,
+      "field_id": 2,
+      "logical_type": {
+        "type": "VARIANT",
+        "specification_version": 1
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "metadata"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value"
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "typed_value",
+      "num_children": 2
+    },
+    {
+      "repetition_type": "REQUIRED",
+      "name": "a",
+      "num_children": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value"
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "typed_value"
+    },
+    {
+      "repetition_type": "REQUIRED",
+      "name": "b",
+      "num_children": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "typed_value",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    }
+  ],
+  "num_rows": 1,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN",
+              "BIT_PACKED"
+            ],
+            "path_in_schema": [
+              "id"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 27,
+            "total_compressed_size": 27,
+            "data_page_offset": 4,
+            "statistics": {
+              "max": 1,
+              "min": 1,
+              "null_count": 0,
+              "max_value": 1,
+              "min_value": 1
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {}
+          },
+          "offset_index_offset": 406,
+          "offset_index_length": 10,
+          "column_index_offset": 236,
+          "column_index_length": 23
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "BIT_PACKED"
+            ],
+            "path_in_schema": [
+              "var",
+              "metadata"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 46,
+            "total_compressed_size": 46,
+            "data_page_offset": 31,
+            "statistics": {
+              "max": "\u0011\u0005\u0000\u0001\u0002\u0003\u0004\u0005abcde",
+              "min": "\u0011\u0005\u0000\u0001\u0002\u0003\u0004\u0005abcde",
+              "null_count": 0,
+              "max_value": "\u0011\u0005\u0000\u0001\u0002\u0003\u0004\u0005abcde",
+              "min_value": "\u0011\u0005\u0000\u0001\u0002\u0003\u0004\u0005abcde"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 13
+            }
+          },
+          "offset_index_offset": 416,
+          "offset_index_length": 13,
+          "column_index_offset": 259,
+          "column_index_length": 41
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "BIT_PACKED"
+            ],
+            "path_in_schema": [
+              "var",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 30,
+            "total_compressed_size": 30,
+            "data_page_offset": 77,
+            "statistics": {
+              "null_count": 1
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 0,
+              "definition_level_histogram": [
+                0,
+                1,
+                0
+              ]
+            }
+          },
+          "offset_index_offset": 429,
+          "offset_index_length": 14,
+          "column_index_offset": 300,
+          "column_index_length": 20
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "BIT_PACKED"
+            ],
+            "path_in_schema": [
+              "var",
+              "typed_value",
+              "a",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 35,
+            "total_compressed_size": 35,
+            "data_page_offset": 107,
+            "statistics": {
+              "max": "\u0000",
+              "min": "\u0000",
+              "null_count": 0,
+              "max_value": "\u0000",
+              "min_value": "\u0000"
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 1,
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1
+              ]
+            }
+          },
+          "offset_index_offset": 443,
+          "offset_index_length": 14,
+          "column_index_offset": 320,
+          "column_index_length": 23
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "BIT_PACKED"
+            ],
+            "path_in_schema": [
+              "var",
+              "typed_value",
+              "a",
+              "typed_value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 30,
+            "total_compressed_size": 30,
+            "data_page_offset": 142,
+            "statistics": {
+              "null_count": 1
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "definition_level_histogram": [
+                0,
+                0,
+                1,
+                0
+              ]
+            }
+          },
+          "offset_index_offset": 457,
+          "offset_index_length": 11,
+          "column_index_offset": 343,
+          "column_index_length": 21
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "BIT_PACKED"
+            ],
+            "path_in_schema": [
+              "var",
+              "typed_value",
+              "b",
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 30,
+            "total_compressed_size": 30,
+            "data_page_offset": 172,
+            "statistics": {
+              "null_count": 1
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 0,
+              "definition_level_histogram": [
+                0,
+                0,
+                1,
+                0
+              ]
+            }
+          },
+          "offset_index_offset": 468,
+          "offset_index_length": 14,
+          "column_index_offset": 364,
+          "column_index_length": 21
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "BIT_PACKED"
+            ],
+            "path_in_schema": [
+              "var",
+              "typed_value",
+              "b",
+              "typed_value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1,
+            "total_uncompressed_size": 34,
+            "total_compressed_size": 34,
+            "data_page_offset": 202,
+            "statistics": {
+              "max": "",
+              "min": "",
+              "null_count": 0,
+              "max_value": "",
+              "min_value": ""
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 0,
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                1
+              ]
+            }
+          },
+          "offset_index_offset": 482,
+          "offset_index_length": 14,
+          "column_index_offset": 385,
+          "column_index_length": 21
+        }
+      ],
+      "total_byte_size": 232,
+      "num_rows": 1,
+      "file_offset": 4,
+      "total_compressed_size": 232,
+      "ordinal": 0
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "parquet.avro.schema",
+      "value": "{\"type\":\"record\",\"name\":\"table\",\"fields\":[{\"name\":\"id\",\"type\":\"int\"},{\"name\":\"var\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"var\",\"fields\":[{\"name\":\"metadata\",\"type\":\"bytes\"},{\"name\":\"value\",\"type\":[\"null\",\"bytes\"],\"default\":null},{\"name\":\"typed_value\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"typed_value\",\"fields\":[{\"name\":\"a\",\"type\":{\"type\":\"record\",\"name\":\"a\",\"fields\":[{\"name\":\"value\",\"type\":[\"null\",\"bytes\"],\"default\":null},{\"name\":\"typed_value\",\"type\":[\"null\",\"int\"],\"default\":null}]}},{\"name\":\"b\",\"type\":{\"type\":\"record\",\"name\":\"b\",\"fields\":[{\"name\":\"value\",\"type\":[\"null\",\"bytes\"],\"default\":null},{\"name\":\"typed_value\",\"type\":[\"null\",\"string\"],\"default\":null}]}}]}],\"default\":null}]}],\"default\":null}]}"
+    },
+    {
+      "key": "writer.model.name",
+      "value": "avro"
+    }
+  ],
+  "created_by": "parquet-mr version 1.16.0-SNAPSHOT (build ee34713e4d906d61f95d2b09145945638b2e2296)",
+  "metadata_length": 1684
+}
