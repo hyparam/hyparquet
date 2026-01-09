@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.24.0]
+ - Variant support (#149)
+
 ## [1.23.3]
  - Fix `readColumn` truncation in struct columns (#148)
 
