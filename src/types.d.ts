@@ -291,6 +291,7 @@ export type Encoding =
   | 'DELTA_BYTE_ARRAY'
   | 'RLE_DICTIONARY'
   | 'BYTE_STREAM_SPLIT'
+  | 'ALP'
 
 export type CompressionCodec =
   | 'UNCOMPRESSED'
