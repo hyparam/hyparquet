@@ -1,3 +1,4 @@
+import { alpDecode } from './alp.js'
 import { deltaBinaryUnpack, deltaByteArray, deltaLengthByteArray } from './delta.js'
 import { bitWidth, byteStreamSplit, readRleBitPackedHybrid } from './encoding.js'
 import { readPlain } from './plain.js'
@@ -48,6 +49,8 @@ export function readDataPage(bytes, daph, { type, element, schemaPath }) {
     }
   } else if (daph.encoding === 'BYTE_STREAM_SPLIT') {
     dataPage = byteStreamSplit(reader, nValues, type, element.type_length)
+  } else if (daph.encoding === 'ALP') {
+    dataPage = alpDecode(reader, nValues, type)
   } else if (daph.encoding === 'DELTA_BINARY_PACKED') {
     const int32 = type === 'INT32'
     dataPage = int32 ? new Int32Array(nValues) : new BigInt64Array(nValues)
@@ -194,6 +197,8 @@ export function readDataPageV2(compressedBytes, ph, columnDecoder) {
     deltaByteArray(pageReader, nValues, dataPage)
   } else if (daph2.encoding === 'BYTE_STREAM_SPLIT') {
     dataPage = byteStreamSplit(pageReader, nValues, type, element.type_length)
+  } else if (daph2.encoding === 'ALP') {
+    dataPage = alpDecode(pageReader, nValues, type)
   } else {
     throw new Error(`parquet unsupported encoding: ${daph2.encoding}`)
   }
