@@ -13,9 +13,13 @@ import { decodeVariantColumn } from './variant.js'
  * @returns {DecodedArray}
  */
 export function assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath) {
-  const n = definitionLevels?.length || repetitionLevels.length
-  if (!n) return values
   const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
+  // If no def/rep levels, synthesize def levels at max
+  if (!definitionLevels?.length && !repetitionLevels.length) {
+    if (!maxDefinitionLevel || !values.length) return values
+    definitionLevels = new Array(values.length).fill(maxDefinitionLevel)
+  }
+  const n = definitionLevels?.length || repetitionLevels.length
   const repetitionPath = schemaPath.map(({ element }) => element.repetition_type)
   let valueIndex = 0
 
@@ -170,13 +174,6 @@ export function assembleNested(subcolumnData, schema, parsers, depth = 0) {
     // remove children
     for (const child of schema.children) {
       subcolumnData.delete(child.path.join('.'))
-    }
-
-    // Wrap REQUIRED leaf children to match OPTIONAL leaf children in structs.
-    for (const child of schema.children) {
-      if (optional && child.element.repetition_type === 'REQUIRED' && !child.children.length) {
-        struct[child.element.name] = struct[child.element.name].map((/** @type {any} */ v) => [v])
-      }
     }
 
     // invert struct by depth

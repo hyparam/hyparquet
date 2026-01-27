@@ -98,19 +98,9 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
     // assert(!daph.statistics?.null_count || daph.statistics.null_count === BigInt(daph.num_values - dataPage.length))
 
     // convert types, dereference dictionary, and assemble lists
-    let values = convertWithDictionary(dataPage, dictionary, daph.encoding, columnDecoder)
-    if (repetitionLevels.length || definitionLevels?.length) {
-      const output = Array.isArray(previousChunk) ? previousChunk : []
-      return assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
-    } else {
-      // wrap nested flat data by depth
-      for (let i = 2; i < schemaPath.length; i++) {
-        if (schemaPath[i].element.repetition_type !== 'REQUIRED') {
-          values = Array.from(values, e => [e])
-        }
-      }
-      return values
-    }
+    const values = convertWithDictionary(dataPage, dictionary, daph.encoding, columnDecoder)
+    const output = Array.isArray(previousChunk) ? previousChunk : []
+    return assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
   } else if (header.type === 'DATA_PAGE_V2') {
     const daph2 = header.data_page_header_v2
     if (!daph2) throw new Error('parquet data page header v2 is undefined')

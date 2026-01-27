@@ -1,0 +1,90 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "name": "root",
+      "num_children": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "person",
+      "num_children": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "name",
+      "converted_type": "UTF8"
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "address",
+      "num_children": 1
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "city",
+      "converted_type": "UTF8"
+    }
+  ],
+  "num_rows": 4,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "person",
+              "name"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 46,
+            "total_compressed_size": 46,
+            "data_page_offset": 4,
+            "statistics": {
+              "null_count": 1,
+              "max_value": "Cara",
+              "min_value": "Ada"
+            }
+          }
+        },
+        {
+          "file_offset": 50,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "person",
+              "address",
+              "city"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 53,
+            "total_compressed_size": 53,
+            "data_page_offset": 75,
+            "dictionary_page_offset": 50,
+            "statistics": {
+              "null_count": 3,
+              "max_value": "London",
+              "min_value": "London"
+            }
+          }
+        }
+      ],
+      "total_byte_size": 99,
+      "num_rows": 4
+    }
+  ],
+  "created_by": "hyparquet",
+  "metadata_length": 204
+}
