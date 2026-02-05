@@ -391,8 +391,7 @@ export type DecodedArray =
 
 /** Wrapper around decoded page data */
 export interface PageResult {
-  length: number
-  skip: boolean
+  skippedRows: number
   decodedArray?: DecodedArray
 }
 
