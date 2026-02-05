@@ -42,14 +42,12 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
     // read page header
     const header = parquetHeader(reader)
     if (header.type === 'DICTIONARY_PAGE') {
-      // assert(!dictionary)
       // @ts-ignore: dictionary pages never return SkipMarker
       dictionary = convert(readPage(reader, header, columnDecoder, dictionary, undefined, 0), columnDecoder)
     } else {
       const lastChunkLength = lastChunk?.length || 0
       const values = readPage(reader, header, columnDecoder, dictionary, lastChunk, selectStart - rowCount)
-      // Check for skip marker (plain object with only length property)
-      // TypedArrays have ArrayBuffer, regular arrays pass Array.isArray
+      // Check for skip marker
       if (!ArrayBuffer.isView(values) && !Array.isArray(values)) {
         // skip marker - just advance row count, don't add to chunks
         if (!chunks.length) {
@@ -71,8 +69,6 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
 
   return { chunks, skippedRows }
 }
-
-// note to self: tomorrow yalc this into hyperparam-cli and .app and see if that is sufficient
 
 /**
  * Read a page (data or dictionary) from a buffer.

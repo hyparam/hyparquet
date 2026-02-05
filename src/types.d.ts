@@ -389,7 +389,7 @@ export type DecodedArray =
   | Float64Array
   | any[]
 
-/** Marker returned when skipping pages, not a real array */
+/** Marker returned when skipping pages */
 export interface SkipMarker {
   length: number
 }

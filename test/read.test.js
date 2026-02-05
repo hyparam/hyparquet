@@ -271,7 +271,6 @@ describe('parquetRead', () => {
       },
     })
 
-    // Now correctly returns 2 pages - no empty page emitted when skipping
     expect(pages.length).toBe(2) // 2 pages read
     expect(counting.fetches).toBe(1) // 1 column chunk
     expect(counting.bytes).toBe(14334)
