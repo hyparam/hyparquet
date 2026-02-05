@@ -42,26 +42,25 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
     // read page header
     const header = parquetHeader(reader)
     if (header.type === 'DICTIONARY_PAGE') {
-      // @ts-ignore: dictionary pages never return SkipMarker
-      dictionary = convert(readPage(reader, header, columnDecoder, dictionary, undefined, 0), columnDecoder)
+      const { decodedArray } = readPage(reader, header, columnDecoder, dictionary, undefined, 0)
+      if (decodedArray) dictionary = convert(decodedArray, columnDecoder)
     } else {
       const lastChunkLength = lastChunk?.length || 0
-      const values = readPage(reader, header, columnDecoder, dictionary, lastChunk, selectStart - rowCount)
-      // Check for skip marker
-      if (!ArrayBuffer.isView(values) && !Array.isArray(values)) {
-        // skip marker - just advance row count, don't add to chunks
+      const result = readPage(reader, header, columnDecoder, dictionary, lastChunk, selectStart - rowCount)
+      if (result.skip) {
+        // skipped page - just advance row count, don't add to chunks
         if (!chunks.length) {
-          skippedRows += values.length
+          skippedRows += result.length
         }
-        rowCount += values.length
-      } else if (lastChunk === values) {
+        rowCount += result.length
+      } else if (result.decodedArray && lastChunk === result.decodedArray) {
         // continued from previous page
-        rowCount += values.length - lastChunkLength
-      } else if (values.length) {
+        rowCount += result.decodedArray.length - lastChunkLength
+      } else if (result.decodedArray && result.decodedArray.length) {
         emitLastChunk?.()
-        chunks.push(values)
-        rowCount += values.length
-        lastChunk = values
+        chunks.push(result.decodedArray)
+        rowCount += result.decodedArray.length
+        lastChunk = result.decodedArray
       }
     }
   }
@@ -73,14 +72,14 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
 /**
  * Read a page (data or dictionary) from a buffer.
  *
- * @import {SkipMarker} from '../src/types.d.ts'
+ * @import {PageResult} from '../src/types.d.ts'
  * @param {DataReader} reader
  * @param {PageHeader} header
  * @param {ColumnDecoder} columnDecoder
  * @param {DecodedArray | undefined} dictionary
  * @param {DecodedArray | undefined} previousChunk
  * @param {number} pageStart skip this many rows in the page
- * @returns {DecodedArray | SkipMarker}
+ * @returns {PageResult}
  */
 export function readPage(reader, header, columnDecoder, dictionary, previousChunk, pageStart) {
   const { type, element, schemaPath, codec, compressors } = columnDecoder
@@ -97,7 +96,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
 
     // skip unnecessary non-nested pages
     if (pageStart > daph.num_values && isFlatColumn(schemaPath)) {
-      return { length: daph.num_values } // skip marker
+      return { length: daph.num_values, skip: true, decodedArray: undefined }
     }
 
     const page = decompressPage(compressedBytes, Number(header.uncompressed_page_size), codec, compressors)
@@ -107,14 +106,15 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
     // convert types, dereference dictionary, and assemble lists
     const values = convertWithDictionary(dataPage, dictionary, daph.encoding, columnDecoder)
     const output = Array.isArray(previousChunk) ? previousChunk : []
-    return assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
+    const assembled = assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
+    return { length: daph.num_values, skip: false, decodedArray: assembled }
   } else if (header.type === 'DATA_PAGE_V2') {
     const daph2 = header.data_page_header_v2
     if (!daph2) throw new Error('parquet data page header v2 is undefined')
 
     // skip unnecessary pages
     if (pageStart > daph2.num_rows) {
-      return { length: daph2.num_values } // skip marker
+      return { length: daph2.num_values, skip: true, decodedArray: undefined }
     }
 
     const { definitionLevels, repetitionLevels, dataPage } =
@@ -123,7 +123,8 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
     // convert types, dereference dictionary, and assemble lists
     const values = convertWithDictionary(dataPage, dictionary, daph2.encoding, columnDecoder)
     const output = Array.isArray(previousChunk) ? previousChunk : []
-    return assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
+    const assembled = assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
+    return { length: daph2.num_values, skip: false, decodedArray: assembled }
   } else if (header.type === 'DICTIONARY_PAGE') {
     const diph = header.dictionary_page_header
     if (!diph) throw new Error('parquet dictionary page header is undefined')
@@ -133,7 +134,8 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
     )
 
     const reader = { view: new DataView(page.buffer, page.byteOffset, page.byteLength), offset: 0 }
-    return readPlain(reader, type, diph.num_values, element.type_length)
+    const dictArray = readPlain(reader, type, diph.num_values, element.type_length)
+    return { length: diph.num_values, skip: false, decodedArray: dictArray }
   } else {
     throw new Error(`parquet unsupported page type: ${header.type}`)
   }

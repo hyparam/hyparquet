@@ -389,9 +389,11 @@ export type DecodedArray =
   | Float64Array
   | any[]
 
-/** Marker returned when skipping pages */
-export interface SkipMarker {
+/** Wrapper around decoded page data */
+export interface PageResult {
   length: number
+  skip: boolean
+  decodedArray?: DecodedArray
 }
 
 export interface OffsetIndex {
