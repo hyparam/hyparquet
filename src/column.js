@@ -13,7 +13,7 @@ import { deserializeTCompactProtocol } from './thrift.js'
  * @param {RowGroupSelect} rowGroupSelect row group selection
  * @param {ColumnDecoder} columnDecoder column decoder params
  * @param {(chunk: SubColumnData) => void} [onPage] callback for each page
- * @returns {DecodedArray[]}
+ * @returns {{ chunks: DecodedArray[], skippedRows: number }}
  */
 export function readColumn(reader, { groupStart, selectStart, selectEnd }, columnDecoder, onPage) {
   const { pathInSchema, schemaPath } = columnDecoder
@@ -25,6 +25,7 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
   /** @type {DecodedArray | undefined} */
   let lastChunk = undefined
   let rowCount = 0
+  let skippedRows = 0
 
   const emitLastChunk = onPage && (() => {
     lastChunk && onPage({
@@ -42,16 +43,23 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
     const header = parquetHeader(reader)
     if (header.type === 'DICTIONARY_PAGE') {
       // assert(!dictionary)
-      dictionary = readPage(reader, header, columnDecoder, dictionary, undefined, 0)
-      dictionary = convert(dictionary, columnDecoder)
+      // @ts-ignore: dictionary pages never return SkipMarker
+      dictionary = convert(readPage(reader, header, columnDecoder, dictionary, undefined, 0), columnDecoder)
     } else {
       const lastChunkLength = lastChunk?.length || 0
       const values = readPage(reader, header, columnDecoder, dictionary, lastChunk, selectStart - rowCount)
-      if (lastChunk === values) {
+      // Check for skip marker (plain object with only length property)
+      // TypedArrays have ArrayBuffer, regular arrays pass Array.isArray
+      if (!ArrayBuffer.isView(values) && !Array.isArray(values)) {
+        // skip marker - just advance row count, don't add to chunks
+        if (!chunks.length) {
+          skippedRows += values.length
+        }
+        rowCount += values.length
+      } else if (lastChunk === values) {
         // continued from previous page
         rowCount += values.length - lastChunkLength
-      } else {
-        // TODO: don't emit empty chunks
+      } else if (values.length) {
         emitLastChunk?.()
         chunks.push(values)
         rowCount += values.length
@@ -61,19 +69,22 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
   }
   emitLastChunk?.()
 
-  return chunks
+  return { chunks, skippedRows }
 }
+
+// note to self: tomorrow yalc this into hyperparam-cli and .app and see if that is sufficient
 
 /**
  * Read a page (data or dictionary) from a buffer.
  *
+ * @import {SkipMarker} from '../src/types.d.ts'
  * @param {DataReader} reader
  * @param {PageHeader} header
  * @param {ColumnDecoder} columnDecoder
  * @param {DecodedArray | undefined} dictionary
  * @param {DecodedArray | undefined} previousChunk
  * @param {number} pageStart skip this many rows in the page
- * @returns {DecodedArray}
+ * @returns {DecodedArray | SkipMarker}
  */
 export function readPage(reader, header, columnDecoder, dictionary, previousChunk, pageStart) {
   const { type, element, schemaPath, codec, compressors } = columnDecoder
@@ -90,7 +101,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
 
     // skip unnecessary non-nested pages
     if (pageStart > daph.num_values && isFlatColumn(schemaPath)) {
-      return new Array(daph.num_values) // TODO: don't allocate array
+      return { length: daph.num_values } // skip marker
     }
 
     const page = decompressPage(compressedBytes, Number(header.uncompressed_page_size), codec, compressors)
@@ -107,7 +118,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
 
     // skip unnecessary pages
     if (pageStart > daph2.num_rows) {
-      return new Array(daph2.num_values) // TODO: don't allocate array
+      return { length: daph2.num_values } // skip marker
     }
 
     const { definitionLevels, repetitionLevels, dataPage } =

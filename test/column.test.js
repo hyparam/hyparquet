@@ -40,7 +40,7 @@ describe('readColumn', () => {
     }
 
     const result = readColumn(reader, rowGroupSelect, columnDecoder)
-    expect(result).toEqual(expected)
+    expect(result.chunks).toEqual(expected)
   })
 
   it('readColumn should return a typed array', async () => {
@@ -70,8 +70,8 @@ describe('readColumn', () => {
       groupRows: Number(column.meta_data.num_values),
     }
 
-    const columnData = readColumn(reader, rowGroupSelect, columnDecoder)
-    expect(columnData[0]).toBeInstanceOf(Int32Array)
+    const { chunks } = readColumn(reader, rowGroupSelect, columnDecoder)
+    expect(chunks[0]).toBeInstanceOf(Int32Array)
   })
 })
 

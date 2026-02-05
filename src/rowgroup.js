@@ -46,9 +46,10 @@ export function readRowGroup(options, { metadata }, groupPlan) {
         data: Promise.resolve(file.slice(chunkPlan.range.startByte, chunkPlan.range.endByte))
           .then(buffer => {
             const reader = { view: new DataView(buffer), offset: 0 }
+            const { chunks, skippedRows } = readColumn(reader, groupPlan, columnDecoder, options.onPage)
             return {
-              pageSkip: 0,
-              data: readColumn(reader, groupPlan, columnDecoder, options.onPage),
+              pageSkip: skippedRows,
+              data: chunks,
             }
           }),
       })
@@ -92,9 +93,10 @@ export function readRowGroup(options, { metadata }, groupPlan) {
             selectStart: groupPlan.selectStart - pageSkip,
             selectEnd: groupPlan.selectEnd - pageSkip,
           } : groupPlan
+          const { chunks, skippedRows } = readColumn(reader, adjustedGroupPlan, columnDecoder, options.onPage)
           return {
-            data: readColumn(reader, adjustedGroupPlan, columnDecoder, options.onPage),
-            pageSkip,
+            data: chunks,
+            pageSkip: pageSkip + skippedRows,
           }
         }),
     })

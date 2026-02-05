@@ -389,6 +389,11 @@ export type DecodedArray =
   | Float64Array
   | any[]
 
+/** Marker returned when skipping pages, not a real array */
+export interface SkipMarker {
+  length: number
+}
+
 export interface OffsetIndex {
   page_locations: PageLocation[]
   unencoded_byte_array_data_bytes?: bigint[]
