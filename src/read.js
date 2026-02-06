@@ -69,8 +69,8 @@ export async function parquetRead(options) {
   if (onChunk) {
     for (const asyncGroup of assembled) {
       for (const asyncColumn of asyncGroup.asyncColumns) {
-        asyncColumn.data.then(({ data, pageSkip }) => {
-          let rowStart = asyncGroup.groupStart + pageSkip
+        asyncColumn.data.then(({ data, skipped }) => {
+          let rowStart = asyncGroup.groupStart + skipped
           for (const columnData of data) {
             onChunk({
               columnName: asyncColumn.pathInSchema[0],

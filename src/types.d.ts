@@ -389,6 +389,12 @@ export type DecodedArray =
   | Float64Array
   | any[]
 
+/** Wrapper around decoded page data */
+export interface PageResult {
+  skipped: number
+  data?: DecodedArray
+}
+
 export interface OffsetIndex {
   page_locations: PageLocation[]
   unencoded_byte_array_data_bytes?: bigint[]
@@ -482,7 +488,7 @@ export interface AsyncColumn {
   data: Promise<AsyncPages>
 }
 interface AsyncPages {
-  pageSkip: number // rows skipped from groupStart to first row of this column data
+  skipped: number // rows skipped from groupStart to first row of this column data
   data: DecodedArray[]
 }
 

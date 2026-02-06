@@ -46,10 +46,7 @@ export function readRowGroup(options, { metadata }, groupPlan) {
         data: Promise.resolve(file.slice(chunkPlan.range.startByte, chunkPlan.range.endByte))
           .then(buffer => {
             const reader = { view: new DataView(buffer), offset: 0 }
-            return {
-              pageSkip: 0,
-              data: readColumn(reader, groupPlan, columnDecoder, options.onPage),
-            }
+            return readColumn(reader, groupPlan, columnDecoder, options.onPage)
           }),
       })
       continue
@@ -67,7 +64,7 @@ export function readRowGroup(options, { metadata }, groupPlan) {
           const pages = offsetIndex.page_locations
           let startByte = NaN
           let endByte = NaN
-          let pageSkip = 0
+          let skipped = 0
           for (let i = 0; i < pages.length; i++) {
             const page = pages[i]
             const pageStart = Number(page.first_row_index)
@@ -78,7 +75,7 @@ export function readRowGroup(options, { metadata }, groupPlan) {
             if (pageStart < selectEnd && pageEnd > selectStart) {
               if (Number.isNaN(startByte)) {
                 startByte = Number(page.offset)
-                pageSkip = pageStart
+                skipped = pageStart
               }
               endByte = Number(page.offset) + page.compressed_page_size
             }
@@ -86,15 +83,16 @@ export function readRowGroup(options, { metadata }, groupPlan) {
           const buffer = await file.slice(startByte, endByte)
           const reader = { view: new DataView(buffer), offset: 0 }
           // adjust row selection for skipped pages
-          const adjustedGroupPlan = pageSkip ? {
+          const adjustedGroupPlan = skipped ? {
             ...groupPlan,
-            groupStart: groupPlan.groupStart + pageSkip,
-            selectStart: groupPlan.selectStart - pageSkip,
-            selectEnd: groupPlan.selectEnd - pageSkip,
+            groupStart: groupPlan.groupStart + skipped,
+            selectStart: groupPlan.selectStart - skipped,
+            selectEnd: groupPlan.selectEnd - skipped,
           } : groupPlan
+          const { data, skipped: columnSkipped } = readColumn(reader, adjustedGroupPlan, columnDecoder, options.onPage)
           return {
-            data: readColumn(reader, adjustedGroupPlan, columnDecoder, options.onPage),
-            pageSkip,
+            data,
+            skipped: skipped + columnSkipped,
           }
         }),
     })
@@ -157,8 +155,8 @@ export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd,
       /** @type {Record<string, any>} */
       const rowData = {}
       for (let i = 0; i < asyncColumns.length; i++) {
-        const { data, pageSkip } = asyncPages[i]
-        rowData[asyncColumns[i].pathInSchema[0]] = data[row - pageSkip]
+        const { data, skipped } = asyncPages[i]
+        rowData[asyncColumns[i].pathInSchema[0]] = data[row - skipped]
       }
       groupData[selectRow] = rowData
     }
@@ -174,8 +172,8 @@ export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd,
     for (let i = 0; i < columnOrder.length; i++) {
       const colIdx = columnIndexes[i]
       if (colIdx >= 0) {
-        const { data, pageSkip } = asyncPages[colIdx]
-        rowData[i] = data[row - pageSkip]
+        const { data, skipped } = asyncPages[colIdx]
+        rowData[i] = data[row - skipped]
       }
     }
     groupData[selectRow] = rowData
@@ -213,7 +211,7 @@ export function assembleAsync(asyncRowGroup, schemaTree, parsers) {
         assembleNested(flatData, child, parsers)
         const flatColumn = flatData.get(child.path.join('.'))
         if (!flatColumn) throw new Error('parquet column data not assembled')
-        return { data: [flatColumn], pageSkip: 0 }
+        return { data: [flatColumn], skipped: 0 }
       })
 
       assembled.push({ pathInSchema: child.path, data })
