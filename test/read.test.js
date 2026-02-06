@@ -319,13 +319,6 @@ describe('parquetRead', () => {
   })
 
   it('skipped pages should not emit chunks with undefined data', async () => {
-    // offset_indexed.parquet has a 'content' BYTE_ARRAY column with 6 data pages
-    // per row group (page sizes: 18, 19, 17, 21, 20, 5 = 100 rows).
-    // When reading rows 50-100, the first two pages (37 rows) should be skipped
-    // entirely. Previously, skipped pages returned sparse arrays filled with
-    // undefined that were emitted as real chunks. This caused blank cells in
-    // streaming table consumers that couldn't distinguish skipped data from
-    // intentionally null values.
     const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
     /** @type {{ columnName: string, columnData: any, rowStart: number, rowEnd: number }[]} */
     const chunks = []
