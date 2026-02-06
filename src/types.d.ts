@@ -391,8 +391,8 @@ export type DecodedArray =
 
 /** Wrapper around decoded page data */
 export interface PageResult {
-  skippedRows: number
-  decodedArray?: DecodedArray
+  skipped: number
+  data?: DecodedArray
 }
 
 export interface OffsetIndex {
@@ -488,7 +488,7 @@ export interface AsyncColumn {
   data: Promise<AsyncPages>
 }
 interface AsyncPages {
-  pageSkip: number // rows skipped from groupStart to first row of this column data
+  skipped: number // rows skipped from groupStart to first row of this column data
   data: DecodedArray[]
 }
 

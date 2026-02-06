@@ -13,7 +13,7 @@ import { deserializeTCompactProtocol } from './thrift.js'
  * @param {RowGroupSelect} rowGroupSelect row group selection
  * @param {ColumnDecoder} columnDecoder column decoder params
  * @param {(chunk: SubColumnData) => void} [onPage] callback for each page
- * @returns {{ chunks: DecodedArray[], skippedRows: number }}
+ * @returns {{ data: DecodedArray[], skipped: number }}
  */
 export function readColumn(reader, { groupStart, selectStart, selectEnd }, columnDecoder, onPage) {
   const { pathInSchema, schemaPath } = columnDecoder
@@ -25,7 +25,7 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
   /** @type {DecodedArray | undefined} */
   let lastChunk = undefined
   let rowCount = 0
-  let skippedRows = 0
+  let skipped = 0
 
   const emitLastChunk = onPage && (() => {
     lastChunk && onPage({
@@ -42,31 +42,31 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
     // read page header
     const header = parquetHeader(reader)
     if (header.type === 'DICTIONARY_PAGE') {
-      const { decodedArray } = readPage(reader, header, columnDecoder, dictionary, undefined, 0)
-      if (decodedArray) dictionary = convert(decodedArray, columnDecoder)
+      const { data } = readPage(reader, header, columnDecoder, dictionary, undefined, 0)
+      if (data) dictionary = convert(data, columnDecoder)
     } else {
       const lastChunkLength = lastChunk?.length || 0
       const result = readPage(reader, header, columnDecoder, dictionary, lastChunk, selectStart - rowCount)
-      if (result.skippedRows) {
+      if (result.skipped) {
         // skipped page - just advance row count, don't add to chunks
         if (!chunks.length) {
-          skippedRows += result.skippedRows
+          skipped += result.skipped
         }
-        rowCount += result.skippedRows
-      } else if (result.decodedArray && lastChunk === result.decodedArray) {
+        rowCount += result.skipped
+      } else if (result.data && lastChunk === result.data) {
         // continued from previous page
-        rowCount += result.decodedArray.length - lastChunkLength
-      } else if (result.decodedArray && result.decodedArray.length) {
+        rowCount += result.data.length - lastChunkLength
+      } else if (result.data && result.data.length) {
         emitLastChunk?.()
-        chunks.push(result.decodedArray)
-        rowCount += result.decodedArray.length
-        lastChunk = result.decodedArray
+        chunks.push(result.data)
+        rowCount += result.data.length
+        lastChunk = result.data
       }
     }
   }
   emitLastChunk?.()
 
-  return { chunks, skippedRows }
+  return { data: chunks, skipped }
 }
 
 /**
@@ -96,7 +96,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
 
     // skip unnecessary non-nested pages
     if (pageStart > daph.num_values && isFlatColumn(schemaPath)) {
-      return { skippedRows: daph.num_values, decodedArray: undefined }
+      return { skipped: daph.num_values, data: undefined }
     }
 
     const page = decompressPage(compressedBytes, Number(header.uncompressed_page_size), codec, compressors)
@@ -107,14 +107,14 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
     const values = convertWithDictionary(dataPage, dictionary, daph.encoding, columnDecoder)
     const output = Array.isArray(previousChunk) ? previousChunk : []
     const assembled = assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
-    return { skippedRows: 0, decodedArray: assembled }
+    return { skipped: 0, data: assembled }
   } else if (header.type === 'DATA_PAGE_V2') {
     const daph2 = header.data_page_header_v2
     if (!daph2) throw new Error('parquet data page header v2 is undefined')
 
     // skip unnecessary pages
     if (pageStart > daph2.num_rows) {
-      return { skippedRows: daph2.num_values, decodedArray: undefined }
+      return { skipped: daph2.num_values, data: undefined }
     }
 
     const { definitionLevels, repetitionLevels, dataPage } =
@@ -124,7 +124,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
     const values = convertWithDictionary(dataPage, dictionary, daph2.encoding, columnDecoder)
     const output = Array.isArray(previousChunk) ? previousChunk : []
     const assembled = assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
-    return { skippedRows: 0, decodedArray: assembled }
+    return { skipped: 0, data: assembled }
   } else if (header.type === 'DICTIONARY_PAGE') {
     const diph = header.dictionary_page_header
     if (!diph) throw new Error('parquet dictionary page header is undefined')
@@ -135,7 +135,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
 
     const reader = { view: new DataView(page.buffer, page.byteOffset, page.byteLength), offset: 0 }
     const dictArray = readPlain(reader, type, diph.num_values, element.type_length)
-    return { skippedRows: 0, decodedArray: dictArray }
+    return { skipped: 0, data: dictArray }
   } else {
     throw new Error(`parquet unsupported page type: ${header.type}`)
   }
