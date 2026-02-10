@@ -271,8 +271,7 @@ describe('parquetRead', () => {
       },
     })
 
-    // TODO: should be 2 but we emit an empty page when skipping pages
-    expect(pages.length).toBe(3) // 3 pages read
+    expect(pages.length).toBe(2) // 2 pages read
     expect(counting.fetches).toBe(1) // 1 column chunk
     expect(counting.bytes).toBe(14334)
   })
@@ -317,5 +316,33 @@ describe('parquetRead', () => {
     expect(rows).toEqual([
       { a: 'abc', d: true },
     ])
+  })
+
+  it('skipped pages should not emit chunks with undefined data', async () => {
+    const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
+    /** @type {{ columnName: string, columnData: any, rowStart: number, rowEnd: number }[]} */
+    const chunks = []
+    await parquetRead({
+      file,
+      columns: ['content'],
+      rowStart: 50,
+      rowEnd: 100,
+      onChunk(chunk) {
+        chunks.push(chunk)
+      },
+    })
+
+    // Every emitted chunk should contain only real string values, not undefined
+    for (const chunk of chunks) {
+      for (let i = 0; i < chunk.columnData.length; i++) {
+        expect(typeof chunk.columnData[i]).toBe('string')
+      }
+    }
+
+    // No chunk should start before the selection range's first relevant page
+    // The first page that overlaps with row 50 starts at row 37
+    for (const chunk of chunks) {
+      expect(chunk.rowStart).toBeGreaterThanOrEqual(37)
+    }
   })
 })
