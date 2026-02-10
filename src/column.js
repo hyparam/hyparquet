@@ -96,7 +96,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
 
     // skip unnecessary non-nested pages
     if (pageStart > daph.num_values && isFlatColumn(schemaPath)) {
-      return { skipped: daph.num_values, data: undefined }
+      return { skipped: daph.num_values }
     }
 
     const page = decompressPage(compressedBytes, Number(header.uncompressed_page_size), codec, compressors)
@@ -114,7 +114,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
 
     // skip unnecessary pages
     if (pageStart > daph2.num_rows) {
-      return { skipped: daph2.num_values, data: undefined }
+      return { skipped: daph2.num_values }
     }
 
     const { definitionLevels, repetitionLevels, dataPage } =

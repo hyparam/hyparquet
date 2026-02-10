@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.25.0]
+ - Support dot-notation for filtering on nested struct fields (#153)
+
+## [1.24.1]
+ - Fix handling of null definition levels (#150)
+
 ## [1.24.0]
  - Variant support (#149)
 
