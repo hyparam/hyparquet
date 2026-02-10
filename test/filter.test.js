@@ -48,6 +48,27 @@ describe('matchFilter', () => {
     expect(matchFilter({ x: 5 }, { x: { $eq: '5' } }, false)).toBe(true)
     expect(matchFilter({ x: 5 }, { x: { $ne: '5' } }, false)).toBe(false)
   })
+
+  it('handles dot-notation for nested struct fields', () => {
+    const record = { bbox: { xmin: -73.1, ymin: 40.9, xmax: -73.0, ymax: 41.0 } }
+    expect(matchFilter(record, { 'bbox.xmin': { $gte: -74, $lte: -73 } })).toBe(true)
+    expect(matchFilter(record, { 'bbox.xmin': { $gte: -72, $lte: -71 } })).toBe(false)
+    expect(matchFilter(record, { 'bbox.xmin': { $eq: -73.1 } })).toBe(true)
+    expect(matchFilter(record, { 'bbox.xmin': { $eq: -73.2 } })).toBe(false)
+  })
+
+  it('handles deeply nested dot-notation', () => {
+    const record = { a: { b: { c: 42 } } }
+    expect(matchFilter(record, { 'a.b.c': { $eq: 42 } })).toBe(true)
+    expect(matchFilter(record, { 'a.b.c': { $gt: 40 } })).toBe(true)
+    expect(matchFilter(record, { 'a.b.c': { $lt: 40 } })).toBe(false)
+  })
+
+  it('returns false when nested path does not exist', () => {
+    const record = { a: { b: 1 } }
+    expect(matchFilter(record, { 'a.c': { $eq: 1 } })).toBe(false)
+    expect(matchFilter(record, { 'x.y.z': { $eq: 1 } })).toBe(false)
+  })
 })
 
 describe('canSkipRowGroup', () => {

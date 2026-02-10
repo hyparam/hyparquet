@@ -233,6 +233,27 @@ describe('parquetQuery', () => {
     ])
   })
 
+  it('filters on nested struct fields with dot-notation', async () => {
+    const file = await asyncBufferFromFile('test/files/hyparquet_struct.parquet')
+    const rows = await parquetQuery({ file, filter: { 'person.name': { $eq: 'Ada' } } })
+    expect(rows).toEqual([{ person: { name: 'Ada', address: { city: 'London' } } }])
+  })
+
+  it('filters on deeply nested struct fields', async () => {
+    const file = await asyncBufferFromFile('test/files/hyparquet_struct.parquet')
+    const rows = await parquetQuery({ file, filter: { 'person.address.city': { $eq: 'London' } } })
+    expect(rows).toEqual([{ person: { name: 'Ada', address: { city: 'London' } } }])
+  })
+
+  it('filters on nested struct fields with operators', async () => {
+    const file = await asyncBufferFromFile('test/files/hyparquet_struct.parquet')
+    const rows = await parquetQuery({ file, filter: { 'person.name': { $gte: 'B' } } })
+    expect(rows).toEqual([
+      { person: { name: 'Ben' } },
+      { person: { name: 'Cara', address: { city: null } } },
+    ])
+  })
+
   it('throws on non-existent column in filter', async () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     await expect(parquetQuery({ file, filter: { nonExistent: { $eq: 1 } } }))
