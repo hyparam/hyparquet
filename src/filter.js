@@ -5,7 +5,7 @@ import { equals } from './utils.js'
  */
 
 /**
- * Returns an array of column names needed to evaluate the filter.
+ * Returns an array of top-level column names needed to evaluate the filter.
  *
  * @param {ParquetQueryFilter} [filter]
  * @returns {string[]}
@@ -21,9 +21,10 @@ export function columnsNeededForFilter(filter) {
   } else if ('$nor' in filter && Array.isArray(filter.$nor)) {
     columns.push(...filter.$nor.flatMap(columnsNeededForFilter))
   } else {
-    columns.push(...Object.keys(filter))
+    // Map dot-notation paths to top-level column names
+    columns.push(...Object.keys(filter).map(key => key.split('.')[0]))
   }
-  return columns
+  return [...new Set(columns)]
 }
 
 /**
@@ -46,7 +47,7 @@ export function matchFilter(record, filter, strict = true) {
   }
 
   return Object.entries(filter).every(([field, condition]) => {
-    const value = record[field]
+    const value = resolve(record, field)
 
     // implicit $eq for non-object conditions
     if (typeof condition !== 'object' || condition === null || Array.isArray(condition)) {
@@ -125,4 +126,19 @@ export function canSkipRowGroup({ rowGroup, physicalColumns, filter, strict = tr
   }
 
   return false
+}
+
+/**
+ * Resolve a dot-notation path to a value in a nested object.
+ *
+ * @param {Record<string, any>} record
+ * @param {string} path
+ * @returns {any}
+ */
+function resolve(record, path) {
+  let value = record
+  for (const part of path.split('.')) {
+    value = value?.[part]
+  }
+  return value
 }
