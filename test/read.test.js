@@ -185,6 +185,23 @@ describe('parquetRead', () => {
     expect(counting.bytes).toBe(14334)
   })
 
+  it('uses OffsetIndex with dictionary-encoded columns', async () => {
+    const file = await asyncBufferFromFile('test/files/dictionary_offset_indexed.parquet')
+    const allRows = await parquetReadObjects({ file })
+
+    const subset = await parquetReadObjects({
+      file,
+      rowStart: 50,
+      rowEnd: 100,
+      useOffsetIndex: true,
+    })
+
+    expect(subset).toHaveLength(50)
+    for (let i = 0; i < subset.length; i++) {
+      expect(subset[i]).toEqual(allRows[50 + i])
+    }
+  })
+
   it('uses OffsetIndex to skip pages', async () => {
     const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
     const metadata = await parquetMetadataAsync(file)

@@ -80,6 +80,10 @@ export function readRowGroup(options, { metadata }, groupPlan) {
               endByte = Number(page.offset) + page.compressed_page_size
             }
           }
+          // include dictionary page so readColumn can decode dictionary-encoded values
+          if (!Number.isNaN(startByte) && columnMetadata.dictionary_page_offset) {
+            startByte = Math.min(startByte, Number(columnMetadata.dictionary_page_offset))
+          }
           const buffer = await file.slice(startByte, endByte)
           const reader = { view: new DataView(buffer), offset: 0 }
           // adjust row selection for skipped pages
