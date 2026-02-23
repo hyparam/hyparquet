@@ -202,6 +202,34 @@ describe('parquetRead', () => {
     }
   })
 
+  it('uses OffsetIndex across multiple pages without repeating earlier rows', async () => {
+    const file = await asyncBufferFromFile('test/fixtures/offset_index_multipage.parquet')
+    const allRows = await parquetReadObjects({ file, useOffsetIndex: false })
+
+    expect(allRows).toHaveLength(640)
+
+    const firstWindow = await parquetReadObjects({
+      file,
+      rowStart: 0,
+      rowEnd: 512,
+      useOffsetIndex: true,
+    })
+    const secondWindow = await parquetReadObjects({
+      file,
+      rowStart: 512,
+      rowEnd: 640,
+      useOffsetIndex: true,
+    })
+
+    expect(firstWindow).toEqual(allRows.slice(0, 512))
+    expect(secondWindow).toEqual(allRows.slice(512, 640))
+    expect(secondWindow[0]).toEqual({
+      location_country: 'United States',
+      person_id: 'person-00000512',
+      skill: 'skill-00512-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+    })
+  })
+
   it('uses OffsetIndex to skip pages', async () => {
     const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
     const metadata = await parquetMetadataAsync(file)

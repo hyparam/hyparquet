@@ -81,11 +81,20 @@ export function readRowGroup(options, { metadata }, groupPlan) {
             }
           }
           // include dictionary page so readColumn can decode dictionary-encoded values
+          // without restarting row selection from the beginning of the row group
+          let rewoundForDictionary = false
           if (!Number.isNaN(startByte) && columnMetadata.dictionary_page_offset) {
-            startByte = Math.min(startByte, Number(columnMetadata.dictionary_page_offset))
+            const dictionaryPageOffset = Number(columnMetadata.dictionary_page_offset)
+            if (dictionaryPageOffset < startByte) {
+              startByte = dictionaryPageOffset
+              rewoundForDictionary = true
+            }
           }
           const buffer = await file.slice(startByte, endByte)
           const reader = { view: new DataView(buffer), offset: 0 }
+          if (rewoundForDictionary) {
+            skipped = 0
+          }
           // adjust row selection for skipped pages
           const adjustedGroupPlan = skipped ? {
             ...groupPlan,
