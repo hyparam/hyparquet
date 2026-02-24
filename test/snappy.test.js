@@ -34,7 +34,7 @@ describe('snappy uncompress', () => {
       },
       // from datapage_v2.snappy.parquet
       { compressed: [2, 4, 0, 3], expected: new Uint8Array([0, 3]) },
-      { compressed: [ 6, 20, 2, 0, 0, 0, 3, 23], expected: new Uint8Array([2, 0, 0, 0, 3, 23]) },
+      { compressed: [6, 20, 2, 0, 0, 0, 3, 23], expected: new Uint8Array([2, 0, 0, 0, 3, 23]) },
     ]
 
     for (const { compressed, expected } of testCases) {
