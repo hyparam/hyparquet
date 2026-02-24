@@ -408,8 +408,8 @@ interface PageLocation {
 
 export interface ColumnIndex {
   null_pages: boolean[]
-  min_values: MinMaxType[]
-  max_values: MinMaxType[]
+  min_values: Uint8Array[]
+  max_values: Uint8Array[]
   boundary_order: BoundaryOrder
   null_counts?: bigint[]
   repetition_level_histograms?: bigint[]
