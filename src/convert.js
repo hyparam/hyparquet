@@ -69,6 +69,7 @@ export function convertWithDictionary(data, dictionary, encoding, columnDecoder)
 export function convert(data, columnDecoder) {
   const { element, parsers, utf8 = true, schemaPath } = columnDecoder
   const { type, converted_type: ctype, logical_type: ltype } = element
+  const nullable = element.repetition_type !== 'REQUIRED'
 
   // Skip utf8 conversion for plain BYTE_ARRAY inside VARIANT
   const isVariant = schemaPath?.some(s => s.element.logical_type?.type === 'VARIANT')
@@ -119,19 +120,17 @@ export function convert(data, columnDecoder) {
     return data.map(v => parsers.stringFromBytes(v))
   }
   if (ctype === 'UINT_64' || ltype?.type === 'INTEGER' && ltype.bitWidth === 64 && !ltype.isSigned) {
-    if (data instanceof BigInt64Array) {
-      return new BigUint64Array(data.buffer, data.byteOffset, data.length)
-    }
-    const arr = new BigUint64Array(data.length)
-    for (let i = 0; i < arr.length; i++) arr[i] = BigInt(data[i])
+    if (data instanceof BigInt64Array) return new BigUint64Array(data.buffer, data.byteOffset, data.length)
+    const arr = nullable ? new Array(data.length) : new BigUint64Array(data.length)
+    for (let i = 0; i < arr.length; i++) arr[i] = data[i]
     return arr
   }
   if (ctype === 'UINT_32' || ltype?.type === 'INTEGER' && ltype.bitWidth === 32 && !ltype.isSigned) {
-    if (data instanceof Int32Array) {
-      return new Uint32Array(data.buffer, data.byteOffset, data.length)
+    if (data instanceof Int32Array) return new Uint32Array(data.buffer, data.byteOffset, data.length)
+    const arr = nullable ? new Array(data.length) : new Uint32Array(data.length)
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = data[i] < 0 ? 4294967296 + data[i] : data[i]
     }
-    const arr = new Uint32Array(data.length)
-    for (let i = 0; i < arr.length; i++) arr[i] = data[i]
     return arr
   }
   if (ltype?.type === 'FLOAT16') {

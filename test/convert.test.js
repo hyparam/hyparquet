@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { DEFAULT_PARSERS, convert, parseDecimal, parseFloat16 } from '../src/convert.js'
 
 /**
- * @import {ColumnDecoder, SchemaElement, SchemaTree} from '../src/types.js'
+ * @import {ColumnDecoder, SchemaElement} from '../src/types.js'
  */
 
 describe('convert function', () => {
@@ -158,10 +158,25 @@ describe('convert function', () => {
     expect(convert(data, { ...columnDecoder, element })).toEqual([{ key: true }, { quay: 314 }])
   })
 
+  it('converts uint32 from Int32Array', () => {
+    const data = new Int32Array([1, -1, 100])
+    /** @type {SchemaElement} */
+    const element = { name, converted_type: 'UINT_32' }
+    expect(convert(data, { ...columnDecoder, element })).toEqual(new Uint32Array([1, 4294967295, 100]))
+  })
+
+  it('converts uint32 with undefined (optional nulls)', () => {
+    const data = [1, undefined, -3]
+    /** @type {SchemaElement} */
+    const element = { name, converted_type: 'UINT_32' }
+    const result = convert(data, { ...columnDecoder, element })
+    expect(result).toEqual([1, undefined, 4294967293])
+  })
+
   it('converts uint64', () => {
     const data = [100n, -100n]
     /** @type {SchemaElement} */
-    const element = { name, converted_type: 'UINT_64' }
+    const element = { name, converted_type: 'UINT_64', repetition_type: 'REQUIRED' }
     expect(convert(data, { ...columnDecoder, element })).toEqual(new BigUint64Array([100n, 18446744073709551516n]))
   })
 
@@ -199,12 +214,10 @@ describe('convert function', () => {
 
   it('respects custom parsers - dateFromDays', () => {
     const data = [1, 2] // days since epoch
-    /** @type {SchemaElement} */
-    const element = { name, converted_type: 'DATE' }
     /** @type {ColumnDecoder} */
     const cd = {
       ...columnDecoder,
-      element,
+      element: { name, converted_type: 'DATE' },
       parsers: {
         ...columnDecoder.parsers,
         dateFromDays: days => days,
@@ -216,12 +229,10 @@ describe('convert function', () => {
 
   it('respects custom parsers - timestampFromMilliseconds', () => {
     const data = [1716506900000n, 1716507000000n]
-    /** @type {SchemaElement} */
-    const element = { name, converted_type: 'TIMESTAMP_MILLIS' }
     /** @type {ColumnDecoder} */
     const cd = {
       ...columnDecoder,
-      element,
+      element: { name, converted_type: 'TIMESTAMP_MILLIS' },
       parsers: {
         ...columnDecoder.parsers,
         timestampFromMilliseconds: millis => Number(millis / 100000n),
@@ -233,12 +244,10 @@ describe('convert function', () => {
 
   it('respects custom parsers - timestampFromMicroseconds', () => {
     const data = [1716506900000000n, 1716507000000000n]
-    /** @type {SchemaElement} */
-    const element = { name, logical_type: { type: 'TIMESTAMP', isAdjustedToUTC: true, unit: 'MICROS' } }
     /** @type {ColumnDecoder} */
     const cd = {
       ...columnDecoder,
-      element,
+      element: { name, logical_type: { type: 'TIMESTAMP', isAdjustedToUTC: true, unit: 'MICROS' } },
       parsers: {
         ...columnDecoder.parsers,
         timestampFromMicroseconds: micros => Number(micros / 100000000n),
@@ -251,12 +260,10 @@ describe('convert function', () => {
   it('respects custom parsers - timestampFromNanoseconds', () => {
     // from alltypes_plain.parquet
     const data = [45284764452596988585705472n, 45284764452597048585705472n]
-    /** @type {SchemaElement} */
-    const element = { name, type: 'INT96' }
     /** @type {ColumnDecoder} */
     const cd = {
       ...columnDecoder,
-      element,
+      element: { name, type: 'INT96' },
       parsers: {
         ...columnDecoder.parsers,
         timestampFromNanoseconds: nanos => Number(nanos / 100000000000n),
@@ -267,17 +274,16 @@ describe('convert function', () => {
   })
 
   it('respects custom parsers - stringFromBytes', () => {
+    const decoder = new TextDecoder()
     const encoder = new TextEncoder()
     const data = [encoder.encode('foo'), undefined]
-    /** @type {SchemaElement} */
-    const element = { name, converted_type: 'UTF8' }
     /** @type {ColumnDecoder} */
     const cd = {
       ...columnDecoder,
-      element,
+      element: { name, converted_type: 'UTF8' },
       parsers: {
         ...columnDecoder.parsers,
-        stringFromBytes: bytes => bytes && `custom-${new TextDecoder().decode(bytes)}`,
+        stringFromBytes: bytes => bytes && `custom-${decoder.decode(bytes)}`,
       },
     }
 
@@ -290,12 +296,10 @@ describe('convert function', () => {
       63,
     ])
     const data = [pointWkb]
-    /** @type {SchemaElement} */
-    const element = { name, type: 'BYTE_ARRAY', logical_type: { type: 'GEOMETRY' } }
     /** @type {ColumnDecoder} */
     const cd = {
       ...columnDecoder,
-      element,
+      element: { name, type: 'BYTE_ARRAY', logical_type: { type: 'GEOMETRY' } },
       parsers: {
         ...columnDecoder.parsers,
         geometryFromBytes: () => 'custom-geometry',
@@ -307,16 +311,13 @@ describe('convert function', () => {
 
   it('respects custom parsers - geographyFromBytes', () => {
     const pointWkb = new Uint8Array([
-      1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 128, 89, 64, 0, 0, 0, 0, 0, 0, 224,
-      63,
+      1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 128, 89, 64, 0, 0, 0, 0, 0, 0, 224, 63,
     ])
     const data = [pointWkb]
-    /** @type {SchemaElement} */
-    const element = { name, type: 'BYTE_ARRAY', logical_type: { type: 'GEOGRAPHY' } }
     /** @type {ColumnDecoder} */
     const cd = {
       ...columnDecoder,
-      element,
+      element: { name, type: 'BYTE_ARRAY', logical_type: { type: 'GEOGRAPHY' } },
       parsers: {
         ...columnDecoder.parsers,
         geographyFromBytes: () => 'custom-geojson',
