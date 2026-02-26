@@ -316,7 +316,7 @@ export interface BoundingBox {
   mmax?: number
 }
 
-interface PageEncodingStats {
+export interface PageEncodingStats {
   page_type: PageType
   encoding: Encoding
   count: number
