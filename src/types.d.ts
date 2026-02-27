@@ -21,6 +21,14 @@ export interface MetadataOptions {
 }
 
 /**
+ * Options for parquetMetadataAsync
+ */
+export interface MetadataAsyncOptions extends MetadataOptions {
+  initialFetchSize?: number // fetch last N bytes from EOF (default 512kb)
+  suffixStart?: number // if provided, fetch from this byte offset to EOF (overrides initialFetchSize)
+}
+
+/**
  * Parquet query options for reading data
  */
 export interface BaseParquetReadOptions {

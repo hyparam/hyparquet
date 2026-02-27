@@ -32,14 +32,16 @@ function decode(/** @type {Uint8Array} */ value) {
  * or a second request for up to the metadata size.
  *
  * @param {AsyncBuffer} asyncBuffer parquet file contents
- * @param {MetadataOptions & { initialFetchSize?: number }} options initial fetch size in bytes (default 512kb)
+ * @param {import('../src/types.d.ts').MetadataAsyncOptions} options
  * @returns {Promise<FileMetaData>} parquet metadata object
  */
-export async function parquetMetadataAsync(asyncBuffer, { parsers, initialFetchSize = defaultInitialFetchSize, geoparquet = true } = {}) {
+export async function parquetMetadataAsync(asyncBuffer, { parsers, initialFetchSize = defaultInitialFetchSize, suffixStart, geoparquet = true } = {}) {
   if (!asyncBuffer || !(asyncBuffer.byteLength >= 0)) throw new Error('parquet expected AsyncBuffer')
 
   // fetch last bytes (footer) of the file
-  const footerOffset = Math.max(0, asyncBuffer.byteLength - initialFetchSize)
+  // suffixStart overrides initialFetchSize - allows caller to specify exact start offset
+  const footerOffset = suffixStart ?? Math.max(0, asyncBuffer.byteLength - initialFetchSize)
+  const fetchSize = asyncBuffer.byteLength - footerOffset
   const footerBuffer = await asyncBuffer.slice(footerOffset, asyncBuffer.byteLength)
 
   // Check for parquet magic number "PAR1"
@@ -56,7 +58,7 @@ export async function parquetMetadataAsync(asyncBuffer, { parsers, initialFetchS
   }
 
   // check if metadata size fits inside the initial fetch
-  if (metadataLength + 8 > initialFetchSize) {
+  if (metadataLength + 8 > fetchSize) {
     // fetch the rest of the metadata
     const metadataOffset = asyncBuffer.byteLength - metadataLength - 8
     const metadataBuffer = await asyncBuffer.slice(metadataOffset, footerOffset)
