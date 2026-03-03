@@ -203,15 +203,17 @@ export function assembleAsync(asyncRowGroup, schemaTree, parsers) {
       /** @type {Map<string, DecodedArray>} */
       const flatData = new Map()
       const data = Promise.all(childColumns.map(column => {
-        return column.data.then(({ data }) => {
+        return column.data.then(({ data, skipped }) => {
           flatData.set(column.pathInSchema.join('.'), flatten(data))
+          return skipped
         })
-      })).then(() => {
+      })).then((skippedValues) => {
         // assemble the column
         assembleNested(flatData, child, parsers)
         const flatColumn = flatData.get(child.path.join('.'))
         if (!flatColumn) throw new Error('parquet column data not assembled')
-        return { data: [flatColumn], skipped: 0 }
+        const skipped = Math.max(...skippedValues)
+        return { data: [flatColumn], skipped }
       })
 
       assembled.push({ pathInSchema: child.path, data })

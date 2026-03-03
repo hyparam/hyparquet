@@ -69,7 +69,7 @@ export function readDataPage(bytes, daph, { type, element, schemaPath }) {
  * @param {SchemaTree[]} schemaPath
  * @returns {any[]} repetition levels and number of bytes read
  */
-function readRepetitionLevels(reader, daph, schemaPath) {
+export function readRepetitionLevels(reader, daph, schemaPath) {
   if (schemaPath.length > 1) {
     const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
     if (maxRepetitionLevel) {

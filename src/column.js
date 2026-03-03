@@ -1,9 +1,9 @@
 import { assembleLists } from './assemble.js'
 import { Encodings, PageTypes } from './constants.js'
 import { convert, convertWithDictionary } from './convert.js'
-import { decompressPage, readDataPage, readDataPageV2 } from './datapage.js'
+import { decompressPage, readDataPage, readDataPageV2, readRepetitionLevels } from './datapage.js'
 import { readPlain } from './plain.js'
-import { isFlatColumn } from './schema.js'
+import { getMaxDefinitionLevel, getMaxRepetitionLevel, hasMultiChildAncestor, isFlatColumn } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
 /**
@@ -17,7 +17,11 @@ import { deserializeTCompactProtocol } from './thrift.js'
  */
 export function readColumn(reader, { groupStart, selectStart, selectEnd }, columnDecoder, onPage) {
   const { pathInSchema, schemaPath } = columnDecoder
-  const isFlat = isFlatColumn(schemaPath)
+  // Terminate the loop early by assembled row count for:
+  // - flat columns (each value = one row)
+  // - nested columns with repetition levels (top-level rows from rep=0 count)
+  // Page-skipping is handled separately and disabled for struct children.
+  const canTerminateEarly = isFlatColumn(schemaPath) || getMaxRepetitionLevel(schemaPath) > 0
   /** @type {DecodedArray[]} */
   const chunks = []
   /** @type {DecodedArray | undefined} */
@@ -36,7 +40,7 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
     })
   })
 
-  while (isFlat ? rowCount < selectEnd : reader.offset < reader.view.byteLength - 1) {
+  while (canTerminateEarly ? rowCount < selectEnd : reader.offset < reader.view.byteLength - 1) {
     if (reader.offset >= reader.view.byteLength - 1) break // end of reader
 
     // read page header
@@ -63,6 +67,14 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
         lastChunk = result.data
       }
     }
+  }
+  // Truncate the last chunk if we overshot selectEnd (can happen when a single
+  // page produces more assembled rows than needed, e.g. in nested columns)
+  if (canTerminateEarly && rowCount > selectEnd && lastChunk) {
+    const excess = rowCount - selectEnd
+    chunks[chunks.length - 1] = lastChunk.slice(0, lastChunk.length - excess)
+    lastChunk = chunks[chunks.length - 1]
+    rowCount = selectEnd
   }
   emitLastChunk?.()
 
@@ -100,21 +112,59 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
     }
 
     const page = decompressPage(compressedBytes, Number(header.uncompressed_page_size), codec, compressors)
+
+    // For nested columns without multi-child ancestors, decode only repetition levels
+    // first to check if page can be skipped. Struct children must not skip pages
+    // independently since siblings need matching row counts.
+    if (getMaxRepetitionLevel(schemaPath) > 0 && !hasMultiChildAncestor(schemaPath)) {
+      const repReader = { view: new DataView(page.buffer, page.byteOffset, page.byteLength), offset: 0 }
+      const repLevelsOnly = readRepetitionLevels(repReader, daph, schemaPath)
+      let topLevelRows = 0
+      for (const rep of repLevelsOnly) {
+        if (rep === 0) topLevelRows++
+      }
+      if (pageStart > topLevelRows) {
+        return { skipped: topLevelRows }
+      }
+    }
+
     const { definitionLevels, repetitionLevels, dataPage } = readDataPage(page, daph, columnDecoder)
     // assert(!daph.statistics?.null_count || daph.statistics.null_count === BigInt(daph.num_values - dataPage.length))
 
     // convert types, dereference dictionary, and assemble lists
-    const values = convertWithDictionary(dataPage, dictionary, daph.encoding, columnDecoder)
+    let values = convertWithDictionary(dataPage, dictionary, daph.encoding, columnDecoder)
     const output = Array.isArray(previousChunk) ? previousChunk : []
-    const assembled = assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
+    let defLevels = definitionLevels
+    let repLevels = repetitionLevels
+
+    // Handle orphaned continuation values from skipped pages
+    if (!output.length && repLevels.length && repLevels[0] > 0) {
+      const maxDefLevel = getMaxDefinitionLevel(schemaPath)
+      let skipIdx = 0
+      let valueSkipCount = 0
+      while (skipIdx < repLevels.length && (skipIdx === 0 || repLevels[skipIdx] !== 0)) {
+        const def = defLevels?.length ? defLevels[skipIdx] : maxDefLevel
+        if (def === maxDefLevel) valueSkipCount++
+        skipIdx++
+      }
+      if (skipIdx >= repLevels.length) {
+        // Entire page is continuation with no new top-level rows
+        return { skipped: 0, data: output }
+      }
+      defLevels = defLevels?.length ? defLevels.slice(skipIdx) : defLevels
+      repLevels = repLevels.slice(skipIdx)
+      values = Array.isArray(values) ? values.slice(valueSkipCount) : values.slice(valueSkipCount)
+    }
+
+    const assembled = assembleLists(output, defLevels, repLevels, values, schemaPath)
     return { skipped: 0, data: assembled }
   } else if (header.type === 'DATA_PAGE_V2') {
     const daph2 = header.data_page_header_v2
     if (!daph2) throw new Error('parquet data page header v2 is undefined')
 
-    // skip unnecessary pages
-    if (pageStart > daph2.num_rows) {
-      return { skipped: daph2.num_values }
+    // skip unnecessary pages (struct children must not skip independently)
+    if (pageStart > daph2.num_rows && !hasMultiChildAncestor(schemaPath)) {
+      return { skipped: daph2.num_rows }
     }
 
     const { definitionLevels, repetitionLevels, dataPage } =

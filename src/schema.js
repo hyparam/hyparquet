@@ -154,3 +154,18 @@ export function isFlatColumn(schemaPath) {
   if (column.children.length) return false
   return true
 }
+
+/**
+ * Check if a column has an ancestor with multiple children (struct or map).
+ * Such columns must not terminate early independently, since their siblings
+ * need to produce matching row counts for assembly.
+ *
+ * @param {SchemaTree[]} schemaPath
+ * @returns {boolean}
+ */
+export function hasMultiChildAncestor(schemaPath) {
+  for (let i = 1; i < schemaPath.length - 1; i++) {
+    if (schemaPath[i].children.length > 1) return true
+  }
+  return false
+}
