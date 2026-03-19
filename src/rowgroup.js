@@ -80,7 +80,27 @@ export function readRowGroup(options, { metadata }, groupPlan) {
               endByte = Number(page.offset) + page.compressed_page_size
             }
           }
-          const buffer = await file.slice(startByte, endByte)
+          // Include dictionary page if it exists before the first data page.
+          // The column chunk may start before the first offset index page
+          // when a dictionary page is present.
+          const chunkStartByte = chunkPlan.bounds.startByte
+          const firstPageByte = Number(pages[0].offset)
+          const hasDictionaryPage = chunkStartByte < firstPageByte
+          let dictBuffer
+          if (hasDictionaryPage) {
+            dictBuffer = await file.slice(chunkStartByte, firstPageByte)
+          }
+          const pageBuffer = await file.slice(startByte, endByte)
+          // Concatenate dictionary page + selected data pages
+          let buffer
+          if (dictBuffer) {
+            const combined = new Uint8Array(dictBuffer.byteLength + pageBuffer.byteLength)
+            combined.set(new Uint8Array(dictBuffer), 0)
+            combined.set(new Uint8Array(pageBuffer), dictBuffer.byteLength)
+            buffer = combined.buffer
+          } else {
+            buffer = pageBuffer
+          }
           const reader = { view: new DataView(buffer), offset: 0 }
           // adjust row selection for skipped pages
           const adjustedGroupPlan = skipped ? {
