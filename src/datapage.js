@@ -1,8 +1,12 @@
 import { deltaBinaryUnpack, deltaByteArray, deltaLengthByteArray } from './delta.js'
-import { bitWidth, byteStreamSplit, readRleBitPackedHybrid } from './encoding.js'
+import { byteStreamSplit, readRleBitPackedHybrid } from './encoding.js'
 import { readPlain } from './plain.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel } from './schema.js'
 import { snappyUncompress } from './snappy.js'
+
+/**
+ * @import {ColumnDecoder, CompressionCodec, Compressors, DataPage, DataPageHeader, DataPageHeaderV2, DataReader, DecodedArray, PageHeader, SchemaTree} from '../src/types.d.ts'
+ */
 
 /**
  * Read a data page from uncompressed reader.
@@ -63,7 +67,6 @@ export function readDataPage(bytes, daph, { type, element, schemaPath }) {
 }
 
 /**
- * @import {ColumnDecoder, CompressionCodec, Compressors, DataPage, DataPageHeader, DataPageHeaderV2, DataReader, DecodedArray, PageHeader, SchemaTree} from '../src/types.d.ts'
  * @param {DataReader} reader data view for the page
  * @param {DataPageHeader} daph data page header
  * @param {SchemaTree[]} schemaPath
@@ -230,4 +233,14 @@ function readDefinitionLevelsV2(reader, daph2, schemaPath) {
     readRleBitPackedHybrid(reader, bitWidth(maxDefinitionLevel), values, daph2.definition_levels_byte_length)
     return values
   }
+}
+
+/**
+ * Minimum bits needed to store value.
+ *
+ * @param {number} value
+ * @returns {number}
+ */
+function bitWidth(value) {
+  return 32 - Math.clz32(value)
 }

@@ -16,6 +16,7 @@ describe('convert function', () => {
     codec: 'UNCOMPRESSED',
     parsers: DEFAULT_PARSERS,
   }
+  const encoder = new TextEncoder()
 
   it('returns the same data if converted_type is undefined', () => {
     const data = [1, 2, 3]
@@ -24,21 +25,21 @@ describe('convert function', () => {
   })
 
   it('converts byte arrays to utf8', () => {
-    const data = [new TextEncoder().encode('foo'), new TextEncoder().encode('bar')]
+    const data = [encoder.encode('foo'), encoder.encode('bar')]
     /** @type {SchemaElement} */
     const element = { name, converted_type: 'UTF8' }
     expect(convert(data, { ...columnDecoder, element })).toEqual(['foo', 'bar'])
   })
 
   it('converts byte arrays to utf8 default true', () => {
-    const data = [new TextEncoder().encode('foo'), new TextEncoder().encode('bar')]
+    const data = [encoder.encode('foo'), encoder.encode('bar')]
     /** @type {SchemaElement} */
     const element = { name, type: 'BYTE_ARRAY' }
     expect(convert(data, { ...columnDecoder, element })).toEqual(['foo', 'bar'])
   })
 
   it('preserves byte arrays utf8=false', () => {
-    const data = [new TextEncoder().encode('foo'), new TextEncoder().encode('bar')]
+    const data = [encoder.encode('foo'), encoder.encode('bar')]
     /** @type {SchemaElement} */
     const element = { name, type: 'BYTE_ARRAY' }
     expect(convert(data, { ...columnDecoder, element, utf8: false })).toEqual([
@@ -150,7 +151,6 @@ describe('convert function', () => {
   })
 
   it('parses strings to JSON', () => {
-    const encoder = new TextEncoder()
     const data = ['{"key": true}', '{"quay": 314}']
       .map(str => encoder.encode(str))
     /** @type {SchemaElement} */
@@ -275,7 +275,6 @@ describe('convert function', () => {
 
   it('respects custom parsers - stringFromBytes', () => {
     const decoder = new TextDecoder()
-    const encoder = new TextEncoder()
     const data = [encoder.encode('foo'), undefined]
     /** @type {ColumnDecoder} */
     const cd = {

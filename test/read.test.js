@@ -143,17 +143,26 @@ describe('parquetRead', () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     await parquetRead({
       file,
-      columns: ['c', 'missing', 'b', 'c'],
+      columns: ['c', 'b', 'c'],
       onComplete(rows) {
         expect(rows).toEqual([
-          [2, undefined, 1, 2],
-          [3, undefined, 2, 3],
-          [4, undefined, 3, 4],
-          [5, undefined, 4, 5],
-          [2, undefined, 5, 2],
+          [2, 1, 2],
+          [3, 2, 3],
+          [4, 3, 4],
+          [5, 4, 5],
+          [2, 5, 2],
         ])
       },
     })
+  })
+
+  it('throws error if requested column is not found', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    await expect(parquetRead({
+      file,
+      columns: ['a', 'missing'],
+      onComplete: () => {},
+    })).rejects.toThrow('parquet column not found: missing')
   })
 
   it('read objects and return a promise', async () => {
@@ -344,5 +353,11 @@ describe('parquetRead', () => {
     for (const chunk of chunks) {
       expect(chunk.rowStart).toBeGreaterThanOrEqual(37)
     }
+  })
+
+  it('requires compressors for compressed files', async () => {
+    const file = await asyncBufferFromFile('test/files/rle_boolean_encoding.parquet')
+    await expect(parquetReadObjects({ file }))
+      .rejects.toThrow('parquet unsupported compression codec: GZIP')
   })
 })

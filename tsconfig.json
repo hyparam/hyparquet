@@ -6,7 +6,8 @@
     "module": "nodenext",
     "noEmit": true,
     "resolveJsonModule": true,
-    "strict": true
+    "strict": true,
+    "types": ["node"]
   },
   "include": ["src", "test"]
 }

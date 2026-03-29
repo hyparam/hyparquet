@@ -1,6 +1,8 @@
 import { DEFAULT_PARSERS } from './convert.js'
 
-/** @import {DataReader, ParquetParsers, VariantMetadata} from './types.d.ts' */
+/**
+ * @import {DataReader, ParquetParsers, VariantMetadata} from '../src/types.d.ts'
+ */
 
 const decoder = new TextDecoder()
 /** @type {WeakMap<object, Map<string, VariantMetadata>>} */

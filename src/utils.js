@@ -1,6 +1,10 @@
 import { defaultInitialFetchSize } from './metadata.js'
 
 /**
+ * @import {AsyncBuffer, Awaitable, DecodedArray} from '../src/types.d.ts'
+ */
+
+/**
  * Replace bigint, date, etc with legal JSON types.
  *
  * @param {any} obj object to convert
@@ -49,8 +53,15 @@ export function concat(aaa, bbb) {
 export function equals(a, b, strict = true) {
   // eslint-disable-next-line eqeqeq
   if (strict ? a === b : a == b) return true
-  if (a instanceof Uint8Array && b instanceof Uint8Array) return equals(Array.from(a), Array.from(b), strict)
-  if (!a || !b || typeof a !== typeof b) return false
+  if (!a || !b || typeof a !== 'object' || typeof b !== 'object') return false
+
+  if (a instanceof Uint8Array && b instanceof Uint8Array) {
+    if (a.length !== b.length) return false
+    for (let i = 0; i < a.length; i++) {
+      if (a[i] !== b[i]) return false
+    }
+    return true
+  }
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false
     for (let i = 0; i < a.length; i++) {
@@ -58,7 +69,7 @@ export function equals(a, b, strict = true) {
     }
     return true
   }
-  if (typeof a !== 'object') return false
+
   const aKeys = Object.keys(a)
   if (aKeys.length !== Object.keys(b).length) return false
   for (const k of aKeys) {
@@ -241,7 +252,6 @@ export function cachedAsyncBuffer({ byteLength, slice }, { minSize = defaultInit
  * Returns canonical cache key for a byte range 'start,end'.
  * Normalize int-range and suffix-range requests to the same key.
  *
- * @import {AsyncBuffer, Awaitable, DecodedArray} from '../src/types.d.ts'
  * @param {number} start start byte of range
  * @param {number} [end] end byte of range, or undefined for suffix range
  * @param {number} [size] size of file, or undefined for suffix range

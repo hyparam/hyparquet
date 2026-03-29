@@ -1,14 +1,8 @@
 import { readVarInt } from './thrift.js'
 
 /**
- * Minimum bits needed to store value.
- *
- * @param {number} value
- * @returns {number}
+ * @import {DataReader, DecodedArray, ParquetType} from '../src/types.d.ts'
  */
-export function bitWidth(value) {
-  return 32 - Math.clz32(value)
-}
 
 /**
  * Read values from a run-length encoded/bit-packed hybrid encoding.
@@ -147,7 +141,6 @@ export function byteStreamSplit(reader, count, type, typeLength) {
 }
 
 /**
- * @import {DataReader, DecodedArray, ParquetType} from '../src/types.d.ts'
  * @param {ParquetType} type
  * @param {number | undefined} typeLength
  * @returns {number}

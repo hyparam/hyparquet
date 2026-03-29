@@ -7,6 +7,10 @@ import { isFlatColumn } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 
 /**
+ * @import {ColumnDecoder, DataReader, DecodedArray, PageHeader, PageResult, RowGroupSelect, SubColumnData} from '../src/types.d.ts'
+ */
+
+/**
  * Parse column data from a buffer.
  *
  * @param {DataReader} reader
@@ -72,7 +76,6 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
 /**
  * Read a page (data or dictionary) from a buffer.
  *
- * @import {PageResult} from '../src/types.d.ts'
  * @param {DataReader} reader
  * @param {PageHeader} header
  * @param {ColumnDecoder} columnDecoder
@@ -144,7 +147,6 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
 /**
  * Read parquet header from a buffer.
  *
- * @import {ColumnDecoder, DataReader, DecodedArray, PageHeader, RowGroupSelect, SubColumnData} from '../src/types.d.ts'
  * @param {DataReader} reader
  * @returns {PageHeader}
  */

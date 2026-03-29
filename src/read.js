@@ -2,7 +2,7 @@ import { columnsNeededForFilter, matchFilter } from './filter.js'
 import { parquetMetadataAsync, parquetSchema } from './metadata.js'
 import { parquetPlan, prefetchAsyncBuffer } from './plan.js'
 import { assembleAsync, asyncGroupToRows, readRowGroup } from './rowgroup.js'
-import { concat, flatten } from './utils.js'
+import { concat } from './utils.js'
 
 /**
  * @import {AsyncRowGroup, DecodedArray, ParquetReadOptions, BaseParquetReadOptions} from '../src/types.js'
@@ -158,12 +158,15 @@ export async function parquetReadColumn(options) {
   const schemaTree = parquetSchema(options.metadata)
   const assembled = asyncGroups.map(arg => assembleAsync(arg, schemaTree, options.parsers))
 
-  /** @type {DecodedArray[]} */
+  /** @type {DecodedArray} */
   const columnData = []
   for (const rg of assembled) {
-    columnData.push(flatten((await rg.asyncColumns[0].data).data))
+    const { data } = await rg.asyncColumns[0].data
+    for (const chunk of data) {
+      concat(columnData, chunk)
+    }
   }
-  return flatten(columnData)
+  return columnData
 }
 
 /**

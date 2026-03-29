@@ -1,7 +1,10 @@
 /**
+ * @import {DataReader, Geometry} from '../src/types.js'
+ */
+
+/**
  * WKB (Well-Known Binary) decoder for geometry objects.
  *
- * @import {DataReader, Geometry} from '../src/types.js'
  * @param {DataReader} reader
  * @returns {Geometry} geometry object
  */

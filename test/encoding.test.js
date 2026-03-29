@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { bitWidth, readRleBitPackedHybrid } from '../src/encoding.js'
+import { readRleBitPackedHybrid } from '../src/encoding.js'
 
 describe('readRle', () => {
   it('reads RLE values with explicit length', () => {
@@ -134,18 +134,5 @@ describe('readBitPacked', () => {
     const values = new Array(3)
     expect(() => readRleBitPackedHybrid(reader, 1, values, 3))
       .toThrow('parquet bitpack offset 1 out of range')
-  })
-})
-
-describe('bitWidth', () => {
-  it('calculates bit widths', () => {
-    expect(bitWidth(0)).toBe(0)
-    expect(bitWidth(1)).toBe(1)
-    expect(bitWidth(7)).toBe(3)
-    expect(bitWidth(8)).toBe(4)
-    expect(bitWidth(255)).toBe(8)
-    expect(bitWidth(256)).toBe(9)
-    expect(bitWidth(1023)).toBe(10)
-    expect(bitWidth(1048575)).toBe(20)
   })
 })

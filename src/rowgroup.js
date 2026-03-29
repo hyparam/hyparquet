@@ -6,8 +6,9 @@ import { getSchemaPath } from './schema.js'
 import { flatten } from './utils.js'
 
 /**
- * @import {AsyncColumn, AsyncRowGroup, DecodedArray, GroupPlan, ParquetParsers, ParquetReadOptions, QueryPlan, SchemaTree} from './types.js'
+ * @import {AsyncColumn, AsyncRowGroup, DecodedArray, GroupPlan, ParquetParsers, ParquetReadOptions, QueryPlan, SchemaTree} from '../src/types.js'
  */
+
 /**
  * Read a row group from a file-like object.
  *
@@ -26,14 +27,14 @@ export function readRowGroup(options, { metadata }, groupPlan) {
 
   // read column data
   for (const chunkPlan of groupPlan.chunks) {
-    const { columnMetadata } = chunkPlan
-    const schemaPath = getSchemaPath(metadata.schema, columnMetadata.path_in_schema)
+    const { codec, path_in_schema: pathInSchema, type } = chunkPlan.columnMetadata
+    const schemaPath = getSchemaPath(metadata.schema, pathInSchema)
     const columnDecoder = {
-      pathInSchema: columnMetadata.path_in_schema,
-      type: columnMetadata.type,
+      pathInSchema,
+      type,
       element: schemaPath[schemaPath.length - 1].element,
       schemaPath,
-      codec: columnMetadata.codec,
+      codec,
       parsers,
       compressors,
       utf8,
@@ -42,7 +43,7 @@ export function readRowGroup(options, { metadata }, groupPlan) {
     // non-offset-index case
     if (!('offsetIndex' in chunkPlan)) {
       asyncColumns.push({
-        pathInSchema: columnMetadata.path_in_schema,
+        pathInSchema,
         data: Promise.resolve(file.slice(chunkPlan.range.startByte, chunkPlan.range.endByte))
           .then(buffer => {
             const reader = { view: new DataView(buffer), offset: 0 }
@@ -54,7 +55,7 @@ export function readRowGroup(options, { metadata }, groupPlan) {
 
     // offset-index case
     asyncColumns.push({
-      pathInSchema: columnMetadata.path_in_schema,
+      pathInSchema,
       // fetch offset index
       data: Promise.resolve(file.slice(chunkPlan.offsetIndex.startByte, chunkPlan.offsetIndex.endByte))
         .then(async arrayBuffer => {
@@ -129,13 +130,27 @@ export function readRowGroup(options, { metadata }, groupPlan) {
  */
 export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd, columns, rowFormat) {
   // TODO: do it without flatten
-  const asyncPages = await Promise.all(asyncColumns.map(async ({ data }) => {
-    const pages = await data
-    return {
-      ...pages,
-      data: flatten(pages.data),
+  const asyncPages = await Promise.all(asyncColumns.map(column =>
+    column.data.then(({ skipped, data }) => ({ skipped, data: flatten(data) }))
+  ))
+
+  // transpose columns into rows
+  const selectCount = selectEnd - selectStart
+  if (rowFormat === 'object') {
+    /** @type {Record<string, any>[]} */
+    const groupData = Array(selectCount)
+    for (let selectRow = 0; selectRow < selectCount; selectRow++) {
+      // return each row as an object
+      /** @type {Record<string, any>} */
+      const rowData = {}
+      for (let i = 0; i < asyncColumns.length; i++) {
+        const { data, skipped } = asyncPages[i]
+        rowData[asyncColumns[i].pathInSchema[0]] = data[selectStart + selectRow - skipped]
+      }
+      groupData[selectRow] = rowData
     }
-  }))
+    return groupData
+  }
 
   // careful mapping of column order for rowFormat: array
   const includedColumnNames = asyncColumns
@@ -144,37 +159,16 @@ export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd,
   const columnOrder = columns ?? includedColumnNames
   const columnIndexes = columnOrder.map(name => asyncColumns.findIndex(column => column.pathInSchema[0] === name))
 
-  // transpose columns into rows
-  const selectCount = selectEnd - selectStart
-  if (rowFormat === 'object') {
-    /** @type {Record<string, any>[]} */
-    const groupData = Array(selectCount)
-    for (let selectRow = 0; selectRow < selectCount; selectRow++) {
-      const row = selectStart + selectRow
-      // return each row as an object
-      /** @type {Record<string, any>} */
-      const rowData = {}
-      for (let i = 0; i < asyncColumns.length; i++) {
-        const { data, skipped } = asyncPages[i]
-        rowData[asyncColumns[i].pathInSchema[0]] = data[row - skipped]
-      }
-      groupData[selectRow] = rowData
-    }
-    return groupData
-  }
-
   /** @type {any[][]} */
   const groupData = Array(selectCount)
   for (let selectRow = 0; selectRow < selectCount; selectRow++) {
-    const row = selectStart + selectRow
     // return each row as an array
     const rowData = Array(asyncColumns.length)
     for (let i = 0; i < columnOrder.length; i++) {
       const colIdx = columnIndexes[i]
-      if (colIdx >= 0) {
-        const { data, skipped } = asyncPages[colIdx]
-        rowData[i] = data[row - skipped]
-      }
+      if (colIdx < 0) throw new Error(`parquet column not found: ${columnOrder[i]}`)
+      const { data, skipped } = asyncPages[colIdx]
+      rowData[i] = data[selectStart + selectRow - skipped]
     }
     groupData[selectRow] = rowData
   }
@@ -199,28 +193,27 @@ export function assembleAsync(asyncRowGroup, schemaTree, parsers) {
       const childColumns = asyncColumns.filter(column => column.pathInSchema[0] === child.element.name)
       if (!childColumns.length) continue
 
-      // wait for all child columns to be read
-      /** @type {Map<string, DecodedArray>} */
-      const flatData = new Map()
-      const data = Promise.all(childColumns.map(column => {
-        return column.data.then(({ data }) => {
-          flatData.set(column.pathInSchema.join('.'), flatten(data))
-        })
-      })).then(() => {
-        // assemble the column
-        assembleNested(flatData, child, parsers)
-        const flatColumn = flatData.get(child.path.join('.'))
-        if (!flatColumn) throw new Error('parquet column data not assembled')
-        return { data: [flatColumn], skipped: 0 }
+      assembled.push({
+        pathInSchema: child.path,
+        data: (async () => {
+          // collect subcolumn data
+          /** @type {Map<string, DecodedArray>} */
+          const subcolumnData = new Map()
+          for (const column of childColumns) {
+            const { data } = await column.data
+            subcolumnData.set(column.pathInSchema.join('.'), flatten(data))
+          }
+          // assemble the column
+          assembleNested(subcolumnData, child, parsers)
+          const assembled = subcolumnData.get(child.element.name)
+          if (!assembled) throw new Error('parquet column data not assembled')
+          return { data: [assembled], skipped: 0 }
+        })(),
       })
-
-      assembled.push({ pathInSchema: child.path, data })
     } else {
       // leaf node, return the column
       const asyncColumn = asyncColumns.find(column => column.pathInSchema[0] === child.element.name)
-      if (asyncColumn) {
-        assembled.push(asyncColumn)
-      }
+      if (asyncColumn) assembled.push(asyncColumn)
     }
   }
   return { ...asyncRowGroup, asyncColumns: assembled }

@@ -4,6 +4,10 @@ import { getSchemaPath } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
 import { markGeoColumns } from './geoparquet.js'
 
+/**
+ * @import {AsyncBuffer, FileMetaData, KeyValue, LogicalType, MetadataOptions, MinMaxType, ParquetParsers, SchemaElement, SchemaTree, Statistics, TimeUnit} from '../src/types.d.ts'
+ */
+
 export const defaultInitialFetchSize = 1 << 19 // 512kb
 
 const decoder = new TextDecoder()
@@ -75,7 +79,6 @@ export async function parquetMetadataAsync(asyncBuffer, { parsers, initialFetchS
 /**
  * Read parquet metadata from a buffer synchronously.
  *
- * @import {KeyValue} from '../src/types.d.ts'
  * @param {ArrayBuffer} arrayBuffer parquet file footer
  * @param {MetadataOptions} options metadata parsing options
  * @returns {FileMetaData} parquet metadata object
@@ -287,7 +290,6 @@ function timeUnit(unit) {
 /**
  * Convert column statistics based on column type.
  *
- * @import {AsyncBuffer, FileMetaData, LogicalType, MetadataOptions, MinMaxType, ParquetParsers, SchemaElement, SchemaTree, Statistics, TimeUnit} from '../src/types.d.ts'
  * @param {any} stats
  * @param {SchemaElement} schema
  * @param {ParquetParsers} parsers
