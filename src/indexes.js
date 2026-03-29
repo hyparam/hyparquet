@@ -1,3 +1,7 @@
+/**
+ * @import {ColumnIndex, DataReader, OffsetIndex, PageLocation, ParquetParsers, SchemaElement} from '../src/types.js'
+ */
+
 import { BoundaryOrders } from './constants.js'
 import { DEFAULT_PARSERS } from './convert.js'
 import { convertMetadata } from './metadata.js'
@@ -31,20 +35,12 @@ export function readColumnIndex(reader, schema, parsers = undefined) {
 export function readOffsetIndex(reader) {
   const thrift = deserializeTCompactProtocol(reader)
   return {
-    page_locations: thrift.field_1.map(pageLocation),
+    // @ts-ignore
+    page_locations: thrift.field_1.map(loc => ({
+      offset: loc.field_1,
+      compressed_page_size: loc.field_2,
+      first_row_index: loc.field_3,
+    })),
     unencoded_byte_array_data_bytes: thrift.field_2,
-  }
-}
-
-/**
- * @import {ColumnIndex, DataReader, OffsetIndex, PageLocation, ParquetParsers, SchemaElement} from '../src/types.d.ts'
- * @param {any} loc
- * @returns {PageLocation}
- */
-function pageLocation(loc) {
-  return {
-    offset: loc.field_1,
-    compressed_page_size: loc.field_2,
-    first_row_index: loc.field_3,
   }
 }

@@ -1,8 +1,4 @@
 /**
- * @import {DataReader, Geometry} from '../src/types.js'
- */
-
-/**
  * WKB (Well-Known Binary) decoder for geometry objects.
  *
  * @param {DataReader} reader
@@ -45,14 +41,6 @@ export function wkbToGeojson(reader) {
     throw new Error(`Unsupported geometry type: ${flags.type}`)
   }
 }
-
-/**
- * @typedef {object} WkbFlags
- * @property {boolean} littleEndian
- * @property {number} type
- * @property {number} dim
- * @property {number} count
- */
 
 /**
  * Extract ISO WKB flags and base geometry type.
@@ -126,3 +114,15 @@ function readPolygon(reader, flags) {
   }
   return rings
 }
+
+/**
+ * @typedef {object} WkbFlags
+ * @property {boolean} littleEndian
+ * @property {number} type
+ * @property {number} dim
+ * @property {number} count
+ */
+
+/**
+ * @import {DataReader, Geometry} from '../src/types.js'
+ */

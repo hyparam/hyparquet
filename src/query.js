@@ -1,9 +1,10 @@
-import { parquetMetadataAsync, parquetSchema } from './metadata.js'
-import { parquetReadColumn, parquetReadObjects } from './read.js'
-
 /**
  * @import {BaseParquetReadOptions} from '../src/types.js'
  */
+
+import { parquetMetadataAsync, parquetSchema } from './metadata.js'
+import { parquetReadColumn, parquetReadObjects } from './read.js'
+
 /**
  * Wraps parquetRead with orderBy support.
  * This is a parquet-aware query engine that can read a subset of rows and columns.

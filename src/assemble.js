@@ -187,7 +187,7 @@ export function assembleNested(subcolumnData, schema, parsers, depth = 0) {
 }
 
 /**
- * @import {DecodedArray, ParquetParsers, SchemaTree} from '../src/types.d.ts'
+ * @import {DecodedArray, ParquetParsers, SchemaTree} from '../src/types.js'
  * @param {DecodedArray} arr
  * @param {number} depth
  */

@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.25.2]
+ - Fix type exports for submodules
+
+## [1.25.1]
+ - Fix nullable UINT types
+
 ## [1.25.0]
  - Support dot-notation for filtering on nested struct fields (#153)
 

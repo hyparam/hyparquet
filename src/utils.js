@@ -1,8 +1,8 @@
-import { defaultInitialFetchSize } from './metadata.js'
-
 /**
- * @import {AsyncBuffer, Awaitable, DecodedArray} from '../src/types.d.ts'
+ * @import {AsyncBuffer, Awaitable, DecodedArray} from '../src/types.js'
  */
+
+import { defaultInitialFetchSize } from './metadata.js'
 
 /**
  * Replace bigint, date, etc with legal JSON types.

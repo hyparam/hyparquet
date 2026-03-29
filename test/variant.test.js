@@ -5,7 +5,9 @@ import { DEFAULT_PARSERS } from '../src/convert.js'
 import { parquetReadObjects } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
 
-/** @import {SchemaTree} from '../src/types.d.ts' */
+/**
+ * @import {SchemaTree} from '../src/types.js'
+ */
 
 /** @type {SchemaTree} */
 const variantMetadataSchema = {

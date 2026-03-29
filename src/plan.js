@@ -2,12 +2,13 @@ import { canSkipRowGroup } from './filter.js'
 import { parquetSchema } from './metadata.js'
 import { getPhysicalColumns } from './schema.js'
 
-// Combine column chunks if less than 2mb
-const runLimit = 1 << 21 // 2mb
-
 /**
  * @import {AsyncBuffer, ByteRange, ChunkPlan, GroupPlan, ParquetReadOptions, QueryPlan} from '../src/types.js'
  */
+
+// Combine column chunks if less than 2mb
+const runLimit = 1 << 21 // 2mb
+
 /**
  * Plan which byte ranges to read to satisfy a read request.
  * Metadata must be non-null.

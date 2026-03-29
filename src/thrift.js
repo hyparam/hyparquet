@@ -1,5 +1,5 @@
 /**
- * @import {DataReader, ThriftObject, ThriftType} from '../src/types.d.ts'
+ * @import {DataReader, ThriftObject, ThriftType} from '../src/types.js'
  */
 
 // TCompactProtocol types

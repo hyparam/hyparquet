@@ -291,8 +291,7 @@ describe('convert function', () => {
 
   it('respects custom parsers - geometryFromBytes', () => {
     const pointWkb = new Uint8Array([
-      1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 128, 89, 64, 0, 0, 0, 0, 0, 0, 224,
-      63,
+      1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 128, 89, 64, 0, 0, 0, 0, 0, 0, 224, 63,
     ])
     const data = [pointWkb]
     /** @type {ColumnDecoder} */

@@ -1,7 +1,6 @@
 /**
  * Build a tree from the schema elements.
  *
- * @import {SchemaElement, SchemaTree} from '../src/types.d.ts'
  * @param {SchemaElement[]} schema
  * @param {number} rootIndex index of the root element
  * @param {string[]} path path to the element
@@ -154,3 +153,7 @@ export function isFlatColumn(schemaPath) {
   if (column.children.length) return false
   return true
 }
+
+/**
+ * @import {SchemaElement, SchemaTree} from '../src/types.js'
+ */

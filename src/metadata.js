@@ -5,7 +5,7 @@ import { deserializeTCompactProtocol } from './thrift.js'
 import { markGeoColumns } from './geoparquet.js'
 
 /**
- * @import {AsyncBuffer, FileMetaData, KeyValue, LogicalType, MetadataOptions, MinMaxType, ParquetParsers, SchemaElement, SchemaTree, Statistics, TimeUnit} from '../src/types.d.ts'
+ * @import {AsyncBuffer, FileMetaData, KeyValue, LogicalType, MetadataOptions, MinMaxType, ParquetParsers, SchemaElement, SchemaTree, Statistics, TimeUnit} from '../src/types.js'
  */
 
 export const defaultInitialFetchSize = 1 << 19 // 512kb

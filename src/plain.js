@@ -167,7 +167,7 @@ function readPlainByteArrayFixed(reader, count, fixedLength) {
 /**
  * Create a new buffer with the offset and size.
  *
- * @import {DataReader, DecodedArray, ParquetType} from '../src/types.d.ts'
+ * @import {DataReader, DecodedArray, ParquetType} from '../src/types.js'
  * @param {ArrayBufferLike} buffer
  * @param {number} offset
  * @param {number} size

@@ -1,7 +1,7 @@
 import { DEFAULT_PARSERS } from './convert.js'
 
 /**
- * @import {DataReader, ParquetParsers, VariantMetadata} from '../src/types.d.ts'
+ * @import {DataReader, ParquetParsers, VariantMetadata} from '../src/types.js'
  */
 
 const decoder = new TextDecoder()

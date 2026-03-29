@@ -3,7 +3,7 @@ import { wkbToGeojson } from '../src/wkb.js'
 
 /**
  * @param {Uint8Array} buffer
- * @returns {import('../src/types.d.ts').DataReader}
+ * @returns {import('../src/types.js').DataReader}
  */
 function makeReader(buffer) {
   return {

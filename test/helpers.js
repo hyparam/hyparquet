@@ -14,7 +14,7 @@ export function fileToJson(filePath) {
 /**
  * Make a DataReader from bytes
  *
- * @import {DataReader} from '../src/types.d.ts'
+ * @import {DataReader} from '../src/types.js'
  * @param {number[]} bytes
  * @returns {DataReader}
  */

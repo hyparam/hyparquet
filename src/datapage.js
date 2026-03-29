@@ -1,12 +1,12 @@
+/**
+ * @import {ColumnDecoder, CompressionCodec, Compressors, DataPage, DataPageHeader, DataPageHeaderV2, DataReader, DecodedArray, PageHeader, SchemaTree} from '../src/types.js'
+ */
+
 import { deltaBinaryUnpack, deltaByteArray, deltaLengthByteArray } from './delta.js'
 import { byteStreamSplit, readRleBitPackedHybrid } from './encoding.js'
 import { readPlain } from './plain.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel } from './schema.js'
 import { snappyUncompress } from './snappy.js'
-
-/**
- * @import {ColumnDecoder, CompressionCodec, Compressors, DataPage, DataPageHeader, DataPageHeaderV2, DataReader, DecodedArray, PageHeader, SchemaTree} from '../src/types.d.ts'
- */
 
 /**
  * Read a data page from uncompressed reader.

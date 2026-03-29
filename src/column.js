@@ -1,3 +1,7 @@
+/**
+ * @import {ColumnDecoder, DataReader, DecodedArray, PageHeader, PageResult, RowGroupSelect, SubColumnData} from '../src/types.js'
+ */
+
 import { assembleLists } from './assemble.js'
 import { Encodings, PageTypes } from './constants.js'
 import { convert, convertWithDictionary } from './convert.js'
@@ -5,10 +9,6 @@ import { decompressPage, readDataPage, readDataPageV2 } from './datapage.js'
 import { readPlain } from './plain.js'
 import { isFlatColumn } from './schema.js'
 import { deserializeTCompactProtocol } from './thrift.js'
-
-/**
- * @import {ColumnDecoder, DataReader, DecodedArray, PageHeader, PageResult, RowGroupSelect, SubColumnData} from '../src/types.d.ts'
- */
 
 /**
  * Parse column data from a buffer.

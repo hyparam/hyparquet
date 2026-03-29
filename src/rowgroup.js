@@ -1,13 +1,13 @@
+/**
+ * @import {AsyncColumn, AsyncRowGroup, DecodedArray, GroupPlan, ParquetParsers, ParquetReadOptions, QueryPlan, SchemaTree} from '../src/types.js'
+ */
+
 import { assembleNested } from './assemble.js'
 import { readColumn } from './column.js'
 import { DEFAULT_PARSERS } from './convert.js'
 import { readOffsetIndex } from './indexes.js'
 import { getSchemaPath } from './schema.js'
 import { flatten } from './utils.js'
-
-/**
- * @import {AsyncColumn, AsyncRowGroup, DecodedArray, GroupPlan, ParquetParsers, ParquetReadOptions, QueryPlan, SchemaTree} from '../src/types.js'
- */
 
 /**
  * Read a row group from a file-like object.

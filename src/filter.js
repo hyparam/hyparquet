@@ -1,8 +1,8 @@
-import { equals } from './utils.js'
-
 /**
  * @import {ParquetQueryFilter, RowGroup} from '../src/types.js'
  */
+
+import { equals } from './utils.js'
 
 /**
  * Returns an array of top-level column names needed to evaluate the filter.

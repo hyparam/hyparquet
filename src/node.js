@@ -1,10 +1,11 @@
+/**
+ * @import {AsyncBuffer} from '../src/types.js'
+ */
+
 import { createReadStream, promises as fs } from 'fs'
 
 export * from './index.js'
 
-/**
- * @import {AsyncBuffer} from '../src/types.js'
- */
 /**
  * Construct an AsyncBuffer for a local file using node fs package.
  *

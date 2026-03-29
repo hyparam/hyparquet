@@ -1,8 +1,4 @@
 /**
- * @import {KeyValue, LogicalType, SchemaElement} from '../src/types.d.ts'
- */
-
-/**
  * @param {SchemaElement[]} schema
  * @param {KeyValue[] | undefined} key_value_metadata
  * @returns {void}
@@ -36,3 +32,7 @@ export function markGeoColumns(schema, key_value_metadata) {
     }
   }
 }
+
+/**
+ * @import {KeyValue, LogicalType, SchemaElement} from '../src/types.js'
+ */

@@ -1,8 +1,8 @@
-import { readVarInt } from './thrift.js'
-
 /**
- * @import {DataReader, DecodedArray, ParquetType} from '../src/types.d.ts'
+ * @import {DataReader, DecodedArray, ParquetType} from '../src/types.js'
  */
+
+import { readVarInt } from './thrift.js'
 
 /**
  * Read values from a run-length encoded/bit-packed hybrid encoding.
