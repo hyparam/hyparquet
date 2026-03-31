@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.25.3]
+ - Fix include dictionary when reading with offset index (#158 1thanks @tomquist)
+ - Don't fetch offset index when reading entire rowgroup
+
 ## [1.25.2]
  - Fix type exports for submodules
 
