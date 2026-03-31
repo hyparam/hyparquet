@@ -1,0 +1,146 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "schema",
+      "num_children": 2
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "id"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "country",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    }
+  ],
+  "num_rows": 200,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "id"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 200,
+            "total_uncompressed_size": 1846,
+            "total_compressed_size": 1065,
+            "data_page_offset": 836,
+            "dictionary_page_offset": 4,
+            "statistics": {
+              "max": 200,
+              "min": 1,
+              "null_count": 0,
+              "max_value": 200,
+              "min_value": 1,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                200
+              ]
+            }
+          },
+          "offset_index_offset": 1360,
+          "offset_index_length": 12,
+          "column_index_offset": 1282,
+          "column_index_length": 36
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "country"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 200,
+            "total_uncompressed_size": 209,
+            "total_compressed_size": 213,
+            "data_page_offset": 1175,
+            "dictionary_page_offset": 1069,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "United States",
+              "min_value": "Australia",
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DICTIONARY_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              },
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "RLE_DICTIONARY",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 1386,
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                200
+              ]
+            }
+          },
+          "offset_index_offset": 1372,
+          "offset_index_length": 16,
+          "column_index_offset": 1318,
+          "column_index_length": 42
+        }
+      ],
+      "total_byte_size": 2055,
+      "num_rows": 200,
+      "file_offset": 4,
+      "total_compressed_size": 1278
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "ARROW:schema",
+      "value": "/////6gAAAAQAAAAAAAKAAwABgAFAAgACgAAAAABBAAMAAAACAAIAAAABAAIAAAABAAAAAIAAABEAAAABAAAANT///8AAAEFEAAAABwAAAAEAAAAAAAAAAcAAABjb3VudHJ5AAQABAAEAAAAEAAUAAgABgAHAAwAAAAQABAAAAAAAAECEAAAABwAAAAEAAAAAAAAAAIAAABpZAAACAAMAAgABwAIAAAAAAAAAUAAAAA="
+    }
+  ],
+  "created_by": "parquet-cpp-arrow version 23.0.1",
+  "metadata_length": 587
+}
