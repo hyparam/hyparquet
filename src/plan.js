@@ -52,7 +52,7 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
           if (startByte < groupStartByte) groupStartByte = startByte
           if (endByte > groupEndByte) groupEndByte = endByte
 
-          if (useOffsetIndex && chunk.offset_index_offset && chunk.offset_index_length) {
+          if (useOffsetIndex && chunk.offset_index_offset && chunk.offset_index_length && (rowStart > groupStart || rowEnd < groupEnd)) {
             const offsetIndexStart = Number(chunk.offset_index_offset)
             chunks.push({
               columnMetadata: meta,

@@ -36,4 +36,28 @@ describe('parquetPlan', () => {
       ],
     })
   })
+
+  it('skips offset index when reading entire row group', async () => {
+    const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
+    const metadata = await parquetMetadataAsync(file)
+    const plan = parquetPlan({ file, metadata, useOffsetIndex: true })
+    // reading all rows, so offset index should not be used
+    for (const group of plan.groups) {
+      for (const chunk of group.chunks) {
+        expect(chunk).toHaveProperty('range')
+        expect(chunk).not.toHaveProperty('offsetIndex')
+      }
+    }
+  })
+
+  it('uses offset index when reading a row subset', async () => {
+    const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
+    const metadata = await parquetMetadataAsync(file)
+    const plan = parquetPlan({ file, metadata, useOffsetIndex: true, rowStart: 50, rowEnd: 150 })
+    // partial read should use offset index
+    const hasOffsetIndex = plan.groups.some(g =>
+      g.chunks.some(c => 'offsetIndex' in c)
+    )
+    expect(hasOffsetIndex).toBe(true)
+  })
 })
