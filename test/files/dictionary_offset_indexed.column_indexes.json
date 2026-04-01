@@ -1,0 +1,42 @@
+[
+  [
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        1
+      ],
+      "max_values": [
+        200
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ],
+      "definition_level_histograms": [
+        0,
+        200
+      ]
+    },
+    {
+      "null_pages": [
+        false
+      ],
+      "min_values": [
+        "Australia"
+      ],
+      "max_values": [
+        "United States"
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0
+      ],
+      "definition_level_histograms": [
+        0,
+        200
+      ]
+    }
+  ]
+]

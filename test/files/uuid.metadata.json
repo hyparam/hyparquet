@@ -1,0 +1,92 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "name": "root",
+      "num_children": 1
+    },
+    {
+      "type": "FIXED_LEN_BYTE_ARRAY",
+      "type_length": 16,
+      "repetition_type": "OPTIONAL",
+      "name": "uuid",
+      "logical_type": {
+        "type": "UUID"
+      }
+    }
+  ],
+  "num_rows": 3,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "type": "FIXED_LEN_BYTE_ARRAY",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "uuid"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 3,
+            "total_uncompressed_size": 73,
+            "total_compressed_size": 73,
+            "data_page_offset": 4,
+            "statistics": {
+              "null_count": 0,
+              "max_value": [
+                102,
+                52,
+                55,
+                97,
+                99,
+                49,
+                48,
+                98,
+                45,
+                53,
+                56,
+                99,
+                99,
+                45,
+                52,
+                51
+              ],
+              "min_value": [
+                53,
+                53,
+                48,
+                101,
+                56,
+                52,
+                48,
+                48,
+                45,
+                101,
+                50,
+                57,
+                98,
+                45,
+                52,
+                49
+              ]
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE_V2",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ]
+          }
+        }
+      ],
+      "total_byte_size": 73,
+      "num_rows": 3
+    }
+  ],
+  "created_by": "hyparquet",
+  "metadata_length": 132
+}
