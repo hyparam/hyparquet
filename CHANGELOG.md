@@ -1,7 +1,10 @@
 # Changelog
 
+## [1.25.4]
+ - Convert UUID logical type to string using custom parser
+
 ## [1.25.3]
- - Fix include dictionary when reading with offset index (#158 1thanks @tomquist)
+ - Fix include dictionary when reading with offset index (#158 thanks @tomquist)
  - Don't fetch offset index when reading entire rowgroup
 
 ## [1.25.2]
