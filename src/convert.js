@@ -32,6 +32,11 @@ export const DEFAULT_PARSERS = {
   geographyFromBytes(bytes) {
     return bytes && wkbToGeojson({ view: new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), offset: 0 })
   },
+  uuidFromBytes(bytes) {
+    if (!bytes) return undefined
+    const hex = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('')
+    return hex.slice(0, 8) + '-' + hex.slice(8, 12) + '-' + hex.slice(12, 16) + '-' + hex.slice(16, 20) + '-' + hex.slice(20, 32)
+  },
 }
 
 /**
@@ -115,6 +120,9 @@ export function convert(data, columnDecoder) {
   }
   if (ltype?.type === 'GEOGRAPHY') {
     return data.map(v => parsers.geographyFromBytes(v))
+  }
+  if (ltype?.type === 'UUID') {
+    return data.map(v => parsers.uuidFromBytes(v))
   }
   if (ctype === 'UTF8' || ltype?.type === 'STRING' || utf8 && type === 'BYTE_ARRAY') {
     return data.map(v => parsers.stringFromBytes(v))

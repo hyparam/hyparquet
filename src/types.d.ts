@@ -10,6 +10,7 @@ export interface ParquetParsers {
   stringFromBytes(bytes: Uint8Array): any
   geometryFromBytes(bytes: Uint8Array): any
   geographyFromBytes(bytes: Uint8Array): any
+  uuidFromBytes(bytes: Uint8Array): any
 }
 
 /**

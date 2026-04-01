@@ -289,6 +289,42 @@ describe('convert function', () => {
     expect(convert(data, cd)).toEqual(['custom-foo', undefined])
   })
 
+  it('converts UUID bytes to string', () => {
+    const data = [new Uint8Array([
+      0x55, 0x0e, 0x84, 0x00, 0xe2, 0x9b, 0x41, 0xd4,
+      0xa7, 0x16, 0x44, 0x66, 0x55, 0x44, 0x00, 0x00,
+    ])]
+    /** @type {SchemaElement} */
+    const element = { name, type: 'FIXED_LEN_BYTE_ARRAY', logical_type: { type: 'UUID' } }
+    expect(convert(data, { ...columnDecoder, element })).toEqual([
+      '550e8400-e29b-41d4-a716-446655440000',
+    ])
+  })
+
+  it('converts UUID with undefined value', () => {
+    const data = [undefined]
+    /** @type {SchemaElement} */
+    const element = { name, type: 'FIXED_LEN_BYTE_ARRAY', logical_type: { type: 'UUID' } }
+    expect(convert(data, { ...columnDecoder, element })).toEqual([undefined])
+  })
+
+  it('respects custom parsers - uuidFromBytes', () => {
+    const data = [new Uint8Array([
+      0x55, 0x0e, 0x84, 0x00, 0xe2, 0x9b, 0x41, 0xd4,
+      0xa7, 0x16, 0x44, 0x66, 0x55, 0x44, 0x00, 0x00,
+    ])]
+    /** @type {ColumnDecoder} */
+    const cd = {
+      ...columnDecoder,
+      element: { name, type: 'FIXED_LEN_BYTE_ARRAY', logical_type: { type: 'UUID' } },
+      parsers: {
+        ...columnDecoder.parsers,
+        uuidFromBytes: () => 'custom-uuid',
+      },
+    }
+    expect(convert(data, cd)).toEqual(['custom-uuid'])
+  })
+
   it('respects custom parsers - geometryFromBytes', () => {
     const pointWkb = new Uint8Array([
       1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 128, 89, 64, 0, 0, 0, 0, 0, 0, 224, 63,
