@@ -257,6 +257,14 @@ describe('parquetRead', () => {
     expect(counting.bytes).toBe(892)
   })
 
+  it('uses OffsetIndex when dictionary_page_offset is missing (polars)', async () => {
+    // polars writes RLE_DICTIONARY columns without setting dictionary_page_offset
+    const file = await asyncBufferFromFile('test/files/offset_index_no_dict_offset.parquet')
+    const allRows = await parquetReadObjects({ file })
+    const rows = await parquetReadObjects({ file, rowEnd: 1, useOffsetIndex: true })
+    expect(rows).toEqual(allRows.slice(0, 1))
+  })
+
   it('reads only required row groups on the boundary', async () => {
     const originalFile = await asyncBufferFromFile('test/files/alpha.parquet')
     const metadata = await parquetMetadataAsync(originalFile)

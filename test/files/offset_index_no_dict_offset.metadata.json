@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "name": "root",
+      "num_children": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "name",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "value"
+    }
+  ],
+  "num_rows": 3,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 91,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "name"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 3,
+            "total_uncompressed_size": 87,
+            "total_compressed_size": 87,
+            "data_page_offset": 4,
+            "statistics": {
+              "null_count": 0,
+              "max_value": "charlie",
+              "min_value": "alice"
+            }
+          },
+          "offset_index_offset": 337,
+          "offset_index_length": 10,
+          "column_index_offset": 279,
+          "column_index_length": 27
+        },
+        {
+          "file_offset": 226,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ],
+            "path_in_schema": [
+              "value"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 3,
+            "total_uncompressed_size": 88,
+            "total_compressed_size": 88,
+            "data_page_offset": 138,
+            "statistics": {
+              "null_count": 0,
+              "max_value": 3,
+              "min_value": 1
+            }
+          },
+          "offset_index_offset": 347,
+          "offset_index_length": 11,
+          "column_index_offset": 306,
+          "column_index_length": 31
+        }
+      ],
+      "total_byte_size": 175,
+      "num_rows": 3,
+      "file_offset": 4,
+      "total_compressed_size": 175,
+      "ordinal": 0
+    }
+  ],
+  "key_value_metadata": [
+    {
+      "key": "ARROW:schema",
+      "value": "/////6kAAAAEAAAA8v///xQAAAAEAAEAAAAKAAsACAAKAAQA+P///wwAAAAIAAgAAAAEAAIAAABAAAAABAAAALT///8oAAAAEAAAAAgAAAABAgAAAAAAAPT///9AAAAAAQAAAAgACQAEAAgABQAAAHZhbHVlAAAA7P///ywAAAAgAAAAGAAAAAEUAAAQABIABAAQABEACAAAAAwAAAAAAPz///8EAAQABAAAAG5hbWUA"
+    }
+  ],
+  "created_by": "Polars",
+  "metadata_length": 464
+}
