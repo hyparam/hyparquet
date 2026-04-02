@@ -18,33 +18,28 @@ import { flatten } from './utils.js'
  * @returns {AsyncRowGroup} resolves to column data
  */
 export function readRowGroup(options, { metadata }, groupPlan) {
-  const { file, compressors, utf8 } = options
-
   /** @type {AsyncColumn[]} */
   const asyncColumns = []
-  /** @type {ParquetParsers} */
-  const parsers = { ...DEFAULT_PARSERS, ...options.parsers }
 
   // read column data
-  for (const chunkPlan of groupPlan.chunks) {
-    const { codec, path_in_schema: pathInSchema, type } = chunkPlan.columnMetadata
+  for (const chunk of groupPlan.chunks) {
+    const { data_page_offset, dictionary_page_offset, path_in_schema: pathInSchema } = chunk.columnMetadata
     const schemaPath = getSchemaPath(metadata.schema, pathInSchema)
     const columnDecoder = {
       pathInSchema,
-      type,
       element: schemaPath[schemaPath.length - 1].element,
       schemaPath,
-      codec,
-      parsers,
-      compressors,
-      utf8,
+      parsers: { ...DEFAULT_PARSERS, ...options.parsers },
+      ...options,
+      ...chunk.columnMetadata,
     }
+    let { startByte, endByte } = chunk.range
 
     // non-offset-index case
-    if (!('offsetIndex' in chunkPlan)) {
+    if (!('offsetIndex' in chunk)) {
       asyncColumns.push({
         pathInSchema,
-        data: Promise.resolve(file.slice(chunkPlan.range.startByte, chunkPlan.range.endByte))
+        data: Promise.resolve(options.file.slice(startByte, endByte))
           .then(buffer => {
             const reader = { view: new DataView(buffer), offset: 0 }
             return readColumn(reader, groupPlan, columnDecoder, options.onPage)
@@ -57,15 +52,14 @@ export function readRowGroup(options, { metadata }, groupPlan) {
     asyncColumns.push({
       pathInSchema,
       // fetch offset index
-      data: Promise.resolve(file.slice(chunkPlan.offsetIndex.startByte, chunkPlan.offsetIndex.endByte))
+      data: Promise.resolve(options.file.slice(chunk.offsetIndex.startByte, chunk.offsetIndex.endByte))
         .then(async arrayBuffer => {
-          const offsetIndex = readOffsetIndex({ view: new DataView(arrayBuffer), offset: 0 })
           // use offset index to read only necessary pages
           const { selectStart, selectEnd } = groupPlan
-          const pages = offsetIndex.page_locations
-          let startByte = NaN
-          let endByte = NaN
+          const pages = readOffsetIndex({ view: new DataView(arrayBuffer), offset: 0 }).page_locations
           let skipped = 0
+          // include dictionary if present, handle polars missing dictionary_page_offset
+          const hasDict = dictionary_page_offset || data_page_offset < pages[0].offset
           for (let i = 0; i < pages.length; i++) {
             const page = pages[i]
             const pageStart = Number(page.first_row_index)
@@ -73,21 +67,15 @@ export function readRowGroup(options, { metadata }, groupPlan) {
               ? Number(pages[i + 1].first_row_index)
               : groupPlan.groupRows // last page extends to end of row group
             // check if page overlaps with [selectStart, selectEnd)
-            if (pageStart < selectEnd && pageEnd > selectStart) {
-              if (Number.isNaN(startByte)) {
-                startByte = Number(page.offset)
-                skipped = pageStart
-              }
+            if (!skipped && !hasDict && pageEnd > selectStart) {
+              startByte = Number(page.offset)
+              skipped = pageStart
+            }
+            if (pageStart < selectEnd) {
               endByte = Number(page.offset) + page.compressed_page_size
             }
           }
-          // include dictionary page so readColumn can decode dictionary-encoded values
-          const dictOffset = chunkPlan.columnMetadata.dictionary_page_offset
-          if (dictOffset !== undefined) {
-            startByte = Number(dictOffset)
-            skipped = 0
-          }
-          const buffer = await file.slice(startByte, endByte)
+          const buffer = await options.file.slice(startByte, endByte)
           const reader = { view: new DataView(buffer), offset: 0 }
           // adjust row selection for skipped pages
           const adjustedGroupPlan = skipped ? {

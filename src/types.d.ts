@@ -458,7 +458,7 @@ interface ChunkFull {
 interface ChunkOffsetIndexed {
   columnMetadata: ColumnMetaData
   offsetIndex: ByteRange
-  bounds: ByteRange
+  range: ByteRange
 }
 
 export interface ColumnDecoder {

@@ -60,7 +60,7 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
                 startByte: offsetIndexStart,
                 endByte: offsetIndexStart + chunk.offset_index_length,
               },
-              bounds: { startByte, endByte },
+              range: { startByte, endByte },
             })
           } else {
             chunks.push({
