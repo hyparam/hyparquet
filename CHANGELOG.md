@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.25.5]
+ - Fix polars missing dictionary_page_offset (#160)
+
 ## [1.25.4]
  - Convert UUID logical type to string using custom parser
 
