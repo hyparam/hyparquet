@@ -260,6 +260,14 @@ describe('parquetRead', () => {
     expect(rows).toEqual(allRows.slice(0, 1))
   })
 
+  it('uses OffsetIndex with struct sub-columns having different page counts', async () => {
+    // struct sub-columns may have different page boundaries with offset index
+    const file = await asyncBufferFromFile('test/files/struct_offset_index.parquet')
+    const allRows = await parquetReadObjects({ file })
+    const rows = await parquetReadObjects({ file, rowEnd: 3, useOffsetIndex: true })
+    expect(rows).toEqual(allRows.slice(0, 3))
+  })
+
   it('reads only required row groups on the boundary', async () => {
     const originalFile = await asyncBufferFromFile('test/files/alpha.parquet')
     const metadata = await parquetMetadataAsync(originalFile)

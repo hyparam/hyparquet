@@ -57,7 +57,7 @@ export function readRowGroup(options, { metadata }, groupPlan) {
           // use offset index to read only necessary pages
           const { selectStart, selectEnd } = groupPlan
           const pages = readOffsetIndex({ view: new DataView(arrayBuffer), offset: 0 }).page_locations
-          let skipped = 0
+          let skipped = -1
           // include dictionary if present, handle polars missing dictionary_page_offset
           const hasDict = dictionary_page_offset || data_page_offset < pages[0].offset
           for (let i = 0; i < pages.length; i++) {
@@ -67,7 +67,7 @@ export function readRowGroup(options, { metadata }, groupPlan) {
               ? Number(pages[i + 1].first_row_index)
               : groupPlan.groupRows // last page extends to end of row group
             // check if page overlaps with [selectStart, selectEnd)
-            if (!skipped && !hasDict && pageEnd > selectStart) {
+            if (skipped < 0 && !hasDict && pageEnd > selectStart) {
               startByte = Number(page.offset)
               skipped = pageStart
             }
@@ -75,6 +75,7 @@ export function readRowGroup(options, { metadata }, groupPlan) {
               endByte = Number(page.offset) + page.compressed_page_size
             }
           }
+          if (skipped < 0) skipped = 0
           const buffer = await options.file.slice(startByte, endByte)
           const reader = { view: new DataView(buffer), offset: 0 }
           // adjust row selection for skipped pages
@@ -193,9 +194,18 @@ export function assembleAsync(asyncRowGroup, schemaTree, parsers) {
           // collect subcolumn data
           /** @type {Map<string, DecodedArray>} */
           const subcolumnData = new Map()
+          let minLength = Infinity
           for (const column of childColumns) {
             const { data } = await column.data
-            subcolumnData.set(column.pathInSchema.join('.'), flatten(data))
+            const flat = flatten(data)
+            subcolumnData.set(column.pathInSchema.join('.'), flat)
+            minLength = Math.min(minLength, flat.length)
+          }
+          // trim sub-columns to same length (offset index may read different pages per column)
+          for (const [key, value] of subcolumnData) {
+            if (value.length > minLength) {
+              subcolumnData.set(key, value.slice(0, minLength))
+            }
           }
           // assemble the column
           assembleNested(subcolumnData, child, parsers)
