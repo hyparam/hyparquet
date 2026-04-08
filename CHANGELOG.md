@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.25.6]
+ - Fix struct assembly with skips
+
 ## [1.25.5]
  - Fix polars missing dictionary_page_offset (#160)
 
