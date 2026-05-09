@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.25.7]
+ - Fix shredded variant type mismatch
+
 ## [1.25.6]
  - Fix struct assembly with skips
 
