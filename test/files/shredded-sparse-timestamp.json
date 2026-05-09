@@ -1,0 +1,25 @@
+[
+  [
+    {
+      "count": 42,
+      "event_type": "login"
+    }
+  ],
+  [
+    {
+      "event_type": "click"
+    }
+  ],
+  [
+    {
+      "count": null,
+      "event_type": "purchase"
+    }
+  ],
+  [
+    {
+      "d": "2024-01-15T10:30:00.000Z",
+      "event_type": "timeout"
+    }
+  ]
+]

@@ -49,6 +49,8 @@ export function decodeVariantColumn(value, parsers = DEFAULT_PARSERS) {
  * @returns {any}
  */
 function decodeTypedValue(typedValue, metadata, parsers) {
+  if (typedValue instanceof Date) return typedValue
+
   // Handle {typed_value, value} wrapper - unwrap and recurse
   if (typedValue && typeof typedValue === 'object' && !Array.isArray(typedValue) && !(typedValue instanceof Uint8Array)) {
     if ('typed_value' in typedValue && typedValue.typed_value !== null && typedValue.typed_value !== undefined) {
@@ -65,6 +67,7 @@ function decodeTypedValue(typedValue, metadata, parsers) {
     /** @type {Record<string, any>} */
     const result = {}
     for (const [key, field] of Object.entries(typedValue)) {
+      if (!metadata.dictionary.includes(key)) continue
       result[key] = decodeTypedValue(field, metadata, parsers)
     }
     return result

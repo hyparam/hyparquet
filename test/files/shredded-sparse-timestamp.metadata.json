@@ -1,0 +1,310 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "duckdb_schema",
+      "num_children": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "v",
+      "num_children": 3,
+      "logical_type": {
+        "type": "VARIANT",
+        "specification_version": 1
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "metadata"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value"
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "typed_value",
+      "num_children": 3
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "d",
+      "num_children": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value"
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "typed_value",
+      "converted_type": "TIMESTAMP_MICROS",
+      "logical_type": {
+        "type": "TIMESTAMP",
+        "isAdjustedToUTC": false,
+        "unit": "MICROS"
+      }
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "count",
+      "num_children": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value"
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "typed_value",
+      "converted_type": "INT_32"
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "event_type",
+      "num_children": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "typed_value",
+      "converted_type": "UTF8"
+    }
+  ],
+  "num_rows": 4,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "v",
+              "metadata"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 111,
+            "total_compressed_size": 83,
+            "data_page_offset": 4,
+            "statistics": {
+              "max": "\u0011\u0002\u0000\n\u000fevent_typecount",
+              "min": "\u0011\u0001\u0000\nevent_type",
+              "null_count": 0,
+              "max_value": "\u0011\u0002\u0000\n\u000fevent_typecount",
+              "min_value": "\u0011\u0001\u0000\nevent_type",
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            }
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "v",
+              "value"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 23,
+            "total_compressed_size": 25,
+            "data_page_offset": 87,
+            "statistics": {
+              "null_count": 4
+            }
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "v",
+              "typed_value",
+              "d",
+              "value"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 23,
+            "total_compressed_size": 25,
+            "data_page_offset": 112,
+            "statistics": {
+              "null_count": 4
+            }
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "v",
+              "typed_value",
+              "d",
+              "typed_value"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 127,
+            "total_compressed_size": 42,
+            "data_page_offset": 137,
+            "statistics": {
+              "max": "2024-01-15T10:30:00.000Z",
+              "min": "2024-01-15T10:30:00.000Z",
+              "null_count": 3,
+              "max_value": "2024-01-15T10:30:00.000Z",
+              "min_value": "2024-01-15T10:30:00.000Z",
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            }
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "v",
+              "typed_value",
+              "count",
+              "value"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 124,
+            "total_compressed_size": 40,
+            "data_page_offset": 179,
+            "statistics": {
+              "max": "\u0000",
+              "min": "\u0000",
+              "null_count": 3,
+              "max_value": "\u0000",
+              "min_value": "\u0000",
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            }
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "v",
+              "typed_value",
+              "count",
+              "typed_value"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 123,
+            "total_compressed_size": 39,
+            "data_page_offset": 219,
+            "statistics": {
+              "max": 42,
+              "min": 42,
+              "null_count": 3,
+              "max_value": 42,
+              "min_value": 42,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            }
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "v",
+              "typed_value",
+              "event_type",
+              "value"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 23,
+            "total_compressed_size": 25,
+            "data_page_offset": 258,
+            "statistics": {
+              "null_count": 4
+            }
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "v",
+              "typed_value",
+              "event_type",
+              "typed_value"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 4,
+            "total_uncompressed_size": 64,
+            "total_compressed_size": 65,
+            "data_page_offset": 283,
+            "statistics": {
+              "max": "timeout",
+              "min": "click",
+              "null_count": 0,
+              "max_value": "timeout",
+              "min_value": "click",
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            }
+          }
+        }
+      ],
+      "total_byte_size": 618,
+      "num_rows": 4,
+      "file_offset": 4,
+      "total_compressed_size": 344
+    }
+  ],
+  "created_by": "DuckDB version v1.5.2 (build 8a5851971f)",
+  "metadata_length": 923
+}

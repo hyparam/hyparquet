@@ -230,4 +230,26 @@ describe('shredded variant', () => {
       { v: { count: 'not a number' } },
     ])
   })
+
+  it('preserves absent shredded fields and typed timestamps', async () => {
+    // Fixture written by DuckDB 1.5.2:
+    //   COPY (SELECT {'event_type':'login','count':42}::VARIANT v UNION ALL
+    //         SELECT {'event_type':'click'}::VARIANT v UNION ALL
+    //         SELECT {'event_type':'purchase','count':NULL}::VARIANT v UNION ALL
+    //         SELECT {'event_type':'timeout','d':TIMESTAMP '2024-01-15 10:30:00'}::VARIANT v)
+    //   TO 'shredded-sparse-timestamp.parquet' (FORMAT PARQUET)
+    // Schema: v (VARIANT) { metadata, value, typed_value {
+    //   d { value, typed_value: TIMESTAMP_MICROS },
+    //   count { value, typed_value: INT32 },
+    //   event_type { value, typed_value: UTF8 }
+    // } }
+    const file = await asyncBufferFromFile('test/files/shredded-sparse-timestamp.parquet')
+    const rows = await parquetReadObjects({ file })
+    expect(rows).toEqual([
+      { v: { count: 42, event_type: 'login' } },
+      { v: { event_type: 'click' } },
+      { v: { count: null, event_type: 'purchase' } },
+      { v: { d: new Date('2024-01-15T10:30:00.000Z'), event_type: 'timeout' } },
+    ])
+  })
 })
