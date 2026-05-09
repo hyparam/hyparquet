@@ -1,0 +1,169 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "duckdb_schema",
+      "num_children": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "v",
+      "num_children": 3,
+      "logical_type": {
+        "type": "VARIANT",
+        "specification_version": 1
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "REQUIRED",
+      "name": "metadata"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value"
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "typed_value",
+      "num_children": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "count",
+      "num_children": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "value"
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "typed_value",
+      "converted_type": "INT_32"
+    }
+  ],
+  "num_rows": 2,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "v",
+              "metadata"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 2,
+            "total_uncompressed_size": 49,
+            "total_compressed_size": 51,
+            "data_page_offset": 4,
+            "statistics": {
+              "max": "\u0011\u0001\u0000\u0005count",
+              "min": "\u0011\u0001\u0000\u0005count",
+              "null_count": 0,
+              "max_value": "\u0011\u0001\u0000\u0005count",
+              "min_value": "\u0011\u0001\u0000\u0005count",
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            }
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "v",
+              "value"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 2,
+            "total_uncompressed_size": 23,
+            "total_compressed_size": 25,
+            "data_page_offset": 55,
+            "statistics": {
+              "null_count": 2
+            }
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "v",
+              "typed_value",
+              "count",
+              "value"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 2,
+            "total_uncompressed_size": 136,
+            "total_compressed_size": 51,
+            "data_page_offset": 80,
+            "statistics": {
+              "max": "1not a number",
+              "min": "1not a number",
+              "null_count": 1,
+              "max_value": "1not a number",
+              "min_value": "1not a number",
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            }
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "v",
+              "typed_value",
+              "count",
+              "typed_value"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 2,
+            "total_uncompressed_size": 123,
+            "total_compressed_size": 38,
+            "data_page_offset": 131,
+            "statistics": {
+              "max": 42,
+              "min": 42,
+              "null_count": 1,
+              "max_value": 42,
+              "min_value": 42,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            }
+          }
+        }
+      ],
+      "total_byte_size": 331,
+      "num_rows": 2,
+      "file_offset": 4,
+      "total_compressed_size": 165
+    }
+  ],
+  "created_by": "DuckDB version v1.5.2 (build 8a5851971f)",
+  "metadata_length": 521
+}

@@ -212,4 +212,22 @@ describe('shredded variant', () => {
     expect(rows[0].var.d).toBeInstanceOf(Date)
     expect(rows[0].var.d.getTime()).toBe(new Date('2024-01-30').getTime())
   })
+
+  it('falls back to binary value when shredded field type mismatches', async () => {
+    // Per the Parquet variant shredding spec, when a shredded field's typed_value
+    // is null but its value column holds a binary variant, the reader must decode
+    // the binary value rather than returning null.
+    //
+    // Fixture written by DuckDB 1.5.2:
+    //   COPY (SELECT {'count': 42}::VARIANT v UNION ALL
+    //         SELECT {'count': 'not a number'}::VARIANT v)
+    //   TO 'shredded-type-mismatch.parquet' (FORMAT PARQUET)
+    // Schema: v (VARIANT) { metadata, value, typed_value { count { value, typed_value: INT32 } } }
+    const file = await asyncBufferFromFile('test/files/shredded-type-mismatch.parquet')
+    const rows = await parquetReadObjects({ file })
+    expect(rows).toEqual([
+      { v: { count: 42 } },
+      { v: { count: 'not a number' } },
+    ])
+  })
 })
