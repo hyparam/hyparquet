@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.25.8]
+ - Fix shredded sparse timestamp
+
 ## [1.25.7]
  - Fix shredded variant type mismatch
 
