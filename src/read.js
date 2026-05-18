@@ -70,6 +70,7 @@ export async function parquetRead(options) {
   if (onChunk) {
     for (const asyncGroup of assembled) {
       for (const asyncColumn of asyncGroup.asyncColumns) {
+        // onChunk is fire-and-forget; the main read path still awaits this data.
         asyncColumn.data.then(({ data, skipped }) => {
           let rowStart = asyncGroup.groupStart + skipped
           for (const columnData of data) {
@@ -81,7 +82,7 @@ export async function parquetRead(options) {
             })
             rowStart += columnData.length
           }
-        })
+        }, () => {})
       }
     }
   }

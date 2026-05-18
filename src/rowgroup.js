@@ -10,6 +10,18 @@ import { getSchemaPath } from './schema.js'
 import { flatten } from './utils.js'
 
 /**
+ * Mark a promise as handled without changing what awaiters observe.
+ *
+ * @template T
+ * @param {Promise<T>} promise
+ * @returns {Promise<T>}
+ */
+function markPromiseHandled(promise) {
+  promise.catch(() => {})
+  return promise
+}
+
+/**
  * Read a row group from a file-like object.
  *
  * @param {ParquetReadOptions} options
@@ -37,61 +49,58 @@ export function readRowGroup(options, { metadata }, groupPlan) {
 
     // non-offset-index case
     if (!('offsetIndex' in chunk)) {
-      asyncColumns.push({
-        pathInSchema,
-        data: Promise.resolve(options.file.slice(startByte, endByte))
-          .then(buffer => {
-            const reader = { view: new DataView(buffer), offset: 0 }
-            return readColumn(reader, groupPlan, columnDecoder, options.onPage)
-          }),
-      })
+      const data = markPromiseHandled(Promise.resolve()
+        .then(() => options.file.slice(startByte, endByte))
+        .then(buffer => {
+          const reader = { view: new DataView(buffer), offset: 0 }
+          return readColumn(reader, groupPlan, columnDecoder, options.onPage)
+        }))
+      asyncColumns.push({ pathInSchema, data })
       continue
     }
 
     // offset-index case
-    asyncColumns.push({
-      pathInSchema,
-      // fetch offset index
-      data: Promise.resolve(options.file.slice(chunk.offsetIndex.startByte, chunk.offsetIndex.endByte))
-        .then(async arrayBuffer => {
-          // use offset index to read only necessary pages
-          const { selectStart, selectEnd } = groupPlan
-          const pages = readOffsetIndex({ view: new DataView(arrayBuffer), offset: 0 }).page_locations
-          let skipped = -1
-          // include dictionary if present, handle polars missing dictionary_page_offset
-          const hasDict = dictionary_page_offset || data_page_offset < pages[0].offset
-          for (let i = 0; i < pages.length; i++) {
-            const page = pages[i]
-            const pageStart = Number(page.first_row_index)
-            const pageEnd = i + 1 < pages.length
-              ? Number(pages[i + 1].first_row_index)
-              : groupPlan.groupRows // last page extends to end of row group
-            // check if page overlaps with [selectStart, selectEnd)
-            if (skipped < 0 && !hasDict && pageEnd > selectStart) {
-              startByte = Number(page.offset)
-              skipped = pageStart
-            }
-            if (pageStart < selectEnd) {
-              endByte = Number(page.offset) + page.compressed_page_size
-            }
+    const data = markPromiseHandled(Promise.resolve()
+      .then(() => options.file.slice(chunk.offsetIndex.startByte, chunk.offsetIndex.endByte))
+      .then(async arrayBuffer => {
+        // use offset index to read only necessary pages
+        const { selectStart, selectEnd } = groupPlan
+        const pages = readOffsetIndex({ view: new DataView(arrayBuffer), offset: 0 }).page_locations
+        let skipped = -1
+        // include dictionary if present, handle polars missing dictionary_page_offset
+        const hasDict = dictionary_page_offset || data_page_offset < pages[0].offset
+        for (let i = 0; i < pages.length; i++) {
+          const page = pages[i]
+          const pageStart = Number(page.first_row_index)
+          const pageEnd = i + 1 < pages.length
+            ? Number(pages[i + 1].first_row_index)
+            : groupPlan.groupRows // last page extends to end of row group
+          // check if page overlaps with [selectStart, selectEnd)
+          if (skipped < 0 && !hasDict && pageEnd > selectStart) {
+            startByte = Number(page.offset)
+            skipped = pageStart
           }
-          if (skipped < 0) skipped = 0
-          const buffer = await options.file.slice(startByte, endByte)
-          const reader = { view: new DataView(buffer), offset: 0 }
-          // adjust row selection for skipped pages
-          const adjustedGroupPlan = skipped ? {
-            ...groupPlan,
-            groupStart: groupPlan.groupStart + skipped,
-            selectStart: groupPlan.selectStart - skipped,
-            selectEnd: groupPlan.selectEnd - skipped,
-          } : groupPlan
-          const { data, skipped: columnSkipped } = readColumn(reader, adjustedGroupPlan, columnDecoder, options.onPage)
-          return {
-            data,
-            skipped: skipped + columnSkipped,
+          if (pageStart < selectEnd) {
+            endByte = Number(page.offset) + page.compressed_page_size
           }
-        }),
-    })
+        }
+        if (skipped < 0) skipped = 0
+        const buffer = await options.file.slice(startByte, endByte)
+        const reader = { view: new DataView(buffer), offset: 0 }
+        // adjust row selection for skipped pages
+        const adjustedGroupPlan = skipped ? {
+          ...groupPlan,
+          groupStart: groupPlan.groupStart + skipped,
+          selectStart: groupPlan.selectStart - skipped,
+          selectEnd: groupPlan.selectEnd - skipped,
+        } : groupPlan
+        const { data: pageData, skipped: columnSkipped } = readColumn(reader, adjustedGroupPlan, columnDecoder, options.onPage)
+        return {
+          data: pageData,
+          skipped: skipped + columnSkipped,
+        }
+      }))
+    asyncColumns.push({ pathInSchema, data })
   }
 
   return { groupStart: groupPlan.groupStart, groupRows: groupPlan.groupRows, asyncColumns }
@@ -188,32 +197,30 @@ export function assembleAsync(asyncRowGroup, schemaTree, parsers) {
       const childColumns = asyncColumns.filter(column => column.pathInSchema[0] === child.element.name)
       if (!childColumns.length) continue
 
-      assembled.push({
-        pathInSchema: child.path,
-        data: (async () => {
-          // collect subcolumn data
-          /** @type {Map<string, DecodedArray>} */
-          const subcolumnData = new Map()
-          let minLength = Infinity
-          for (const column of childColumns) {
-            const { data } = await column.data
-            const flat = flatten(data)
-            subcolumnData.set(column.pathInSchema.join('.'), flat)
-            minLength = Math.min(minLength, flat.length)
+      const data = markPromiseHandled((async () => {
+        // collect subcolumn data
+        /** @type {Map<string, DecodedArray>} */
+        const subcolumnData = new Map()
+        let minLength = Infinity
+        for (const column of childColumns) {
+          const { data } = await column.data
+          const flat = flatten(data)
+          subcolumnData.set(column.pathInSchema.join('.'), flat)
+          minLength = Math.min(minLength, flat.length)
+        }
+        // trim sub-columns to same length (offset index may read different pages per column)
+        for (const [key, value] of subcolumnData) {
+          if (value.length > minLength) {
+            subcolumnData.set(key, value.slice(0, minLength))
           }
-          // trim sub-columns to same length (offset index may read different pages per column)
-          for (const [key, value] of subcolumnData) {
-            if (value.length > minLength) {
-              subcolumnData.set(key, value.slice(0, minLength))
-            }
-          }
-          // assemble the column
-          assembleNested(subcolumnData, child, parsers)
-          const assembled = subcolumnData.get(child.element.name)
-          if (!assembled) throw new Error('parquet column data not assembled')
-          return { data: [assembled], skipped: 0 }
-        })(),
-      })
+        }
+        // assemble the column
+        assembleNested(subcolumnData, child, parsers)
+        const assembled = subcolumnData.get(child.element.name)
+        if (!assembled) throw new Error('parquet column data not assembled')
+        return { data: [assembled], skipped: 0 }
+      })())
+      assembled.push({ pathInSchema: child.path, data })
     } else {
       // leaf node, return the column
       const asyncColumn = asyncColumns.find(column => column.pathInSchema[0] === child.element.name)

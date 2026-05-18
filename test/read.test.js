@@ -5,6 +5,42 @@ import { countingBuffer } from './helpers.js'
 
 vi.mock('../src/convert.js', { spy: true })
 
+async function expectNoUnhandledRejections(callback) {
+  /** @type {unknown[]} */
+  const unhandled = []
+  function onUnhandled(reason) {
+    unhandled.push(reason)
+  }
+  process.on('unhandledRejection', onUnhandled)
+  try {
+    await callback()
+    await new Promise(resolve => setTimeout(resolve, 50))
+    expect(unhandled).toEqual([])
+  } finally {
+    process.off('unhandledRejection', onUnhandled)
+  }
+}
+
+async function rowGroupFailingFile() {
+  const file = await asyncBufferFromFile('test/files/rowgroups.parquet')
+  const metadata = await parquetMetadataAsync(file)
+  const failedColumn = metadata.row_groups[1].columns[0].meta_data
+  const failedStart = Number(failedColumn.dictionary_page_offset || failedColumn.data_page_offset)
+  const failedEnd = failedStart + Number(failedColumn.total_compressed_size)
+  return {
+    metadata,
+    file: {
+      byteLength: file.byteLength,
+      slice(start, end) {
+        if (start === failedStart && end === failedEnd) {
+          return Promise.reject(new Error('simulated read failure'))
+        }
+        return file.slice(start, end)
+      },
+    },
+  }
+}
+
 describe('parquetRead', () => {
   it('throws error for undefined file', async () => {
     // @ts-expect-error testing invalid input
@@ -415,5 +451,23 @@ describe('parquetRead', () => {
     const file = await asyncBufferFromFile('test/files/rle_boolean_encoding.parquet')
     await expect(parquetReadObjects({ file }))
       .rejects.toThrow('parquet unsupported compression codec: GZIP')
+  })
+
+  it('does not leak unhandled rejections when a row group read fails', async () => {
+    const { file, metadata } = await rowGroupFailingFile()
+
+    await expectNoUnhandledRejections(async () => {
+      await expect(parquetReadObjects({ file, metadata }))
+        .rejects.toThrow('simulated read failure')
+    })
+  })
+
+  it('does not leak unhandled rejections from onChunk when a read fails', async () => {
+    const { file, metadata } = await rowGroupFailingFile()
+
+    await expectNoUnhandledRejections(async () => {
+      await expect(parquetRead({ file, metadata, onChunk: vi.fn() }))
+        .rejects.toThrow('simulated read failure')
+    })
   })
 })
