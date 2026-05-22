@@ -323,6 +323,11 @@ export interface PageEncodingStats {
   count: number
 }
 
+export interface BloomFilter {
+  numBytes: number
+  blocks: Uint32Array
+}
+
 export type PageType =
   'DATA_PAGE' |
   'INDEX_PAGE' |

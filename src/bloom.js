@@ -3,6 +3,12 @@
 // Insertion sets one bit per word, chosen by salting the low 32 bits of an xxhash64.
 // Membership requires all 8 bits to be set; misses are exact, hits are probabilistic.
 
+import { deserializeTCompactProtocol } from './thrift.js'
+
+/**
+ * @import {BloomFilter, DataReader} from '../src/types.js'
+ */
+
 const SALT = new Uint32Array([
   0x47b6137b, 0x44974d91, 0x8824ad5b, 0xa2b7289d,
   0x705495c7, 0x2df1424b, 0x9efc4947, 0x5c6bfb31,
@@ -63,4 +69,34 @@ export function sbbfContains(blocks, hash) {
     if ((blocks[offset + i] & m[i]) === 0) return false
   }
   return true
+}
+
+/**
+ * Parse a Split Block Bloom Filter from a reader positioned at the BloomFilterHeader.
+ * Returns undefined when the header advertises an unsupported algorithm, hash, or
+ * compression — callers should treat that as "cannot use this bloom filter."
+ *
+ * @param {DataReader} reader
+ * @returns {BloomFilter | undefined}
+ */
+export function readBloomFilter(reader) {
+  const header = deserializeTCompactProtocol(reader)
+  const numBytes = header.field_1
+  if (typeof numBytes !== 'number' || numBytes <= 0 || numBytes % 32 !== 0) return undefined
+  // BloomFilterAlgorithm / Hash / Compression are unions with a single supported variant each.
+  if (!header.field_2?.field_1) return undefined // algorithm must be BLOCK
+  if (!header.field_3?.field_1) return undefined // hash must be XXHASH
+  if (!header.field_4?.field_1) return undefined // compression must be UNCOMPRESSED
+
+  const { view, offset } = reader
+  if (offset + numBytes > view.byteLength) {
+    throw new Error(`parquet bloom filter truncated: need ${numBytes} bytes, have ${view.byteLength - offset}`)
+  }
+  // Reader offset is not 4-aligned in general, and we want endian-portable reads.
+  const blocks = new Uint32Array(numBytes >> 2)
+  for (let i = 0; i < blocks.length; i++) {
+    blocks[i] = view.getUint32(offset + i * 4, true)
+  }
+  reader.offset = offset + numBytes
+  return { numBytes, blocks }
 }
