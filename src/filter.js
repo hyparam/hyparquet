@@ -1,7 +1,8 @@
 /**
- * @import {ParquetQueryFilter, RowGroup} from '../src/types.js'
+ * @import {BloomFilter, ParquetQueryFilter, RowGroup, SchemaElement} from '../src/types.js'
  */
 
+import { hashParquetValue, sbbfContains } from './bloom.js'
 import { equals } from './utils.js'
 
 /**
@@ -70,26 +71,30 @@ export function matchFilter(record, filter, strict = true) {
 }
 
 /**
- * Check if a row group can be skipped based on filter and column statistics.
+ * Check if a row group can be skipped based on filter and column statistics,
+ * optionally consulting per-column bloom filters for equality predicates that
+ * statistics can't decide.
  *
  * @param {object} options
  * @param {RowGroup} options.rowGroup
  * @param {string[]} options.physicalColumns
  * @param {ParquetQueryFilter | undefined} options.filter
  * @param {boolean} [options.strict]
+ * @param {Record<string, BloomFilter>} [options.bloomFilters] keyed by top-level column name
+ * @param {Record<string, SchemaElement>} [options.schemaElements] keyed by top-level column name, required to use bloomFilters
  * @returns {boolean} true if the row group can be skipped
  */
-export function canSkipRowGroup({ rowGroup, physicalColumns, filter, strict = true }) {
+export function canSkipRowGroup({ rowGroup, physicalColumns, filter, strict = true, bloomFilters, schemaElements }) {
   if (!filter) return false
 
   // Handle logical operators
   if ('$and' in filter && Array.isArray(filter.$and)) {
     // For AND, we can skip if ANY condition allows skipping
-    return filter.$and.some(subFilter => canSkipRowGroup({ rowGroup, physicalColumns, filter: subFilter, strict }))
+    return filter.$and.some(subFilter => canSkipRowGroup({ rowGroup, physicalColumns, filter: subFilter, strict, bloomFilters, schemaElements }))
   }
   if ('$or' in filter && Array.isArray(filter.$or)) {
     // For OR, we can skip only if ALL conditions allow skipping
-    return filter.$or.every(subFilter => canSkipRowGroup({ rowGroup, physicalColumns, filter: subFilter, strict }))
+    return filter.$or.every(subFilter => canSkipRowGroup({ rowGroup, physicalColumns, filter: subFilter, strict, bloomFilters, schemaElements }))
   }
   if ('$nor' in filter && Array.isArray(filter.$nor)) {
     // For NOR, we can skip if none of the conditions allow skipping
@@ -104,24 +109,45 @@ export function canSkipRowGroup({ rowGroup, physicalColumns, filter, strict = tr
     if (columnIndex === -1) continue
 
     const stats = rowGroup.columns[columnIndex].meta_data?.statistics
-    if (!stats) continue // No statistics available, can't skip
-
-    const { min, max, min_value, max_value } = stats
+    const { min, max, min_value, max_value } = stats || {}
     const minVal = min_value !== undefined ? min_value : min
     const maxVal = max_value !== undefined ? max_value : max
+    const haveStats = minVal !== undefined && maxVal !== undefined
 
-    if (minVal === undefined || maxVal === undefined) continue
+    const bloom = bloomFilters?.[field]
+    const element = schemaElements?.[field]
 
     // Handle operators
     for (const [operator, target] of Object.entries(condition || {})) {
-      if (operator === '$gt' && maxVal <= target) return true
-      if (operator === '$gte' && maxVal < target) return true
-      if (operator === '$lt' && minVal >= target) return true
-      if (operator === '$lte' && minVal > target) return true
-      if (operator === '$eq' && (target < minVal || target > maxVal)) return true
-      if (operator === '$ne' && equals(minVal, maxVal, strict) && equals(minVal, target, strict)) return true
-      if (operator === '$in' && Array.isArray(target) && target.every(v => v < minVal || v > maxVal)) return true
-      if (operator === '$nin' && Array.isArray(target) && equals(minVal, maxVal, strict) && target.includes(minVal)) return true
+      // Statistics-based skipping
+      if (haveStats) {
+        if (operator === '$gt' && maxVal <= target) return true
+        if (operator === '$gte' && maxVal < target) return true
+        if (operator === '$lt' && minVal >= target) return true
+        if (operator === '$lte' && minVal > target) return true
+        if (operator === '$eq' && (target < minVal || target > maxVal)) return true
+        if (operator === '$ne' && equals(minVal, maxVal, strict) && equals(minVal, target, strict)) return true
+        if (operator === '$in' && Array.isArray(target) && target.every(v => v < minVal || v > maxVal)) return true
+        if (operator === '$nin' && Array.isArray(target) && equals(minVal, maxVal, strict) && target.includes(minVal)) return true
+      }
+      // Bloom-filter skipping for equality predicates (proves absence, never presence)
+      if (bloom && element) {
+        if (operator === '$eq') {
+          const hash = hashParquetValue(target, element)
+          if (hash !== undefined && !sbbfContains(bloom.blocks, hash)) return true
+        }
+        if (operator === '$in' && Array.isArray(target) && target.length > 0) {
+          let allAbsent = true
+          for (const v of target) {
+            const h = hashParquetValue(v, element)
+            if (h === undefined || sbbfContains(bloom.blocks, h)) {
+              allAbsent = false
+              break
+            }
+          }
+          if (allAbsent) return true
+        }
+      }
     }
   }
 

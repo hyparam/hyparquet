@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest'
+import { hashParquetValue, sbbfInsert } from '../src/bloom.js'
 import { canSkipRowGroup, matchFilter } from '../src/filter.js'
 
 /**
- * @import { RowGroup } from '../src/types.js'
+ * @import { BloomFilter, RowGroup, SchemaElement } from '../src/types.js'
  */
 
 describe('matchFilter', () => {
@@ -164,5 +165,150 @@ describe('canSkipRowGroup', () => {
     /** @type {any} */
     const rowGroup = { columns: [{ meta_data: { statistics: { min_value: 10 } } }] }
     expect(canSkipRowGroup({ filter: { x: { $gt: 5 } }, rowGroup, physicalColumns: ['x'] })).toBe(false)
+  })
+})
+
+describe('canSkipRowGroup with bloom filters', () => {
+  /** @type {SchemaElement} */
+  const nameSchema = { name: 'name', type: 'BYTE_ARRAY', converted_type: 'UTF8' }
+
+  /**
+   * Build a row group whose `name` column has UTF8 stats with the given min/max.
+   *
+   * @param {string} min
+   * @param {string} max
+   * @returns {RowGroup}
+   */
+  function nameRowGroup(min, max) {
+    return {
+      columns: [{
+        meta_data: {
+          type: 'BYTE_ARRAY',
+          path_in_schema: ['name'],
+          codec: 'UNCOMPRESSED',
+          num_values: 1000n,
+          total_compressed_size: 2048n,
+          total_uncompressed_size: 4096n,
+          encodings: ['PLAIN'],
+          data_page_offset: 4n,
+          statistics: { min_value: min, max_value: max },
+        },
+        file_offset: 4n,
+      }],
+      total_byte_size: 4096n,
+      num_rows: 1000n,
+    }
+  }
+
+  /**
+   * Build a small bloom filter containing the given UTF-8 string values.
+   *
+   * @param {string[]} present
+   * @returns {BloomFilter}
+   */
+  function bloomOf(present) {
+    const blocks = new Uint32Array(8 * 4) // 4 blocks, generous for a few values
+    for (const v of present) {
+      const h = hashParquetValue(v, nameSchema)
+      if (h === undefined) throw new Error('expected hash')
+      sbbfInsert(blocks, h)
+    }
+    return { numBytes: blocks.byteLength, blocks }
+  }
+
+  const cols = ['name']
+  const rowGroup = nameRowGroup('a', 'z')
+  const present = bloomOf(['alice', 'bob'])
+  const schemaElements = { name: nameSchema }
+
+  it('skips $eq when the value is provably absent from the bloom filter', () => {
+    // 'carol' is lexicographically in [a, z] so stats alone can't skip
+    expect(canSkipRowGroup({ filter: { name: { $eq: 'carol' } }, rowGroup, physicalColumns: cols })).toBe(false)
+    expect(canSkipRowGroup({
+      filter: { name: { $eq: 'carol' } }, rowGroup, physicalColumns: cols,
+      bloomFilters: { name: present }, schemaElements,
+    })).toBe(true)
+  })
+
+  it('does not skip $eq when the bloom filter says the value might be present', () => {
+    expect(canSkipRowGroup({
+      filter: { name: { $eq: 'alice' } }, rowGroup, physicalColumns: cols,
+      bloomFilters: { name: present }, schemaElements,
+    })).toBe(false)
+  })
+
+  it('does not skip when the filter value cannot be hashed (lossy column type)', () => {
+    /** @type {SchemaElement} */
+    const dateSchema = { name: 'created', type: 'INT32', converted_type: 'DATE' }
+    const dateRowGroup = nameRowGroup('a', 'z') // stats irrelevant; same shape
+    // hashParquetValue returns undefined for DATE → bloom should not be consulted
+    expect(canSkipRowGroup({
+      filter: { name: { $eq: new Date() } }, rowGroup: dateRowGroup, physicalColumns: ['name'],
+      bloomFilters: { name: present }, schemaElements: { name: dateSchema },
+    })).toBe(false)
+  })
+
+  it('still skips via stats when bloom filter is missing', () => {
+    // '~' (0x7e) sorts after 'z' lexicographically, so stats prove absence
+    expect(canSkipRowGroup({ filter: { name: { $eq: '~' } }, rowGroup, physicalColumns: cols })).toBe(true)
+  })
+
+  it('skips via bloom even when statistics are missing entirely', () => {
+    /** @type {any} */
+    const noStats = { columns: [{ meta_data: { type: 'BYTE_ARRAY' } }] }
+    expect(canSkipRowGroup({
+      filter: { name: { $eq: 'carol' } }, rowGroup: noStats, physicalColumns: cols,
+      bloomFilters: { name: present }, schemaElements,
+    })).toBe(true)
+  })
+
+  it('$in: skips only when every value is provably absent from the bloom filter', () => {
+    // All absent → skip
+    expect(canSkipRowGroup({
+      filter: { name: { $in: ['carol', 'dave'] } }, rowGroup, physicalColumns: cols,
+      bloomFilters: { name: present }, schemaElements,
+    })).toBe(true)
+    // One present → don't skip
+    expect(canSkipRowGroup({
+      filter: { name: { $in: ['alice', 'carol'] } }, rowGroup, physicalColumns: cols,
+      bloomFilters: { name: present }, schemaElements,
+    })).toBe(false)
+    // One unhashable target → conservative: don't skip
+    expect(canSkipRowGroup({
+      filter: { name: { $in: ['carol', 123] } }, rowGroup, physicalColumns: cols,
+      bloomFilters: { name: present }, schemaElements,
+    })).toBe(false)
+  })
+
+  it('ignores bloom filter on a different column', () => {
+    expect(canSkipRowGroup({
+      filter: { name: { $eq: 'carol' } }, rowGroup, physicalColumns: cols,
+      bloomFilters: { other: present }, schemaElements,
+    })).toBe(false)
+  })
+
+  it('does nothing without schemaElements (cannot hash the filter value)', () => {
+    expect(canSkipRowGroup({
+      filter: { name: { $eq: 'carol' } }, rowGroup, physicalColumns: cols,
+      bloomFilters: { name: present },
+    })).toBe(false)
+  })
+
+  it('passes bloom filters through $and / $or recursion', () => {
+    // $and: skip if ANY clause allows. Bloom proves 'carol' absent → whole $and skips.
+    expect(canSkipRowGroup({
+      filter: { $and: [{ name: { $eq: 'carol' } }, { name: { $eq: 'alice' } }] },
+      rowGroup, physicalColumns: cols, bloomFilters: { name: present }, schemaElements,
+    })).toBe(true)
+    // $or: skip only if EVERY clause allows. 'alice' is in bloom → cannot skip.
+    expect(canSkipRowGroup({
+      filter: { $or: [{ name: { $eq: 'carol' } }, { name: { $eq: 'alice' } }] },
+      rowGroup, physicalColumns: cols, bloomFilters: { name: present }, schemaElements,
+    })).toBe(false)
+    // $or with both clauses provably absent → skip
+    expect(canSkipRowGroup({
+      filter: { $or: [{ name: { $eq: 'carol' } }, { name: { $eq: 'dave' } }] },
+      rowGroup, physicalColumns: cols, bloomFilters: { name: present }, schemaElements,
+    })).toBe(true)
   })
 })
