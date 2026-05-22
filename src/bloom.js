@@ -7,7 +7,7 @@ import { deserializeTCompactProtocol } from './thrift.js'
 import { xxhash64 } from './xxhash.js'
 
 /**
- * @import {BloomFilter, DataReader, SchemaElement} from '../src/types.js'
+ * @import {BloomFilter, DataReader, ParquetQueryFilter, SchemaElement} from '../src/types.js'
  */
 
 const textEncoder = new TextEncoder()
@@ -179,4 +179,46 @@ export function hashParquetValue(value, element) {
 
   // INT96 deprecated, or type missing on group columns
   return undefined
+}
+
+/**
+ * Top-level column names that appear in $eq or $in predicates within a filter.
+ * These are the only columns where a bloom filter can prove a value's absence
+ * and let us skip a row group; any other operator can't be helped by a bloom.
+ *
+ * @param {ParquetQueryFilter | undefined} filter
+ * @returns {Set<string>}
+ */
+export function bloomEligibleColumns(filter) {
+  /** @type {Set<string>} */
+  const out = new Set()
+  walkBloomEligible(filter, out)
+  return out
+}
+
+/**
+ * @param {ParquetQueryFilter | undefined} filter
+ * @param {Set<string>} out
+ */
+function walkBloomEligible(filter, out) {
+  if (!filter) return
+  if ('$and' in filter && Array.isArray(filter.$and)) {
+    for (const sub of filter.$and) walkBloomEligible(sub, out)
+    return
+  }
+  if ('$or' in filter && Array.isArray(filter.$or)) {
+    for (const sub of filter.$or) walkBloomEligible(sub, out)
+    return
+  }
+  // $nor would need to prove presence, not absence — bloom can't help.
+  if ('$nor' in filter) return
+  for (const [field, condition] of Object.entries(filter)) {
+    if (field.startsWith('$')) continue
+    if (typeof condition === 'object' && condition !== null && !Array.isArray(condition)) {
+      if ('$eq' in condition || '$in' in condition) out.add(field)
+    } else {
+      // primitive / null / array condition is an implicit $eq
+      out.add(field)
+    }
+  }
 }

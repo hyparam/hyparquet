@@ -142,9 +142,9 @@ describe('readBloomFilter', () => {
     }
     const bytes = [...encodeHeader(32), ...blocksToBytes(blocks)]
     const parsed = readBloomFilter(reader(bytes))
-    expect(parsed).toBeDefined()
-    expect(parsed?.numBytes).toBe(32)
-    expect(Array.from(parsed?.blocks ?? [])).toEqual(Array.from(blocks))
+    if (!parsed) throw new Error('expected parsed bloom filter')
+    expect(parsed.numBytes).toBe(32)
+    expect(Array.from(parsed.blocks)).toEqual(Array.from(blocks))
     for (const v of ['alice', 'bob', 'carol']) {
       expect(sbbfContains(parsed.blocks, xxhash64(new TextEncoder().encode(v)))).toBe(true)
     }
