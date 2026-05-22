@@ -4,10 +4,13 @@
 // Membership requires all 8 bits to be set; misses are exact, hits are probabilistic.
 
 import { deserializeTCompactProtocol } from './thrift.js'
+import { xxhash64 } from './xxhash.js'
 
 /**
- * @import {BloomFilter, DataReader} from '../src/types.js'
+ * @import {BloomFilter, DataReader, SchemaElement} from '../src/types.js'
  */
+
+const textEncoder = new TextEncoder()
 
 const SALT = new Uint32Array([
   0x47b6137b, 0x44974d91, 0x8824ad5b, 0xa2b7289d,
@@ -99,4 +102,81 @@ export function readBloomFilter(reader) {
   }
   reader.offset = offset + numBytes
   return { numBytes, blocks }
+}
+
+/**
+ * Hash a JS filter value as its parquet PLAIN-encoded bytes, suitable for a
+ * bloom filter lookup. Returns undefined when the column's parser is lossy or
+ * ambiguous (DATE, TIMESTAMP_*, DECIMAL, JSON, BSON, INT96, FLOAT16, UUID,
+ * GEOMETRY, GEOGRAPHY, INTERVAL) or when the JS value type doesn't match the
+ * column. Callers must treat undefined as "bloom filter cannot help."
+ *
+ * @param {any} value
+ * @param {SchemaElement} element
+ * @returns {bigint | undefined}
+ */
+export function hashParquetValue(value, element) {
+  if (value === null || value === undefined) return undefined
+  const { type, converted_type, logical_type } = element
+
+  if (type === 'BOOLEAN') {
+    if (typeof value !== 'boolean') return undefined
+    return xxhash64(new Uint8Array([value ? 1 : 0]))
+  }
+
+  if (type === 'FLOAT') {
+    if (typeof value !== 'number') return undefined
+    const buf = new ArrayBuffer(4)
+    new DataView(buf).setFloat32(0, value, true)
+    return xxhash64(new Uint8Array(buf))
+  }
+
+  if (type === 'DOUBLE') {
+    if (typeof value !== 'number') return undefined
+    const buf = new ArrayBuffer(8)
+    new DataView(buf).setFloat64(0, value, true)
+    return xxhash64(new Uint8Array(buf))
+  }
+
+  if (type === 'INT32') {
+    if (converted_type === 'DATE' || converted_type === 'DECIMAL' || converted_type === 'TIME_MILLIS') return undefined
+    if (logical_type?.type === 'DATE' || logical_type?.type === 'TIME' || logical_type?.type === 'DECIMAL') return undefined
+    if (typeof value !== 'number' || !Number.isInteger(value)) return undefined
+    const buf = new ArrayBuffer(4)
+    new DataView(buf).setInt32(0, value | 0, true)
+    return xxhash64(new Uint8Array(buf))
+  }
+
+  if (type === 'INT64') {
+    if (converted_type === 'TIMESTAMP_MILLIS' || converted_type === 'TIMESTAMP_MICROS') return undefined
+    if (converted_type === 'TIME_MICROS' || converted_type === 'DECIMAL') return undefined
+    if (logical_type?.type === 'TIMESTAMP' || logical_type?.type === 'TIME' || logical_type?.type === 'DECIMAL') return undefined
+    let bigValue
+    if (typeof value === 'bigint') bigValue = value
+    else if (typeof value === 'number' && Number.isSafeInteger(value)) bigValue = BigInt(value)
+    else return undefined
+    const buf = new ArrayBuffer(8)
+    new DataView(buf).setBigUint64(0, BigInt.asUintN(64, bigValue), true)
+    return xxhash64(new Uint8Array(buf))
+  }
+
+  if (type === 'BYTE_ARRAY') {
+    if (converted_type === 'JSON' || converted_type === 'BSON' || converted_type === 'DECIMAL') return undefined
+    if (logical_type?.type === 'JSON' || logical_type?.type === 'BSON' || logical_type?.type === 'VARIANT') return undefined
+    if (logical_type?.type === 'GEOMETRY' || logical_type?.type === 'GEOGRAPHY') return undefined
+    if (typeof value === 'string') return xxhash64(textEncoder.encode(value))
+    if (value instanceof Uint8Array) return xxhash64(value)
+    return undefined
+  }
+
+  if (type === 'FIXED_LEN_BYTE_ARRAY') {
+    if (converted_type === 'DECIMAL' || converted_type === 'INTERVAL') return undefined
+    if (logical_type?.type === 'DECIMAL' || logical_type?.type === 'UUID' || logical_type?.type === 'FLOAT16') return undefined
+    if (logical_type?.type === 'GEOMETRY' || logical_type?.type === 'GEOGRAPHY') return undefined
+    if (value instanceof Uint8Array) return xxhash64(value)
+    return undefined
+  }
+
+  // INT96 deprecated, or type missing on group columns
+  return undefined
 }

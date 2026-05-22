@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { readBloomFilter, sbbfContains, sbbfInsert } from '../src/bloom.js'
+import { hashParquetValue, readBloomFilter, sbbfContains, sbbfInsert } from '../src/bloom.js'
 import { xxhash64 } from '../src/xxhash.js'
 
 /**
- * @import {DataReader} from '../src/types.js'
+ * @import {DataReader, SchemaElement} from '../src/types.js'
  */
 
 /**
@@ -197,5 +197,139 @@ describe('readBloomFilter', () => {
     // header says 64 bytes but only 16 bytes of body follow
     const bytes = [...encodeHeader(64), ...new Array(16).fill(0)]
     expect(() => readBloomFilter(reader(bytes))).toThrow(/truncated/)
+  })
+})
+
+/** @type {SchemaElement} */
+const boolCol = { name: 'b', type: 'BOOLEAN' }
+/** @type {SchemaElement} */
+const int32Col = { name: 'i', type: 'INT32' }
+/** @type {SchemaElement} */
+const int64Col = { name: 'l', type: 'INT64' }
+/** @type {SchemaElement} */
+const floatCol = { name: 'f', type: 'FLOAT' }
+/** @type {SchemaElement} */
+const doubleCol = { name: 'd', type: 'DOUBLE' }
+/** @type {SchemaElement} */
+const utf8Col = { name: 's', type: 'BYTE_ARRAY', converted_type: 'UTF8' }
+/** @type {SchemaElement} */
+const binaryCol = { name: 'bin', type: 'BYTE_ARRAY' }
+/** @type {SchemaElement} */
+const flbaCol = { name: 'flba', type: 'FIXED_LEN_BYTE_ARRAY', type_length: 4 }
+
+describe('hashParquetValue', () => {
+  it('hashes BOOLEAN values as a single byte', () => {
+    expect(hashParquetValue(true, boolCol)).toBe(xxhash64(new Uint8Array([1])))
+    expect(hashParquetValue(false, boolCol)).toBe(xxhash64(new Uint8Array([0])))
+  })
+
+  it('hashes INT32 as 4-byte little-endian', () => {
+    const buf = new ArrayBuffer(4)
+    new DataView(buf).setInt32(0, -123456, true)
+    expect(hashParquetValue(-123456, int32Col)).toBe(xxhash64(new Uint8Array(buf)))
+  })
+
+  it('hashes UINT_32 max-range integers correctly', () => {
+    // Hash of 0xFFFFFFFF should match whether the user writes -1 or 4294967295
+    const a = hashParquetValue(-1, int32Col)
+    const b = hashParquetValue(4294967295, { name: 'u', type: 'INT32', converted_type: 'UINT_32' })
+    expect(a).toBeDefined()
+    expect(a).toBe(b)
+  })
+
+  it('hashes INT64 from bigint and from safe-integer numbers', () => {
+    const buf = new ArrayBuffer(8)
+    new DataView(buf).setBigInt64(0, 123n, true)
+    const expected = xxhash64(new Uint8Array(buf))
+    expect(hashParquetValue(123n, int64Col)).toBe(expected)
+    expect(hashParquetValue(123, int64Col)).toBe(expected)
+  })
+
+  it('hashes negative INT64 (two\'s-complement bytes match unsigned UINT_64)', () => {
+    expect(hashParquetValue(-1n, int64Col))
+      .toBe(hashParquetValue(0xffffffffffffffffn, { name: 'u', type: 'INT64', converted_type: 'UINT_64' }))
+  })
+
+  it('hashes FLOAT and DOUBLE via IEEE 754 little-endian', () => {
+    const f = new ArrayBuffer(4)
+    new DataView(f).setFloat32(0, 1.5, true)
+    expect(hashParquetValue(1.5, floatCol)).toBe(xxhash64(new Uint8Array(f)))
+
+    const d = new ArrayBuffer(8)
+    new DataView(d).setFloat64(0, -3.14, true)
+    expect(hashParquetValue(-3.14, doubleCol)).toBe(xxhash64(new Uint8Array(d)))
+  })
+
+  it('hashes BYTE_ARRAY UTF8 strings as UTF-8 bytes', () => {
+    expect(hashParquetValue('abc', utf8Col)).toBe(xxhash64(new TextEncoder().encode('abc')))
+    // multi-byte string
+    expect(hashParquetValue('héllo', utf8Col)).toBe(xxhash64(new TextEncoder().encode('héllo')))
+  })
+
+  it('hashes BYTE_ARRAY raw bytes via Uint8Array passthrough', () => {
+    const bytes = new Uint8Array([0xde, 0xad, 0xbe, 0xef])
+    expect(hashParquetValue(bytes, binaryCol)).toBe(xxhash64(bytes))
+  })
+
+  it('hashes FIXED_LEN_BYTE_ARRAY via Uint8Array passthrough', () => {
+    const bytes = new Uint8Array([1, 2, 3, 4])
+    expect(hashParquetValue(bytes, flbaCol)).toBe(xxhash64(bytes))
+  })
+
+  it('returns undefined for null / undefined input', () => {
+    expect(hashParquetValue(null, int32Col)).toBeUndefined()
+    expect(hashParquetValue(undefined, utf8Col)).toBeUndefined()
+  })
+
+  it('returns undefined when JS type does not match column type', () => {
+    expect(hashParquetValue('not a bool', boolCol)).toBeUndefined()
+    expect(hashParquetValue(1.5, int32Col)).toBeUndefined() // non-integer
+    expect(hashParquetValue(2n ** 60n, int32Col)).toBeUndefined() // bigint into int32
+    expect(hashParquetValue('123', int64Col)).toBeUndefined()
+    expect(hashParquetValue(123, utf8Col)).toBeUndefined()
+    expect(hashParquetValue('hi', flbaCol)).toBeUndefined() // string into FLBA
+  })
+
+  it('returns undefined for lossy / ambiguous column types', () => {
+    // DATE
+    expect(hashParquetValue(new Date(), { name: 'd', type: 'INT32', converted_type: 'DATE' })).toBeUndefined()
+    expect(hashParquetValue(0, { name: 'd', type: 'INT32', logical_type: { type: 'DATE' } })).toBeUndefined()
+    // TIMESTAMP
+    expect(hashParquetValue(0n, { name: 't', type: 'INT64', converted_type: 'TIMESTAMP_MILLIS' })).toBeUndefined()
+    expect(hashParquetValue(0n, { name: 't', type: 'INT64', logical_type: { type: 'TIMESTAMP', isAdjustedToUTC: true, unit: 'MICROS' } })).toBeUndefined()
+    // TIME
+    expect(hashParquetValue(0, { name: 't', type: 'INT32', converted_type: 'TIME_MILLIS' })).toBeUndefined()
+    expect(hashParquetValue(0n, { name: 't', type: 'INT64', converted_type: 'TIME_MICROS' })).toBeUndefined()
+    // DECIMAL
+    expect(hashParquetValue(0, { name: 'd', type: 'INT32', converted_type: 'DECIMAL', precision: 5, scale: 2 })).toBeUndefined()
+    expect(hashParquetValue(new Uint8Array(8), { name: 'd', type: 'FIXED_LEN_BYTE_ARRAY', type_length: 8, converted_type: 'DECIMAL', precision: 18, scale: 4 })).toBeUndefined()
+    // JSON / BSON
+    expect(hashParquetValue({ a: 1 }, { name: 'j', type: 'BYTE_ARRAY', converted_type: 'JSON' })).toBeUndefined()
+    expect(hashParquetValue(new Uint8Array(0), { name: 'b', type: 'BYTE_ARRAY', converted_type: 'BSON' })).toBeUndefined()
+    // INT96
+    expect(hashParquetValue(0n, { name: 'i96', type: 'INT96' })).toBeUndefined()
+    // FLOAT16, UUID, GEOMETRY, GEOGRAPHY, INTERVAL
+    expect(hashParquetValue(new Uint8Array(2), { name: 'f16', type: 'FIXED_LEN_BYTE_ARRAY', type_length: 2, logical_type: { type: 'FLOAT16' } })).toBeUndefined()
+    expect(hashParquetValue(new Uint8Array(16), { name: 'u', type: 'FIXED_LEN_BYTE_ARRAY', type_length: 16, logical_type: { type: 'UUID' } })).toBeUndefined()
+    expect(hashParquetValue(new Uint8Array(0), { name: 'g', type: 'BYTE_ARRAY', logical_type: { type: 'GEOMETRY' } })).toBeUndefined()
+  })
+
+  it('end-to-end: a serialized bloom filter recognises values hashed via hashParquetValue', () => {
+    const present = ['alice', 'bob', 'carol']
+    const blocks = new Uint32Array(8 * 4)
+    for (const v of present) {
+      const h = hashParquetValue(v, utf8Col)
+      if (h === undefined) throw new Error('hash should be defined')
+      sbbfInsert(blocks, h)
+    }
+    // Round-trip through the on-disk encoding
+    const bytes = [...encodeHeader(blocks.byteLength), ...blocksToBytes(blocks)]
+    const parsed = readBloomFilter(reader(bytes))
+    if (!parsed) throw new Error('parsed should be defined')
+    for (const v of present) {
+      const h = hashParquetValue(v, utf8Col)
+      if (h === undefined) throw new Error('hash should be defined')
+      expect(sbbfContains(parsed.blocks, h)).toBe(true)
+    }
   })
 })
