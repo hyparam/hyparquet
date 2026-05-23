@@ -39,7 +39,7 @@ export interface BaseParquetReadOptions {
   parsers?: ParquetParsers // custom parsers to decode advanced types
   geoparquet?: boolean // parse geoparquet metadata and set logical type to geometry/geography for geospatial columns (default true)
   useOffsetIndex?: boolean // use offset index to limit column chunk reads when available (default false)
-  useBloomFilters?: boolean // fetch bloom filters to enable row-group skipping on $eq/$in predicates (default true)
+  useBloomFilters?: boolean // fetch bloom filters to enable row-group skipping on $eq/$in predicates (default false)
 }
 
 interface ArrayRowFormat {

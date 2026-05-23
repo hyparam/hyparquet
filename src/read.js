@@ -181,7 +181,7 @@ export async function parquetReadColumn(options) {
  * @returns {Promise<BaseParquetReadOptions>}
  */
 async function withBloomFilters(options) {
-  if (options.useBloomFilters === false) return options
+  if (!options.useBloomFilters) return options
   if (!options.filter || !options.metadata) return options
   const schemaTree = parquetSchema(options.metadata)
   /** @type {Record<string, SchemaElement>} */

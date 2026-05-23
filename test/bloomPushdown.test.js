@@ -54,13 +54,13 @@ describe('bloom filter pushdown against test/files/bloom_filter.parquet', () => 
 
   it('absent value: both row groups skip via bloom and the read returns no rows', async () => {
     const file = await asyncBufferFromFile(path)
-    const rows = await parquetReadObjects({ file, filter: { code: { $eq: 50 } } })
+    const rows = await parquetReadObjects({ file, filter: { code: { $eq: 50 } }, useBloomFilters: true })
     expect(rows).toEqual([])
   })
 
   it('present-in-one-group value: $eq:30 returns the 1024 rows from RG 1', async () => {
     const file = await asyncBufferFromFile(path)
-    const rows = await parquetReadObjects({ file, filter: { code: { $eq: 30 } } })
+    const rows = await parquetReadObjects({ file, filter: { code: { $eq: 30 } }, useBloomFilters: true })
     expect(rows).toHaveLength(1024)
     expect(rows.every(r => r.code === 30)).toBe(true)
   })
@@ -76,7 +76,7 @@ describe('bloom filter pushdown against test/files/bloom_filter.parquet', () => 
   it('$in with one value absent from both bloom filters still reads the row group(s) that may contain the present value', async () => {
     const file = await asyncBufferFromFile(path)
     // 30 is in RG 1 only; 50 is in neither. RG 0 can be pruned (bloom rejects both); RG 1 cannot.
-    const rows = await parquetReadObjects({ file, filter: { code: { $in: [30, 50] } } })
+    const rows = await parquetReadObjects({ file, filter: { code: { $in: [30, 50] } }, useBloomFilters: true })
     expect(rows).toHaveLength(1024)
     expect(rows.every(r => r.code === 30)).toBe(true)
   })
