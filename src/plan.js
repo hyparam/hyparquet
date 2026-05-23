@@ -1,9 +1,10 @@
+import { bloomEligibleColumns, readBloomFilter } from './bloom.js'
 import { canSkipRowGroup } from './filter.js'
 import { parquetSchema } from './metadata.js'
 import { getPhysicalColumns } from './schema.js'
 
 /**
- * @import {AsyncBuffer, ByteRange, ChunkPlan, GroupPlan, ParquetReadOptions, QueryPlan} from '../src/types.js'
+ * @import {AsyncBuffer, BloomFilter, ByteRange, ChunkPlan, FileMetaData, GroupPlan, ParquetQueryFilter, ParquetReadOptions, QueryPlan, SchemaElement} from '../src/types.js'
  */
 
 // Combine column chunks if less than 2mb
@@ -13,10 +14,10 @@ const runLimit = 1 << 21 // 2mb
  * Plan which byte ranges to read to satisfy a read request.
  * Metadata must be non-null.
  *
- * @param {ParquetReadOptions} options
+ * @param {ParquetReadOptions & { bloomFiltersByGroup?: Record<string, BloomFilter>[], schemaElements?: Record<string, SchemaElement> }} options
  * @returns {QueryPlan}
  */
-export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns, filter, filterStrict = true, useOffsetIndex = false }) {
+export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns, filter, filterStrict = true, useOffsetIndex = false, bloomFiltersByGroup, schemaElements }) {
   if (!metadata) throw new Error('parquetPlan requires metadata')
   /** @type {GroupPlan[]} */
   const groups = []
@@ -28,11 +29,13 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
 
   // find which row groups to read
   let groupStart = 0 // first row index of the current group
+  let rgIdx = 0
   for (const rowGroup of metadata.row_groups) {
     const groupRows = Number(rowGroup.num_rows)
     const groupEnd = groupStart + groupRows
+    const bloomFilters = bloomFiltersByGroup?.[rgIdx]
     // if row group overlaps with row range, add it to the plan
-    if (groupRows > 0 && groupEnd > rowStart && groupStart < rowEnd && !canSkipRowGroup({ rowGroup, physicalColumns, filter, strict: filterStrict })) {
+    if (groupRows > 0 && groupEnd > rowStart && groupStart < rowEnd && !canSkipRowGroup({ rowGroup, physicalColumns, filter, strict: filterStrict, bloomFilters, schemaElements })) {
       /** @type {ChunkPlan[]} */
       const chunks = []
       let groupStartByte = Infinity
@@ -99,11 +102,55 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
     }
 
     groupStart = groupEnd
+    rgIdx++
   }
   if (!isFinite(rowEnd)) rowEnd = groupStart
   fetches.push(...indexes)
 
   return { metadata, rowStart, rowEnd, columns, fetches, groups }
+}
+
+/**
+ * Fetch bloom filters for $eq / $in columns of row groups not already provably
+ * skippable by statistics alone. Returns an array indexed by row-group ordinal;
+ * each entry maps top-level column name → BloomFilter for any chunk whose
+ * bloom filter we were able to parse. Adds one round-trip when at least one
+ * bloom filter is fetched; otherwise returns synchronously.
+ *
+ * @param {object} options
+ * @param {AsyncBuffer} options.file
+ * @param {FileMetaData} options.metadata
+ * @param {ParquetQueryFilter} options.filter
+ * @param {boolean} [options.filterStrict]
+ * @returns {Promise<Record<string, BloomFilter>[]>}
+ */
+export async function prefetchBloomFilters({ file, metadata, filter, filterStrict = true }) {
+  const result = metadata.row_groups.map(() => /** @type {Record<string, BloomFilter>} */ ({}))
+  const eligibleCols = bloomEligibleColumns(filter)
+  if (eligibleCols.size === 0) return result
+  const physicalColumns = getPhysicalColumns(parquetSchema(metadata))
+
+  /** @type {Promise<void>[]} */
+  const tasks = []
+  metadata.row_groups.forEach((rowGroup, rgIdx) => {
+    if (canSkipRowGroup({ rowGroup, physicalColumns, filter, strict: filterStrict })) return
+    for (const colName of eligibleCols) {
+      const columnIdx = physicalColumns.indexOf(colName)
+      if (columnIdx === -1) continue
+      const meta = rowGroup.columns[columnIdx]?.meta_data
+      if (!meta?.bloom_filter_offset || !meta.bloom_filter_length) continue
+      const start = Number(meta.bloom_filter_offset)
+      const end = start + meta.bloom_filter_length
+      tasks.push((async () => {
+        const buffer = await file.slice(start, end)
+        const bloom = readBloomFilter({ view: new DataView(buffer), offset: 0 })
+        if (bloom) result[rgIdx][colName] = bloom
+      })())
+    }
+  })
+
+  if (tasks.length) await Promise.all(tasks)
+  return result
 }
 
 /**
