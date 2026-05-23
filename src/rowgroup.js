@@ -191,14 +191,15 @@ export function assembleAsync(asyncRowGroup, schemaTree, parsers) {
       assembled.push({
         pathInSchema: child.path,
         data: (async () => {
-          // collect subcolumn data
+          // collect subcolumn data — Promise.all observes every rejection so
+          // a sibling failure cannot leak as an unhandledRejection
+          const resolved = await Promise.all(childColumns.map(c => c.data))
           /** @type {Map<string, DecodedArray>} */
           const subcolumnData = new Map()
           let minLength = Infinity
-          for (const column of childColumns) {
-            const { data } = await column.data
-            const flat = flatten(data)
-            subcolumnData.set(column.pathInSchema.join('.'), flat)
+          for (let i = 0; i < childColumns.length; i++) {
+            const flat = flatten(resolved[i].data)
+            subcolumnData.set(childColumns[i].pathInSchema.join('.'), flat)
             minLength = Math.min(minLength, flat.length)
           }
           // trim sub-columns to same length (offset index may read different pages per column)

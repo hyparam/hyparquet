@@ -57,9 +57,7 @@ export async function parquetRead(options) {
 
   // skip assembly if no onComplete or onChunk, but wait for reading to finish
   if (!onComplete && !onChunk) {
-    for (const { asyncColumns } of asyncGroups) {
-      for (const { data } of asyncColumns) await data
-    }
+    await awaitAllColumns(asyncGroups)
     return
   }
 
@@ -67,7 +65,7 @@ export async function parquetRead(options) {
   const schemaTree = parquetSchema(options.metadata)
   const assembled = asyncGroups.map(arg => assembleAsync(arg, schemaTree, options.parsers))
 
-  // onChunk emit all chunks (don't await)
+  // onChunk emit all chunks (don't await). Rejection is surfaced by awaitAllColumns below.
   if (onChunk) {
     for (const asyncGroup of assembled) {
       for (const asyncColumn of asyncGroup.asyncColumns) {
@@ -82,13 +80,15 @@ export async function parquetRead(options) {
             })
             rowStart += columnData.length
           }
-        })
+        }, () => {})
       }
     }
   }
 
   // onComplete transpose column chunks to rows
   if (onComplete) {
+    // wait for all reads to settle so a sibling rejection cannot leak
+    await awaitAllColumns(assembled)
     // loosen the types to avoid duplicate code
     /** @type {any[]} */
     const rows = []
@@ -121,10 +121,22 @@ export async function parquetRead(options) {
     onComplete(rows)
   } else {
     // wait for all async groups to finish (complete takes care of this)
-    for (const { asyncColumns } of assembled) {
-      for (const { data } of asyncColumns) await data
-    }
+    await awaitAllColumns(assembled)
   }
+}
+
+/**
+ * Await every column promise across the given row groups via Promise.allSettled
+ * so no rejection escapes as an unhandledRejection. Throws the first rejection.
+ *
+ * @param {AsyncRowGroup[]} asyncGroups
+ * @returns {Promise<void>}
+ */
+async function awaitAllColumns(asyncGroups) {
+  const all = asyncGroups.flatMap(g => g.asyncColumns.map(c => c.data))
+  const results = await Promise.allSettled(all)
+  const failed = results.find(r => r.status === 'rejected')
+  if (failed) throw failed.reason
 }
 
 /**
@@ -159,6 +171,9 @@ export async function parquetReadColumn(options) {
   // assemble struct columns
   const schemaTree = parquetSchema(options.metadata)
   const assembled = asyncGroups.map(arg => assembleAsync(arg, schemaTree, options.parsers))
+
+  // wait for all reads to settle so a sibling rejection cannot leak
+  await awaitAllColumns(assembled)
 
   /** @type {DecodedArray} */
   const columnData = []
