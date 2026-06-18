@@ -332,6 +332,7 @@ export function convertMetadata(value, schema, parsers) {
   if (type === 'INT64' && view.byteLength === 8) return view.getBigInt64(0, true)
   if (converted_type === 'DECIMAL') return parseDecimal(value) * 10 ** -(schema.scale || 0)
   if (logical_type?.type === 'FLOAT16') return parseFloat16(value)
+  if (logical_type?.type === 'UUID') return parsers.uuidFromBytes(value)
   if (type === 'FIXED_LEN_BYTE_ARRAY') return value
   // assert(false)
   return value
