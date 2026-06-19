@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.26.1]
+ - Fix UUID statistics decode (#166)
+
 ## [1.26.0]
  - Bloom filter support (#165)
  - Fix unhandled rejections (#164)
