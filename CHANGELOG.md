@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.26.2]
+ - Custom jsonFromBytes parser option
+
 ## [1.26.1]
  - Fix UUID statistics decode (#166)
 
