@@ -26,6 +26,9 @@ export const DEFAULT_PARSERS = {
   stringFromBytes(bytes) {
     return bytes && decoder.decode(bytes)
   },
+  jsonFromBytes(bytes) {
+    return bytes && JSON.parse(decoder.decode(bytes))
+  },
   geometryFromBytes(bytes) {
     return bytes && wkbToGeojson({ view: new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), offset: 0 })
   },
@@ -107,7 +110,7 @@ export function convert(data, columnDecoder) {
     return Array.from(data).map(v => parsers.timestampFromMicroseconds(v))
   }
   if (ctype === 'JSON') {
-    return data.map(v => JSON.parse(decoder.decode(v)))
+    return data.map(v => parsers.jsonFromBytes(v))
   }
   if (ctype === 'BSON') {
     throw new Error('parquet bson not supported')

@@ -158,6 +158,15 @@ describe('convert function', () => {
     expect(convert(data, { ...columnDecoder, element })).toEqual([{ key: true }, { quay: 314 }])
   })
 
+  it('parses JSON with a custom jsonFromBytes parser', () => {
+    const data = ['{"key": true}', '{"quay": 314}']
+      .map(str => encoder.encode(str))
+    /** @type {SchemaElement} */
+    const element = { name, converted_type: 'JSON' }
+    const parsers = { ...DEFAULT_PARSERS, jsonFromBytes: () => 'custom' }
+    expect(convert(data, { ...columnDecoder, element, parsers })).toEqual(['custom', 'custom'])
+  })
+
   it('converts uint32 from Int32Array', () => {
     const data = new Int32Array([1, -1, 100])
     /** @type {SchemaElement} */

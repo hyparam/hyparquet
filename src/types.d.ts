@@ -8,6 +8,7 @@ export interface ParquetParsers {
   timestampFromNanoseconds(nanos: bigint): any
   dateFromDays(days: number): any
   stringFromBytes(bytes: Uint8Array): any
+  jsonFromBytes(bytes: Uint8Array): any
   geometryFromBytes(bytes: Uint8Array): any
   geographyFromBytes(bytes: Uint8Array): any
   uuidFromBytes(bytes: Uint8Array): any
