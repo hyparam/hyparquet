@@ -197,8 +197,10 @@ If Hyparquet detects a [GeoParquet](https://geoparquet.org/) file, any geospatia
 
 ## Compression
 
-By default, hyparquet supports uncompressed and snappy-compressed parquet files.
-To support the full range of parquet compression codecs (gzip, brotli, zstd, etc), use the [hyparquet-compressors](https://github.com/hyparam/hyparquet-compressors) package.
+By default, hyparquet supports uncompressed, snappy-compressed, and gzip-compressed parquet files.
+Gzip uses the native [DecompressionStream](https://developer.mozilla.org/en-US/docs/Web/API/DecompressionStream) API.
+In browsers this is limited to single-member gzip streams (the overwhelmingly common case); rare multi-member pages require a custom gzip decompressor.
+To support the full range of parquet compression codecs (brotli, zstd, etc), use the [hyparquet-compressors](https://github.com/hyparam/hyparquet-compressors) package.
 
 ```javascript
 import { parquetReadObjects } from 'hyparquet'
@@ -211,7 +213,7 @@ const data = await parquetReadObjects({ file, compressors })
 |---------------|-----------|----------------------------|
 | Uncompressed  | ✅        | ✅                         |
 | Snappy        | ✅        | ✅                         |
-| GZip          | ❌        | ✅                         |
+| GZip          | ✅        | ✅                         |
 | LZO           | ❌        | ✅                         |
 | Brotli        | ❌        | ✅                         |
 | LZ4           | ❌        | ✅                         |
