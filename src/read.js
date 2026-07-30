@@ -4,7 +4,7 @@
 
 import { columnsNeededForFilter, matchFilter } from './filter.js'
 import { parquetMetadataAsync, parquetSchema } from './metadata.js'
-import { parquetPlan, prefetchAsyncBuffer, prefetchBloomFilters } from './plan.js'
+import { parquetPlan, prefetchAsyncBuffer, prefetchBloomFilters, prefetchPageIndexes } from './plan.js'
 import { assembleAsync, asyncGroupToRows, readRowGroup } from './rowgroup.js'
 import { concat } from './utils.js'
 
@@ -53,6 +53,7 @@ export async function parquetRead(options) {
   // read row groups with expanded columns
   let readOptions = readColumns !== columns ? { ...options, columns: readColumns } : options
   readOptions = await withBloomFilters(readOptions)
+  readOptions = await withPageIndexes(readOptions)
   const asyncGroups = parquetReadAsync(readOptions)
 
   // skip assembly if no onComplete or onChunk, but wait for reading to finish
@@ -93,9 +94,10 @@ export async function parquetRead(options) {
     /** @type {any[]} */
     const rows = []
     for (const asyncGroup of assembled) {
-      // filter to rows in range
-      const selectStart = Math.max(rowStart - asyncGroup.groupStart, 0)
-      const selectEnd = Math.min((rowEnd ?? Infinity) - asyncGroup.groupStart, asyncGroup.groupRows)
+      // filter to rows in range (the plan may have narrowed the selection to
+      // a sub-range of the group via page index pushdown)
+      const selectStart = asyncGroup.selectStart ?? Math.max(rowStart - asyncGroup.groupStart, 0)
+      const selectEnd = asyncGroup.selectEnd ?? Math.min((rowEnd ?? Infinity) - asyncGroup.groupStart, asyncGroup.groupRows)
       // transpose column chunks to rows in output
       const groupData = rowFormat === 'object' ?
         await asyncGroupToRows(asyncGroup, selectStart, selectEnd, readColumns, 'object') :
@@ -210,6 +212,37 @@ async function withBloomFilters(options) {
   })
   // eslint-disable-next-line no-extra-parens
   return /** @type {BaseParquetReadOptions} */ ({ ...options, bloomFiltersByGroup, schemaElements })
+}
+
+/**
+ * Conditionally fetch page indexes (column index + offset index) for filter
+ * columns and attach per-group candidate row ranges and page locations to
+ * options so parquetPlan can skip pages that cannot match the filter.
+ * Returns options unchanged when there's no filter or the user has not
+ * enabled page index pushdown.
+ *
+ * @param {BaseParquetReadOptions} options
+ * @returns {Promise<BaseParquetReadOptions>}
+ */
+async function withPageIndexes(options) {
+  if (!options.usePageIndex) return options
+  if (!options.filter || !options.metadata) return options
+  const { pageRangesByGroup, pageLocationsByGroup } = await prefetchPageIndexes({
+    file: options.file,
+    metadata: options.metadata,
+    filter: options.filter,
+    filterStrict: options.filterStrict,
+    rowStart: options.rowStart,
+    rowEnd: options.rowEnd,
+    columns: options.columns,
+    // @ts-expect-error bloomFiltersByGroup/schemaElements are attached by withBloomFilters
+    bloomFiltersByGroup: options.bloomFiltersByGroup,
+    // @ts-expect-error bloomFiltersByGroup/schemaElements are attached by withBloomFilters
+    schemaElements: options.schemaElements,
+    parsers: options.parsers,
+  })
+  const readOptions = { ...options, pageRangesByGroup, pageLocationsByGroup }
+  return readOptions
 }
 
 /**

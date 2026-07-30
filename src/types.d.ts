@@ -41,6 +41,7 @@ export interface BaseParquetReadOptions {
   geoparquet?: boolean // parse geoparquet metadata and set logical type to geometry/geography for geospatial columns (default true)
   useOffsetIndex?: boolean // use offset index to limit column chunk reads when available (default false)
   useBloomFilters?: boolean // fetch bloom filters to enable row-group skipping on $eq/$in predicates (default false)
+  usePageIndex?: boolean // fetch page indexes (column index + offset index) for filter columns to skip pages that cannot match (default false)
 }
 
 interface ArrayRowFormat {
@@ -408,7 +409,7 @@ export interface OffsetIndex {
   unencoded_byte_array_data_bytes?: bigint[]
 }
 
-interface PageLocation {
+export interface PageLocation {
   offset: bigint
   compressed_page_size: number
   first_row_index: bigint
@@ -425,6 +426,22 @@ export interface ColumnIndex {
 }
 
 export type BoundaryOrder = 'UNORDERED' | 'ASCENDING' | 'DESCENDING'
+
+/**
+ * Per-page statistics for one column chunk, decoded from the column index
+ * and offset index, used for page-level filter pushdown.
+ */
+export interface ColumnPageStats {
+  minValues: any[] // per-page lower bound
+  maxValues: any[] // per-page upper bound
+  nullPages: boolean[] // per-page all-null flag
+  nullCounts?: (bigint | undefined)[] // per-page null count, when supplied by the writer
+  pageStarts: number[] // first row index of each page, relative to the row group
+  element?: SchemaElement // physical type and logical annotation for comparisons
+}
+
+// Sorted disjoint [start, end) row ranges relative to a row group
+export type PageRanges = [number, number][]
 
 export interface VariantMetadata {
   dictionary: string[]
@@ -455,7 +472,7 @@ interface GroupPlan {
   groupRows: number // number of rows in the group
 }
 // Plan for one column within a row group
-type ChunkPlan = ChunkFull | ChunkOffsetIndexed
+type ChunkPlan = ChunkFull | ChunkOffsetIndexed | ChunkPaged
 // full column chunk
 interface ChunkFull {
   columnMetadata: ColumnMetaData
@@ -465,6 +482,12 @@ interface ChunkFull {
 interface ChunkOffsetIndexed {
   columnMetadata: ColumnMetaData
   offsetIndex: ByteRange
+  range: ByteRange
+}
+// column chunk with page locations already parsed from the offset index
+interface ChunkPaged {
+  columnMetadata: ColumnMetaData
+  pageLocations: PageLocation[]
   range: ByteRange
 }
 
@@ -489,6 +512,8 @@ export interface RowGroupSelect {
 export interface AsyncRowGroup {
   groupStart: number
   groupRows: number
+  selectStart?: number // row index in the group to start reading
+  selectEnd?: number // row index in the group to stop reading
   asyncColumns: AsyncColumn[]
 }
 export interface AsyncColumn {
