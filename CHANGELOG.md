@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.27.0]
+ - Add usePageIndex option for page-level filter pushdown (#169)
+ - Fix filtering on null and NaN row-group matches
+ - Fix nested child column alignment by absolute row offsets
+ - Compare date statistics by timestamp
+ - Fix metadata decode of unsigned and decimal bounds
+ - Fix node file slices (should be end-exclusive)
+
 ## [1.26.2]
  - Custom jsonFromBytes parser option
 
