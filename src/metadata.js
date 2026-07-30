@@ -322,12 +322,22 @@ export function convertMetadata(value, schema, parsers) {
   const view = new DataView(value.buffer, value.byteOffset, value.byteLength)
   if (type === 'FLOAT' && view.byteLength === 4) return view.getFloat32(0, true)
   if (type === 'DOUBLE' && view.byteLength === 8) return view.getFloat64(0, true)
+  if (type === 'INT32' && converted_type === 'DECIMAL' && view.byteLength === 4) {
+    return view.getInt32(0, true) * 10 ** -(schema.scale || 0)
+  }
+  if (type === 'INT64' && converted_type === 'DECIMAL' && view.byteLength === 8) {
+    return Number(view.getBigInt64(0, true)) * 10 ** -(schema.scale || 0)
+  }
   if (type === 'INT32' && converted_type === 'DATE') return parsers.dateFromDays(view.getInt32(0, true))
   if (type === 'INT64' && converted_type === 'TIMESTAMP_MILLIS') return parsers.timestampFromMilliseconds(view.getBigInt64(0, true))
   if (type === 'INT64' && converted_type === 'TIMESTAMP_MICROS') return parsers.timestampFromMicroseconds(view.getBigInt64(0, true))
   if (type === 'INT64' && logical_type?.type === 'TIMESTAMP' && logical_type?.unit === 'NANOS') return parsers.timestampFromNanoseconds(view.getBigInt64(0, true))
   if (type === 'INT64' && logical_type?.type === 'TIMESTAMP' && logical_type?.unit === 'MICROS') return parsers.timestampFromMicroseconds(view.getBigInt64(0, true))
   if (type === 'INT64' && logical_type?.type === 'TIMESTAMP') return parsers.timestampFromMilliseconds(view.getBigInt64(0, true))
+  const unsigned = converted_type?.startsWith('UINT_') ||
+    logical_type?.type === 'INTEGER' && !logical_type.isSigned
+  if (type === 'INT32' && unsigned && view.byteLength === 4) return view.getUint32(0, true)
+  if (type === 'INT64' && unsigned && view.byteLength === 8) return view.getBigUint64(0, true)
   if (type === 'INT32' && view.byteLength === 4) return view.getInt32(0, true)
   if (type === 'INT64' && view.byteLength === 8) return view.getBigInt64(0, true)
   if (converted_type === 'DECIMAL') return parseDecimal(value) * 10 ** -(schema.scale || 0)

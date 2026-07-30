@@ -181,7 +181,7 @@
             "dictionary_page_offset": 158,
             "statistics": {
               "null_count": 0,
-              "max_value": -1,
+              "max_value": 4294967295,
               "min_value": 0
             },
             "encoding_stats": [
@@ -218,7 +218,7 @@
             "dictionary_page_offset": 235,
             "statistics": {
               "null_count": 0,
-              "max_value": -1,
+              "max_value": 18446744073709552000,
               "min_value": 0
             },
             "encoding_stats": [
