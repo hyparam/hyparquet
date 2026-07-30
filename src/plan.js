@@ -1,10 +1,11 @@
 import { bloomEligibleColumns, readBloomFilter } from './bloom.js'
-import { canSkipRowGroup } from './filter.js'
+import { canSkipRowGroup, filterPageRanges, pathsNeededForFilter } from './filter.js'
+import { readColumnIndex, readOffsetIndex } from './indexes.js'
 import { parquetSchema } from './metadata.js'
 import { getPhysicalColumns } from './schema.js'
 
 /**
- * @import {AsyncBuffer, BloomFilter, ByteRange, ChunkPlan, FileMetaData, GroupPlan, ParquetQueryFilter, ParquetReadOptions, QueryPlan, SchemaElement, SchemaTree} from '../src/types.js'
+ * @import {AsyncBuffer, BloomFilter, ByteRange, ChunkPlan, ColumnPageStats, FileMetaData, GroupPlan, PageLocation, PageRanges, ParquetParsers, ParquetQueryFilter, ParquetReadOptions, QueryPlan, RowGroup, SchemaElement, SchemaTree} from '../src/types.js'
  */
 
 // Combine column chunks if less than 2mb
@@ -156,6 +157,129 @@ export async function prefetchBloomFilters({ file, metadata, filter, filterStric
 
   if (tasks.length) await Promise.all(tasks)
   return result
+}
+
+/**
+ * Fetch page indexes (column index + offset index) for filter columns of row
+ * groups that survive row-group-level pruning, and compute candidate row
+ * ranges per group from the per-page min/max statistics.
+ *
+ * Returns pageRangesByGroup indexed by row-group ordinal: sorted disjoint
+ * [start, end) row ranges (relative to the group) that could match the filter.
+ * An empty array means the group provably contains no matching rows; undefined
+ * means no page-level information was available for that group.
+ * Also returns pageLocationsByGroup, mapping row-group ordinals and physical
+ * leaf paths to page locations, so the read path can reuse the parsed offset
+ * indexes without refetching them.
+ *
+ * @param {object} options
+ * @param {AsyncBuffer} options.file
+ * @param {FileMetaData} options.metadata
+ * @param {ParquetQueryFilter} [options.filter]
+ * @param {boolean} [options.filterStrict]
+ * @param {number} [options.rowStart]
+ * @param {number} [options.rowEnd]
+ * @param {string[]} [options.columns]
+ * @param {Record<string, BloomFilter>[]} [options.bloomFiltersByGroup]
+ * @param {Record<string, SchemaElement>} [options.schemaElements]
+ * @param {ParquetParsers} [options.parsers]
+ * @returns {Promise<{pageRangesByGroup: (PageRanges | undefined)[], pageLocationsByGroup: Record<string, PageLocation[]>[]}>}
+ */
+export async function prefetchPageIndexes({ file, metadata, filter, filterStrict = true, rowStart = 0, rowEnd = Infinity, columns, bloomFiltersByGroup, schemaElements, parsers }) {
+  /** @type {(PageRanges | undefined)[]} */
+  const pageRangesByGroup = metadata.row_groups.map(() => undefined)
+  const pageLocationsByGroup = metadata.row_groups.map(() => /** @type {Record<string, PageLocation[]>} */ ({}))
+  if (filter && '$nor' in filter && Array.isArray(filter.$nor)) {
+    return { pageRangesByGroup, pageLocationsByGroup }
+  }
+  const filterColumns = pathsNeededForFilter(filter)
+  if (!filterColumns.length) return { pageRangesByGroup, pageLocationsByGroup }
+  const schemaTree = parquetSchema(metadata)
+  const physicalColumns = getPhysicalColumns(schemaTree)
+  const elementsByPath = {
+    ...physicalSchemaElements(schemaTree),
+    ...schemaElements,
+  }
+
+  /** @type {Promise<void>[]} */
+  const tasks = []
+  let groupStart = 0
+  metadata.row_groups.forEach((rowGroup, rgIdx) => {
+    const groupRows = Number(rowGroup.num_rows)
+    const groupEnd = groupStart + groupRows
+    const overlaps = groupRows > 0 && groupEnd > rowStart && groupStart < rowEnd
+    groupStart = groupEnd
+    if (!overlaps) return
+    if (canSkipRowGroup({ rowGroup, physicalColumns, filter, strict: filterStrict, bloomFilters: bloomFiltersByGroup?.[rgIdx], schemaElements: elementsByPath })) return
+
+    /** @type {Record<string, ColumnPageStats>} */
+    const columnPages = {}
+    /** @type {Promise<void>[]} */
+    const columnTasks = []
+    const scheduledOffsetPaths = new Set()
+    let hasFilterIndex = false
+    for (const columnName of filterColumns) {
+      const columnIdx = physicalColumns.indexOf(columnName)
+      if (columnIdx === -1) continue
+      const chunk = rowGroup.columns[columnIdx]
+      const meta = chunk?.meta_data
+      if (!meta) continue
+      if (!chunk.column_index_offset || !chunk.column_index_length) continue
+      if (!chunk.offset_index_offset || !chunk.offset_index_length) continue
+      const element = elementsByPath[columnName]
+      if (!element) continue
+      hasFilterIndex = true
+      scheduledOffsetPaths.add(columnName)
+      const columnIndexStart = Number(chunk.column_index_offset)
+      const offsetIndexStart = Number(chunk.offset_index_offset)
+      columnTasks.push(Promise.all([
+        file.slice(columnIndexStart, columnIndexStart + chunk.column_index_length),
+        file.slice(offsetIndexStart, offsetIndexStart + chunk.offset_index_length),
+      ]).then(([columnIndexBuffer, offsetIndexBuffer]) => {
+        const columnIndex = readColumnIndex({ view: new DataView(columnIndexBuffer), offset: 0 }, element, parsers)
+        const offsetIndex = readOffsetIndex({ view: new DataView(offsetIndexBuffer), offset: 0 })
+        pageLocationsByGroup[rgIdx][columnName] = offsetIndex.page_locations
+        columnPages[columnName] = {
+          minValues: columnIndex.min_values,
+          maxValues: columnIndex.max_values,
+          nullPages: columnIndex.null_pages,
+          nullCounts: columnIndex.null_counts,
+          pageStarts: offsetIndex.page_locations.map(page => Number(page.first_row_index)),
+          element,
+        }
+      }))
+    }
+    // Candidate ranges are shared by every selected column. Load their offset
+    // indexes too so the planner can merge ranges that map to the same coarse
+    // page instead of fetching and decoding that page more than once.
+    if (hasFilterIndex) {
+      for (const chunk of rowGroup.columns) {
+        const meta = chunk.meta_data
+        if (!meta) continue
+        const columnName = meta.path_in_schema[0]
+        const columnPath = meta.path_in_schema.join('.')
+        if (columns && !columns.includes(columnName)) continue
+        if (scheduledOffsetPaths.has(columnPath)) continue
+        if (!chunk.offset_index_offset || !chunk.offset_index_length) continue
+        scheduledOffsetPaths.add(columnPath)
+        const offsetIndexStart = Number(chunk.offset_index_offset)
+        columnTasks.push(Promise.resolve(
+          file.slice(offsetIndexStart, offsetIndexStart + chunk.offset_index_length)
+        ).then(offsetIndexBuffer => {
+          const offsetIndex = readOffsetIndex({ view: new DataView(offsetIndexBuffer), offset: 0 })
+          pageLocationsByGroup[rgIdx][columnPath] = offsetIndex.page_locations
+        }))
+      }
+    }
+    if (columnTasks.length) {
+      tasks.push(Promise.all(columnTasks).then(() => {
+        pageRangesByGroup[rgIdx] = filterPageRanges(filter, columnPages, groupRows, filterStrict)
+      }))
+    }
+  })
+
+  if (tasks.length) await Promise.all(tasks)
+  return { pageRangesByGroup, pageLocationsByGroup }
 }
 
 /**

@@ -408,7 +408,7 @@ export interface OffsetIndex {
   unencoded_byte_array_data_bytes?: bigint[]
 }
 
-interface PageLocation {
+export interface PageLocation {
   offset: bigint
   compressed_page_size: number
   first_row_index: bigint
