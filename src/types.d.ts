@@ -426,6 +426,22 @@ export interface ColumnIndex {
 
 export type BoundaryOrder = 'UNORDERED' | 'ASCENDING' | 'DESCENDING'
 
+/**
+ * Per-page statistics for one column chunk, decoded from the column index
+ * and offset index, used for page-level filter pushdown.
+ */
+export interface ColumnPageStats {
+  minValues: any[] // per-page lower bound
+  maxValues: any[] // per-page upper bound
+  nullPages: boolean[] // per-page all-null flag
+  nullCounts?: (bigint | undefined)[] // per-page null count, when supplied by the writer
+  pageStarts: number[] // first row index of each page, relative to the row group
+  element?: SchemaElement // physical type and logical annotation for comparisons
+}
+
+// Sorted disjoint [start, end) row ranges relative to a row group
+export type PageRanges = [number, number][]
+
 export interface VariantMetadata {
   dictionary: string[]
   sorted: boolean
