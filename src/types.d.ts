@@ -471,7 +471,7 @@ interface GroupPlan {
   groupRows: number // number of rows in the group
 }
 // Plan for one column within a row group
-type ChunkPlan = ChunkFull | ChunkOffsetIndexed
+type ChunkPlan = ChunkFull | ChunkOffsetIndexed | ChunkPaged
 // full column chunk
 interface ChunkFull {
   columnMetadata: ColumnMetaData
@@ -481,6 +481,12 @@ interface ChunkFull {
 interface ChunkOffsetIndexed {
   columnMetadata: ColumnMetaData
   offsetIndex: ByteRange
+  range: ByteRange
+}
+// column chunk with page locations already parsed from the offset index
+interface ChunkPaged {
+  columnMetadata: ColumnMetaData
+  pageLocations: PageLocation[]
   range: ByteRange
 }
 
