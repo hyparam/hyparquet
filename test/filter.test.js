@@ -96,7 +96,7 @@ describe('canSkipRowGroup', () => {
           total_uncompressed_size: 4096n,
           encodings: ['PLAIN'],
           data_page_offset: 4n,
-          statistics: { min_value: min, max_value: max },
+          statistics: { min_value: min, max_value: max, null_count: 0n },
         },
         file_offset: 4n,
       }],
@@ -159,6 +159,40 @@ describe('canSkipRowGroup', () => {
     // $nin: skip only if uniform and value in array
     expect(canSkipRowGroup({ filter: { x: { $nin: [5, 6, 7] } }, rowGroup: uniformRowGroup, physicalColumns: cols })).toBe(true)
     expect(canSkipRowGroup({ filter: { x: { $nin: [1, 2, 3] } }, rowGroup: uniformRowGroup, physicalColumns: cols })).toBe(false)
+  })
+
+  it('does not skip uniform non-null bounds when null rows can match', () => {
+    const mixedNullRowGroup = makeRowGroup(5, 5)
+    const stats = mixedNullRowGroup.columns[0].meta_data?.statistics
+    if (!stats) throw new Error('expected statistics')
+    stats.null_count = 1n
+
+    expect(canSkipRowGroup({
+      filter: { x: { $ne: 5 } },
+      rowGroup: mixedNullRowGroup,
+      physicalColumns: ['x'],
+    })).toBe(false)
+
+    delete stats.null_count
+    expect(canSkipRowGroup({
+      filter: { x: { $ne: 5 } },
+      rowGroup: mixedNullRowGroup,
+      physicalColumns: ['x'],
+    })).toBe(false)
+  })
+
+  it('does not treat uniform floating-point bounds as excluding NaN', () => {
+    const rowGroup = makeRowGroup(5, 5)
+    /** @type {Record<string, SchemaElement>} */
+    const schemaElements = { x: { name: 'x', type: 'DOUBLE' } }
+    const options = {
+      rowGroup,
+      physicalColumns: ['x'],
+      schemaElements,
+    }
+
+    expect(canSkipRowGroup({ ...options, filter: { x: { $ne: 5 } } })).toBe(false)
+    expect(canSkipRowGroup({ ...options, filter: { x: { $nin: [5] } } })).toBe(false)
   })
 
   it('handles min/max fallback to legacy fields', () => {

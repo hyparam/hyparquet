@@ -4,7 +4,7 @@ import { parquetSchema } from './metadata.js'
 import { getPhysicalColumns } from './schema.js'
 
 /**
- * @import {AsyncBuffer, BloomFilter, ByteRange, ChunkPlan, FileMetaData, GroupPlan, ParquetQueryFilter, ParquetReadOptions, QueryPlan, SchemaElement} from '../src/types.js'
+ * @import {AsyncBuffer, BloomFilter, ByteRange, ChunkPlan, FileMetaData, GroupPlan, ParquetQueryFilter, ParquetReadOptions, QueryPlan, SchemaElement, SchemaTree} from '../src/types.js'
  */
 
 // Combine column chunks if less than 2mb
@@ -25,7 +25,12 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
   const fetches = []
   /** @type {ByteRange[]} */
   const indexes = []
-  const physicalColumns = getPhysicalColumns(parquetSchema(metadata))
+  const schemaTree = parquetSchema(metadata)
+  const physicalColumns = getPhysicalColumns(schemaTree)
+  const elementsByPath = filter ? {
+    ...physicalSchemaElements(schemaTree),
+    ...schemaElements,
+  } : schemaElements
 
   // find which row groups to read
   let groupStart = 0 // first row index of the current group
@@ -35,7 +40,7 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
     const groupEnd = groupStart + groupRows
     const bloomFilters = bloomFiltersByGroup?.[rgIdx]
     // if row group overlaps with row range, add it to the plan
-    if (groupRows > 0 && groupEnd > rowStart && groupStart < rowEnd && !canSkipRowGroup({ rowGroup, physicalColumns, filter, strict: filterStrict, bloomFilters, schemaElements })) {
+    if (groupRows > 0 && groupEnd > rowStart && groupStart < rowEnd && !canSkipRowGroup({ rowGroup, physicalColumns, filter, strict: filterStrict, bloomFilters, schemaElements: elementsByPath })) {
       /** @type {ChunkPlan[]} */
       const chunks = []
       let groupStartByte = Infinity
@@ -151,6 +156,27 @@ export async function prefetchBloomFilters({ file, metadata, filter, filterStric
 
   if (tasks.length) await Promise.all(tasks)
   return result
+}
+
+/**
+ * Build a lookup from physical paths to leaf schema elements.
+ *
+ * @param {SchemaTree} schemaTree
+ * @returns {Record<string, SchemaElement>}
+ */
+function physicalSchemaElements(schemaTree) {
+  /** @type {Record<string, SchemaElement>} */
+  const elements = {}
+  /** @param {SchemaTree} node */
+  function traverse(node) {
+    if (node.children.length) {
+      for (const child of node.children) traverse(child)
+    } else {
+      elements[node.path.join('.')] = node.element
+    }
+  }
+  traverse(schemaTree)
+  return elements
 }
 
 /**

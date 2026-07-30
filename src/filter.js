@@ -80,8 +80,8 @@ export function matchFilter(record, filter, strict = true) {
  * @param {string[]} options.physicalColumns
  * @param {ParquetQueryFilter | undefined} options.filter
  * @param {boolean} [options.strict]
- * @param {Record<string, BloomFilter>} [options.bloomFilters] keyed by top-level column name
- * @param {Record<string, SchemaElement>} [options.schemaElements] keyed by top-level column name, required to use bloomFilters
+ * @param {Record<string, BloomFilter>} [options.bloomFilters] keyed by filter path
+ * @param {Record<string, SchemaElement>} [options.schemaElements] keyed by physical leaf path
  * @returns {boolean} true if the row group can be skipped
  */
 export function canSkipRowGroup({ rowGroup, physicalColumns, filter, strict = true, bloomFilters, schemaElements }) {
@@ -109,26 +109,31 @@ export function canSkipRowGroup({ rowGroup, physicalColumns, filter, strict = tr
     if (columnIndex === -1) continue
 
     const stats = rowGroup.columns[columnIndex].meta_data?.statistics
-    const { min, max, min_value, max_value } = stats || {}
+    const { min, max, min_value, max_value, null_count: nullCount } = stats || {}
     const minVal = min_value !== undefined ? min_value : min
     const maxVal = max_value !== undefined ? max_value : max
     const haveStats = minVal !== undefined && maxVal !== undefined
 
     const bloom = bloomFilters?.[field]
     const element = schemaElements?.[field]
+    const mayContainNaN = element?.type === 'FLOAT' ||
+      element?.type === 'DOUBLE' ||
+      element?.logical_type?.type === 'FLOAT16'
+    const matchingNulls = matchFilter({ value: null }, { value: condition }, strict) &&
+      (nullCount === undefined || nullCount > 0)
 
     // Handle operators
     for (const [operator, target] of Object.entries(condition || {})) {
       // Statistics-based skipping
-      if (haveStats) {
+      if (haveStats && !matchingNulls) {
         if (operator === '$gt' && maxVal <= target) return true
         if (operator === '$gte' && maxVal < target) return true
         if (operator === '$lt' && minVal >= target) return true
         if (operator === '$lte' && minVal > target) return true
         if (operator === '$eq' && (target < minVal || target > maxVal)) return true
-        if (operator === '$ne' && equals(minVal, maxVal, strict) && equals(minVal, target, strict)) return true
+        if (operator === '$ne' && !mayContainNaN && equals(minVal, maxVal, strict) && equals(minVal, target, strict)) return true
         if (operator === '$in' && Array.isArray(target) && target.every(v => v < minVal || v > maxVal)) return true
-        if (operator === '$nin' && Array.isArray(target) && equals(minVal, maxVal, strict) && target.includes(minVal)) return true
+        if (operator === '$nin' && !mayContainNaN && Array.isArray(target) && equals(minVal, maxVal, strict) && target.includes(minVal)) return true
       }
       // Bloom-filter skipping for equality predicates (proves absence, never presence)
       if (bloom && element) {
