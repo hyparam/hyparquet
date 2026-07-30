@@ -1,0 +1,282 @@
+[
+  [
+    {
+      "null_pages": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "min_values": [
+        0,
+        299,
+        598,
+        897,
+        1196,
+        1495
+      ],
+      "max_values": [
+        298,
+        597,
+        896,
+        1195,
+        1494,
+        1499
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "min_values": [
+        "word-000000",
+        "word-000109",
+        "word-000218",
+        "word-000327",
+        "word-000436",
+        "word-000545",
+        "word-000654",
+        "word-000763",
+        "word-000872",
+        "word-000981",
+        "word-001090",
+        "word-001199",
+        "word-001308",
+        "word-001417"
+      ],
+      "max_values": [
+        "word-000108",
+        "word-000217",
+        "word-000326",
+        "word-000435",
+        "word-000544",
+        "word-000653",
+        "word-000762",
+        "word-000871",
+        "word-000980",
+        "word-001089",
+        "word-001198",
+        "word-001307",
+        "word-001416",
+        "word-001499"
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    null,
+    {
+      "null_pages": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "min_values": [
+        "cat-0",
+        "cat-0",
+        "cat-0",
+        "cat-0",
+        "cat-0",
+        "cat-45"
+      ],
+      "max_values": [
+        "cat-9",
+        "cat-9",
+        "cat-9",
+        "cat-9",
+        "cat-9",
+        "cat-49"
+      ],
+      "boundary_order": "UNORDERED",
+      "null_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  [
+    {
+      "null_pages": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "min_values": [
+        1500,
+        1799,
+        2098,
+        2397,
+        2696,
+        2995
+      ],
+      "max_values": [
+        1798,
+        2097,
+        2396,
+        2695,
+        2994,
+        2999
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "null_pages": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "min_values": [
+        "word-001500",
+        "word-001609",
+        "word-001718",
+        "word-001827",
+        "word-001936",
+        "word-002045",
+        "word-002154",
+        "word-002263",
+        "word-002372",
+        "word-002481",
+        "word-002590",
+        "word-002699",
+        "word-002808",
+        "word-002917"
+      ],
+      "max_values": [
+        "word-001608",
+        "word-001717",
+        "word-001826",
+        "word-001935",
+        "word-002044",
+        "word-002153",
+        "word-002262",
+        "word-002371",
+        "word-002480",
+        "word-002589",
+        "word-002698",
+        "word-002807",
+        "word-002916",
+        "word-002999"
+      ],
+      "boundary_order": "ASCENDING",
+      "null_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    null,
+    {
+      "null_pages": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "min_values": [
+        "cat-0",
+        "cat-0",
+        "cat-0",
+        "cat-0",
+        "cat-0",
+        "cat-45"
+      ],
+      "max_values": [
+        "cat-9",
+        "cat-9",
+        "cat-9",
+        "cat-9",
+        "cat-9",
+        "cat-49"
+      ],
+      "boundary_order": "UNORDERED",
+      "null_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+]
