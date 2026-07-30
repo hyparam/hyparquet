@@ -60,6 +60,143 @@ describe('page index pushdown against test/files/page_index.parquet', () => {
     expect(pageLocationsByGroup[0].id.length).toBeGreaterThan(1)
   })
 
+  it('coalesces adjacent offset indexes without overreading or changing results', async () => {
+    const file = await asyncBufferFromFile(path)
+    const metadata = await parquetMetadataAsync(file)
+    const idChunk = metadata.row_groups[0].columns[0]
+    const wordChunk = metadata.row_groups[0].columns[1]
+    const idColumnIndexLength = idChunk.column_index_length
+    const idOffsetIndexLength = idChunk.offset_index_length
+    const wordOffsetIndexLength = wordChunk.offset_index_length
+    if (idColumnIndexLength === undefined || idOffsetIndexLength === undefined || wordOffsetIndexLength === undefined) {
+      throw new Error('fixture is missing expected index lengths')
+    }
+    const columnIndexStart = Number(idChunk.column_index_offset)
+    const idOffsetStart = Number(idChunk.offset_index_offset)
+    const wordOffsetStart = Number(wordChunk.offset_index_offset)
+    const wordOffsetEnd = wordOffsetStart + wordOffsetIndexLength
+    expect(idOffsetStart + idOffsetIndexLength).toBe(wordOffsetStart)
+
+    const counted = countingBuffer(file)
+    const filter = { id: { $eq: 1234 } }
+    const { pageRangesByGroup } = await prefetchPageIndexes({
+      file: counted,
+      metadata,
+      filter,
+      columns: ['word'],
+    })
+
+    expect(counted.ranges()).toEqual([
+      [columnIndexStart, columnIndexStart + idColumnIndexLength],
+      [idOffsetStart, wordOffsetEnd],
+    ])
+    expect(counted.fetches()).toBe(2)
+    expect(counted.bytes()).toBe(
+      idColumnIndexLength +
+      idOffsetIndexLength +
+      wordOffsetIndexLength
+    )
+    expect(pageRangesByGroup).toEqual([[[1196, 1495]], undefined])
+
+    const expected = await parquetReadObjects({ file, metadata, filter, columns: ['word'] })
+    const actual = await parquetReadObjects({ file, metadata, filter, columns: ['word'], usePageIndex: true })
+    expect(actual).toEqual(expected)
+  })
+
+  it('keeps non-adjacent page indexes in separate fetches', async () => {
+    const file = await asyncBufferFromFile(path)
+    const metadata = await parquetMetadataAsync(file)
+    const idChunk = metadata.row_groups[0].columns[0]
+    const payloadChunk = metadata.row_groups[0].columns[2]
+    const idColumnIndexLength = idChunk.column_index_length
+    const idOffsetIndexLength = idChunk.offset_index_length
+    const payloadOffsetIndexLength = payloadChunk.offset_index_length
+    if (idColumnIndexLength === undefined || idOffsetIndexLength === undefined || payloadOffsetIndexLength === undefined) {
+      throw new Error('fixture is missing expected index lengths')
+    }
+    const columnIndexStart = Number(idChunk.column_index_offset)
+    const idOffsetStart = Number(idChunk.offset_index_offset)
+    const payloadOffsetStart = Number(payloadChunk.offset_index_offset)
+    expect(idOffsetStart + idOffsetIndexLength).toBeLessThan(payloadOffsetStart)
+
+    const counted = countingBuffer(file)
+    await prefetchPageIndexes({
+      file: counted,
+      metadata,
+      filter: { id: { $eq: 1234 } },
+      columns: ['payload'],
+    })
+
+    expect(counted.ranges()).toEqual([
+      [columnIndexStart, columnIndexStart + idColumnIndexLength],
+      [idOffsetStart, idOffsetStart + idOffsetIndexLength],
+      [payloadOffsetStart, payloadOffsetStart + payloadOffsetIndexLength],
+    ])
+    expect(counted.bytes()).toBe(
+      idColumnIndexLength +
+      idOffsetIndexLength +
+      payloadOffsetIndexLength
+    )
+  })
+
+  it('coalesces adjacent column indexes from neighboring surviving row groups', async () => {
+    const file = await asyncBufferFromFile(path)
+    const metadata = await parquetMetadataAsync(file)
+    const firstCategory = metadata.row_groups[0].columns[3]
+    const secondId = metadata.row_groups[1].columns[0]
+    const firstColumnIndexLength = firstCategory.column_index_length
+    const secondColumnIndexLength = secondId.column_index_length
+    if (firstColumnIndexLength === undefined || secondColumnIndexLength === undefined) {
+      throw new Error('fixture is missing expected index lengths')
+    }
+    const firstStart = Number(firstCategory.column_index_offset)
+    const secondStart = Number(secondId.column_index_offset)
+    const secondEnd = secondStart + secondColumnIndexLength
+    expect(firstStart + firstColumnIndexLength).toBe(secondStart)
+
+    const counted = countingBuffer(file)
+    const { pageRangesByGroup } = await prefetchPageIndexes({
+      file: counted,
+      metadata,
+      filter: { $or: [{ category: { $eq: 'cat-1' } }, { id: { $eq: 1600 } }] },
+      columns: ['id', 'category'],
+    })
+
+    expect(counted.ranges()).toContainEqual([firstStart, secondEnd])
+    expect(pageRangesByGroup[0]).toBeDefined()
+    expect(pageRangesByGroup[1]).toBeDefined()
+  })
+
+  it('does not read page indexes for row groups rejected by statistics', async () => {
+    const file = await asyncBufferFromFile(path)
+    const metadata = await parquetMetadataAsync(file)
+    const counted = countingBuffer(file)
+    const { pageRangesByGroup } = await prefetchPageIndexes({
+      file: counted,
+      metadata,
+      filter: { id: { $eq: 1234 } },
+      columns: ['word'],
+    })
+    const rejectedIndexRanges = metadata.row_groups[1].columns.flatMap(chunk => {
+      /** @type {[number, number][]} */
+      const ranges = []
+      if (chunk.column_index_offset && chunk.column_index_length) {
+        const start = Number(chunk.column_index_offset)
+        ranges.push([start, start + chunk.column_index_length])
+      }
+      if (chunk.offset_index_offset && chunk.offset_index_length) {
+        const start = Number(chunk.offset_index_offset)
+        ranges.push([start, start + chunk.offset_index_length])
+      }
+      return ranges
+    })
+
+    expect(pageRangesByGroup[1]).toBeUndefined()
+    expect(counted.ranges().some(([start, end]) =>
+      rejectedIndexRanges.some(([indexStart, indexEnd]) => start < indexEnd && indexStart < end)
+    )).toBe(false)
+  })
+
   it('prefetchPageIndexes narrows candidate ranges to matching pages', async () => {
     const file = await asyncBufferFromFile(path)
     const metadata = await parquetMetadataAsync(file)

@@ -300,8 +300,12 @@ export async function prefetchPageIndexes({ file, metadata, filter, filterStrict
     ...schemaElements,
   }
 
-  /** @type {Promise<void>[]} */
-  const tasks = []
+  /** @type {ByteRange[]} */
+  const indexRanges = []
+  /** @type {((file: AsyncBuffer) => Promise<void>)[]} */
+  const indexTasks = []
+  /** @type {{rgIdx: number, groupRows: number, columnPages: Record<string, ColumnPageStats>}[]} */
+  const candidateGroups = []
   let groupStart = 0
   metadata.row_groups.forEach((rowGroup, rgIdx) => {
     const groupRows = Number(rowGroup.num_rows)
@@ -313,8 +317,7 @@ export async function prefetchPageIndexes({ file, metadata, filter, filterStrict
 
     /** @type {Record<string, ColumnPageStats>} */
     const columnPages = {}
-    /** @type {Promise<void>[]} */
-    const columnTasks = []
+    let columnTaskCount = 0
     const scheduledOffsetPaths = new Set()
     let hasFilterIndex = false
     for (const columnName of filterColumns) {
@@ -331,10 +334,18 @@ export async function prefetchPageIndexes({ file, metadata, filter, filterStrict
       scheduledOffsetPaths.add(columnName)
       const columnIndexStart = Number(chunk.column_index_offset)
       const offsetIndexStart = Number(chunk.offset_index_offset)
-      columnTasks.push(Promise.all([
-        file.slice(columnIndexStart, columnIndexStart + chunk.column_index_length),
-        file.slice(offsetIndexStart, offsetIndexStart + chunk.offset_index_length),
-      ]).then(([columnIndexBuffer, offsetIndexBuffer]) => {
+      const columnIndexEnd = columnIndexStart + chunk.column_index_length
+      const offsetIndexEnd = offsetIndexStart + chunk.offset_index_length
+      indexRanges.push(
+        { startByte: columnIndexStart, endByte: columnIndexEnd },
+        { startByte: offsetIndexStart, endByte: offsetIndexEnd }
+      )
+      columnTaskCount++
+      indexTasks.push(async prefetchedFile => {
+        const [columnIndexBuffer, offsetIndexBuffer] = await Promise.all([
+          prefetchedFile.slice(columnIndexStart, columnIndexEnd),
+          prefetchedFile.slice(offsetIndexStart, offsetIndexEnd),
+        ])
         const columnIndex = readColumnIndex({ view: new DataView(columnIndexBuffer), offset: 0 }, element, parsers)
         const offsetIndex = readOffsetIndex({ view: new DataView(offsetIndexBuffer), offset: 0 })
         pageLocationsByGroup[rgIdx][columnName] = offsetIndex.page_locations
@@ -346,7 +357,7 @@ export async function prefetchPageIndexes({ file, metadata, filter, filterStrict
           pageStarts: offsetIndex.page_locations.map(page => Number(page.first_row_index)),
           element,
         }
-      }))
+      })
     }
     // Candidate ranges are shared by every selected column. Load their offset
     // indexes too so the planner can merge ranges that map to the same coarse
@@ -362,23 +373,52 @@ export async function prefetchPageIndexes({ file, metadata, filter, filterStrict
         if (!chunk.offset_index_offset || !chunk.offset_index_length) continue
         scheduledOffsetPaths.add(columnPath)
         const offsetIndexStart = Number(chunk.offset_index_offset)
-        columnTasks.push(Promise.resolve(
-          file.slice(offsetIndexStart, offsetIndexStart + chunk.offset_index_length)
-        ).then(offsetIndexBuffer => {
+        const offsetIndexEnd = offsetIndexStart + chunk.offset_index_length
+        indexRanges.push({ startByte: offsetIndexStart, endByte: offsetIndexEnd })
+        columnTaskCount++
+        indexTasks.push(async prefetchedFile => {
+          const offsetIndexBuffer = await prefetchedFile.slice(offsetIndexStart, offsetIndexEnd)
           const offsetIndex = readOffsetIndex({ view: new DataView(offsetIndexBuffer), offset: 0 })
           pageLocationsByGroup[rgIdx][columnPath] = offsetIndex.page_locations
-        }))
+        })
       }
     }
-    if (columnTasks.length) {
-      tasks.push(Promise.all(columnTasks).then(() => {
-        pageRangesByGroup[rgIdx] = filterPageRanges(filter, columnPages, groupRows, filterStrict)
-      }))
+    if (columnTaskCount) {
+      candidateGroups.push({ rgIdx, groupRows, columnPages })
     }
   })
 
-  if (tasks.length) await Promise.all(tasks)
+  if (indexTasks.length) {
+    const prefetchedFile = prefetchAsyncBuffer(file, { fetches: coalesceByteRanges(indexRanges) })
+    await Promise.all(indexTasks.map(task => task(prefetchedFile)))
+    for (const { rgIdx, groupRows, columnPages } of candidateGroups) {
+      pageRangesByGroup[rgIdx] = filterPageRanges(filter, columnPages, groupRows, filterStrict)
+    }
+  }
   return { pageRangesByGroup, pageLocationsByGroup }
+}
+
+/**
+ * Merge overlapping or exactly touching byte ranges without adding bytes.
+ *
+ * @param {ByteRange[]} ranges
+ * @returns {ByteRange[]}
+ */
+function coalesceByteRanges(ranges) {
+  const sorted = ranges
+    .map(range => ({ ...range }))
+    .sort((a, b) => a.startByte - b.startByte || a.endByte - b.endByte)
+  /** @type {ByteRange[]} */
+  const merged = []
+  for (const range of sorted) {
+    const last = merged[merged.length - 1]
+    if (last && range.startByte <= last.endByte) {
+      last.endByte = Math.max(last.endByte, range.endByte)
+    } else {
+      merged.push(range)
+    }
+  }
+  return merged
 }
 
 /**
@@ -406,7 +446,7 @@ function physicalSchemaElements(schemaTree) {
  * Prefetch byte ranges from an AsyncBuffer.
  *
  * @param {AsyncBuffer} file
- * @param {QueryPlan} plan
+ * @param {{fetches: ByteRange[]}} options
  * @returns {AsyncBuffer}
  */
 export function prefetchAsyncBuffer(file, { fetches }) {
