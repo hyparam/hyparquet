@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { assembleLists } from '../src/assemble.js'
 
+/** @import {FieldRepetitionType, SchemaTree} from '../src/types.js' */
+
 describe('assembleLists', () => {
   const nonnullable = toSchemaPath([undefined, 'REQUIRED', 'REPEATED', 'REQUIRED'])
   const nullable = toSchemaPath([undefined, 'OPTIONAL', 'REPEATED', 'OPTIONAL'])
@@ -8,7 +10,6 @@ describe('assembleLists', () => {
   const nestedOptional = toSchemaPath([undefined, 'OPTIONAL', 'REPEATED', 'OPTIONAL', 'REPEATED', 'OPTIONAL'])
 
   /**
-   * @import {FieldRepetitionType, SchemaTree} from '../src/types.js'
    * @param {(FieldRepetitionType | undefined)[]} repetitionPath
    * @returns {SchemaTree[]}
    */

@@ -7,11 +7,10 @@ import {
   isMapLike,
 } from '../src/schema.js'
 
+/** @import {SchemaElement} from '../src/types.js' */
+
 describe('Parquet schema utils', () => {
-  /**
-   * @import {SchemaElement} from '../src/types.js'
-   * @type {SchemaElement[]}
-   */
+  /** @type {SchemaElement[]} */
   const schema = [
     { name: 'root', num_children: 7 },
     { name: 'flat', repetition_type: 'OPTIONAL' },

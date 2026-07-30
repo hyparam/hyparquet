@@ -125,7 +125,7 @@ function toVarInt(n) {
   const varInt = []
   while (true) {
     if ((n & ~0x7f) === 0) {
-      varInt[idx++] = n
+      varInt[idx] = n
       break
     } else {
       varInt[idx++] = n & 0x7f | 0x80
