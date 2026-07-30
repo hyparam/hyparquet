@@ -30,6 +30,12 @@ describe('matchFilter', () => {
     expect(matchFilter(record, { x: { $ne: 5 } })).toBe(true)
   })
 
+  it('compares Date values by timestamp', () => {
+    const record = { x: new Date('2024-01-01T00:00:00Z') }
+    expect(matchFilter(record, { x: { $eq: new Date('2024-01-01T00:00:00Z') } })).toBe(true)
+    expect(matchFilter(record, { x: { $eq: new Date('2024-01-02T00:00:00Z') } })).toBe(false)
+  })
+
   it('handles $in, $nin, and $not operators', () => {
     const record = { x: 5 }
     expect(matchFilter(record, { x: { $in: [1, 5, 10] } })).toBe(true)
