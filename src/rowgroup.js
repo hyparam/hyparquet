@@ -85,7 +85,7 @@ export function readRowGroup(options, { metadata }, groupPlan) {
             selectStart: groupPlan.selectStart - skipped,
             selectEnd: groupPlan.selectEnd - skipped,
           } : groupPlan
-          const { data, skipped: columnSkipped } = readColumn(reader, adjustedGroupPlan, columnDecoder, options.onPage)
+          const { data, skipped: columnSkipped } = await readColumn(reader, adjustedGroupPlan, columnDecoder, options.onPage)
           return {
             data,
             skipped: skipped + columnSkipped,

@@ -17,9 +17,9 @@ import { deserializeTCompactProtocol } from './thrift.js'
  * @param {RowGroupSelect} rowGroupSelect row group selection
  * @param {ColumnDecoder} columnDecoder column decoder params
  * @param {(chunk: SubColumnData) => void} [onPage] callback for each page
- * @returns {{ data: DecodedArray[], skipped: number }}
+ * @returns {Promise<{ data: DecodedArray[], skipped: number }>}
  */
-export function readColumn(reader, { groupStart, selectStart, selectEnd }, columnDecoder, onPage) {
+export async function readColumn(reader, { groupStart, selectStart, selectEnd }, columnDecoder, onPage) {
   const { pathInSchema, schemaPath } = columnDecoder
   const isFlat = isFlatColumn(schemaPath)
   /** @type {DecodedArray[]} */
@@ -46,11 +46,11 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
     // read page header
     const header = parquetHeader(reader)
     if (header.type === 'DICTIONARY_PAGE') {
-      const { data } = readPage(reader, header, columnDecoder, dictionary, undefined, 0)
+      const { data } = await readPage(reader, header, columnDecoder, dictionary, undefined, 0)
       if (data) dictionary = convert(data, columnDecoder)
     } else {
       const lastChunkLength = lastChunk?.length || 0
-      const result = readPage(reader, header, columnDecoder, dictionary, lastChunk, selectStart - rowCount)
+      const result = await readPage(reader, header, columnDecoder, dictionary, lastChunk, selectStart - rowCount)
       if (result.skipped) {
         // skipped page - just advance row count, don't add to chunks
         if (!chunks.length) {
@@ -82,9 +82,9 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
  * @param {DecodedArray | undefined} dictionary
  * @param {DecodedArray | undefined} previousChunk
  * @param {number} pageStart skip this many rows in the page
- * @returns {PageResult}
+ * @returns {Promise<PageResult>}
  */
-export function readPage(reader, header, columnDecoder, dictionary, previousChunk, pageStart) {
+export async function readPage(reader, header, columnDecoder, dictionary, previousChunk, pageStart) {
   const { type, element, schemaPath, codec, compressors } = columnDecoder
   // read compressed_page_size bytes
   const compressedBytes = new Uint8Array(
@@ -102,7 +102,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
       return { skipped: daph.num_values }
     }
 
-    const page = decompressPage(compressedBytes, Number(header.uncompressed_page_size), codec, compressors)
+    const page = await decompressPage(compressedBytes, Number(header.uncompressed_page_size), codec, compressors)
     const { definitionLevels, repetitionLevels, dataPage } = readDataPage(page, daph, columnDecoder)
     // assert(!daph.statistics?.null_count || daph.statistics.null_count === BigInt(daph.num_values - dataPage.length))
 
@@ -121,7 +121,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
     }
 
     const { definitionLevels, repetitionLevels, dataPage } =
-      readDataPageV2(compressedBytes, header, columnDecoder)
+      await readDataPageV2(compressedBytes, header, columnDecoder)
 
     // convert types, dereference dictionary, and assemble lists
     const values = convertWithDictionary(dataPage, dictionary, daph2.encoding, columnDecoder)
@@ -132,7 +132,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
     const diph = header.dictionary_page_header
     if (!diph) throw new Error('parquet dictionary page header is undefined')
 
-    const page = decompressPage(
+    const page = await decompressPage(
       compressedBytes, Number(header.uncompressed_page_size), codec, compressors
     )
 

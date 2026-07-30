@@ -4,6 +4,7 @@
 
 import { deltaBinaryUnpack, deltaByteArray, deltaLengthByteArray } from './delta.js'
 import { byteStreamSplit, readRleBitPackedHybrid } from './encoding.js'
+import { gzipUncompress } from './gzip.js'
 import { readPlain } from './plain.js'
 import { getMaxDefinitionLevel, getMaxRepetitionLevel } from './schema.js'
 import { snappyUncompress } from './snappy.js'
@@ -112,19 +113,21 @@ function readDefinitionLevels(reader, daph, schemaPath) {
  * @param {number} uncompressed_page_size
  * @param {CompressionCodec} codec
  * @param {Compressors | undefined} compressors
- * @returns {Uint8Array}
+ * @returns {Promise<Uint8Array>}
  */
-export function decompressPage(compressedBytes, uncompressed_page_size, codec, compressors) {
+export async function decompressPage(compressedBytes, uncompressed_page_size, codec, compressors) {
   /** @type {Uint8Array} */
   let page
   const customDecompressor = compressors?.[codec]
   if (codec === 'UNCOMPRESSED') {
     page = compressedBytes
   } else if (customDecompressor) {
-    page = customDecompressor(compressedBytes, uncompressed_page_size)
+    page = await customDecompressor(compressedBytes, uncompressed_page_size)
   } else if (codec === 'SNAPPY') {
     page = new Uint8Array(uncompressed_page_size)
     snappyUncompress(compressedBytes, page)
+  } else if (codec === 'GZIP') {
+    page = await gzipUncompress(compressedBytes, uncompressed_page_size)
   } else {
     throw new Error(`parquet unsupported compression codec: ${codec}`)
   }
@@ -141,9 +144,9 @@ export function decompressPage(compressedBytes, uncompressed_page_size, codec, c
  * @param {Uint8Array} compressedBytes raw page data
  * @param {PageHeader} ph page header
  * @param {ColumnDecoder} columnDecoder
- * @returns {DataPage} definition levels, repetition levels, and array of values
+ * @returns {Promise<DataPage>} definition levels, repetition levels, and array of values
  */
-export function readDataPageV2(compressedBytes, ph, columnDecoder) {
+export async function readDataPageV2(compressedBytes, ph, columnDecoder) {
   const view = new DataView(compressedBytes.buffer, compressedBytes.byteOffset, compressedBytes.byteLength)
   const reader = { view, offset: 0 }
   const { type, element, schemaPath, codec, compressors } = columnDecoder
@@ -162,7 +165,7 @@ export function readDataPageV2(compressedBytes, ph, columnDecoder) {
 
   let page = compressedBytes.subarray(reader.offset)
   if (daph2.is_compressed !== false) {
-    page = decompressPage(page, uncompressedPageSize, codec, compressors)
+    page = await decompressPage(page, uncompressedPageSize, codec, compressors)
   }
   const pageView = new DataView(page.buffer, page.byteOffset, page.byteLength)
   const pageReader = { view: pageView, offset: 0 }

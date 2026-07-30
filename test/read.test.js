@@ -461,9 +461,16 @@ describe('parquetRead', () => {
   })
 
   it('requires compressors for compressed files', async () => {
-    const file = await asyncBufferFromFile('test/files/rle_boolean_encoding.parquet')
+    const file = await asyncBufferFromFile('test/files/brotli_compressed.parquet')
     await expect(parquetReadObjects({ file }))
-      .rejects.toThrow('parquet unsupported compression codec: GZIP')
+      .rejects.toThrow('parquet unsupported compression codec: BROTLI')
+  })
+
+  it('reads gzip files without external compressors', async () => {
+    const file = await asyncBufferFromFile('test/files/rle_boolean_encoding.parquet')
+    const rows = await parquetReadObjects({ file })
+    expect(rows.length).toBe(68)
+    expect(rows[0]).toEqual({ datatype_boolean: true })
   })
 
   it('does not leak unhandled rejections when a row group read fails', async () => {
