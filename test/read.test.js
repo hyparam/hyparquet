@@ -313,8 +313,10 @@ describe('parquetRead', () => {
     // struct sub-columns may have different page boundaries with offset index
     const file = await asyncBufferFromFile('test/files/struct_offset_index.parquet')
     const allRows = await parquetReadObjects({ file })
-    const rows = await parquetReadObjects({ file, rowEnd: 3, useOffsetIndex: true })
-    expect(rows).toEqual(allRows.slice(0, 3))
+    const firstRows = await parquetReadObjects({ file, rowEnd: 3, useOffsetIndex: true })
+    const laterRows = await parquetReadObjects({ file, rowStart: 15, rowEnd: 18, useOffsetIndex: true })
+    expect(firstRows).toEqual(allRows.slice(0, 3))
+    expect(laterRows).toEqual(allRows.slice(15, 18))
   })
 
   it('reads only required row groups on the boundary', async () => {

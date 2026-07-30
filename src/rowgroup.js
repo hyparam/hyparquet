@@ -196,23 +196,24 @@ export function assembleAsync(asyncRowGroup, schemaTree, parsers) {
           const resolved = await Promise.all(childColumns.map(c => c.data))
           /** @type {Map<string, DecodedArray>} */
           const subcolumnData = new Map()
-          let minLength = Infinity
+          const flattened = resolved.map(({ data }) => flatten(data))
+          const skipped = Math.max(...resolved.map(result => result.skipped))
+          const end = Math.min(...resolved.map((result, i) => result.skipped + flattened[i].length))
           for (let i = 0; i < childColumns.length; i++) {
-            const flat = flatten(resolved[i].data)
-            subcolumnData.set(childColumns[i].pathInSchema.join('.'), flat)
-            minLength = Math.min(minLength, flat.length)
-          }
-          // trim sub-columns to same length (offset index may read different pages per column)
-          for (const [key, value] of subcolumnData) {
-            if (value.length > minLength) {
-              subcolumnData.set(key, value.slice(0, minLength))
-            }
+            // Offset-index reads may start each physical child at a different
+            // page boundary. Align them to their common absolute row range.
+            const start = skipped - resolved[i].skipped
+            const length = Math.max(0, end - skipped)
+            subcolumnData.set(
+              childColumns[i].pathInSchema.join('.'),
+              flattened[i].slice(start, start + length)
+            )
           }
           // assemble the column
           assembleNested(subcolumnData, child, parsers)
           const assembled = subcolumnData.get(child.element.name)
           if (!assembled) throw new Error('parquet column data not assembled')
-          return { data: [assembled], skipped: 0 }
+          return { data: [assembled], skipped }
         })(),
       })
     } else {
