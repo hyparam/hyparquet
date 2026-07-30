@@ -17,8 +17,9 @@ export async function asyncBufferFromFile(filename) {
   return {
     byteLength: size,
     slice(start, end) {
-      // read file slice
-      const reader = createReadStream(filename, { start, end })
+      if (start === end) return Promise.resolve(new ArrayBuffer(0))
+      // read file slice (createReadStream end is inclusive)
+      const reader = createReadStream(filename, { start, end: end === undefined ? undefined : end - 1 })
       return new Promise((resolve, reject) => {
         /** @type {any[]} */
         const chunks = []
