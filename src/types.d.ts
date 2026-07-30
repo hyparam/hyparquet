@@ -511,6 +511,8 @@ export interface RowGroupSelect {
 export interface AsyncRowGroup {
   groupStart: number
   groupRows: number
+  selectStart?: number // row index in the group to start reading
+  selectEnd?: number // row index in the group to stop reading
   asyncColumns: AsyncColumn[]
 }
 export interface AsyncColumn {

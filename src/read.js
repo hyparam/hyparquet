@@ -93,9 +93,10 @@ export async function parquetRead(options) {
     /** @type {any[]} */
     const rows = []
     for (const asyncGroup of assembled) {
-      // filter to rows in range
-      const selectStart = Math.max(rowStart - asyncGroup.groupStart, 0)
-      const selectEnd = Math.min((rowEnd ?? Infinity) - asyncGroup.groupStart, asyncGroup.groupRows)
+      // filter to rows in range (the plan may have narrowed the selection to
+      // a sub-range of the group via page index pushdown)
+      const selectStart = asyncGroup.selectStart ?? Math.max(rowStart - asyncGroup.groupStart, 0)
+      const selectEnd = asyncGroup.selectEnd ?? Math.min((rowEnd ?? Infinity) - asyncGroup.groupStart, asyncGroup.groupRows)
       // transpose column chunks to rows in output
       const groupData = rowFormat === 'object' ?
         await asyncGroupToRows(asyncGroup, selectStart, selectEnd, readColumns, 'object') :

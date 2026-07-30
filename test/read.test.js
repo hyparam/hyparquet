@@ -283,6 +283,25 @@ describe('parquetRead', () => {
     expect(secondWindow).toEqual(allRows.slice(100, 200))
   })
 
+  it('fetches a dictionary separately when skipping leading data pages', async () => {
+    const file = await asyncBufferFromFile('test/files/page_index.parquet')
+    const metadata = await parquetMetadataAsync(file)
+    const counting = countingBuffer(file)
+
+    const rows = await parquetReadObjects({
+      file: counting,
+      metadata,
+      columns: ['category'],
+      rowStart: 1200,
+      rowEnd: 1210,
+      useOffsetIndex: true,
+    })
+
+    expect(rows).toHaveLength(10)
+    expect(rows[0].category).toBe('cat-0')
+    expect(counting.bytes).toBeLessThan(500)
+  })
+
   it('uses OffsetIndex to skip pages', async () => {
     const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
     const metadata = await parquetMetadataAsync(file)
