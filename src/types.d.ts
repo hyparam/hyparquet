@@ -41,6 +41,7 @@ export interface BaseParquetReadOptions {
   geoparquet?: boolean // parse geoparquet metadata and set logical type to geometry/geography for geospatial columns (default true)
   useOffsetIndex?: boolean // use offset index to limit column chunk reads when available (default false)
   useBloomFilters?: boolean // fetch bloom filters to enable row-group skipping on $eq/$in predicates (default false)
+  usePageIndex?: boolean // fetch page indexes (column index + offset index) for filter columns to skip pages that cannot match (default false)
 }
 
 interface ArrayRowFormat {
