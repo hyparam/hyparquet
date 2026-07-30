@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.27.1]
+ - Coalesce page index fetches into fewer byte range requests
+
 ## [1.27.0]
  - Add usePageIndex option for page-level filter pushdown (#169)
  - Fix filtering on null and NaN row-group matches
