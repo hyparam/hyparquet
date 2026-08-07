@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.28.1]
+ - Fix $nin filters when comparing Date values
+
 ## [1.28.0]
  - Support $in filters on array values (#171)
 
