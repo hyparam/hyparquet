@@ -46,6 +46,16 @@ describe('matchFilter', () => {
     expect(matchFilter(record, { x: { $not: { $lt: 10 } } })).toBe(false)
   })
 
+  it('handles $in and $nin with array values', () => {
+    const record = { x: [['a', 'b'], 'c'] }
+    expect(matchFilter(record, { x: { $in: ['c'] } })).toBe(true)
+    expect(matchFilter(record, { x: { $in: ['a'] } })).toBe(false)
+    expect(matchFilter(record, { x: { $in: [['a', 'b']] } })).toBe(true)
+    expect(matchFilter(record, { x: { $in: [[['a', 'b'], 'c']] } })).toBe(true)
+    expect(matchFilter(record, { x: { $nin: ['a'] } })).toBe(true)
+    expect(matchFilter(record, { x: { $nin: ['c'] } })).toBe(false)
+  })
+
   it('uses strict equality (===) when strict is true', () => {
     expect(matchFilter({ x: 5 }, { x: { $eq: '5' } }, true)).toBe(false)
     expect(matchFilter({ x: 5 }, { x: { $ne: '5' } }, true)).toBe(true)

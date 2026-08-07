@@ -73,12 +73,26 @@ export function matchFilter(record, filter, strict = true) {
       if (operator === '$lte') return value <= target
       if (operator === '$eq') return equals(value, target, strict)
       if (operator === '$ne') return !equals(value, target, strict)
-      if (operator === '$in') return Array.isArray(target) && target.includes(value)
-      if (operator === '$nin') return Array.isArray(target) && !target.includes(value)
+      if (operator === '$in') return Array.isArray(target) && matchesIn(value, target, strict)
+      if (operator === '$nin') return Array.isArray(target) && !matchesIn(value, target, strict)
       if (operator === '$not') return !matchFilter({ [field]: value }, { [field]: target }, strict)
       return true
     })
   })
+}
+
+/**
+ * Match a value or one of its immediate array elements against a list.
+ *
+ * @param {any} value
+ * @param {any[]} targets
+ * @param {boolean} strict
+ * @returns {boolean}
+ */
+function matchesIn(value, targets, strict) {
+  return targets.some(target =>
+    equals(value, target, strict) ||
+    Array.isArray(value) && value.some(element => equals(element, target, strict)))
 }
 
 /**
