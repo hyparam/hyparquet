@@ -215,7 +215,7 @@ function canSkipStats(condition, minVal, maxVal, strict, element) {
       return valueMinComparison !== undefined && valueMinComparison < 0 ||
         valueMaxComparison !== undefined && valueMaxComparison > 0
     })) return true
-    if (operator === '$nin' && !mayContainNaN && Array.isArray(target) && equals(minVal, maxVal, strict) && target.includes(minVal)) return true
+    if (operator === '$nin' && !mayContainNaN && Array.isArray(target) && equals(minVal, maxVal, strict) && target.some(value => equals(minVal, value, strict))) return true
   }
   return false
 }

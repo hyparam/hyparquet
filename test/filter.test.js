@@ -56,6 +56,14 @@ describe('matchFilter', () => {
     expect(matchFilter(record, { x: { $nin: ['c'] } })).toBe(false)
   })
 
+  it('handles $in and $nin with Date values', () => {
+    const record = { x: new Date('2024-01-01T00:00:00Z') }
+    expect(matchFilter(record, { x: { $in: [new Date('2024-01-01T00:00:00Z')] } })).toBe(true)
+    expect(matchFilter(record, { x: { $in: [new Date('2024-01-02T00:00:00Z')] } })).toBe(false)
+    expect(matchFilter(record, { x: { $nin: [new Date('2024-01-01T00:00:00Z')] } })).toBe(false)
+    expect(matchFilter(record, { x: { $nin: [new Date('2024-01-02T00:00:00Z')] } })).toBe(true)
+  })
+
   it('uses strict equality (===) when strict is true', () => {
     expect(matchFilter({ x: 5 }, { x: { $eq: '5' } }, true)).toBe(false)
     expect(matchFilter({ x: 5 }, { x: { $ne: '5' } }, true)).toBe(true)
@@ -90,8 +98,8 @@ describe('matchFilter', () => {
 
 describe('canSkipRowGroup', () => {
   /**
-   * @param {number} min
-   * @param {number} max
+   * @param {number | Date} min
+   * @param {number | Date} max
    * @returns {RowGroup}
    */
   function makeRowGroup(min, max) {
@@ -169,6 +177,14 @@ describe('canSkipRowGroup', () => {
     // $nin: skip only if uniform and value in array
     expect(canSkipRowGroup({ filter: { x: { $nin: [5, 6, 7] } }, rowGroup: uniformRowGroup, physicalColumns: cols })).toBe(true)
     expect(canSkipRowGroup({ filter: { x: { $nin: [1, 2, 3] } }, rowGroup: uniformRowGroup, physicalColumns: cols })).toBe(false)
+  })
+
+  it('skips $nin with uniform Date values compared by timestamp', () => {
+    const day = new Date('2024-01-01T00:00:00Z')
+    const uniformRowGroup = makeRowGroup(new Date(day), new Date(day))
+    const cols = ['x']
+    expect(canSkipRowGroup({ filter: { x: { $nin: [new Date(day)] } }, rowGroup: uniformRowGroup, physicalColumns: cols })).toBe(true)
+    expect(canSkipRowGroup({ filter: { x: { $nin: [new Date('2024-01-02T00:00:00Z')] } }, rowGroup: uniformRowGroup, physicalColumns: cols })).toBe(false)
   })
 
   it('does not skip uniform non-null bounds when null rows can match', () => {
