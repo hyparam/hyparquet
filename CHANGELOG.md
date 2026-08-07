@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.28.0]
+ - Support $in filters on array values (#171)
+
 ## [1.27.1]
  - Coalesce page index fetches into fewer byte range requests
 
