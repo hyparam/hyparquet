@@ -1,11 +1,12 @@
 /**
- * @import {AsyncRowGroup, BaseParquetReadOptions, DecodedArray, ParquetReadOptions, SchemaElement} from '../src/types.js'
+ * @import {AsyncRowGroup, BaseParquetReadOptions, DecodedArray, ParquetReadOptions} from '../src/types.js'
  */
 
 import { columnsNeededForFilter, matchFilter } from './filter.js'
 import { parquetMetadataAsync, parquetSchema } from './metadata.js'
-import { parquetPlan, prefetchAsyncBuffer, prefetchBloomFilters, prefetchPageIndexes } from './plan.js'
-import { assembleAsync, asyncGroupToRows, readRowGroup } from './rowgroup.js'
+import { parquetPlan } from './plan.js'
+import { assembleAsync, asyncGroupToRows } from './rowgroup.js'
+import { prepareParquetRead, readParquetPlan } from './scan.js'
 import { concat } from './utils.js'
 
 /**
@@ -31,30 +32,18 @@ export async function parquetRead(options) {
     throw new Error('parquet filter requires rowFormat: "object"')
   }
 
-  // Include filter columns in the read plan
   const filterColumns = columnsNeededForFilter(filter)
-  if (filterColumns.length) {
-    const schemaColumns = parquetSchema(options.metadata).children.map(c => c.element.name)
-    const missingColumns = filterColumns.filter(c => !schemaColumns.includes(c))
-    if (missingColumns.length) {
-      throw new Error(`parquet filter columns not found: ${missingColumns.join(', ')}`)
-    }
-  }
   let readColumns = columns
-  let requiresProjection = false
-  if (columns && filter) {
-    const missingFilterColumns = filterColumns.filter(c => !columns.includes(c))
-    if (missingFilterColumns.length) {
-      readColumns = [...columns, ...missingFilterColumns]
-      requiresProjection = true
-    }
+  if (columns && filterColumns.length) {
+    const selectedColumns = new Set(columns)
+    const extraColumns = filterColumns.filter(column => !selectedColumns.has(column))
+    if (extraColumns.length) readColumns = [...columns, ...extraColumns]
   }
-
-  // read row groups with expanded columns
-  let readOptions = readColumns !== columns ? { ...options, columns: readColumns } : options
-  readOptions = await withBloomFilters(readOptions)
-  readOptions = await withPageIndexes(readOptions)
-  const asyncGroups = parquetReadAsync(readOptions)
+  const readOptions = readColumns === columns ? options : { ...options, columns: readColumns }
+  const prepared = await prepareParquetRead(readOptions)
+  const preparedOptions = prepared.options
+  const requiresProjection = readColumns !== columns
+  const asyncGroups = readParquetPlan(preparedOptions, prepared.plan)
 
   // skip assembly if no onComplete or onChunk, but wait for reading to finish
   if (!onComplete && !onChunk) {
@@ -63,7 +52,8 @@ export async function parquetRead(options) {
   }
 
   // assemble struct columns
-  const schemaTree = parquetSchema(options.metadata)
+  if (!preparedOptions.metadata) throw new Error('parquet requires metadata')
+  const schemaTree = parquetSchema(preparedOptions.metadata)
   const assembled = asyncGroups.map(arg => assembleAsync(arg, schemaTree, options.parsers))
 
   // onChunk emit all chunks (don't await). Rejection is surfaced by awaitAllColumns below.
@@ -148,13 +138,7 @@ async function awaitAllColumns(asyncGroups) {
 export function parquetReadAsync(options) {
   if (!options.metadata) throw new Error('parquet requires metadata')
   // TODO: validate options (start, end, columns, etc)
-
-  // prefetch byte ranges
-  const plan = parquetPlan(options)
-  options.file = prefetchAsyncBuffer(options.file, plan)
-
-  // read row groups
-  return plan.groups.map(groupPlan => readRowGroup(options, plan, groupPlan))
+  return readParquetPlan(options, parquetPlan(options))
 }
 
 /**
@@ -168,81 +152,24 @@ export async function parquetReadColumn(options) {
     throw new Error('parquetReadColumn expected columns: [columnName]')
   }
   options.metadata ??= await parquetMetadataAsync(options.file, options)
-  const asyncGroups = parquetReadAsync(await withBloomFilters(options))
+  const column = options.columns[0]
+  const prepared = await prepareParquetRead(options)
+  const asyncGroups = readParquetPlan(prepared.options, prepared.plan)
+  if (!prepared.options.metadata) throw new Error('parquet requires metadata')
+  const schemaTree = parquetSchema(prepared.options.metadata)
+  const assembled = asyncGroups.map(group => assembleAsync(group, schemaTree, options.parsers))
 
-  // assemble struct columns
-  const schemaTree = parquetSchema(options.metadata)
-  const assembled = asyncGroups.map(arg => assembleAsync(arg, schemaTree, options.parsers))
-
-  // wait for all reads to settle so a sibling rejection cannot leak
+  // Keep one plan for the whole column so reads can be prefetched together.
   await awaitAllColumns(assembled)
-
   /** @type {DecodedArray} */
   const columnData = []
-  for (const rg of assembled) {
-    const { data } = await rg.asyncColumns[0].data
-    for (const chunk of data) {
-      concat(columnData, chunk)
-    }
+  for (const group of assembled) {
+    const asyncColumn = group.asyncColumns.find(candidate => candidate.pathInSchema[0] === column)
+    if (!asyncColumn) throw new Error(`parquet column not found: ${column}`)
+    const { data } = await asyncColumn.data
+    for (const chunk of data) concat(columnData, chunk)
   }
   return columnData
-}
-
-/**
- * Conditionally fetch bloom filters and attach them (and the per-column schema
- * elements they require) to options so parquetPlan can use them for row-group
- * pruning. Returns options unchanged when there's no filter or the user has
- * disabled bloom pushdown.
- *
- * @param {BaseParquetReadOptions} options
- * @returns {Promise<BaseParquetReadOptions>}
- */
-async function withBloomFilters(options) {
-  if (!options.useBloomFilters) return options
-  if (!options.filter || !options.metadata) return options
-  const schemaTree = parquetSchema(options.metadata)
-  /** @type {Record<string, SchemaElement>} */
-  const schemaElements = {}
-  for (const child of schemaTree.children) schemaElements[child.element.name] = child.element
-  const bloomFiltersByGroup = await prefetchBloomFilters({
-    file: options.file,
-    metadata: options.metadata,
-    filter: options.filter,
-    filterStrict: options.filterStrict,
-  })
-  // eslint-disable-next-line no-extra-parens
-  return /** @type {BaseParquetReadOptions} */ ({ ...options, bloomFiltersByGroup, schemaElements })
-}
-
-/**
- * Conditionally fetch page indexes (column index + offset index) for filter
- * columns and attach per-group candidate row ranges and page locations to
- * options so parquetPlan can skip pages that cannot match the filter.
- * Returns options unchanged when there's no filter or the user has not
- * enabled page index pushdown.
- *
- * @param {BaseParquetReadOptions} options
- * @returns {Promise<BaseParquetReadOptions>}
- */
-async function withPageIndexes(options) {
-  if (!options.usePageIndex) return options
-  if (!options.filter || !options.metadata) return options
-  const { pageRangesByGroup, pageLocationsByGroup } = await prefetchPageIndexes({
-    file: options.file,
-    metadata: options.metadata,
-    filter: options.filter,
-    filterStrict: options.filterStrict,
-    rowStart: options.rowStart,
-    rowEnd: options.rowEnd,
-    columns: options.columns,
-    // @ts-expect-error bloomFiltersByGroup/schemaElements are attached by withBloomFilters
-    bloomFiltersByGroup: options.bloomFiltersByGroup,
-    // @ts-expect-error bloomFiltersByGroup/schemaElements are attached by withBloomFilters
-    schemaElements: options.schemaElements,
-    parsers: options.parsers,
-  })
-  const readOptions = { ...options, pageRangesByGroup, pageLocationsByGroup }
-  return readOptions
 }
 
 /**

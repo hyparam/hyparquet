@@ -54,6 +54,32 @@ interface ObjectRowFormat {
 }
 export type ParquetReadOptions = BaseParquetReadOptions & (ArrayRowFormat | ObjectRowFormat)
 
+/** Options for a lazy, column-oriented parquet scan. */
+export type ParquetScanOptions = Omit<BaseParquetReadOptions, 'filter' | 'onChunk' | 'onPage' | 'useOffsetIndex'> & {
+  /** Conservative filter used only to prune physical row ranges. */
+  pruningFilter?: ParquetQueryFilter
+  /** Use offset indexes for range reads when available (default true). */
+  useOffsetIndex?: boolean
+}
+
+/** A physical, zero-based, half-open row range in a parquet file. */
+export interface ParquetRowRange {
+  readonly rowStart: number
+  readonly rowEnd: number
+}
+
+/** Options for reading one column from a prepared scan range or an exact subrange. */
+export interface ParquetScanColumnOptions extends ParquetRowRange {
+  column: string
+}
+
+/** A prepared parquet scan with lazy physical column reads. */
+export interface ParquetScan {
+  metadata: FileMetaData
+  ranges: readonly ParquetRowRange[]
+  readColumn(options: ParquetScanColumnOptions): Promise<DecodedArray>
+}
+
 /**
  * Parquet query options for filtering data
  */
