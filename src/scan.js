@@ -13,7 +13,7 @@
 
 import { columnsNeededForFilter } from './filter.js'
 import { parquetMetadataAsync, parquetSchema } from './metadata.js'
-import { parquetPlan, prefetchAsyncBuffer, prefetchBloomFilters, prefetchPageIndexes } from './plan.js'
+import { parquetPlan, parquetPlanGroup, parquetPlanGroups, prefetchAsyncBuffer, prefetchBloomFilters, prefetchPageIndexes } from './plan.js'
 import { assembleAsync, readRowGroup } from './rowgroup.js'
 import { flatten } from './utils.js'
 
@@ -42,28 +42,23 @@ export async function parquetScan(options) {
       .filter(column => !selectedColumns.has(column))
     if (extraColumns.length) columns = [...columns, ...extraColumns]
   }
-  const prepared = await prepareParquetRead({
+  const preparedOptions = await prepareParquetOptions({
     ...readOptions,
     columns,
     filter: pruningFilter,
     useOffsetIndex: readOptions.useOffsetIndex ?? true,
   })
-  const { metadata } = prepared.options
+  const { metadata } = preparedOptions
   if (!metadata) throw new Error('parquet requires metadata')
 
   const schemaTree = parquetSchema(metadata)
   const availableColumns = new Set(columns ?? schemaTree.children.map(child => child.element.name))
-  const groupIndexes = new Map(metadata.row_groups.map((group, index) => [group, index]))
-  const candidates = prepared.plan.groups.map(groupPlan => {
-    const groupIndex = groupIndexes.get(groupPlan.rowGroup)
-    if (groupIndex === undefined) throw new Error('parquet scan row group not found')
-    return {
-      rowStart: groupPlan.groupStart + groupPlan.selectStart,
-      rowEnd: groupPlan.groupStart + groupPlan.selectEnd,
-      groupIndex,
-      groupPlan,
-    }
-  })
+  const plan = parquetPlanGroups(preparedOptions)
+  const candidates = plan.groups.flatMap(group => group.ranges.map(([selectStart, selectEnd]) => ({
+    rowStart: group.groupStart + selectStart,
+    rowEnd: group.groupStart + selectEnd,
+    group,
+  })))
   const ranges = candidates.map(({ rowStart, rowEnd }) => ({ rowStart, rowEnd }))
   /** @type {Map<string, {rowStart: number, rowEnd: number, data: Promise<DecodedArray>}>} */
   const cache = new Map()
@@ -82,7 +77,7 @@ export async function parquetScan(options) {
     if (candidateIndex < 0) {
       throw new RangeError(`parquet row range [${rowStart}, ${rowEnd}) is outside scan ranges`)
     }
-    const { groupIndex, groupPlan } = candidates[candidateIndex]
+    const { group } = candidates[candidateIndex]
 
     const cached = cache.get(column)
     if (cached && rowStart >= cached.rowStart && rowEnd <= cached.rowEnd) {
@@ -94,10 +89,9 @@ export async function parquetScan(options) {
     }
 
     const data = readColumnRange({
-      options: prepared.options,
+      options: preparedOptions,
       schemaTree,
-      groupIndex,
-      groupPlan,
+      group,
       column,
       rowStart,
       rowEnd,
@@ -122,6 +116,20 @@ export async function parquetScan(options) {
  * @returns {Promise<{options: PreparedParquetReadOptions, plan: QueryPlan}>}
  */
 export async function prepareParquetRead(options) {
+  const prepared = await prepareParquetOptions(options)
+  return {
+    options: prepared,
+    plan: parquetPlan(prepared),
+  }
+}
+
+/**
+ * Load optional indexes and validate read options without planning data reads.
+ *
+ * @param {BaseParquetReadOptions} options
+ * @returns {Promise<PreparedParquetReadOptions>}
+ */
+async function prepareParquetOptions(options) {
   const metadata = options.metadata ?? await parquetMetadataAsync(options.file, options)
   const schemaColumns = parquetSchema(metadata).children.map(child => child.element.name)
   const filterColumns = columnsNeededForFilter(options.filter)
@@ -139,10 +147,7 @@ export async function prepareParquetRead(options) {
   let prepared = { ...options, metadata }
   prepared = await withBloomFilters(prepared)
   prepared = await withPageIndexes(prepared)
-  return {
-    options: prepared,
-    plan: parquetPlan(prepared),
-  }
+  return prepared
 }
 
 /**
@@ -161,14 +166,13 @@ export function readParquetPlan(options, plan) {
  * @param {object} input
  * @param {PreparedParquetReadOptions} input.options
  * @param {import('../src/types.js').SchemaTree} input.schemaTree
- * @param {number} input.groupIndex
- * @param {QueryPlan['groups'][number]} input.groupPlan
+ * @param {ReturnType<typeof parquetPlanGroups>['groups'][number]} input.group
  * @param {string} input.column
  * @param {number} input.rowStart
  * @param {number} input.rowEnd
  * @returns {Promise<DecodedArray>}
  */
-async function readColumnRange({ options, schemaTree, groupIndex, groupPlan, column, rowStart, rowEnd }) {
+async function readColumnRange({ options, schemaTree, group, column, rowStart, rowEnd }) {
   const columnOptions = {
     ...options,
     columns: [column],
@@ -180,16 +184,16 @@ async function readColumnRange({ options, schemaTree, groupIndex, groupPlan, col
     usePageIndex: false,
     pageRangesByGroup: undefined,
   }
-  const columnPlan = planCandidateColumn({ options, groupIndex, groupPlan, column, rowStart, rowEnd })
+  const columnPlan = planCandidateColumn({ options, group, column, rowStart, rowEnd })
   const [asyncGroup] = readParquetPlan(columnOptions, columnPlan)
   if (!asyncGroup) throw new Error('parquet scan range not planned')
-  const group = assembleAsync(asyncGroup, schemaTree, options.parsers)
-  const asyncColumn = group.asyncColumns.find(child => child.pathInSchema[0] === column)
+  const assembled = assembleAsync(asyncGroup, schemaTree, options.parsers)
+  const asyncColumn = assembled.asyncColumns.find(child => child.pathInSchema[0] === column)
   if (!asyncColumn) throw new Error(`parquet column not found: ${column}`)
   const result = await asyncColumn.data
   const data = flatten(result.data)
-  const selectStart = group.selectStart ?? rowStart - group.groupStart
-  const selectEnd = group.selectEnd ?? rowEnd - group.groupStart
+  const selectStart = assembled.selectStart ?? rowStart - assembled.groupStart
+  const selectEnd = assembled.selectEnd ?? rowEnd - assembled.groupStart
   return sliceDecodedArray(data, selectStart - result.skipped, selectEnd - result.skipped)
 }
 
@@ -199,43 +203,32 @@ async function readColumnRange({ options, schemaTree, groupIndex, groupPlan, col
  *
  * @param {object} input
  * @param {PreparedParquetReadOptions} input.options
- * @param {number} input.groupIndex
- * @param {QueryPlan['groups'][number]} input.groupPlan
+ * @param {ReturnType<typeof parquetPlanGroups>['groups'][number]} input.group
  * @param {string} input.column
  * @param {number} input.rowStart
  * @param {number} input.rowEnd
  * @returns {QueryPlan}
  */
-function planCandidateColumn({ options, groupIndex, groupPlan, column, rowStart, rowEnd }) {
+function planCandidateColumn({ options, group, column, rowStart, rowEnd }) {
   if (!options.metadata) throw new Error('parquet requires metadata')
-  const source = groupPlan
-  const pageLocations = options.pageLocationsByGroup?.[groupIndex]
-  const metadata = {
-    version: options.metadata.version,
-    schema: options.metadata.schema,
-    num_rows: source.rowGroup.num_rows,
-    row_groups: [source.rowGroup],
-    metadata_length: options.metadata.metadata_length,
-  }
-  const localPlan = parquetPlan({
-    ...options,
-    metadata,
+  const localPlan = parquetPlanGroup({
+    rowGroup: group.rowGroup,
+    groupStart: group.groupStart,
+    groupRows: group.groupRows,
+    ranges: [[rowStart - group.groupStart, rowEnd - group.groupStart]],
     columns: [column],
-    filter: undefined,
-    rowStart: rowStart - source.groupStart,
-    rowEnd: rowEnd - source.groupStart,
-    useBloomFilters: false,
-    usePageIndex: false,
-    pageRangesByGroup: undefined,
-    pageLocationsByGroup: pageLocations ? [pageLocations] : undefined,
+    useOffsetIndex: options.useOffsetIndex ?? true,
+    pageLocations: group.pageLocations,
   })
   const [localGroupPlan] = localPlan.groups
   if (!localGroupPlan) throw new Error(`parquet column not found: ${column}`)
   return {
-    ...localPlan,
+    metadata: options.metadata,
     rowStart,
     rowEnd,
-    groups: [{ ...localGroupPlan, groupStart: source.groupStart }],
+    columns: [column],
+    fetches: [...localPlan.fetches, ...localPlan.indexes],
+    groups: [localGroupPlan],
   }
 }
 

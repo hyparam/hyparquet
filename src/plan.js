@@ -18,7 +18,8 @@ const runLimit = 1 << 21 // 2mb
  * @param {ParquetReadOptions & { bloomFiltersByGroup?: Record<string, BloomFilter>[], schemaElements?: Record<string, SchemaElement>, pageRangesByGroup?: (PageRanges | undefined)[], pageLocationsByGroup?: Record<string, PageLocation[]>[] }} options
  * @returns {QueryPlan}
  */
-export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns, filter, filterStrict = true, useOffsetIndex = false, bloomFiltersByGroup, schemaElements, pageRangesByGroup, pageLocationsByGroup }) {
+export function parquetPlan(options) {
+  const { metadata, rowStart = 0, columns, useOffsetIndex = false } = options
   if (!metadata) throw new Error('parquetPlan requires metadata')
   /** @type {GroupPlan[]} */
   const groups = []
@@ -26,31 +27,52 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
   const fetches = []
   /** @type {ByteRange[]} */
   const indexes = []
+  const scanPlan = parquetPlanGroups(options)
+  for (const group of scanPlan.groups) {
+    const groupPlan = parquetPlanGroup({ ...group, columns, useOffsetIndex })
+    groups.push(...groupPlan.groups)
+    fetches.push(...groupPlan.fetches)
+    indexes.push(...groupPlan.indexes)
+  }
+  fetches.push(...indexes)
+
+  return { metadata, rowStart, rowEnd: scanPlan.rowEnd, columns, fetches, groups }
+}
+
+/**
+ * Select physical row-group ranges without planning column reads.
+ *
+ * @param {ParquetReadOptions & { bloomFiltersByGroup?: Record<string, BloomFilter>[], schemaElements?: Record<string, SchemaElement>, pageRangesByGroup?: (PageRanges | undefined)[], pageLocationsByGroup?: Record<string, PageLocation[]>[] }} options
+ * @returns {{groups: {rowGroup: RowGroup, groupIndex: number, groupStart: number, groupRows: number, ranges: PageRanges, pageRanges?: PageRanges, pageLocations?: Record<string, PageLocation[]>}[], rowEnd: number}}
+ */
+export function parquetPlanGroups({ metadata, rowStart = 0, rowEnd = Infinity, columns, filter, filterStrict = true, bloomFiltersByGroup, schemaElements, pageRangesByGroup, pageLocationsByGroup }) {
+  if (!metadata) throw new Error('parquetPlan requires metadata')
   const schemaTree = parquetSchema(metadata)
   const physicalColumns = getPhysicalColumns(schemaTree)
   const elementsByPath = filter ? {
     ...physicalSchemaElements(schemaTree),
     ...schemaElements,
   } : schemaElements
-
-  // find which row groups to read
-  let groupStart = 0 // first row index of the current group
-  let rgIdx = 0
-  for (const rowGroup of metadata.row_groups) {
+  const groups = []
+  let groupStart = 0
+  for (let groupIndex = 0; groupIndex < metadata.row_groups.length; groupIndex++) {
+    const rowGroup = metadata.row_groups[groupIndex]
     const groupRows = Number(rowGroup.num_rows)
     const groupEnd = groupStart + groupRows
-    const bloomFilters = bloomFiltersByGroup?.[rgIdx]
-    // if row group overlaps with row range, add it to the plan
-    if (groupRows > 0 && groupEnd > rowStart && groupStart < rowEnd && !canSkipRowGroup({ rowGroup, physicalColumns, filter, strict: filterStrict, bloomFilters, schemaElements: elementsByPath })) {
+    if (groupRows > 0 && groupEnd > rowStart && groupStart < rowEnd && !canSkipRowGroup({
+      rowGroup,
+      physicalColumns,
+      filter,
+      strict: filterStrict,
+      bloomFilters: bloomFiltersByGroup?.[groupIndex],
+      schemaElements: elementsByPath,
+    })) {
       const selectStart = Math.max(rowStart - groupStart, 0)
       const selectEnd = Math.min(rowEnd - groupStart, groupRows)
-
-      // page-level pruning: split the group selection into candidate sub-ranges.
-      // an empty list of sub-ranges skips the group entirely.
-      const pageRanges = pageRangesByGroup?.[rgIdx]
-      const pageLocations = pageLocationsByGroup?.[rgIdx]
+      const pageRanges = pageRangesByGroup?.[groupIndex]
+      const pageLocations = pageLocationsByGroup?.[groupIndex]
       /** @type {PageRanges} */
-      let subranges = pageRanges
+      let ranges = pageRanges
         ? pageRanges
           .map(([start, end]) => {
             /** @type {[number, number]} */
@@ -60,105 +82,97 @@ export function parquetPlan({ metadata, rowStart = 0, rowEnd = Infinity, columns
           .filter(([start, end]) => start < end)
         : [[selectStart, selectEnd]]
 
-      // splitting requires page reads for every included chunk, or full chunks
-      // would be fetched once per sub-range; collapse to one covering range otherwise
-      if (subranges.length > 1) {
+      if (ranges.length > 1) {
         const canSplit = rowGroup.columns.every(chunk => {
           const columnName = chunk.meta_data?.path_in_schema[0]
           const columnPath = chunk.meta_data?.path_in_schema.join('.')
           if (columns && columnName && !columns.includes(columnName)) return true
           return !!(chunk.offset_index_offset && chunk.offset_index_length) || !!(columnPath && pageLocations?.[columnPath])
         })
-        if (!canSplit) {
-          subranges = [[subranges[0][0], subranges[subranges.length - 1][1]]]
-        } else {
-          subranges = coalesceOverlappingPageRanges(subranges, rowGroup, columns, pageLocations)
-        }
+        ranges = canSplit
+          ? coalesceOverlappingPageRanges(ranges, rowGroup, columns, pageLocations)
+          : [[ranges[0][0], ranges[ranges.length - 1][1]]]
       }
-
-      if (subranges.length) {
-        /** @type {ChunkPlan[]} */
-        const chunks = []
-        // Multiple sub-ranges are necessarily narrower than the whole group.
-        const narrowed = subranges.length > 1 ||
-          subranges[0][0] > 0 || subranges[0][1] < groupRows
-        // loop through each column chunk
-        for (const chunk of rowGroup.columns) {
-          const meta = chunk.meta_data
-          if (chunk.file_path) throw new Error('parquet file_path not supported')
-          if (!meta) throw new Error('parquet column metadata is undefined')
-          // add included column chunks to the plan
-          if (!columns || columns.includes(meta.path_in_schema[0])) {
-            // full column chunk
-            const columnOffset = meta.dictionary_page_offset || meta.data_page_offset
-            const startByte = Number(columnOffset)
-            const endByte = Number(columnOffset + meta.total_compressed_size)
-            const chunkPageLocations = pageLocations?.[meta.path_in_schema.join('.')]
-
-            if (chunkPageLocations && narrowed) {
-              // page locations already parsed during page index prefetch
-              chunks.push({
-                columnMetadata: meta,
-                pageLocations: chunkPageLocations,
-                range: { startByte, endByte },
-              })
-            } else if ((useOffsetIndex || pageRanges) && chunk.offset_index_offset && chunk.offset_index_length && narrowed) {
-              const offsetIndexStart = Number(chunk.offset_index_offset)
-              chunks.push({
-                columnMetadata: meta,
-                offsetIndex: {
-                  startByte: offsetIndexStart,
-                  endByte: offsetIndexStart + chunk.offset_index_length,
-                },
-                range: { startByte, endByte },
-              })
-            } else {
-              chunks.push({
-                columnMetadata: meta,
-                range: { startByte, endByte },
-              })
-            }
-
-          }
-        }
-
-        for (const [subStart, subEnd] of subranges) {
-          groups.push({ chunks, rowGroup, groupStart, groupRows, selectStart: subStart, selectEnd: subEnd })
-        }
-
-        // combine runs of column chunks
-        /** @type {ByteRange | undefined} */
-        let run
-        for (const chunk of chunks) {
-          if ('pageLocations' in chunk) {
-            // pages are fetched on demand in readRowGroup
-          } else if ('offsetIndex' in chunk) {
-            indexes.push(chunk.offsetIndex)
-          } else {
-            const { range } = chunk
-            if (columns) {
-              fetches.push(range)
-            } else if (run && range.endByte - run.startByte <= runLimit) {
-              // extend range
-              run.endByte = range.endByte
-            } else {
-              // new range
-              if (run) fetches.push(run)
-              run = { ...range }
-            }
-          }
-        }
-        if (run) fetches.push(run)
+      if (ranges.length) {
+        groups.push({ rowGroup, groupIndex, groupStart, groupRows, ranges, pageRanges, pageLocations })
       }
     }
-
     groupStart = groupEnd
-    rgIdx++
   }
-  if (!isFinite(rowEnd)) rowEnd = groupStart
-  fetches.push(...indexes)
+  return { groups, rowEnd: isFinite(rowEnd) ? rowEnd : groupStart }
+}
 
-  return { metadata, rowStart, rowEnd, columns, fetches, groups }
+/**
+ * Build byte plans for retained ranges in one row group.
+ *
+ * @param {object} options
+ * @param {RowGroup} options.rowGroup
+ * @param {number} options.groupStart
+ * @param {number} options.groupRows
+ * @param {PageRanges} options.ranges
+ * @param {string[]} [options.columns]
+ * @param {boolean} [options.useOffsetIndex]
+ * @param {PageRanges} [options.pageRanges]
+ * @param {Record<string, PageLocation[]>} [options.pageLocations]
+ * @returns {{groups: GroupPlan[], fetches: ByteRange[], indexes: ByteRange[]}}
+ */
+export function parquetPlanGroup({ rowGroup, groupStart, groupRows, ranges, columns, useOffsetIndex = false, pageRanges, pageLocations }) {
+  /** @type {ChunkPlan[]} */
+  const chunks = []
+  /** @type {ByteRange[]} */
+  const fetches = []
+  /** @type {ByteRange[]} */
+  const indexes = []
+  const narrowed = ranges.length > 1 || ranges[0][0] > 0 || ranges[0][1] < groupRows
+  for (const chunk of rowGroup.columns) {
+    const meta = chunk.meta_data
+    if (chunk.file_path) throw new Error('parquet file_path not supported')
+    if (!meta) throw new Error('parquet column metadata is undefined')
+    if (columns && !columns.includes(meta.path_in_schema[0])) continue
+    const columnOffset = meta.dictionary_page_offset || meta.data_page_offset
+    const startByte = Number(columnOffset)
+    const endByte = Number(columnOffset + meta.total_compressed_size)
+    const chunkPageLocations = pageLocations?.[meta.path_in_schema.join('.')]
+
+    if (chunkPageLocations && narrowed) {
+      chunks.push({ columnMetadata: meta, pageLocations: chunkPageLocations, range: { startByte, endByte } })
+    } else if ((useOffsetIndex || pageRanges) && chunk.offset_index_offset && chunk.offset_index_length && narrowed) {
+      const startByte = Number(chunk.offset_index_offset)
+      chunks.push({
+        columnMetadata: meta,
+        offsetIndex: { startByte, endByte: startByte + chunk.offset_index_length },
+        range: { startByte: Number(columnOffset), endByte },
+      })
+    } else {
+      chunks.push({ columnMetadata: meta, range: { startByte, endByte } })
+    }
+  }
+
+  /** @type {ByteRange | undefined} */
+  let run
+  for (const chunk of chunks) {
+    if ('pageLocations' in chunk) continue
+    if ('offsetIndex' in chunk) {
+      indexes.push(chunk.offsetIndex)
+    } else if (columns) {
+      fetches.push(chunk.range)
+    } else if (run && chunk.range.endByte - run.startByte <= runLimit) {
+      run.endByte = chunk.range.endByte
+    } else {
+      if (run) fetches.push(run)
+      run = { ...chunk.range }
+    }
+  }
+  if (run) fetches.push(run)
+  const groups = ranges.map(([selectStart, selectEnd]) => ({
+    chunks,
+    rowGroup,
+    groupStart,
+    groupRows,
+    selectStart,
+    selectEnd,
+  }))
+  return { groups, fetches, indexes }
 }
 
 /**

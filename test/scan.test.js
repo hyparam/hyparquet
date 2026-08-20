@@ -60,6 +60,24 @@ describe('parquetScan', () => {
     expect(rowGroupReads).toBe(readsAfterPlanning)
   })
 
+  it('defers column planning until a column is read', async () => {
+    const file = await asyncBufferFromFile('test/files/rowgroups.parquet')
+    const metadata = await parquetMetadataAsync(file)
+    const { columns } = metadata.row_groups[0]
+    let columnReads = 0
+    Object.defineProperty(metadata.row_groups[0], 'columns', {
+      get() {
+        columnReads++
+        return columns
+      },
+    })
+
+    const scan = await parquetScan({ file, metadata, columns: ['numbers'] })
+    expect(columnReads).toBe(0)
+    await scan.readColumn({ column: 'numbers', ...scan.ranges[0] })
+    expect(columnReads).toBeGreaterThan(0)
+  })
+
   it('uses offset indexes by default for exact subranges', async () => {
     const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
     const metadata = await parquetMetadataAsync(file)
