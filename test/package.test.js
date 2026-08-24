@@ -26,9 +26,9 @@ describe('package.json', () => {
     expect(Object.keys(exports)).toEqual(['.', './src/*.js'])
     // node vs default (browser)
     expect(Object.keys(exports['.'])).toEqual(['browser', 'default'])
-    expect(Object.keys(exports['.'].browser)).toEqual(['types', 'import'])
-    expect(Object.keys(exports['.'].default)).toEqual(['types', 'import'])
+    expect(Object.keys(exports['.'].browser)).toEqual(['types', 'import', 'default'])
+    expect(Object.keys(exports['.'].default)).toEqual(['types', 'import', 'default'])
     // deep imports
-    expect(Object.keys(exports['./src/*.js'])).toEqual(['types', 'import'])
+    expect(Object.keys(exports['./src/*.js'])).toEqual(['types', 'import', 'default'])
   })
 })
