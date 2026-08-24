@@ -35,16 +35,19 @@
     ".": {
       "browser": {
         "types": "./types/index.d.ts",
-        "import": "./src/index.js"
+        "import": "./src/index.js",
+        "default": "./src/index.js"
       },
       "default": {
         "types": "./types/node.d.ts",
-        "import": "./src/node.js"
+        "import": "./src/node.js",
+        "default": "./src/node.js"
       }
     },
     "./src/*.js": {
       "types": "./types/*.d.ts",
-      "import": "./src/*.js"
+      "import": "./src/*.js",
+      "default": "./src/*.js"
     }
   },
   "sideEffects": false,
