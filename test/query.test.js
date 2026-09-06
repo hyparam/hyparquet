@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { parquetQuery } from '../src/query.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { parquetMetadataAsync } from '../src/metadata.js'
+import { rowIndex } from '../src/index.js'
 import { countingBuffer } from './helpers.js'
 
 describe('parquetQuery', () => {
@@ -43,6 +44,23 @@ describe('parquetQuery', () => {
       { __index__: 1, a: 'abc', b: 2, c: 3, d: true },
       { __index__: 2, a: 'abc', b: 3, c: 4, d: true },
     ])
+  })
+
+  it('preserves physical row indices when sorting with limits and projection', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    const options = { file, orderBy: 'c', rowStart: 1, rowEnd: 4, columns: ['b'] }
+    const rows = await parquetQuery({ ...options, includeRowIndex: true })
+    expect(rows.map(row => row[rowIndex])).toEqual([4, 1, 2])
+    expect(rows.map(row => row.b)).toEqual([5, 2, 3])
+    for (const row of rows) {
+      expect(Object.getOwnPropertyDescriptor(row, rowIndex)).toEqual({
+        value: row.__index__, enumerable: false, writable: false, configurable: false,
+      })
+      expect(Object.keys(row)).toEqual(['__index__', 'b'])
+    }
+    const withoutIndices = await parquetQuery(options)
+    expect(withoutIndices.every(row => !Object.hasOwn(row, rowIndex))).toBe(true)
+    expect(JSON.stringify(rows)).toBe(JSON.stringify(withoutIndices))
   })
 
   it('reads data with rowStart and rowEnd without orderBy', async () => {

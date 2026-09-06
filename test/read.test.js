@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { parquetMetadataAsync, parquetRead, parquetReadObjects } from '../src/index.js'
+import { parquetMetadataAsync, parquetRead, parquetReadObjects, rowIndex } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { countingBuffer } from './helpers.js'
 
@@ -53,6 +53,47 @@ async function rowGroupFailingFile() {
     },
   }
 }
+
+describe('rowIndex', () => {
+  it('is opt-in and omitted by enumeration, serialization, and copying', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    const plain = await parquetReadObjects({ file, rowEnd: 1 })
+    expect(Object.getOwnPropertySymbols(plain[0])).toEqual([])
+    const [row] = await parquetReadObjects({ file, rowEnd: 1, includeRowIndex: true })
+    expect(row[rowIndex]).toBe(0)
+    expect(Object.getOwnPropertyDescriptor(row, rowIndex)).toEqual({
+      value: 0, enumerable: false, writable: false, configurable: false,
+    })
+    expect(Object.keys(row)).toEqual(Object.keys(plain[0]))
+    expect(JSON.stringify(row)).toBe(JSON.stringify(plain[0]))
+    expect(Reflect.ownKeys({ ...row })).toEqual(Object.keys(plain[0]))
+    expect(Reflect.ownKeys(Object.assign({}, row))).toEqual(Object.keys(plain[0]))
+  })
+
+  it('preserves positions across row groups and requested ranges', async () => {
+    const file = await asyncBufferFromFile('test/files/rowgroups.parquet')
+    const rows = await parquetReadObjects({ file, rowStart: 2, rowEnd: 13, includeRowIndex: true })
+    expect(rows.map(row => row[rowIndex])).toEqual(Array.from({ length: 11 }, (_, i) => i + 2))
+  })
+
+  it('preserves positions through filtering and projection in onComplete', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    await parquetRead({
+      file, rowFormat: 'object', includeRowIndex: true,
+      columns: ['a'], rowStart: 1, filter: { b: { $in: [3, 5] } },
+      onComplete(rows) {
+        expect(rows.map(row => row[rowIndex])).toEqual([2, 4])
+        expect(rows).toEqual([{ a: 'abc' }, { a: 'abc' }])
+      },
+    })
+  })
+
+  it('rejects array output', async () => {
+    const file = await asyncBufferFromFile('test/files/rowgroups.parquet')
+    await expect(parquetRead({ file, includeRowIndex: true }))
+      .rejects.toThrow('parquet includeRowIndex requires rowFormat: "object"')
+  })
+})
 
 describe('parquetRead', () => {
   it('throws error for undefined file', async () => {

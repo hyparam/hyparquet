@@ -1,4 +1,7 @@
 
+/** Symbol for the absolute, zero-based physical position of an object row. */
+export declare const rowIndex: unique symbol
+
 /**
  * Custom parsers for columns
  */
@@ -30,6 +33,7 @@ export interface BaseParquetReadOptions {
   metadata?: FileMetaData // parquet metadata, will be parsed if not provided
   columns?: string[] // columns to read, all columns if undefined
   filter?: ParquetQueryFilter // filter applied to rows (requires rowFormat: 'object', onChunk is not filtered)
+  includeRowIndex?: boolean // attach non-enumerable rowIndex symbol to object rows (default false)
   filterStrict?: boolean // if true filtering uses strict equality (default true)
   rowStart?: number // first requested row index (inclusive)
   rowEnd?: number // last requested row index (exclusive)
@@ -48,14 +52,17 @@ interface ArrayRowFormat {
   rowFormat?: 'array' // format of each row passed to the onComplete function. Can be omitted, as it's the default.
   onComplete?: (rows: any[][]) => void // called when all requested rows and columns are parsed
 }
+/** Object row with optional absolute, zero-based physical row position. */
+export type ParquetRow = Record<string, any> & { readonly [rowIndex]?: number }
+
 interface ObjectRowFormat {
   rowFormat: 'object' // format of each row passed to the onComplete function
-  onComplete?: (rows: Record<string, any>[]) => void // called when all requested rows and columns are parsed
+  onComplete?: (rows: ParquetRow[]) => void // called when all requested rows and columns are parsed
 }
 export type ParquetReadOptions = BaseParquetReadOptions & (ArrayRowFormat | ObjectRowFormat)
 
 /** Options for a lazy, column-oriented parquet scan. */
-export type ParquetScanOptions = Omit<BaseParquetReadOptions, 'filter' | 'onChunk' | 'onPage' | 'useOffsetIndex'> & {
+export type ParquetScanOptions = Omit<BaseParquetReadOptions, 'filter' | 'onChunk' | 'onPage' | 'useOffsetIndex' | 'includeRowIndex'> & {
   /** Conservative filter used only to prune physical row ranges. */
   pruningFilter?: ParquetQueryFilter
   /** Use offset indexes for range reads when available (default true). */

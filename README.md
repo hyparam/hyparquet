@@ -139,6 +139,22 @@ You can provide an `ArrayBuffer` anywhere that an `AsyncBuffer` is expected. Thi
 parquetReadObjects({ file }): Promise<Record<string, any>[]>
 ```
 
+To include each object's absolute, zero-based physical row position, enable
+`includeRowIndex` and access it with the exported `rowIndex` symbol:
+
+```javascript
+import { parquetReadObjects, rowIndex } from 'hyparquet'
+
+const rows = await parquetReadObjects({ file, includeRowIndex: true })
+const position = rows[0][rowIndex]
+```
+
+Positions remain relative to the original file when using `rowStart`, filters,
+or page and row-group pruning. The symbol property is non-enumerable and read-only:
+JSON serialization, `Object.keys`, object spread, and `Object.assign` omit it.
+The option defaults to `false` and also works with `parquetRead` using
+`rowFormat: 'object'`; array output is not supported.
+
 #### parquetRead
 
 `parquetRead` is the "base" function for reading parquet files.

@@ -1,5 +1,5 @@
 /**
- * @import {AsyncRowGroup, BaseParquetReadOptions, DecodedArray, ParquetReadOptions} from '../src/types.js'
+ * @import {AsyncRowGroup, BaseParquetReadOptions, DecodedArray, ParquetReadOptions, ParquetRow} from '../src/types.js'
  */
 
 import { columnsNeededForFilter, matchFilter } from './filter.js'
@@ -8,6 +8,13 @@ import { parquetPlan } from './plan.js'
 import { assembleAsync, asyncGroupToRows } from './rowgroup.js'
 import { prepareParquetRead, readParquetPlan } from './scan.js'
 import { concat } from './utils.js'
+
+/**
+ * Symbol for the absolute, zero-based physical position of an object row.
+ * @type {typeof import('../src/types.js').rowIndex}
+ */
+// eslint-disable-next-line no-extra-parens
+export const rowIndex = /** @type {typeof import('../src/types.js').rowIndex} */ (Symbol('rowIndex'))
 
 /**
  * Read parquet data rows from a file-like object.
@@ -30,6 +37,10 @@ export async function parquetRead(options) {
   // Filter requires object format to match column names
   if (filter && rowFormat !== 'object') {
     throw new Error('parquet filter requires rowFormat: "object"')
+  }
+
+  if (options.includeRowIndex && rowFormat !== 'object') {
+    throw new Error('parquet includeRowIndex requires rowFormat: "object"')
   }
 
   const filterColumns = columnsNeededForFilter(filter)
@@ -92,6 +103,16 @@ export async function parquetRead(options) {
       const groupData = rowFormat === 'object' ?
         await asyncGroupToRows(asyncGroup, selectStart, selectEnd, readColumns, 'object') :
         await asyncGroupToRows(asyncGroup, selectStart, selectEnd, columns, 'array')
+
+      // Attach positions before filtering compacts rows. selectStart accounts
+      // for both requested ranges and page-index pruning within the group.
+      if (options.includeRowIndex) {
+        for (let i = 0; i < groupData.length; i++) {
+          Object.defineProperty(groupData[i], rowIndex, {
+            value: asyncGroup.groupStart + selectStart + i,
+          })
+        }
+      }
 
       // Apply filter and projection
       if (filter) {
@@ -177,7 +198,7 @@ export async function parquetReadColumn(options) {
  * It is a wrapper around the more configurable parquetRead function.
  *
  * @param {Omit<ParquetReadOptions, 'onComplete'>} options
- * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
+ * @returns {Promise<ParquetRow[]>} resolves when all requested rows and columns are parsed
  */
 export function parquetReadObjects(options) {
   return new Promise((onComplete, reject) => {
