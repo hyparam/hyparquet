@@ -1,9 +1,9 @@
 /**
- * @import {BaseParquetReadOptions} from '../src/types.js'
+ * @import {BaseParquetReadOptions, ParquetRow} from '../src/types.js'
  */
 
 import { parquetMetadataAsync, parquetSchema } from './metadata.js'
-import { parquetReadColumn, parquetReadObjects } from './read.js'
+import { parquetReadColumn, parquetReadObjects, rowIndex } from './read.js'
 
 /**
  * Wraps parquetRead with orderBy support.
@@ -12,7 +12,7 @@ import { parquetReadColumn, parquetReadObjects } from './read.js'
  * Note that using orderBy may SIGNIFICANTLY increase the query time.
  *
  * @param {BaseParquetReadOptions & { orderBy?: string }} options
- * @returns {Promise<Record<string, any>[]>} resolves when all requested rows and columns are parsed
+ * @returns {Promise<ParquetRow[]>} resolves when all requested rows and columns are parsed
  */
 export async function parquetQuery(options) {
   if (!options.file || !(options.file.byteLength >= 0)) {
@@ -34,7 +34,7 @@ export async function parquetQuery(options) {
 
   if (filter && !orderBy && rowEnd < metadata.num_rows) {
     // iterate through row groups and filter until we have enough rows
-    /** @type {Record<string, any>[]} */
+    /** @type {ParquetRow[]} */
     const filteredRows = []
     let groupStart = 0
     for (const group of metadata.row_groups) {
@@ -100,7 +100,7 @@ export async function parquetQuery(options) {
  * Reads a list rows from a parquet file, reading only the row groups that contain the rows.
  * Returns a sparse array of rows.
  * @param {BaseParquetReadOptions & { rows: number[] }} options
- * @returns {Promise<(Record<string, any> & {__index__: number})[]>}
+ * @returns {Promise<(ParquetRow & {__index__: number})[]>}
  */
 async function parquetReadRows(options) {
   const { file, rows } = options
@@ -138,7 +138,7 @@ async function parquetReadRows(options) {
   }
 
   // Fetch by row group and map to rows
-  /** @type {(Record<string, any> & {__index__: number})[]} */
+  /** @type {(ParquetRow & {__index__: number})[]} */
   const sparseData = Array(Number(options.metadata.num_rows))
   for (const [rangeStart, rangeEnd] of rowRanges) {
     // TODO: fetch in parallel
@@ -146,6 +146,9 @@ async function parquetReadRows(options) {
     for (let i = rangeStart; i < rangeEnd; i++) {
       // warning: if the row contains a column named __index__, it will overwrite the index.
       sparseData[i] = { __index__: i, ...groupData[i - rangeStart] }
+      if (options.includeRowIndex) {
+        Object.defineProperty(sparseData[i], rowIndex, { value: groupData[i - rangeStart][rowIndex] })
+      }
     }
   }
   return sparseData

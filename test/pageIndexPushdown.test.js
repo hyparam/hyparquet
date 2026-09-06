@@ -1,3 +1,4 @@
+import { rowIndex } from '../src/index.js'
 import { describe, expect, it } from 'vitest'
 import { parquetMetadataAsync, parquetReadObjects } from '../src/index.js'
 import { filterPageRanges, intersectRanges, unionRanges } from '../src/filter.js'
@@ -305,6 +306,24 @@ describe('page index pushdown against test/files/page_index.parquet', () => {
     const actual = await parquetReadObjects({ file, filter, rowStart: 200, rowEnd: 1700, usePageIndex: true })
     expect(actual).toEqual(expected)
     expect(actual.map(row => row.id)).toEqual([1400, 1600])
+  })
+
+  it('preserves physical indices through page pruning, filtering, and projection', async () => {
+    const file = await asyncBufferFromFile(path)
+    for (const usePageIndex of [false, true]) {
+      const rows = await parquetReadObjects({
+        file, includeRowIndex: true, usePageIndex,
+        columns: ['word'], rowStart: 200, rowEnd: 3000,
+        filter: { id: { $in: [100, 1400, 1600, 2999] } },
+      })
+      expect(rows.map(row => row[rowIndex])).toEqual([1400, 1600, 2999])
+      expect(rows.map(row => Object.keys(row))).toEqual([['word'], ['word'], ['word']])
+    }
+    const rows = await parquetReadObjects({
+      file, includeRowIndex: true, usePageIndex: true,
+      filter: { id: { $eq: 2999 } },
+    })
+    expect(rows.map(row => row[rowIndex])).toEqual([2999])
   })
 
   it('fetches far fewer data bytes with usePageIndex', async () => {
