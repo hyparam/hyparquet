@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.30.0]
+ - Add opt-in physical row index symbol to object rows (#176)
+
 ## [1.29.2]
  - Add default exports to package.json for compatibility with CJS resolvers (#174)
 

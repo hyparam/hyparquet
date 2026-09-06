@@ -249,9 +249,10 @@ describe('asyncBufferFromUrl', () => {
   })
 
   it('uses provided byte length if given', async () => {
+    global.fetch = vi.fn()
     const buffer = await asyncBufferFromUrl({ url: 'https://example.com', byteLength: 2048 })
     expect(buffer.byteLength).toBe(2048)
-    expect(fetch).toHaveBeenCalledOnce()
+    expect(fetch).not.toHaveBeenCalled()
   })
 
   it('slice method fetches correct byte range', async () => {
