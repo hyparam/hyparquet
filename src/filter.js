@@ -75,7 +75,9 @@ export function matchFilter(record, filter, strict = true) {
       if (operator === '$ne') return !equals(value, target, strict)
       if (operator === '$in') return Array.isArray(target) && matchesIn(value, target, strict)
       if (operator === '$nin') return Array.isArray(target) && !matchesIn(value, target, strict)
-      if (operator === '$not') return !matchFilter({ [field]: value }, { [field]: target }, strict)
+      // value is already resolved, so re-wrap it under a plain key. Reusing
+      // field would send a dotted path back through resolve and lose the value.
+      if (operator === '$not') return !matchFilter({ value }, { value: target }, strict)
       return true
     })
   })

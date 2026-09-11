@@ -100,6 +100,17 @@ describe('matchFilter', () => {
     expect(matchFilter(record, { 'a.b.c': { $lt: 40 } })).toBe(false)
   })
 
+  it('handles $not with dot-notation', () => {
+    const record = { bbox: { xmin: -73.1 }, a: { b: { c: 42 } } }
+    expect(matchFilter(record, { 'bbox.xmin': { $not: { $gt: -74 } } })).toBe(false)
+    expect(matchFilter(record, { 'bbox.xmin': { $not: { $gt: -72 } } })).toBe(true)
+    expect(matchFilter(record, { 'bbox.xmin': { $not: { $eq: -73.1 } } })).toBe(false)
+    expect(matchFilter(record, { 'bbox.xmin': { $not: { $eq: -73.2 } } })).toBe(true)
+    expect(matchFilter(record, { 'bbox.xmin': { $not: { $in: [-73.1] } } })).toBe(false)
+    expect(matchFilter(record, { 'a.b.c': { $not: { $lt: 40 } } })).toBe(true)
+    expect(matchFilter(record, { 'a.b.c': { $not: { $gt: 40 } } })).toBe(false)
+  })
+
   it('returns false when nested path does not exist', () => {
     const record = { a: { b: 1 } }
     expect(matchFilter(record, { 'a.c': { $eq: 1 } })).toBe(false)
