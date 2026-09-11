@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.30.1]
+ - Fix $not filters on dot-notation paths (#177)
+
 ## [1.30.0]
  - Add opt-in physical row index symbol to object rows (#176)
 
