@@ -21,7 +21,7 @@ export interface ParquetParsers {
  * Parquet Metadata options for metadata parsing
  */
 export interface MetadataOptions {
-  parsers?: ParquetParsers // custom parsers to decode advanced types
+  parsers?: Partial<ParquetParsers> // custom parsers to decode advanced types, merged over the defaults
   geoparquet?: boolean // parse geoparquet metadata and set logical type to geometry/geography for geospatial columns (default true)
 }
 
@@ -41,7 +41,7 @@ export interface BaseParquetReadOptions {
   onPage?: (chunk: SubColumnData) => void // called when a data page is parsed. pages may contain data outside the requested range.
   compressors?: Compressors // custom decompressors
   utf8?: boolean // decode byte arrays as utf8 strings (default true)
-  parsers?: ParquetParsers // custom parsers to decode advanced types
+  parsers?: Partial<ParquetParsers> // custom parsers to decode advanced types, merged over the defaults
   geoparquet?: boolean // parse geoparquet metadata and set logical type to geometry/geography for geospatial columns (default true)
   useOffsetIndex?: boolean // use offset index to limit column chunk reads when available (default false)
   useBloomFilters?: boolean // fetch bloom filters to enable row-group skipping on $eq/$in predicates (default false)

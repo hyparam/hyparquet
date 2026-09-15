@@ -452,6 +452,16 @@ describe('parquetRead', () => {
     expect(counting.bytes).toBe(14334)
   })
 
+  it('keeps default parsers for types a custom parser does not override', async () => {
+    const file = await asyncBufferFromFile('test/files/duckdb4442.parquet')
+    const rows = await parquetReadObjects({
+      file,
+      parsers: { stringFromBytes: () => 'custom' },
+    })
+    expect(rows[0].call_type).toBe('custom')
+    expect(rows[0].call_date).toEqual(new Date('2011-10-06T22:21:49.580Z'))
+  })
+
   it('filter rows with parquetRead', async () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     await parquetRead({

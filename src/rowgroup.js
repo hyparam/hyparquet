@@ -29,9 +29,10 @@ export function readRowGroup(options, { metadata }, groupPlan) {
       pathInSchema,
       element: schemaPath[schemaPath.length - 1].element,
       schemaPath,
-      parsers: { ...DEFAULT_PARSERS, ...options.parsers },
       ...options,
       ...chunk.columnMetadata,
+      // merge after options, so a partial parsers object keeps the defaults
+      parsers: { ...DEFAULT_PARSERS, ...options.parsers },
     }
     const { startByte, endByte } = chunk.range
 
@@ -221,12 +222,12 @@ export async function asyncGroupToRows({ asyncColumns }, selectStart, selectEnd,
  *
  * @param {AsyncRowGroup} asyncRowGroup
  * @param {SchemaTree} schemaTree
- * @param {ParquetParsers} [parsers]
+ * @param {Partial<ParquetParsers>} [parsers]
  * @returns {AsyncRowGroup}
  */
 export function assembleAsync(asyncRowGroup, schemaTree, parsers) {
   const { asyncColumns } = asyncRowGroup
-  parsers = { ...DEFAULT_PARSERS, ...parsers }
+  const allParsers = { ...DEFAULT_PARSERS, ...parsers }
   /** @type {AsyncColumn[]} */
   const assembled = []
   for (const child of schemaTree.children) {
@@ -256,7 +257,7 @@ export function assembleAsync(asyncRowGroup, schemaTree, parsers) {
             )
           }
           // assemble the column
-          assembleNested(subcolumnData, child, parsers)
+          assembleNested(subcolumnData, child, allParsers)
           const assembled = subcolumnData.get(child.element.name)
           if (!assembled) throw new Error('parquet column data not assembled')
           return { data: [assembled], skipped }

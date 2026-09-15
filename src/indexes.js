@@ -10,17 +10,17 @@ import { deserializeTCompactProtocol } from './thrift.js'
 /**
  * @param {DataReader} reader
  * @param {SchemaElement} schema
- * @param {ParquetParsers | undefined} parsers
+ * @param {Partial<ParquetParsers> | undefined} parsers
  * @returns {ColumnIndex}
  */
 export function readColumnIndex(reader, schema, parsers = undefined) {
-  parsers = { ...DEFAULT_PARSERS, ...parsers }
+  const allParsers = { ...DEFAULT_PARSERS, ...parsers }
 
   const thrift = deserializeTCompactProtocol(reader)
   return {
     null_pages: thrift.field_1,
-    min_values: thrift.field_2.map((/** @type {any} */ m) => convertMetadata(m, schema, parsers)),
-    max_values: thrift.field_3.map((/** @type {any} */ m) => convertMetadata(m, schema, parsers)),
+    min_values: thrift.field_2.map((/** @type {any} */ m) => convertMetadata(m, schema, allParsers)),
+    max_values: thrift.field_3.map((/** @type {any} */ m) => convertMetadata(m, schema, allParsers)),
     boundary_order: BoundaryOrders[thrift.field_4],
     null_counts: thrift.field_5,
     repetition_level_histograms: thrift.field_6,
