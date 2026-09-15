@@ -295,7 +295,7 @@ export async function prefetchBloomFilters({ file, metadata, filter, filterStric
  * @param {string[]} [options.columns]
  * @param {Record<string, BloomFilter>[]} [options.bloomFiltersByGroup]
  * @param {Record<string, SchemaElement>} [options.schemaElements]
- * @param {ParquetParsers} [options.parsers]
+ * @param {Partial<ParquetParsers>} [options.parsers]
  * @returns {Promise<{pageRangesByGroup: (PageRanges | undefined)[], pageLocationsByGroup: Record<string, PageLocation[]>[]}>}
  */
 export async function prefetchPageIndexes({ file, metadata, filter, filterStrict = true, rowStart = 0, rowEnd = Infinity, columns, bloomFiltersByGroup, schemaElements, parsers }) {
