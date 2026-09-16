@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.31.0]
+ - Custom parsers option accepts a partial object, keeping default parsers for anything not overridden (#178)
+
 ## [1.30.1]
  - Fix $not filters on dot-notation paths (#177)
 
