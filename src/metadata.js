@@ -88,7 +88,7 @@ export function parquetMetadata(arrayBuffer, { parsers, geoparquet = true } = {}
   const view = new DataView(arrayBuffer)
 
   // Use default parsers if not given
-  parsers = { ...DEFAULT_PARSERS, ...parsers }
+  const allParsers = { ...DEFAULT_PARSERS, ...parsers }
 
   // Validate footer magic number "PAR1"
   if (view.byteLength < 8) {
@@ -148,7 +148,7 @@ export function parquetMetadata(arrayBuffer, { parsers, geoparquet = true } = {}
         data_page_offset: column.field_3.field_9,
         index_page_offset: column.field_3.field_10,
         dictionary_page_offset: column.field_3.field_11,
-        statistics: convertStats(column.field_3.field_12, columnSchema[columnIndex], parsers),
+        statistics: convertStats(column.field_3.field_12, columnSchema[columnIndex], allParsers),
         encoding_stats: column.field_3.field_13?.map((/** @type {any} */ encodingStat) => ({
           page_type: PageTypes[encodingStat.field_1],
           encoding: Encodings[encodingStat.field_2],
