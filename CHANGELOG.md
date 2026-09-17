@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.31.1]
+ - Avoid decoding unselected rows when reading nested VARIANT columns (#179)
+
 ## [1.31.0]
  - Custom parsers option accepts a partial object, keeping default parsers for anything not overridden (#178)
 
