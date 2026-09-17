@@ -1,9 +1,39 @@
 import { describe, expect, it } from 'vitest'
 import { assembleAsync, asyncGroupToRows } from '../src/rowgroup.js'
+import { parquetSchema } from '../src/metadata.js'
 
 /** @import {SchemaTree} from '../src/types.js' */
 
 describe('assembleAsync', () => {
+  it('slices physical children before decoding nested variants', async () => {
+    const schemaTree = parquetSchema({ schema: [
+      { name: 'schema', num_children: 1 },
+      { name: 'payload', num_children: 2, repetition_type: 'REQUIRED', logical_type: { type: 'VARIANT' } },
+      { name: 'metadata', type: 'BYTE_ARRAY', repetition_type: 'REQUIRED' },
+      { name: 'value', type: 'BYTE_ARRAY', repetition_type: 'REQUIRED' },
+    ] })
+    const valid = Uint8Array.from([0x11, 0x00, 0x00])
+    // These unselected values must never reach the VARIANT decoder. This
+    // also catches an implementation that decodes everything and slices later.
+    const invalid = Uint8Array.from([0xff])
+    const hi = Uint8Array.from([0x09, 0x68, 0x69])
+    const group = {
+      groupStart: 100,
+      groupRows: 5,
+      selectStart: 2,
+      selectEnd: 3,
+      asyncColumns: [
+        { pathInSchema: ['payload', 'metadata'], data: Promise.resolve({ skipped: 1, data: [[invalid, valid, invalid, invalid]] }) },
+        { pathInSchema: ['payload', 'value'], data: Promise.resolve({ skipped: 0, data: [[hi, hi, hi, hi, hi]] }) },
+      ],
+    }
+    const assembled = assembleAsync(group, schemaTree)
+    const column = await assembled.asyncColumns[0].data
+    expect(column).toEqual({ skipped: 2, data: [['hi']] })
+    expect(await asyncGroupToRows(assembled, 2, 3, undefined, 'object'))
+      .toEqual([{ payload: 'hi' }])
+  })
+
   it('aligns nested child columns and preserves their skipped row offset', async () => {
     /** @type {SchemaTree} */
     const schemaTree = {
