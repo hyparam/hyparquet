@@ -244,8 +244,11 @@ export function assembleAsync(asyncRowGroup, schemaTree, parsers) {
           /** @type {Map<string, DecodedArray>} */
           const subcolumnData = new Map()
           const flattened = resolved.map(({ data }) => flatten(data))
-          const skipped = Math.max(...resolved.map(result => result.skipped))
-          const end = Math.min(...resolved.map((result, i) => result.skipped + flattened[i].length))
+          // Physical pages can cover far more rows than the requested range.
+          // Clip before nested/VARIANT assembly, which expands compact binary
+          // values into independent object graphs and strings for every row.
+          const skipped = Math.max(asyncRowGroup.selectStart ?? 0, ...resolved.map(result => result.skipped))
+          const end = Math.min(asyncRowGroup.selectEnd ?? Infinity, ...resolved.map((result, i) => result.skipped + flattened[i].length))
           for (let i = 0; i < childColumns.length; i++) {
             // Offset-index reads may start each physical child at a different
             // page boundary. Align them to their common absolute row range.
