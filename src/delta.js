@@ -2,7 +2,7 @@
  * @import {DataReader} from '../src/types.js'
  */
 
-import { readVarInt, readZigZagBigInt } from './thrift.js'
+import { readVarInt, readZigZag, readZigZagBigInt } from './thrift.js'
 
 /**
  * @param {DataReader} reader
@@ -10,13 +10,16 @@ import { readVarInt, readZigZagBigInt } from './thrift.js'
  * @param {Int32Array | BigInt64Array} output
  */
 export function deltaBinaryUnpack(reader, count, output) {
-  const int32 = output instanceof Int32Array
+  if (output instanceof Int32Array) {
+    deltaBinaryUnpackInt32(reader, count, output)
+    return
+  }
   const blockSize = readVarInt(reader)
   const miniblockPerBlock = readVarInt(reader)
   readVarInt(reader) // assert(=== count)
   let value = readZigZagBigInt(reader) // first value
   let outputIndex = 0
-  output[outputIndex++] = int32 ? Number(value) : value
+  output[outputIndex++] = value
 
   const valuesPerMiniblock = blockSize / miniblockPerBlock
 
@@ -47,7 +50,7 @@ export function deltaBinaryUnpack(reader, count, output) {
           }
           const delta = minDelta + bits
           value += delta
-          output[outputIndex++] = int32 ? Number(value) : value
+          output[outputIndex++] = value
           miniblockCount--
         }
         if (miniblockCount) {
@@ -57,9 +60,55 @@ export function deltaBinaryUnpack(reader, count, output) {
       } else {
         for (let j = 0; j < valuesPerMiniblock && outputIndex < count; j++) {
           value += minDelta
-          output[outputIndex++] = int32 ? Number(value) : value
+          output[outputIndex++] = value
         }
       }
+    }
+  }
+}
+
+/**
+ * Decode INT32 without BigInt arithmetic in the per-value loop.
+ *
+ * @param {DataReader} reader
+ * @param {number} count
+ * @param {Int32Array} output
+ */
+function deltaBinaryUnpackInt32(reader, count, output) {
+  const blockSize = readVarInt(reader)
+  const miniblockPerBlock = readVarInt(reader)
+  readVarInt(reader)
+  let value = readZigZag(reader)
+  let outputIndex = 0
+  output[outputIndex++] = value
+  const valuesPerMiniblock = blockSize / miniblockPerBlock
+  while (outputIndex < count) {
+    const minDelta = readZigZag(reader)
+    const bitWidthsOffset = reader.offset
+    reader.offset += miniblockPerBlock
+    for (let i = 0; i < miniblockPerBlock && outputIndex < count; i++) {
+      const bitWidth = reader.view.getUint8(bitWidthsOffset + i)
+      const end = reader.offset + valuesPerMiniblock * bitWidth / 8
+      let bitOffset = 0
+      for (let j = 0; j < valuesPerMiniblock && outputIndex < count; j++) {
+        let residual = 0
+        let bitsRead = 0
+        while (bitsRead < bitWidth) {
+          const bitsToRead = Math.min(8 - bitOffset, bitWidth - bitsRead)
+          residual |= (reader.view.getUint8(reader.offset) >>> bitOffset & (1 << bitsToRead) - 1) << bitsRead
+          bitsRead += bitsToRead
+          bitOffset += bitsToRead
+          if (bitOffset === 8) {
+            bitOffset = 0
+            reader.offset++
+          }
+        }
+        // Parquet INT32 delta arithmetic wraps in two's complement.
+        value = value + minDelta + residual | 0
+        output[outputIndex++] = value
+      }
+      // Consume the entire padded miniblock, but not unused miniblock bodies.
+      reader.offset = end
     }
   }
 }
