@@ -10,6 +10,10 @@ import { getPhysicalColumns } from './schema.js'
 
 // Combine column chunks if less than 2mb
 const runLimit = 1 << 21 // 2mb
+// When reading selected columns, combine chunks separated by at most this many unrequested bytes.
+// Arrow C++ before 18 and Polars write a copy of each column's metadata after its chunk, leaving small gaps.
+// Same default as Arrow's CacheOptions hole_size_limit.
+const columnGapLimit = 1 << 13 // 8kb
 
 /**
  * Plan which byte ranges to read to satisfy a read request.
@@ -148,6 +152,8 @@ export function parquetPlanGroup({ rowGroup, groupStart, groupRows, ranges, colu
     }
   }
 
+  /** @type {ByteRange[]} */
+  const columnRanges = []
   /** @type {ByteRange | undefined} */
   let run
   for (const chunk of chunks) {
@@ -155,7 +161,7 @@ export function parquetPlanGroup({ rowGroup, groupStart, groupRows, ranges, colu
     if ('offsetIndex' in chunk) {
       indexes.push(chunk.offsetIndex)
     } else if (columns) {
-      fetches.push(chunk.range)
+      columnRanges.push(chunk.range)
     } else if (run && chunk.range.endByte - run.startByte <= runLimit) {
       run.endByte = chunk.range.endByte
     } else {
@@ -164,6 +170,8 @@ export function parquetPlanGroup({ rowGroup, groupStart, groupRows, ranges, colu
     }
   }
   if (run) fetches.push(run)
+  // selected chunks are combined in file order, skipping only small gaps
+  fetches.push(...coalesceByteRanges(columnRanges, columnGapLimit, runLimit))
   const groups = ranges.map(([selectStart, selectEnd]) => ({
     chunks,
     rowGroup,
@@ -413,12 +421,16 @@ export async function prefetchPageIndexes({ file, metadata, filter, filterStrict
 }
 
 /**
- * Merge overlapping or exactly touching byte ranges without adding bytes.
+ * Merge overlapping or touching byte ranges. By default no bytes are added;
+ * pass maxGap to also merge ranges separated by up to maxGap unrequested bytes,
+ * as long as the merged range stays within maxSize.
  *
  * @param {ByteRange[]} ranges
+ * @param {number} [maxGap]
+ * @param {number} [maxSize]
  * @returns {ByteRange[]}
  */
-function coalesceByteRanges(ranges) {
+function coalesceByteRanges(ranges, maxGap = 0, maxSize = Infinity) {
   const sorted = ranges
     .map(range => ({ ...range }))
     .sort((a, b) => a.startByte - b.startByte || a.endByte - b.endByte)
@@ -426,7 +438,7 @@ function coalesceByteRanges(ranges) {
   const merged = []
   for (const range of sorted) {
     const last = merged[merged.length - 1]
-    if (last && range.startByte <= last.endByte) {
+    if (last && range.startByte <= last.endByte + maxGap && Math.max(last.endByte, range.endByte) - last.startByte <= maxSize) {
       last.endByte = Math.max(last.endByte, range.endByte)
     } else {
       merged.push(range)
