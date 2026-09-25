@@ -410,7 +410,7 @@ describe('parquetRead', () => {
     expect(counting.bytes).toBe(14768)
   })
 
-  it('does not groups column chunks when columns are specified', async () => {
+  it('groups adjacent column chunks when columns are specified', async () => {
     const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
     const metadata = await parquetMetadataAsync(file)
     const counting = countingBuffer(file)
@@ -424,7 +424,7 @@ describe('parquetRead', () => {
       columns: ['id', 'content'],
     })
     expect(row).toEqual({ id: 26n, content: expect.any(String) })
-    expect(counting.fetches).toBe(2) // 2 column chunks
+    expect(counting.fetches).toBe(1) // 2 adjacent column chunks in 1 run
     expect(counting.bytes).toBe(14768)
   })
 

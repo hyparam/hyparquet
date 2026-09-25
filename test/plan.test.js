@@ -146,4 +146,106 @@ describe('parquetPlan', () => {
     expect(plan.groups).toHaveLength(2)
     expect(plan.groups[0].chunks).toBe(plan.groups[1].chunks)
   })
+
+  it.for([
+    { gap: 8192, fetches: [{ startByte: 4, endByte: 22964 }] },
+    { gap: 8193, fetches: [{ startByte: 4, endByte: 438 }, { startByte: 8631, endByte: 22965 }] },
+  ])('combines selected column chunks across a $gap byte gap', async ({ gap, fetches }) => {
+    const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
+    const metadata = await parquetMetadataAsync(file)
+    const plan = parquetPlan({
+      file,
+      metadata: moveColumnChunk(metadata, 1, 438 + gap),
+      columns: ['id', 'content'],
+      rowEnd: 100,
+    })
+    expect(plan.fetches).toEqual(fetches)
+  })
+
+  it('combines selected column chunks in file order', async () => {
+    const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
+    const metadata = await parquetMetadataAsync(file)
+    // store content before id in the file, keeping schema order
+    let reordered = moveColumnChunk(metadata, 1, 4)
+    reordered = moveColumnChunk(reordered, 0, 14338)
+    const plan = parquetPlan({ file, metadata: reordered, columns: ['id', 'content'], rowEnd: 100 })
+    expect(plan.fetches).toEqual([{ startByte: 4, endByte: 14772 }])
+  })
+
+  it('does not combine selected column chunks across row groups', async () => {
+    const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
+    const metadata = await parquetMetadataAsync(file)
+    const plan = parquetPlan({ file, metadata, columns: ['id', 'content'], rowEnd: 200 })
+    // the row groups touch at byte 14772
+    expect(plan.fetches).toEqual([
+      { startByte: 4, endByte: 14772 },
+      { startByte: 14772, endByte: 29507 },
+    ])
+  })
+
+  it.for([
+    { columns: ['id', 'payload'], fetches: [{ startByte: 4, endByte: 23486 }] },
+    { columns: ['id', 'category'], fetches: [{ startByte: 4, endByte: 6177 }, { startByte: 23486, endByte: 24361 }] },
+  ])('skips unselected columns only when they exceed the gap limit: $columns', async ({ columns, fetches }) => {
+    const file = await asyncBufferFromFile('test/files/page_index.parquet')
+    const metadata = await parquetMetadataAsync(file)
+    // word (8167 bytes) sits between id and payload; word and payload (17309 bytes) sit between id and category
+    const plan = parquetPlan({ file, metadata, columns, rowEnd: 1 })
+    expect(plan.fetches).toEqual(fetches)
+  })
+
+  it.for([
+    // the merged range starts at byte 4, so it reaches exactly 2mb at this size
+    { size: (1 << 21) - 434, fetches: [{ startByte: 4, endByte: (1 << 21) + 4 }] },
+    { size: (1 << 21) - 433, fetches: [{ startByte: 4, endByte: 438 }, { startByte: 438, endByte: (1 << 21) + 5 }] },
+  ])('combines selected column chunks up to 2mb: $size byte chunk', async ({ size, fetches }) => {
+    const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
+    const metadata = await parquetMetadataAsync(file)
+    const resized = resizeColumnChunk(metadata, 1, size)
+    const plan = parquetPlan({ file, metadata: resized, columns: ['id', 'content'], rowEnd: 100 })
+    expect(plan.fetches).toEqual(fetches)
+  })
+
+  it('fetches a selected column chunk larger than 2mb in one request', async () => {
+    const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
+    const metadata = await parquetMetadataAsync(file)
+    const resized = resizeColumnChunk(metadata, 1, 3 << 20)
+    const plan = parquetPlan({ file, metadata: resized, columns: ['content'], rowEnd: 100 })
+    expect(plan.fetches).toEqual([{ startByte: 438, endByte: 438 + (3 << 20) }])
+  })
 })
+
+/**
+ * Copy metadata with one column chunk of the first row group given a new compressed size.
+ *
+ * @param {FileMetaData} metadata
+ * @param {number} columnIndex
+ * @param {number} size
+ * @returns {FileMetaData}
+ */
+function resizeColumnChunk(metadata, columnIndex, size) {
+  const copy = structuredClone(metadata)
+  const meta = copy.row_groups[0].columns[columnIndex].meta_data
+  if (!meta) throw new Error('expected column metadata')
+  meta.total_compressed_size = BigInt(size)
+  return copy
+}
+
+/**
+ * Copy metadata with one column chunk of the first row group moved to a new byte offset.
+ *
+ * @import {FileMetaData} from '../src/types.js'
+ * @param {FileMetaData} metadata
+ * @param {number} columnIndex
+ * @param {number} startByte
+ * @returns {FileMetaData}
+ */
+function moveColumnChunk(metadata, columnIndex, startByte) {
+  const copy = structuredClone(metadata)
+  const meta = copy.row_groups[0].columns[columnIndex].meta_data
+  if (!meta) throw new Error('expected column metadata')
+  const shift = BigInt(startByte) - (meta.dictionary_page_offset || meta.data_page_offset)
+  meta.data_page_offset += shift
+  if (meta.dictionary_page_offset) meta.dictionary_page_offset += shift
+  return copy
+}
