@@ -12,9 +12,10 @@
  */
 
 import { columnsNeededForFilter } from './filter.js'
+import { createColumnView } from './columnview.js'
 import { parquetMetadataAsync, parquetSchema } from './metadata.js'
 import { parquetPlan, parquetPlanGroup, parquetPlanGroups, prefetchAsyncBuffer, prefetchBloomFilters, prefetchPageIndexes } from './plan.js'
-import { assembleAsync, readRowGroup } from './rowgroup.js'
+import { assembleAsync, readRowGroup, readRowGroupPages } from './rowgroup.js'
 import { flatten } from './utils.js'
 
 /**
@@ -100,10 +101,52 @@ export async function parquetScan(options) {
     return data
   }
 
+  /**
+   * @param {import('../src/types.js').ParquetScanColumnOptions} columnOptions
+   * @returns {Promise<import('../src/types.js').ParquetColumnView>}
+   */
+  async function readColumnView({ column, rowStart, rowEnd }) {
+    if (!availableColumns.has(column)) {
+      throw new Error(`parquet column not found in scan: ${column}`)
+    }
+    validateRange(rowStart, rowEnd)
+    const schema = schemaTree.children.find(child => child.element.name === column)
+    if (!schema) throw new Error(`parquet column not found: ${column}`)
+    if (rowStart === rowEnd) {
+      return createColumnView(schema, [], rowStart, 0, rowStart, rowEnd, options.parsers)
+    }
+    const candidateIndex = findCandidate(candidates, rowStart, rowEnd)
+    if (candidateIndex < 0) {
+      throw new RangeError(`parquet row range [${rowStart}, ${rowEnd}) is outside scan ranges`)
+    }
+    const { group } = candidates[candidateIndex]
+    // A repeated row may span pages. Read the complete column chunk until
+    // page selection can include the preceding fragment of a continued row.
+    const fullOptions = { ...preparedOptions, useOffsetIndex: false }
+    const groupRowStart = group.groupStart
+    const groupRowEnd = groupRowStart + group.groupRows
+    const columnPlan = planCandidateColumn({
+      options: fullOptions, group, column, rowStart: groupRowStart, rowEnd: groupRowEnd,
+    })
+    const [groupPlan] = columnPlan.groups
+    if (!groupPlan) throw new Error(`parquet column not found: ${column}`)
+    const readOptions = { ...fullOptions, file: prefetchAsyncBuffer(fullOptions.file, columnPlan) }
+    const physicalLeaves = readRowGroupPages(readOptions, columnPlan, groupPlan)
+    const resolved = await Promise.all(physicalLeaves.map(async leaf => ({
+      pathInSchema: leaf.pathInSchema,
+      schemaPath: leaf.schemaPath,
+      pages: await leaf.pages,
+    })))
+    return createColumnView(
+      schema, resolved, groupRowStart, group.groupRows, rowStart, rowEnd, options.parsers
+    )
+  }
+
   return {
     metadata,
     ranges,
     readColumn,
+    readColumnView,
   }
 }
 

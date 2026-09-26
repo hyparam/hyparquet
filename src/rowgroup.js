@@ -3,7 +3,7 @@
  */
 
 import { assembleNested } from './assemble.js'
-import { readColumn } from './column.js'
+import { readColumn, readColumnPages } from './column.js'
 import { DEFAULT_PARSERS } from './convert.js'
 import { readOffsetIndex } from './indexes.js'
 import { getSchemaPath } from './schema.js'
@@ -23,17 +23,7 @@ export function readRowGroup(options, { metadata }, groupPlan) {
 
   // read column data
   for (const chunk of groupPlan.chunks) {
-    const { path_in_schema: pathInSchema } = chunk.columnMetadata
-    const schemaPath = getSchemaPath(metadata.schema, pathInSchema)
-    const columnDecoder = {
-      pathInSchema,
-      element: schemaPath[schemaPath.length - 1].element,
-      schemaPath,
-      ...options,
-      ...chunk.columnMetadata,
-      // merge after options, so a partial parsers object keeps the defaults
-      parsers: { ...DEFAULT_PARSERS, ...options.parsers },
-    }
+    const { pathInSchema, columnDecoder } = decoderForChunk(options, metadata, chunk)
     const { startByte, endByte } = chunk.range
 
     if ('pageLocations' in chunk) {
@@ -72,6 +62,54 @@ export function readRowGroup(options, { metadata }, groupPlan) {
     selectEnd: groupPlan.selectEnd,
     asyncColumns,
   }
+}
+
+/**
+ * Read complete physical leaf chunks for a column view. The view indexes
+ * Dremel row boundaries before materializing any nested JavaScript values.
+ *
+ * @param {ParquetReadOptions} options
+ * @param {QueryPlan} plan
+ * @param {GroupPlan} groupPlan
+ * @returns {{pathInSchema: string[], schemaPath: SchemaTree[], pages: Promise<import('../src/types.js').ColumnLevelPage[]>}[]}
+ */
+export function readRowGroupPages(options, { metadata }, groupPlan) {
+  return groupPlan.chunks.map(chunk => {
+    if ('offsetIndex' in chunk || 'pageLocations' in chunk) {
+      throw new Error('parquet column view requires complete column chunks')
+    }
+    const { pathInSchema, schemaPath, columnDecoder } = decoderForChunk(options, metadata, chunk)
+    const { startByte, endByte } = chunk.range
+    return {
+      pathInSchema,
+      schemaPath,
+      pages: Promise.resolve(options.file.slice(startByte, endByte)).then(buffer => {
+        const reader = { view: new DataView(buffer), offset: 0 }
+        return readColumnPages(reader, columnDecoder)
+      }),
+    }
+  })
+}
+
+/**
+ * @param {ParquetReadOptions} options
+ * @param {QueryPlan['metadata']} metadata
+ * @param {ChunkPlan} chunk
+ * @returns {{pathInSchema: string[], schemaPath: SchemaTree[], columnDecoder: ColumnDecoder}}
+ */
+function decoderForChunk(options, metadata, chunk) {
+  const { path_in_schema: pathInSchema } = chunk.columnMetadata
+  const schemaPath = getSchemaPath(metadata.schema, pathInSchema)
+  const columnDecoder = {
+    pathInSchema,
+    element: schemaPath[schemaPath.length - 1].element,
+    schemaPath,
+    ...options,
+    ...chunk.columnMetadata,
+    // merge after options, so a partial parsers object keeps the defaults
+    parsers: { ...DEFAULT_PARSERS, ...options.parsers },
+  }
+  return { pathInSchema, schemaPath, columnDecoder }
 }
 
 /**

@@ -74,6 +74,37 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
 }
 
 /**
+ * Decode physical pages without creating one array per nested row. The caller
+ * owns row alignment and materialization; values have already passed through
+ * the existing logical type parsers.
+ *
+ * @param {DataReader} reader
+ * @param {ColumnDecoder} columnDecoder
+ * @returns {import('../src/types.js').ColumnLevelPage[]}
+ */
+export function readColumnPages(reader, columnDecoder) {
+  /** @type {DecodedArray | undefined} */
+  let dictionary
+  /** @type {import('../src/types.js').ColumnLevelPage[]} */
+  const pages = []
+  while (reader.offset < reader.view.byteLength - 1) {
+    const header = parquetHeader(reader)
+    const result = decodePage(reader, header, columnDecoder, dictionary, 0)
+    if (!result.values) continue
+    if (header.type === 'DICTIONARY_PAGE') {
+      dictionary = convert(result.values, columnDecoder)
+    } else {
+      pages.push({
+        values: result.values,
+        definitionLevels: result.definitionLevels || [],
+        repetitionLevels: result.repetitionLevels || [],
+      })
+    }
+  }
+  return pages
+}
+
+/**
  * Read a page (data or dictionary) from a buffer.
  *
  * @param {DataReader} reader
@@ -85,6 +116,25 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
  * @returns {PageResult}
  */
 export function readPage(reader, header, columnDecoder, dictionary, previousChunk, pageStart) {
+  const result = decodePage(reader, header, columnDecoder, dictionary, pageStart)
+  if (!result.values) return { skipped: result.skipped }
+  if (header.type === 'DICTIONARY_PAGE') return { skipped: 0, data: result.values }
+  const output = Array.isArray(previousChunk) ? previousChunk : []
+  const assembled = assembleLists(
+    output, result.definitionLevels, result.repetitionLevels || [], result.values, columnDecoder.schemaPath
+  )
+  return { skipped: 0, data: assembled }
+}
+
+/**
+ * @param {DataReader} reader
+ * @param {PageHeader} header
+ * @param {ColumnDecoder} columnDecoder
+ * @param {DecodedArray | undefined} dictionary
+ * @param {number} pageStart
+ * @returns {{ skipped: number, values?: DecodedArray, definitionLevels?: number[], repetitionLevels?: number[] }}
+ */
+function decodePage(reader, header, columnDecoder, dictionary, pageStart) {
   const { type, element, schemaPath, codec, compressors } = columnDecoder
   // read compressed_page_size bytes
   const compressedBytes = new Uint8Array(
@@ -108,9 +158,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
 
     // convert types, dereference dictionary, and assemble lists
     const values = convertWithDictionary(dataPage, dictionary, daph.encoding, columnDecoder)
-    const output = Array.isArray(previousChunk) ? previousChunk : []
-    const assembled = assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
-    return { skipped: 0, data: assembled }
+    return { skipped: 0, values, definitionLevels, repetitionLevels }
   } else if (header.type === 'DATA_PAGE_V2') {
     const daph2 = header.data_page_header_v2
     if (!daph2) throw new Error('parquet data page header v2 is undefined')
@@ -125,9 +173,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
 
     // convert types, dereference dictionary, and assemble lists
     const values = convertWithDictionary(dataPage, dictionary, daph2.encoding, columnDecoder)
-    const output = Array.isArray(previousChunk) ? previousChunk : []
-    const assembled = assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
-    return { skipped: 0, data: assembled }
+    return { skipped: 0, values, definitionLevels, repetitionLevels }
   } else if (header.type === 'DICTIONARY_PAGE') {
     const diph = header.dictionary_page_header
     if (!diph) throw new Error('parquet dictionary page header is undefined')
@@ -138,7 +184,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
 
     const reader = { view: new DataView(page.buffer, page.byteOffset, page.byteLength), offset: 0 }
     const dictArray = readPlain(reader, type, diph.num_values, element.type_length)
-    return { skipped: 0, data: dictArray }
+    return { skipped: 0, values: dictArray }
   } else {
     throw new Error(`parquet unsupported page type: ${header.type}`)
   }

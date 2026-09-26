@@ -5,6 +5,58 @@ import { parquetReadColumn } from '../src/read.js'
 import { countingBuffer } from './helpers.js'
 
 describe('parquetScan', () => {
+  it.for([
+    { name: 'datapage_v2.snappy.parquet', column: 'b' },
+    { name: 'datapage_v2.snappy.parquet', column: 'e' },
+    { name: 'nullable.impala.parquet', column: 'int_array_Array' },
+    { name: 'nullable.impala.parquet', column: 'int_map' },
+    { name: 'nullable.impala.parquet', column: 'nested_struct' },
+    { name: 'continued_page.parquet', column: 'int_list' },
+    { name: 'dictionary_offset_indexed.parquet', column: 'country' },
+    { name: 'struct_strings.parquet', column: 'inner' },
+    { name: 'shredded-object.parquet', column: 'var' },
+  ])('reads $name/$column without eager nested assembly', async ({ name, column }) => {
+    const file = await asyncBufferFromFile(`test/files/${name}`)
+    const scan = await parquetScan({ file, columns: [column], useOffsetIndex: false })
+    const range = scan.ranges[0]
+    const options = { column, ...range }
+    const view = await scan.readColumnView(options)
+    const expected = await scan.readColumn(options)
+
+    expect(view.length).toBe(expected.length)
+    expect(Array.from(view.toArray())).toEqual(Array.from(expected))
+    for (let i = 0; i < view.length; i++) expect(view.get(i)).toEqual(expected[i])
+    expect(view.leaves.length).toBeGreaterThan(0)
+    for (const leaf of view.leaves) {
+      expect(leaf.rowOffsets.length).toBe(view.length + 1)
+      expect(leaf.valueOffsets.length).toBe(view.length + 1)
+    }
+  })
+
+  it('indexes a selected subrange within its row group', async () => {
+    const file = await asyncBufferFromFile('test/files/continued_page.parquet')
+    const scan = await parquetScan({ file, columns: ['int_list'] })
+    const options = { column: 'int_list', rowStart: 48, rowEnd: 53 }
+    const view = await scan.readColumnView(options)
+    const expected = await scan.readColumn(options)
+    expect(view.rowStart).toBe(48)
+    expect(view.length).toBe(5)
+    expect(view.toArray()).toEqual(expected)
+    expect(view.get(2)).toEqual(expected[2])
+    expect(() => view.get(5)).toThrow(RangeError)
+  })
+
+  it('uses absolute positions across row groups', async () => {
+    const file = await asyncBufferFromFile('test/files/rowgroups.parquet')
+    const scan = await parquetScan({ file, columns: ['numbers'], rowStart: 12, rowEnd: 15 })
+    const options = { column: 'numbers', ...scan.ranges[0] }
+    const view = await scan.readColumnView(options)
+    expect(view.groupStart).toBe(10)
+    expect(view.rowStart).toBe(12)
+    expect(view.toArray()).toEqual(await scan.readColumn(options))
+    expect(view.get(0)).toBe(13n)
+  })
+
   it('exposes physical ranges and reads columns lazily', async () => {
     const file = await asyncBufferFromFile('test/files/rowgroups.parquet')
     const counted = countingBuffer(file)

@@ -205,6 +205,28 @@ await parquetRead({
 
 The `parquetReadObjects` function defaults to `rowFormat: 'object'`.
 
+### Column views
+
+`parquetScan().readColumnView()` keeps nested data in physical leaf columns until a row is requested. The leaf pages expose compact `values` with definition and repetition levels; `get(index)` assembles one row, and `toArray()` assembles the selected column. `index` is relative to the requested range.
+
+```javascript
+import { parquetScan } from 'hyparquet'
+
+const scan = await parquetScan({ file, columns: ['items'] })
+const range = scan.ranges[0]
+const view = await scan.readColumnView({ column: 'items', ...range })
+
+for (const leaf of view.leaves) {
+  for (const page of leaf.pages) {
+    console.log(page.values) // compact leaf values, without per-row lists or objects
+  }
+}
+console.log(view.get(0))   // assemble only the first selected row
+console.log(view.toArray()) // assemble all selected rows
+```
+
+`rowOffsets` and `valueOffsets` on each leaf are indexed from `view.groupStart`, the first row of the backing row group. Values have already passed through the configured logical type parsers and dictionary decoding. The current implementation reads complete column chunks for a view, so a small row range can transfer more bytes than `readColumn()` with an offset index.
+
 ### Binary columns
 
 Hyparquet defaults to decoding binary columns as utf8 text strings. A parquet `BYTE_ARRAY` column may contain arbitrary binary data or utf8 encoded text data. In theory, a column should be annotated as [LogicalType](https://github.com/apache/parquet-format/blob/master/LogicalTypes.md) STRING if it contains utf8 text. But in practice, many parquet files omit this annotation. Hyparquet's default decoding behavior can be disabled by setting the `utf8` option to `false`. The `utf8` option only affects `BYTE_ARRAY` columns _without_ an annotation.

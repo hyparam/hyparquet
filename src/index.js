@@ -49,6 +49,8 @@ export { asyncBufferFromUrl, byteLengthFromUrl, cachedAsyncBuffer, flatten, toJs
  * @typedef {import('../src/types.d.ts').ParquetRow} ParquetRow
  * @typedef {import('../src/types.d.ts').ParquetRowRange} ParquetRowRange
  * @typedef {import('../src/types.d.ts').ParquetScan} ParquetScan
+ * @typedef {import('../src/types.d.ts').ParquetColumnView} ParquetColumnView
+ * @typedef {import('../src/types.d.ts').ParquetColumnLeaf} ParquetColumnLeaf
  * @typedef {import('../src/types.d.ts').ParquetScanColumnOptions} ParquetScanColumnOptions
  * @typedef {import('../src/types.d.ts').ParquetScanOptions} ParquetScanOptions
  * @typedef {import('../src/types.d.ts').MetadataOptions} MetadataOptions

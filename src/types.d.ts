@@ -85,6 +85,37 @@ export interface ParquetScan {
   metadata: FileMetaData
   ranges: readonly ParquetRowRange[]
   readColumn(options: ParquetScanColumnOptions): Promise<DecodedArray>
+  /** Read a column without assembling nested rows. The current implementation reads its complete row-group chunk. */
+  readColumnView(options: ParquetScanColumnOptions): Promise<ParquetColumnView>
+}
+
+/** A decoded physical page, before list, struct, and map assembly. */
+export interface ColumnLevelPage {
+  values: DecodedArray
+  definitionLevels: number[]
+  repetitionLevels: number[]
+}
+
+/** One physical leaf and its row-boundary index within a row group. */
+export interface ParquetColumnLeaf {
+  pathInSchema: string[]
+  schemaPath: SchemaTree[]
+  pages: readonly (ColumnLevelPage & { eventStart: number, eventEnd: number, valueStart: number })[]
+  rowOffsets: Uint32Array
+  valueOffsets: Uint32Array
+}
+
+/** A column whose nested JavaScript values are created only on request. */
+export interface ParquetColumnView {
+  /** Absolute first row of the row group backing the leaf offsets. */
+  groupStart: number
+  rowStart: number
+  rowEnd: number
+  length: number
+  leaves: readonly ParquetColumnLeaf[]
+  /** Relative row index within this view. */
+  get(index: number): any
+  toArray(): DecodedArray
 }
 
 /**
