@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.31.2]
+ - Coalesce column chunk reads within a row group when gaps are at most 8 KB (#182)
+ - Faster INT32 and INT64 delta binary packed decoding (#180, #181)
+
 ## [1.31.1]
  - Avoid decoding unselected rows when reading nested VARIANT columns (#179)
 
