@@ -88,6 +88,20 @@ describe('deltaBinaryUnpack', () => {
     })
   }
 
+  it('decodes unsigned INT64 residuals at every bit width', () => {
+    for (let width = 0; width <= 64; width++) {
+      const bytes = new Uint8Array(10 + 4 * width).fill(255)
+      bytes.set([128, 1, 4, 3, 0, 0, width, 0, 0, 0])
+      // First residual is zero; the second and padding have all bits set.
+      for (let bit = 0; bit < width; bit++) bytes[10 + (bit >> 3)] &= ~(1 << (bit & 7))
+      const reader = { view: new DataView(bytes.buffer), offset: 0 }
+      const output = new BigInt64Array(3)
+      deltaBinaryUnpack(reader, 3, output)
+      expect(output).toEqual(new BigInt64Array([0n, 0n, BigInt.asIntN(64, (1n << BigInt(width)) - 1n)]))
+      expect(reader.offset).toBe(bytes.length)
+    }
+  })
+
   it('preserves INT64 values beyond Number precision', () => {
     // First value 2^60, min delta 1, all four miniblocks have zero width.
     const bytes = Uint8Array.from([128, 1, 4, 3, 128, 128, 128, 128, 128, 128, 128, 128, 32, 2, 0, 0, 0, 0])

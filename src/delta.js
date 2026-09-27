@@ -33,19 +33,20 @@ export function deltaBinaryUnpack(reader, count, output) {
 
     for (let i = 0; i < miniblockPerBlock && outputIndex < count; i++) {
       // new miniblock
-      const bitWidth = BigInt(bitWidths[i])
+      const bitWidth = bitWidths[i]
       if (bitWidth) {
-        let bitpackPos = 0n
+        // Miniblock data lengths are multiples of four bytes.
+        let bitpackPos = 0
         let miniblockCount = valuesPerMiniblock
-        const mask = (1n << bitWidth) - 1n
+        const mask = (1n << BigInt(bitWidth)) - 1n
         while (miniblockCount && outputIndex < count) {
-          let bits = BigInt(reader.view.getUint8(reader.offset)) >> bitpackPos & mask // TODO: don't re-read value every time
+          let bits = BigInt(reader.view.getUint32(reader.offset, true) >>> bitpackPos) & mask // TODO: don't re-read value every time
           bitpackPos += bitWidth
-          while (bitpackPos >= 8) {
-            bitpackPos -= 8n
-            reader.offset++
+          while (bitpackPos >= 32) {
+            bitpackPos -= 32
+            reader.offset += 4
             if (bitpackPos) {
-              bits |= BigInt(reader.view.getUint8(reader.offset)) << bitWidth - bitpackPos & mask
+              bits |= BigInt(reader.view.getUint32(reader.offset, true)) << BigInt(bitWidth - bitpackPos) & mask
             }
           }
           const delta = minDelta + bits
@@ -55,7 +56,7 @@ export function deltaBinaryUnpack(reader, count, output) {
         }
         if (miniblockCount) {
           // consume leftover miniblock
-          reader.offset += Math.ceil((miniblockCount * Number(bitWidth) + Number(bitpackPos)) / 8)
+          reader.offset += Math.ceil((miniblockCount * bitWidth + bitpackPos) / 8)
         }
       } else {
         for (let j = 0; j < valuesPerMiniblock && outputIndex < count; j++) {
