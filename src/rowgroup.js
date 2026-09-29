@@ -1,11 +1,12 @@
 /**
- * @import {AsyncColumn, AsyncRowGroup, ChunkPlan, ColumnDecoder, DecodedArray, GroupPlan, PageLocation, ParquetParsers, ParquetReadOptions, QueryPlan, SchemaTree} from '../src/types.js'
+ * @import {AsyncColumn, AsyncRowGroup, ByteRange, ChunkPlan, ColumnDecoder, DecodedArray, GroupPlan, PageLocation, ParquetParsers, ParquetReadOptions, QueryPlan, SchemaTree} from '../src/types.js'
  */
 
 import { assembleNested } from './assemble.js'
 import { readColumn } from './column.js'
 import { DEFAULT_PARSERS } from './convert.js'
 import { readOffsetIndex } from './indexes.js'
+import { coalesceByteRanges, prefetchAsyncBuffer, runLimit } from './plan.js'
 import { getSchemaPath } from './schema.js'
 import { flatten } from './utils.js'
 
@@ -21,7 +22,23 @@ export function readRowGroup(options, { metadata }, groupPlan) {
   /** @type {AsyncColumn[]} */
   const asyncColumns = []
 
+  // read all offset indexes, then fetch the selected pages of every column
+  // together so neighboring pages share one request instead of one per column
+  const pagedChunks = groupPlan.chunks.filter(chunk => 'pageLocations' in chunk || 'offsetIndex' in chunk)
+  const prefetchedPages = Promise.all(pagedChunks.map(async chunk => {
+    if ('pageLocations' in chunk) return selectedPageRanges(groupPlan, chunk, chunk.pageLocations)
+    if (!('offsetIndex' in chunk)) throw new Error('parquet expected offset index')
+    const buffer = await options.file.slice(chunk.offsetIndex.startByte, chunk.offsetIndex.endByte)
+    const pages = readOffsetIndex({ view: new DataView(buffer), offset: 0 }).page_locations
+    return selectedPageRanges(groupPlan, chunk, pages)
+  })).then(selections => {
+    const ranges = selections.flatMap(selection => selection.fetches)
+    const file = prefetchAsyncBuffer(options.file, { fetches: coalesceByteRanges(ranges, 0, runLimit) })
+    return { file, selections }
+  })
+
   // read column data
+  let pagedChunkIndex = 0
   for (const chunk of groupPlan.chunks) {
     const { path_in_schema: pathInSchema } = chunk.columnMetadata
     const schemaPath = getSchemaPath(metadata.schema, pathInSchema)
@@ -36,21 +53,13 @@ export function readRowGroup(options, { metadata }, groupPlan) {
     }
     const { startByte, endByte } = chunk.range
 
-    if ('pageLocations' in chunk) {
-      // page locations already parsed from the offset index
+    if ('pageLocations' in chunk || 'offsetIndex' in chunk) {
+      const chunkIndex = pagedChunkIndex++
       asyncColumns.push({
         pathInSchema,
-        data: readSelectedPages(options, groupPlan, chunk, chunk.pageLocations, columnDecoder),
-      })
-    } else if ('offsetIndex' in chunk) {
-      asyncColumns.push({
-        pathInSchema,
-        // fetch offset index
-        data: Promise.resolve(options.file.slice(chunk.offsetIndex.startByte, chunk.offsetIndex.endByte))
-          .then(arrayBuffer => {
-            const pages = readOffsetIndex({ view: new DataView(arrayBuffer), offset: 0 }).page_locations
-            return readSelectedPages(options, groupPlan, chunk, pages, columnDecoder)
-          }),
+        data: prefetchedPages.then(({ file, selections }) =>
+          readSelectedPages({ ...options, file }, groupPlan, selections[chunkIndex], columnDecoder)
+        ),
       })
     } else {
       // full column chunk
@@ -75,17 +84,15 @@ export function readRowGroup(options, { metadata }, groupPlan) {
 }
 
 /**
- * Read only the pages of a column chunk that overlap the group plan's select
- * range [selectStart, selectEnd), using page locations from the offset index.
+ * Compute the byte ranges needed to read the pages of a column chunk that
+ * overlap the group plan's select range [selectStart, selectEnd).
  *
- * @param {ParquetReadOptions} options
  * @param {GroupPlan} groupPlan
  * @param {ChunkPlan} chunk
  * @param {PageLocation[]} pages
- * @param {ColumnDecoder} columnDecoder
- * @returns {Promise<{data: DecodedArray[], skipped: number}>}
+ * @returns {{skipped: number, fetches: ByteRange[]}} rows skipped before the first selected page, and the byte ranges to fetch
  */
-async function readSelectedPages(options, groupPlan, chunk, pages, columnDecoder) {
+function selectedPageRanges(groupPlan, chunk, pages) {
   const { data_page_offset, dictionary_page_offset } = chunk.columnMetadata
   const { selectStart, selectEnd } = groupPlan
   let { startByte, endByte } = chunk.range
@@ -108,26 +115,42 @@ async function readSelectedPages(options, groupPlan, chunk, pages, columnDecoder
     }
   }
   if (skipped < 0) skipped = 0
+  if (!hasDict) return { skipped, fetches: [{ startByte, endByte }] }
+  // dictionary page is contiguous with the first selected page
+  if (!skipped) return { skipped, fetches: [{ startByte: chunk.range.startByte, endByte }] }
+  const dictionary = { startByte: chunk.range.startByte, endByte: Number(pages[0].offset) }
+  return { skipped, fetches: [dictionary, { startByte, endByte }] }
+}
+
+/**
+ * Read only the pages of a column chunk that overlap the group plan's select
+ * range [selectStart, selectEnd), using page locations from the offset index.
+ *
+ * @param {ParquetReadOptions} options
+ * @param {GroupPlan} groupPlan
+ * @param {{skipped: number, fetches: ByteRange[]}} selection from selectedPageRanges
+ * @param {ColumnDecoder} columnDecoder
+ * @returns {Promise<{data: DecodedArray[], skipped: number}>}
+ */
+async function readSelectedPages(options, groupPlan, { skipped, fetches }, columnDecoder) {
   /** @type {DataView} */
   let view
-  if (hasDict && skipped) {
+  if (fetches.length > 1) {
     // fetch the dictionary page separately from the selected data pages so
     // the skipped leading pages are not transferred
-    const dictLength = Number(pages[0].offset) - chunk.range.startByte
+    const [dictionary, dataPages] = fetches
+    const dictLength = dictionary.endByte - dictionary.startByte
     const [dictBuffer, dataBuffer] = await Promise.all([
-      options.file.slice(chunk.range.startByte, Number(pages[0].offset)),
-      options.file.slice(startByte, endByte),
+      options.file.slice(dictionary.startByte, dictionary.endByte),
+      options.file.slice(dataPages.startByte, dataPages.endByte),
     ])
     // clamp in case the AsyncBuffer returned more bytes than requested
     const combined = new Uint8Array(dictLength + dataBuffer.byteLength)
     combined.set(new Uint8Array(dictBuffer, 0, dictLength))
     combined.set(new Uint8Array(dataBuffer), dictLength)
     view = new DataView(combined.buffer)
-  } else if (hasDict) {
-    // dictionary page is contiguous with the first selected page
-    view = new DataView(await options.file.slice(chunk.range.startByte, endByte))
   } else {
-    view = new DataView(await options.file.slice(startByte, endByte))
+    view = new DataView(await options.file.slice(fetches[0].startByte, fetches[0].endByte))
   }
   const reader = { view, offset: 0 }
   // adjust row selection for skipped pages

@@ -26,6 +26,39 @@ async function expectNoUnhandledRejections(callback) {
 }
 
 /**
+ * page_index.parquet where the first page read rejects and the second throws synchronously.
+ *
+ * @returns {Promise<{ metadata: import('../src/types.js').FileMetaData, file: import('../src/types.js').AsyncBuffer }>}
+ */
+async function pageFailingFile() {
+  const file = await asyncBufferFromFile('test/files/page_index.parquet')
+  const metadata = await parquetMetadataAsync(file)
+  const offsetIndexStarts = new Set(metadata.row_groups.flatMap(rowGroup =>
+    rowGroup.columns.map(column => Number(column.offset_index_offset))
+  ))
+  let pageReads = 0
+  return {
+    metadata,
+    file: {
+      byteLength: file.byteLength,
+      /**
+       * @param {number} start
+       * @param {number} [end]
+       * @returns {Promise<ArrayBuffer> | ArrayBuffer}
+       */
+      slice(start, end) {
+        if (!offsetIndexStarts.has(start)) {
+          pageReads++
+          if (pageReads === 1) return Promise.reject(new Error('simulated async page failure'))
+          if (pageReads === 2) throw new Error('simulated sync page failure')
+        }
+        return file.slice(start, end)
+      },
+    },
+  }
+}
+
+/**
  * @returns {Promise<{ metadata: import('../src/types.js').FileMetaData, file: import('../src/types.js').AsyncBuffer }>}
  */
 async function rowGroupFailingFile() {
@@ -553,6 +586,46 @@ describe('parquetRead', () => {
     await expectNoUnhandledRejections(async () => {
       await expect(parquetRead({ file, metadata, onChunk: vi.fn() }))
         .rejects.toThrow('simulated read failure')
+    })
+  })
+  it('reads the selected pages of all offset-indexed columns together', async () => {
+    const file = await asyncBufferFromFile('test/files/dictionary_offset_indexed.parquet')
+    const metadata = await parquetMetadataAsync(file)
+    const counting = countingBuffer(file)
+    const rows = await parquetReadObjects({ file: counting, metadata, rowStart: 0, rowEnd: 1, useOffsetIndex: true })
+    const allRows = await parquetReadObjects({ file, metadata })
+    expect(rows).toEqual(allRows.slice(0, 1))
+    expect(counting.fetches).toBe(2) // 1 for both offset indexes, 1 for both columns' pages
+    expect(counting.bytes).toBe(1306)
+  })
+
+  it('reads skipped-page selections of plain and dictionary columns together', async () => {
+    const file = await asyncBufferFromFile('test/files/page_index.parquet')
+    const metadata = await parquetMetadataAsync(file)
+    const counting = countingBuffer(file)
+    const rows = await parquetReadObjects({ file: counting, metadata, rowStart: 1200, rowEnd: 1210, useOffsetIndex: true })
+    const allRows = await parquetReadObjects({ file, metadata })
+    expect(rows).toEqual(allRows.slice(1200, 1210))
+    // 1 for all offset indexes, 1 per column's selected pages, 1 for the category dictionary
+    expect(counting.fetches).toBe(6)
+    expect(counting.bytes).toBe(3085)
+  })
+
+  it('does not leak unhandled rejections when a page read throws synchronously', async () => {
+    const { file, metadata } = await pageFailingFile()
+
+    await expectNoUnhandledRejections(async () => {
+      await expect(parquetReadObjects({ file, metadata, rowStart: 1200, rowEnd: 1210, useOffsetIndex: true }))
+        .rejects.toThrow('simulated async page failure')
+    })
+  })
+
+  it('does not leak unhandled rejections from onChunk when a page read throws synchronously', async () => {
+    const { file, metadata } = await pageFailingFile()
+
+    await expectNoUnhandledRejections(async () => {
+      await expect(parquetRead({ file, metadata, rowStart: 1200, rowEnd: 1210, useOffsetIndex: true, onChunk: vi.fn() }))
+        .rejects.toThrow('simulated async page failure')
     })
   })
 })
