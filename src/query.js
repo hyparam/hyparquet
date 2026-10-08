@@ -34,18 +34,35 @@ export async function parquetQuery(options) {
 
   if (filter && !orderBy && rowEnd < metadata.num_rows) {
     // iterate through row groups and filter until we have enough rows
+    /** @type {number[]} */
+    const groupEnds = []
+    let groupEnd = 0
+    for (const group of metadata.row_groups) {
+      groupEnds.push(groupEnd += Number(group.num_rows))
+    }
+    /**
+     * @param {number} index
+     * @returns {Promise<ParquetRow[]>}
+     */
+    function readGroup(index) {
+      const rows = parquetReadObjects({
+        ...options, rowStart: index ? groupEnds[index - 1] : 0, rowEnd: groupEnds[index],
+      })
+      // a read-ahead may be abandoned once enough rows are found
+      rows.catch(() => {})
+      return rows
+    }
+    // callbacks must not fire for a group read ahead and then abandoned
+    const readAhead = !options.onChunk && !options.onPage
     /** @type {ParquetRow[]} */
     const filteredRows = []
-    let groupStart = 0
-    for (const group of metadata.row_groups) {
-      const groupEnd = groupStart + Number(group.num_rows)
-      // TODO: if expected > group size, start fetching next groups
-      const groupData = await parquetReadObjects({
-        ...options, rowStart: groupStart, rowEnd: groupEnd,
-      })
-      filteredRows.push(...groupData)
+    /** @type {Promise<ParquetRow[]> | undefined} */
+    let next
+    for (let i = 0; i < groupEnds.length; i++) {
+      const current = next ?? readGroup(i)
+      next = readAhead && i + 1 < groupEnds.length ? readGroup(i + 1) : undefined
+      filteredRows.push(...await current)
       if (filteredRows.length >= rowEnd) break
-      groupStart = groupEnd
     }
     return filteredRows.slice(rowStart, rowEnd)
   } else if (filter && orderBy) {
