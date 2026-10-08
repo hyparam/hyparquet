@@ -83,25 +83,29 @@ function deltaBinaryUnpackInt32(reader, count, output) {
   let outputIndex = 0
   output[outputIndex++] = value
   const valuesPerMiniblock = blockSize / miniblockPerBlock
+  const { view } = reader
   while (outputIndex < count) {
-    const minDelta = readZigZag(reader)
+    const minDelta = readZigZagInt33(reader)
     const bitWidthsOffset = reader.offset
-    reader.offset += miniblockPerBlock
+    let offset = bitWidthsOffset + miniblockPerBlock
     for (let i = 0; i < miniblockPerBlock && outputIndex < count; i++) {
-      const bitWidth = reader.view.getUint8(bitWidthsOffset + i)
-      const end = reader.offset + valuesPerMiniblock * bitWidth / 8
+      const bitWidth = view.getUint8(bitWidthsOffset + i)
+      const end = offset + valuesPerMiniblock * bitWidth / 8
       let bitOffset = 0
       for (let j = 0; j < valuesPerMiniblock && outputIndex < count; j++) {
         let residual = 0
         let bitsRead = 0
         while (bitsRead < bitWidth) {
           const bitsToRead = Math.min(8 - bitOffset, bitWidth - bitsRead)
-          residual |= (reader.view.getUint8(reader.offset) >>> bitOffset & (1 << bitsToRead) - 1) << bitsRead
+          // Residual bits at 32 and above vanish modulo 2^32.
+          if (bitsRead < 32) {
+            residual |= (view.getUint8(offset) >>> bitOffset & (1 << bitsToRead) - 1) << bitsRead
+          }
           bitsRead += bitsToRead
           bitOffset += bitsToRead
           if (bitOffset === 8) {
             bitOffset = 0
-            reader.offset++
+            offset++
           }
         }
         // Parquet INT32 delta arithmetic wraps in two's complement.
@@ -109,9 +113,26 @@ function deltaBinaryUnpackInt32(reader, count, output) {
         output[outputIndex++] = value
       }
       // Consume the entire padded miniblock, but not unused miniblock bodies.
-      reader.offset = end
+      offset = end
     }
+    reader.offset = offset
   }
+}
+
+/**
+ * Read a zigzag varint modulo 2^32. INT32 deltas can need 33 bits, which
+ * readZigZag truncates, but only the low 32 bits of the decoded value matter.
+ * readVarInt keeps the low 32 zigzag bits of a 5-byte varint; bit 32 is bit 4
+ * of the fifth byte. Reusing readVarInt keeps the caller's hot loop fast.
+ *
+ * @param {DataReader} reader
+ * @returns {number}
+ */
+function readZigZagInt33(reader) {
+  const start = reader.offset
+  const low = readVarInt(reader)
+  const high = reader.offset - start === 5 ? reader.view.getUint8(start + 4) >>> 4 & 1 : 0
+  return (low >>> 1 | high << 31) ^ -(low & 1)
 }
 
 /**

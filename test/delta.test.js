@@ -4,6 +4,7 @@ import { deltaBinaryUnpack } from '../src/delta.js'
 /**
  * Build packed residuals and an independent modular BigInt reference result.
  * Padding is deliberately nonzero, including unused miniblock width bytes.
+ * Width 33 and a 33-bit min delta match writers that use exact INT32 deltas.
  *
  * @param {number} count
  * @param {number} width
@@ -30,7 +31,8 @@ function fixture(count, width, first, min, blockSize, miniblocks) {
    * @param {number} value
    */
   function zigzag(value) {
-    varint(BigInt(value) << 1n ^ BigInt(value) >> 31n)
+    const big = BigInt(value)
+    varint(big < 0n ? -big * 2n - 1n : big * 2n)
   }
   varint(BigInt(blockSize))
   varint(BigInt(miniblocks))
@@ -68,10 +70,10 @@ function fixture(count, width, first, min, blockSize, miniblocks) {
 }
 
 describe('deltaBinaryUnpack', () => {
-  for (let width = 0; width <= 32; width++) {
+  for (let width = 0; width <= 33; width++) {
     it(`decodes INT32 width ${width} with wrapping and padding`, () => {
       for (const count of [1, 2, 31, 32, 33, 34, 127, 128, 129, 130, 257]) {
-        for (const [first, min] of [[-2147483648, -2147483648], [2147483647, 2147483647], [0, -1]]) {
+        for (const [first, min] of [[-2147483648, -2147483648], [2147483647, 2147483647], [0, -1], [2147483647, -4294967295]]) {
           for (const [blockSize, miniblocks] of [[128, 4], [256, 4], [128, 1]]) {
             const { bytes, expected } = fixture(count, width, first, min, blockSize, miniblocks)
             // Exercise both a DataView byteOffset and a nonzero reader offset.
@@ -82,6 +84,10 @@ describe('deltaBinaryUnpack', () => {
             deltaBinaryUnpack(reader, count, output)
             expect(output).toEqual(expected)
             expect(reader.offset).toBe(bytes.length + 1)
+            // The BigInt64 path agrees modulo 2^32.
+            const bigOutput = new BigInt64Array(count)
+            deltaBinaryUnpack({ view: new DataView(bytes.buffer), offset: 0 }, count, bigOutput)
+            expect(Int32Array.from(bigOutput, v => Number(BigInt.asIntN(32, v)))).toEqual(expected)
           }
         }
       }
