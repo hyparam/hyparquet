@@ -1,5 +1,5 @@
 /**
- * @import {ColumnDecoder, DataReader, DecodedArray, PageHeader, PageResult, RowGroupSelect, SubColumnData} from '../src/types.js'
+ * @import {ColumnDecoder, DataReader, DecodedArray, PageHeader, PageResult, RowGroupSelect, Statistics, SubColumnData} from '../src/types.js'
  */
 
 import { assembleLists } from './assemble.js'
@@ -145,12 +145,12 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
 }
 
 /**
- * Read parquet header from a buffer.
+ * Read a page header from a buffer, leaving the reader at the start of the page data.
  *
  * @param {DataReader} reader
  * @returns {PageHeader}
  */
-function parquetHeader(reader) {
+export function parquetHeader(reader) {
   const header = deserializeTCompactProtocol(reader)
 
   // Parse parquet header from thrift data
@@ -163,14 +163,7 @@ function parquetHeader(reader) {
     encoding: Encodings[header.field_5.field_2],
     definition_level_encoding: Encodings[header.field_5.field_3],
     repetition_level_encoding: Encodings[header.field_5.field_4],
-    statistics: header.field_5.field_5 && {
-      max: header.field_5.field_5.field_1,
-      min: header.field_5.field_5.field_2,
-      null_count: header.field_5.field_5.field_3,
-      distinct_count: header.field_5.field_5.field_4,
-      max_value: header.field_5.field_5.field_5,
-      min_value: header.field_5.field_5.field_6,
-    },
+    statistics: pageStatistics(header.field_5.field_5),
   }
   const index_page_header = header.field_6
   const dictionary_page_header = header.field_7 && {
@@ -186,7 +179,7 @@ function parquetHeader(reader) {
     definition_levels_byte_length: header.field_8.field_5,
     repetition_levels_byte_length: header.field_8.field_6,
     is_compressed: header.field_8.field_7 === undefined ? true : header.field_8.field_7, // default true
-    statistics: header.field_8.field_8,
+    statistics: pageStatistics(header.field_8.field_8),
   }
 
   return {
@@ -198,5 +191,22 @@ function parquetHeader(reader) {
     index_page_header,
     dictionary_page_header,
     data_page_header_v2,
+  }
+}
+
+/**
+ * @param {any} stats thrift Statistics struct
+ * @returns {Statistics | undefined}
+ */
+function pageStatistics(stats) {
+  return stats && {
+    max: stats.field_1,
+    min: stats.field_2,
+    null_count: stats.field_3,
+    distinct_count: stats.field_4,
+    max_value: stats.field_5,
+    min_value: stats.field_6,
+    is_max_value_exact: stats.field_7,
+    is_min_value_exact: stats.field_8,
   }
 }
