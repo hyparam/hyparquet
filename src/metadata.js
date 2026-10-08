@@ -79,13 +79,19 @@ export async function parquetMetadataAsync(asyncBuffer, { parsers, initialFetchS
 /**
  * Read parquet metadata from a buffer synchronously.
  *
- * @param {ArrayBuffer} arrayBuffer parquet file footer
+ * @param {ArrayBuffer | Uint8Array} arrayBuffer parquet file footer
  * @param {MetadataOptions} options metadata parsing options
  * @returns {FileMetaData} parquet metadata object
  */
 export function parquetMetadata(arrayBuffer, { parsers, geoparquet = true } = {}) {
-  if (!(arrayBuffer instanceof ArrayBuffer)) throw new Error('parquet expected ArrayBuffer')
-  const view = new DataView(arrayBuffer)
+  let view
+  if (arrayBuffer instanceof ArrayBuffer) {
+    view = new DataView(arrayBuffer)
+  } else if (arrayBuffer instanceof Uint8Array) {
+    view = new DataView(arrayBuffer.buffer, arrayBuffer.byteOffset, arrayBuffer.byteLength)
+  } else {
+    throw new Error('parquet expected ArrayBuffer or Uint8Array')
+  }
 
   // Use default parsers if not given
   const allParsers = { ...DEFAULT_PARSERS, ...parsers }
