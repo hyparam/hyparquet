@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { readColumn } from '../src/column.js'
+import { readColumn, readPage } from '../src/column.js'
 import { DEFAULT_PARSERS } from '../src/convert.js'
 import { parquetMetadata } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
@@ -75,8 +75,48 @@ describe('readColumn', () => {
   })
 })
 
+describe('readPage', () => {
+  it('skips a v2 page of a nested column by its row count', () => {
+    /** @type {SchemaElement[]} */
+    const schema = [
+      { name: 'root', num_children: 1 },
+      { name: 'list', repetition_type: 'OPTIONAL', converted_type: 'LIST', num_children: 1 },
+      { name: 'list', repetition_type: 'REPEATED', num_children: 1 },
+      { name: 'element', repetition_type: 'OPTIONAL', type: 'INT32' },
+    ]
+    const schemaPath = getSchemaPath(schema, ['list', 'list', 'element'])
+    /** @type {ColumnDecoder} */
+    const columnDecoder = {
+      pathInSchema: ['list', 'list', 'element'],
+      type: 'INT32',
+      element: schema[3],
+      schemaPath,
+      parsers: DEFAULT_PARSERS,
+      codec: 'UNCOMPRESSED',
+    }
+    /** @type {PageHeader} */
+    const header = {
+      type: 'DATA_PAGE_V2',
+      uncompressed_page_size: 8,
+      compressed_page_size: 8,
+      data_page_header_v2: {
+        num_values: 10,
+        num_nulls: 0,
+        num_rows: 5,
+        encoding: 'PLAIN',
+        definition_levels_byte_length: 0,
+        repetition_levels_byte_length: 0,
+      },
+    }
+    const reader = { view: new DataView(new ArrayBuffer(8)), offset: 0 }
+    const result = readPage(reader, header, columnDecoder, undefined, undefined, 6)
+    expect(result).toEqual({ skipped: 5 })
+    expect(reader.offset).toBe(8)
+  })
+})
+
 /**
- * @import {ByteRange, ColumnMetaData} from '../src/types.js'
+ * @import {ByteRange, ColumnDecoder, ColumnMetaData, PageHeader, SchemaElement} from '../src/types.js'
  * @param {ColumnMetaData} meta
  * @returns {ByteRange}
  */

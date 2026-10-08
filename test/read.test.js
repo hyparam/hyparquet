@@ -3,6 +3,8 @@ import { parquetMetadataAsync, parquetRead, parquetReadObjects, rowIndex } from 
 import { asyncBufferFromFile } from '../src/node.js'
 import { countingBuffer } from './helpers.js'
 
+/** @import {ColumnData} from '../src/types.js' */
+
 vi.mock('../src/convert.js', { spy: true })
 
 /**
@@ -377,6 +379,34 @@ describe('parquetRead', () => {
     const laterRows = await parquetReadObjects({ file, rowStart: 15, rowEnd: 18, useOffsetIndex: true })
     expect(firstRows).toEqual(allRows.slice(0, 3))
     expect(laterRows).toEqual(allRows.slice(15, 18))
+  })
+
+  it('skips v2 pages of nested columns by rows', async () => {
+    const file = await asyncBufferFromFile('test/files/nested_v2_pages.parquet')
+    const allRows = await parquetReadObjects({ file })
+    for (let rowStart = 0; rowStart < allRows.length; rowStart++) {
+      const rows = await parquetReadObjects({ file, rowStart, rowEnd: rowStart + 3 })
+      expect(rows).toEqual(allRows.slice(rowStart, rowStart + 3))
+    }
+  })
+
+  it('reports row positions of nested v2 chunks after skipped pages', async () => {
+    const file = await asyncBufferFromFile('test/files/nested_v2_pages.parquet')
+    const allRows = await parquetReadObjects({ file })
+    /** @type {ColumnData[]} */
+    const chunks = []
+    await parquetRead({
+      file,
+      columns: ['list'],
+      rowStart: 30,
+      onChunk(chunk) {
+        chunks.push(chunk)
+      },
+    })
+    expect(chunks.length).toBeGreaterThan(0)
+    for (const { columnData, rowStart, rowEnd } of chunks) {
+      expect(Array.from(columnData)).toEqual(allRows.slice(rowStart, rowEnd).map(row => row.list))
+    }
   })
 
   it('reads only required row groups on the boundary', async () => {
