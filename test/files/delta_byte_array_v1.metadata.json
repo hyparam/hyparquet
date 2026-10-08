@@ -1,0 +1,103 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "schema",
+      "num_children": 2
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "string",
+      "converted_type": "UTF8",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "FIXED_LEN_BYTE_ARRAY",
+      "type_length": 4,
+      "repetition_type": "OPTIONAL",
+      "name": "fixed"
+    }
+  ],
+  "num_rows": 200,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "string"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 200,
+            "total_uncompressed_size": 1191,
+            "total_compressed_size": 814,
+            "data_page_offset": 4,
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 2
+              }
+            ],
+            "size_statistics": {
+              "unencoded_byte_array_data_bytes": 1290,
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                20,
+                180
+              ]
+            }
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FIXED_LEN_BYTE_ARRAY",
+            "encodings": [
+              "RLE",
+              "DELTA_BYTE_ARRAY"
+            ],
+            "path_in_schema": [
+              "fixed"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 200,
+            "total_uncompressed_size": 719,
+            "total_compressed_size": 567,
+            "data_page_offset": 818,
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "DELTA_BYTE_ARRAY",
+                "count": 2
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                29,
+                171
+              ]
+            }
+          }
+        }
+      ],
+      "total_byte_size": 1910,
+      "num_rows": 200,
+      "file_offset": 4,
+      "total_compressed_size": 1381
+    }
+  ],
+  "created_by": "parquet-cpp-arrow version 25.0.1",
+  "metadata_length": 217
+}

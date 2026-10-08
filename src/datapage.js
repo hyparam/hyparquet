@@ -59,6 +59,9 @@ export function readDataPage(bytes, daph, { type, element, schemaPath }) {
   } else if (daph.encoding === 'DELTA_LENGTH_BYTE_ARRAY') {
     dataPage = new Array(nValues)
     deltaLengthByteArray(reader, nValues, dataPage)
+  } else if (daph.encoding === 'DELTA_BYTE_ARRAY') {
+    dataPage = new Array(nValues)
+    deltaByteArray(reader, nValues, dataPage)
   } else {
     throw new Error(`parquet unsupported encoding: ${daph.encoding}`)
   }
