@@ -108,6 +108,21 @@ describe('variant decoding', () => {
 
     expect(subcolumnData.get('variant')).toEqual(['hi', [1, 'foo']])
   })
+
+  it('keeps a __proto__ object key as an own property', () => {
+    const metadata = Uint8Array.from([0x11, 0x01, 0x00, 0x09, ...new TextEncoder().encode('__proto__')])
+    const value = Uint8Array.from([0x02, 0x01, 0x00, 0x00, 0x05, 0x14, 0x2a, 0x00, 0x00, 0x00])
+
+    const subcolumnData = new Map()
+    subcolumnData.set('variant.metadata', [metadata])
+    subcolumnData.set('variant.value', [value])
+
+    assembleNested(subcolumnData, variantSchema, DEFAULT_PARSERS)
+
+    const [result] = subcolumnData.get('variant')
+    expect(Object.keys(result)).toEqual(['__proto__'])
+    expect(Object.getOwnPropertyDescriptor(result, '__proto__')?.value).toBe(42)
+  })
 })
 
 describe('variant binary encoding', () => {

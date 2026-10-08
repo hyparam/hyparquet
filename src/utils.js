@@ -22,11 +22,27 @@ export function toJson(obj) {
     const newObj = {}
     for (const key of Object.keys(obj)) {
       if (obj[key] === undefined) continue
-      newObj[key] = toJson(obj[key])
+      setOwnKey(newObj, key, toJson(obj[key]))
     }
     return newObj
   }
   return obj
+}
+
+/**
+ * Set a data-derived key as an own property, including '__proto__',
+ * which plain assignment would treat as the object's prototype.
+ *
+ * @param {Record<string, any>} obj
+ * @param {string} key
+ * @param {any} value
+ */
+export function setOwnKey(obj, key, value) {
+  if (key === '__proto__') {
+    Object.defineProperty(obj, key, { value, enumerable: true, configurable: true, writable: true })
+  } else {
+    obj[key] = value
+  }
 }
 
 /**
