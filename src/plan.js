@@ -238,45 +238,56 @@ function pagesForRange([rangeStart, rangeEnd], pages, groupRows) {
 }
 
 /**
- * Fetch bloom filters for $eq / $in columns of row groups not already provably
- * skippable by statistics alone. Returns an array indexed by row-group ordinal;
- * each entry maps top-level column name → BloomFilter for any chunk whose
- * bloom filter we were able to parse. Adds one round-trip when at least one
- * bloom filter is fetched; otherwise returns synchronously.
+ * Fetch bloom filters for $eq / $in columns of row groups that overlap the
+ * requested rows and are not already provably skippable by statistics alone.
+ * Returns an array indexed by row-group ordinal; each entry maps top-level
+ * column name → BloomFilter for any chunk whose bloom filter we were able to
+ * parse. Adjacent bloom filters are coalesced into a single request.
  *
  * @param {object} options
  * @param {AsyncBuffer} options.file
  * @param {FileMetaData} options.metadata
  * @param {ParquetQueryFilter} options.filter
  * @param {boolean} [options.filterStrict]
+ * @param {number} [options.rowStart]
+ * @param {number} [options.rowEnd]
  * @returns {Promise<Record<string, BloomFilter>[]>}
  */
-export async function prefetchBloomFilters({ file, metadata, filter, filterStrict = true }) {
+export async function prefetchBloomFilters({ file, metadata, filter, filterStrict = true, rowStart = 0, rowEnd = Infinity }) {
   const result = metadata.row_groups.map(() => /** @type {Record<string, BloomFilter>} */ ({}))
   const eligibleCols = bloomEligibleColumns(filter)
   if (eligibleCols.size === 0) return result
   const physicalColumns = getPhysicalColumns(parquetSchema(metadata))
 
-  /** @type {Promise<void>[]} */
-  const tasks = []
+  /** @type {{rgIdx: number, colName: string, startByte: number, endByte: number}[]} */
+  const blooms = []
+  let groupStart = 0
   metadata.row_groups.forEach((rowGroup, rgIdx) => {
+    const groupRows = Number(rowGroup.num_rows)
+    const groupEnd = groupStart + groupRows
+    const overlaps = groupRows > 0 && groupEnd > rowStart && groupStart < rowEnd
+    groupStart = groupEnd
+    if (!overlaps) return
     if (canSkipRowGroup({ rowGroup, physicalColumns, filter, strict: filterStrict })) return
     for (const colName of eligibleCols) {
       const columnIdx = physicalColumns.indexOf(colName)
       if (columnIdx === -1) continue
       const meta = rowGroup.columns[columnIdx]?.meta_data
       if (!meta?.bloom_filter_offset || !meta.bloom_filter_length) continue
-      const start = Number(meta.bloom_filter_offset)
-      const end = start + meta.bloom_filter_length
-      tasks.push((async () => {
-        const buffer = await file.slice(start, end)
-        const bloom = readBloomFilter({ view: new DataView(buffer), offset: 0 })
-        if (bloom) result[rgIdx][colName] = bloom
-      })())
+      const startByte = Number(meta.bloom_filter_offset)
+      const endByte = startByte + meta.bloom_filter_length
+      blooms.push({ rgIdx, colName, startByte, endByte })
     }
   })
 
-  if (tasks.length) await Promise.all(tasks)
+  if (blooms.length) {
+    const prefetchedFile = prefetchAsyncBuffer(file, { fetches: coalesceByteRanges(blooms) })
+    await Promise.all(blooms.map(async ({ rgIdx, colName, startByte, endByte }) => {
+      const buffer = await prefetchedFile.slice(startByte, endByte)
+      const bloom = readBloomFilter({ view: new DataView(buffer), offset: 0 })
+      if (bloom) result[rgIdx][colName] = bloom
+    }))
+  }
   return result
 }
 
