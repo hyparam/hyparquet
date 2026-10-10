@@ -117,7 +117,7 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
 
     // skip unnecessary pages
     if (pageStart > daph2.num_rows) {
-      return { skipped: daph2.num_values }
+      return { skipped: daph2.num_rows }
     }
 
     const { definitionLevels, repetitionLevels, dataPage } =
