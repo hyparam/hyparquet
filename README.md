@@ -85,6 +85,8 @@ const schema = parquetSchema(metadata)
 const columnNames = schema.children.map(e => e.element.name)
 ```
 
+If the file (or at least its footer) is already in memory, `parquetMetadata` parses it synchronously from an `ArrayBuffer` or a `Uint8Array`, such as a node `Buffer`.
+
 ### AsyncBuffer
 
 Hyparquet requires an argument `file` of type `AsyncBuffer`. An `AsyncBuffer` is similar to a js `ArrayBuffer` but the `slice` method can return async `Promise<ArrayBuffer>`. This makes it a useful way to represent a remote file.
