@@ -11,7 +11,8 @@ describe('parquetMetadata', () => {
     it(`parse metadata from ${file}`, async () => {
       const asyncBuffer = await asyncBufferFromFile(`test/files/${file}`)
       const arrayBuffer = await asyncBuffer.slice(0)
-      const result = toJson(parquetMetadata(arrayBuffer))
+      // stringify and parse to make legal json (Infinity, etc)
+      const result = JSON.parse(JSON.stringify(toJson(parquetMetadata(arrayBuffer))))
       const base = file.replace('.parquet', '')
       const expected = fileToJson(`test/files/${base}.metadata.json`)
       expect(result, JSON.stringify(result, null, 2)).toEqual(expected)
@@ -58,7 +59,7 @@ describe('parquetMetadataAsync', () => {
       const result = await parquetMetadataAsync(asyncBuffer)
       const base = file.replace('.parquet', '')
       const expected = fileToJson(`test/files/${base}.metadata.json`)
-      expect(toJson(result)).toEqual(expected)
+      expect(JSON.parse(JSON.stringify(toJson(result)))).toEqual(expected)
     })
   })
 

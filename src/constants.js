@@ -23,6 +23,7 @@ export const Encodings = [
   'DELTA_BYTE_ARRAY',
   'RLE_DICTIONARY',
   'BYTE_STREAM_SPLIT',
+  'ALP',
 ]
 
 /** @type {import('../src/types.d.ts').FieldRepetitionType[]} */
