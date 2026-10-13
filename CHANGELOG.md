@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.31.4]
+ - Fix DELTA_BYTE_ARRAY decoding in v1 data pages (#186)
+ - Fix row count of skipped v2 pages in nested columns (#187)
+ - Throw on malformed thrift structs that end before STOP (#189)
+
 ## [1.31.3]
  - Fix INT32 delta binary packed decoding when deltas need 33 bits
 
