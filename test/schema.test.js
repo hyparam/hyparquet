@@ -60,6 +60,14 @@ describe('Parquet schema utils', () => {
       expect(() => getSchemaPath(schema, ['nonexistent']))
         .toThrow('parquet schema element not found: nonexistent')
     })
+
+    it('share one schema tree across calls for the same schema', () => {
+      const flatPath = getSchemaPath(schema, ['flat'])
+      const mapPath = getSchemaPath(schema, ['mappy', 'map', 'key'])
+      expect(flatPath[0]).toBe(mapPath[0])
+      // a different schema array gets its own tree
+      expect(getSchemaPath([...schema], ['flat'])[0]).not.toBe(flatPath[0])
+    })
   })
 
   it('getMaxRepetitionLevel', () => {

@@ -24,6 +24,11 @@ function schemaTree(schema, rootIndex, path) {
   return { count, element, children, path }
 }
 
+// Schema trees are cached per schema array so that callers resolving many
+// column paths share one tree instead of rebuilding it per column chunk.
+/** @type {WeakMap<SchemaElement[], SchemaTree>} */
+const schemaTreeCache = new WeakMap()
+
 /**
  * Get schema elements from the root to the given element name.
  *
@@ -32,7 +37,9 @@ function schemaTree(schema, rootIndex, path) {
  * @returns {SchemaTree[]} list of schema elements
  */
 export function getSchemaPath(schema, name) {
-  let tree = schemaTree(schema, 0, [])
+  const cached = schemaTreeCache.get(schema)
+  let tree = cached ?? schemaTree(schema, 0, [])
+  if (!cached) schemaTreeCache.set(schema, tree)
   const path = [tree]
   for (const part of name) {
     const child = tree.children.find(child => child.element.name === part)
