@@ -3,7 +3,11 @@ import { parquetQuery } from '../src/query.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { parquetMetadataAsync } from '../src/metadata.js'
 import { rowIndex } from '../src/index.js'
-import { countingBuffer } from './helpers.js'
+import { countingBuffer, fileToJson } from './helpers.js'
+
+/**
+ * @import {AsyncBuffer} from '../src/types.js'
+ */
 
 describe('parquetQuery', () => {
   it('throws error for undefined file', async () => {
@@ -240,6 +244,79 @@ describe('parquetQuery', () => {
     expect(rows[0]).toEqual({ id: 'xy' })
     expect(file.fetches).toBe(1) // 1 row group
     expect(file.bytes).toBe(335)
+  })
+
+  it('reads the next row group while the current one is read when filtering with a limit', async () => {
+    const source = await asyncBufferFromFile('test/files/alpha.parquet')
+    const metadata = await parquetMetadataAsync(source)
+    let inFlight = 0
+    let maxInFlight = 0
+    /** @type {AsyncBuffer} */
+    const file = {
+      byteLength: source.byteLength,
+      async slice(start, end) {
+        inFlight++
+        maxInFlight = Math.max(maxInFlight, inFlight)
+        await new Promise(resolve => setTimeout(resolve, 5))
+        inFlight--
+        return source.slice(start, end)
+      },
+    }
+    const rows = await parquetQuery({ file, metadata, filter: { id: { $gt: 'a' } }, rowStart: 90, rowEnd: 150 })
+    const expected = fileToJson('test/files/alpha.json').slice(90, 150).map((/** @type {[string]} */ [id]) => ({ id }))
+    expect(rows).toEqual(expected)
+    expect(maxInFlight).toBe(2)
+  })
+
+  it('ignores a failed read-ahead once the limit is reached', async () => {
+    const source = await asyncBufferFromFile('test/files/alpha.parquet')
+    const metadata = await parquetMetadataAsync(source)
+    const thirdGroupStart = Number(metadata.row_groups[2].columns[0].meta_data?.data_page_offset)
+    /** @type {AsyncBuffer} */
+    const file = {
+      byteLength: source.byteLength,
+      slice(start, end) {
+        if (start >= thirdGroupStart) return Promise.reject(new Error('read-ahead failed'))
+        return source.slice(start, end)
+      },
+    }
+    const rows = await parquetQuery({ file, metadata, filter: { id: { $gt: 'a' } }, rowEnd: 150 })
+    expect(rows).toHaveLength(150)
+  })
+
+  it('does not read ahead when a callback is set', async () => {
+    const source = await asyncBufferFromFile('test/files/alpha.parquet')
+    const metadata = await parquetMetadataAsync(source)
+    /** @type {AsyncBuffer} */
+    const file = {
+      byteLength: source.byteLength,
+      async slice(start, end) {
+        await new Promise(resolve => setTimeout(resolve, 5))
+        return source.slice(start, end)
+      },
+    }
+    /** @type {string[]} */
+    const chunks = []
+    await parquetQuery({
+      file, metadata, filter: { id: { $gt: 'a' } }, rowEnd: 150,
+      onChunk: ({ rowStart, rowEnd }) => chunks.push(`${rowStart}-${rowEnd}`),
+    })
+    await new Promise(resolve => setTimeout(resolve, 50))
+    expect(chunks).toEqual(['0-100', '100-200'])
+  })
+
+  it('rejects when the current row group fails to read', async () => {
+    const source = await asyncBufferFromFile('test/files/alpha.parquet')
+    const metadata = await parquetMetadataAsync(source)
+    /** @type {AsyncBuffer} */
+    const file = {
+      byteLength: source.byteLength,
+      slice() {
+        return Promise.reject(new Error('read failed'))
+      },
+    }
+    await expect(parquetQuery({ file, metadata, filter: { id: { $gt: 'a' } }, rowEnd: 150 }))
+      .rejects.toThrow('read failed')
   })
 
   it('filter on columns that are not selected', async () => {
