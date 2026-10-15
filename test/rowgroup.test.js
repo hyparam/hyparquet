@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { assembleAsync, asyncGroupToRows, readRowGroup } from '../src/rowgroup.js'
 import { parquetSchema } from '../src/metadata.js'
+import { parquetMetadataAsync, parquetRead } from '../src/index.js'
 
 /** @import {SchemaTree} from '../src/types.js' */
 
@@ -160,5 +161,36 @@ describe('readRowGroup synchronous failure cleanup', () => {
     const plan = makePlan([makeChunk('first', 0)])
     const result = readRowGroup({ file: { byteLength: 2, slice } }, { metadata }, plan)
     await expect(result.asyncColumns[0].data).rejects.toBe(failure)
+  })
+})
+
+describe('corrupt Parquet file with mismatched column schema (issue #197)', () => {
+  it('rejects the original failing file without an unhandled read error', async () => {
+    // Byte-for-byte fixture reported in https://github.com/hyparam/hyparquet/issues/197
+    const bytes = Buffer.from('UEFSMRUAFcACFcACFYGj5Y8JHBUoFQAVCBUIAAAAAAAAAAAAAAEAAAAAAAAAAgAAAAAAAAADAAAAAAAAAAQAAAAAAAAABQAAAAAAAAAGAAAAAAAAAAcAAAAAAAAACAAAAAAAAAAJAAAAAAAAAAoAAAAAAAAACwAAAAAAAAAMAAAAAAAAAA0AAAAAAAAADgAAAAAAAAAPAAAAAAAAABAAAAAAAAAAEQAAAAAAAAASAAAAAAAAABMAAAAAAAAAFQAVwAIVwAIVr6HOyA4cFSiNABUGFQgAAAQAAAAH3nsPBQAAAHJvdy0xBQAAAHJvdy0yBQAAAHJvdy0zBQAAAHJvdy00BQAAAHJvdy02BQAAAHJvdy03BQAAAHJvdy04BQAAAHJvdy05BgAAAHJvd8UxMQYAAAByb3ctMTIGAAAAcm93LTEzBgAAAHJvdy0xNAYAAAByb3ctMTYGAAAAcm93LTE3BgAAAHJvdy0xOAYAAAByb3ctMTkVABXgARXgARWI2rT4DBwVKBUAFQYVCAAABAAAAAe2bQsAAAAAAADgPwAAAAAAAPA/AAAAAAAAAEAAAAAAAAAEQAAAAAAAAAxAAAAAAAAAEEAAAAAAAAAUQAAAAAAAABZAAAAAAAAAGkAAAAAAAAAcQAAAAAAAACBAAAAAAAAAIUAAAAAnAAAjQBUAFRQVFBXm86DUCRwVKBUAFQYVCAAABAAAAAdVVQVVARkRAhkYCAAAAAAAAAAAGRgIEwAAAAAAAAAVAhkWABkWKBkWKAAZEQIZGAVyb3ctMRkYBXJvdy05FQIZFggZFigZJgggABkRAhkYCAAAAAAAAOA/GRgIAAAAAAAAI0AVAhkWDhkWKBkmDhoAGRECGRgBABkYAQEVAhkWFBkWKBkmFBQAGRwWCBXyAhYAAAAZHBb6AhXyAhYAABkWsAGUGRwW7AUVkgIWAAAAGRwW/gcVQhYAAAAVAhlcSAViYXNpYxUIABUEJQAYAmlkABUMJQIYBG5hbWUlAEwcAAAAFQolAhgFc2NvcmUAFQAlAhgEZmxhNAAWKBkcGUwmABwVBBklCAAZGAJpZBUAFigW8gIW8gImCDwYCEEAAAAAAAAAGAgAAAAAAAAAABYAKAgTAAAAAAAAABgIAAAAAAAAAAAAGRwVABUAFQIAPCkWKBkWKAAAFsYKFRYWwAgVSgAmABwVDBk1CAYAGRgEbmFtZRUAFigW8gIW8gIm+gI8NggoBXJvdy05GAVyb3ctMQAZHBUAFQAVAgA8FrABGRYoGSYIIAAAFtwKFSAWigkVQAAmABwVChk1CAYAGRgFc2NvcmUVABYoFpICFpICJuwFPBgIAAAAAAAAI0AYCAAAAAAAAOA/Fg4oCAAAAAAAACNAGAgAAAAAAADgPwAZHBUAFQAVAgA8KRYoGSYOGgAAFvwKFRgWygkVTAAmABwVABk1CAYAGRgEZmxhZxUAFigWQhZCJv4HPBgBARgBABYUKAEBGAEAABkcFQAVABUCADwpFigZJhQUAAAWlAsVFhaWChUwABa4CBYoJggWuAgUAAAZHBgRd3JpdGVyLm1vZGVsLm5hbWUYB2V4YW1wbGUAGEpwYXJxdWV0LW1yIHZlcnNpb24gMS4xNS4yIChidWlsZCA4NTllYWMxNjViMDhmOTI3ZmExNDU5MGMzM2JjNWY0NzY0MDVmYjY4KRlMHAAAHAAAHAAAHAAAADMCAABQQVIx', 'base64')
+    const file = {
+      byteLength: bytes.length,
+      /**
+       * @param {number} start
+       * @param {number} [end]
+       */
+      slice(start, end) {
+        return bytes.buffer.slice(bytes.byteOffset + start, bytes.byteOffset + (end ?? bytes.length))
+      },
+    }
+    const metadata = await parquetMetadataAsync(file)
+    /** @type {unknown[]} */
+    const unhandled = []
+    /** @param {unknown} reason */
+    const onUnhandled = reason => unhandled.push(reason)
+    process.on('unhandledRejection', onUnhandled)
+    try {
+      await expect(parquetRead({ file, metadata, onComplete: () => {} }))
+        .rejects.toThrow('parquet schema element not found: flag')
+      await new Promise(resolve => setTimeout(resolve, 50))
+      expect(unhandled).toEqual([])
+    } finally {
+      process.off('unhandledRejection', onUnhandled)
+    }
   })
 })
