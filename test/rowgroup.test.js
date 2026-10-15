@@ -89,36 +89,51 @@ describe('assembleAsync', () => {
 })
 
 describe('readRowGroup synchronous failure cleanup', () => {
+  /** @type {import('../src/types.js').FileMetaData} */
   const metadata = {
+    version: 1,
+    num_rows: 1n,
+    row_groups: [],
+    metadata_length: 0,
     schema: [
       { name: 'schema', num_children: 2 },
       { name: 'first', type: 'INT32', repetition_type: 'OPTIONAL' },
       { name: 'second', type: 'INT32', repetition_type: 'OPTIONAL' },
     ],
   }
+  /**
+   * @param {string} name
+   * @param {number} startByte
+   */
   const makeChunk = (name, startByte) => ({
     columnMetadata: { path_in_schema: [name] },
     range: { startByte, endByte: startByte + 1 },
   })
-  const makePlan = chunks => ({
-    chunks,
-    groupStart: 0,
-    groupRows: 1,
-    selectStart: 0,
-    selectEnd: 1,
-  })
+  /**
+   * @param {ReturnType<typeof makeChunk>[]} chunks
+   * @returns {import('../src/types.js').QueryPlan['groups'][number]}
+   */
+  const makePlan = chunks => /** @type {import('../src/types.js').QueryPlan['groups'][number]} */ (
+    /** @type {unknown} */ ({
+      chunks,
+      groupStart: 0,
+      groupRows: 1,
+      selectStart: 0,
+      selectEnd: 1,
+    })
+  )
 
   it('validates every schema path before issuing any column reads', () => {
     const slice = vi.fn(() => Promise.reject(new Error('should never be fetched')))
     const plan = makePlan([makeChunk('first', 0), makeChunk('missing', 1)])
 
-    expect(() => readRowGroup({ file: { slice } }, { metadata }, plan))
+    expect(() => readRowGroup({ file: { byteLength: 2, slice } }, { metadata }, plan))
       .toThrow('parquet schema element not found: missing')
     expect(slice).not.toHaveBeenCalled()
   })
 
   it('observes earlier rejected reads when a later slice throws synchronously', async () => {
-    const slice = vi.fn(start => {
+    const slice = vi.fn((/** @type {number} */ start) => {
       if (start === 0) return Promise.reject(new Error('earlier read failed'))
       throw new Error('synchronous slice failure')
     })
@@ -129,7 +144,7 @@ describe('readRowGroup synchronous failure cleanup', () => {
     process.on('unhandledRejection', onUnhandled)
     try {
       const plan = makePlan([makeChunk('first', 0), makeChunk('second', 1)])
-      expect(() => readRowGroup({ file: { slice } }, { metadata }, plan))
+      expect(() => readRowGroup({ file: { byteLength: 2, slice } }, { metadata }, plan))
         .toThrow('synchronous slice failure')
       expect(slice).toHaveBeenCalledTimes(2)
       await new Promise(resolve => setTimeout(resolve, 50))
@@ -143,7 +158,7 @@ describe('readRowGroup synchronous failure cleanup', () => {
     const failure = new Error('decode failure')
     const slice = vi.fn(() => Promise.reject(failure))
     const plan = makePlan([makeChunk('first', 0)])
-    const result = readRowGroup({ file: { slice } }, { metadata }, plan)
+    const result = readRowGroup({ file: { byteLength: 2, slice } }, { metadata }, plan)
     await expect(result.asyncColumns[0].data).rejects.toBe(failure)
   })
 })
