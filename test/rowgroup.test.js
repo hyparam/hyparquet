@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
-import { assembleAsync, asyncGroupToRows } from '../src/rowgroup.js'
+import { describe, expect, it, vi } from 'vitest'
+import { assembleAsync, asyncGroupToRows, readRowGroup } from '../src/rowgroup.js'
 import { parquetSchema } from '../src/metadata.js'
 
 /** @import {SchemaTree} from '../src/types.js' */
@@ -85,5 +85,65 @@ describe('assembleAsync', () => {
       { details: { left: 30, right: 30 } },
       { details: { left: 40, right: 40 } },
     ])
+  })
+})
+
+describe('readRowGroup synchronous failure cleanup', () => {
+  const metadata = {
+    schema: [
+      { name: 'schema', num_children: 2 },
+      { name: 'first', type: 'INT32', repetition_type: 'OPTIONAL' },
+      { name: 'second', type: 'INT32', repetition_type: 'OPTIONAL' },
+    ],
+  }
+  const makeChunk = (name, startByte) => ({
+    columnMetadata: { path_in_schema: [name] },
+    range: { startByte, endByte: startByte + 1 },
+  })
+  const makePlan = chunks => ({
+    chunks,
+    groupStart: 0,
+    groupRows: 1,
+    selectStart: 0,
+    selectEnd: 1,
+  })
+
+  it('validates every schema path before issuing any column reads', () => {
+    const slice = vi.fn(() => Promise.reject(new Error('should never be fetched')))
+    const plan = makePlan([makeChunk('first', 0), makeChunk('missing', 1)])
+
+    expect(() => readRowGroup({ file: { slice } }, { metadata }, plan))
+      .toThrow('parquet schema element not found: missing')
+    expect(slice).not.toHaveBeenCalled()
+  })
+
+  it('observes earlier rejected reads when a later slice throws synchronously', async () => {
+    const slice = vi.fn(start => {
+      if (start === 0) return Promise.reject(new Error('earlier read failed'))
+      throw new Error('synchronous slice failure')
+    })
+    /** @type {unknown[]} */
+    const unhandled = []
+    /** @param {unknown} reason */
+    const onUnhandled = reason => unhandled.push(reason)
+    process.on('unhandledRejection', onUnhandled)
+    try {
+      const plan = makePlan([makeChunk('first', 0), makeChunk('second', 1)])
+      expect(() => readRowGroup({ file: { slice } }, { metadata }, plan))
+        .toThrow('synchronous slice failure')
+      expect(slice).toHaveBeenCalledTimes(2)
+      await new Promise(resolve => setTimeout(resolve, 50))
+      expect(unhandled).toEqual([])
+    } finally {
+      process.off('unhandledRejection', onUnhandled)
+    }
+  })
+
+  it('does not consume failures that callers need to observe', async () => {
+    const failure = new Error('decode failure')
+    const slice = vi.fn(() => Promise.reject(failure))
+    const plan = makePlan([makeChunk('first', 0)])
+    const result = readRowGroup({ file: { slice } }, { metadata }, plan)
+    await expect(result.asyncColumns[0].data).rejects.toBe(failure)
   })
 })
