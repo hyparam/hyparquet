@@ -18,6 +18,16 @@ describe('parquetMetadata', () => {
     })
   })
 
+  it('parses a Uint8Array view at a non-zero offset', async () => {
+    const asyncBuffer = await asyncBufferFromFile('test/files/alpha.parquet')
+    const arrayBuffer = await asyncBuffer.slice(0)
+    const padded = new Uint8Array(arrayBuffer.byteLength + 16).fill(0xff)
+    padded.set(new Uint8Array(arrayBuffer), 8)
+    const bytes = padded.subarray(8, 8 + arrayBuffer.byteLength)
+    const expected = fileToJson('test/files/alpha.metadata.json')
+    expect(toJson(parquetMetadata(bytes))).toEqual(expected)
+  })
+
   it('throws for arrayBuffer undefined', () => {
     // @ts-expect-error testing invalid input
     expect(() => parquetMetadata(undefined)).toThrow('parquet expected ArrayBuffer')
