@@ -9,7 +9,7 @@ import { getPhysicalColumns } from './schema.js'
  */
 
 // Combine column chunks if less than 2mb
-const runLimit = 1 << 21 // 2mb
+export const runLimit = 1 << 21 // 2mb
 // When reading selected columns, combine chunks separated by at most this many unrequested bytes.
 // Arrow C++ before 18 and Polars write a copy of each column's metadata after its chunk, leaving small gaps.
 // Same default as Arrow's CacheOptions hole_size_limit.
@@ -38,7 +38,7 @@ export function parquetPlan(options) {
     fetches.push(...groupPlan.fetches)
     indexes.push(...groupPlan.indexes)
   }
-  fetches.push(...indexes)
+  fetches.push(...coalesceByteRanges(indexes))
 
   return { metadata, rowStart, rowEnd: scanPlan.rowEnd, columns, fetches, groups }
 }
@@ -430,7 +430,7 @@ export async function prefetchPageIndexes({ file, metadata, filter, filterStrict
  * @param {number} [maxSize]
  * @returns {ByteRange[]}
  */
-function coalesceByteRanges(ranges, maxGap = 0, maxSize = Infinity) {
+export function coalesceByteRanges(ranges, maxGap = 0, maxSize = Infinity) {
   const sorted = ranges
     .map(range => ({ ...range }))
     .sort((a, b) => a.startByte - b.startByte || a.endByte - b.endByte)
@@ -477,7 +477,14 @@ function physicalSchemaElements(schemaTree) {
  */
 export function prefetchAsyncBuffer(file, { fetches }) {
   // fetch byte ranges from the file
-  const promises = fetches.map(({ startByte, endByte }) => file.slice(startByte, endByte))
+  // a synchronous throw becomes a rejection for that range, so earlier requests stay observed
+  const promises = fetches.map(({ startByte, endByte }) => {
+    try {
+      return file.slice(startByte, endByte)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
   return {
     byteLength: file.byteLength,
     slice(start, end = file.byteLength) {
