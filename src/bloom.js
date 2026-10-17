@@ -108,8 +108,8 @@ export function readBloomFilter(reader) {
  * Hash a JS filter value as its parquet PLAIN-encoded bytes, suitable for a
  * bloom filter lookup. Returns undefined when the column's parser is lossy or
  * ambiguous (DATE, TIMESTAMP_*, DECIMAL, JSON, BSON, INT96, FLOAT16, UUID,
- * GEOMETRY, GEOGRAPHY, INTERVAL) or when the JS value type doesn't match the
- * column. Callers must treat undefined as "bloom filter cannot help."
+ * GEOMETRY, GEOGRAPHY, INTERVAL), when a string holds U+FFFD, or when the JS
+ * value type doesn't match the column. Callers must treat undefined as "bloom filter cannot help."
  *
  * @param {any} value
  * @param {SchemaElement} element
@@ -164,7 +164,7 @@ export function hashParquetValue(value, element) {
     if (converted_type === 'JSON' || converted_type === 'BSON' || converted_type === 'DECIMAL') return undefined
     if (logical_type?.type === 'JSON' || logical_type?.type === 'BSON' || logical_type?.type === 'VARIANT') return undefined
     if (logical_type?.type === 'GEOMETRY' || logical_type?.type === 'GEOGRAPHY') return undefined
-    if (typeof value === 'string') return xxhash64(textEncoder.encode(value))
+    if (typeof value === 'string') return value.includes('\uFFFD') ? undefined : xxhash64(textEncoder.encode(value))
     if (value instanceof Uint8Array) return xxhash64(value)
     return undefined
   }
