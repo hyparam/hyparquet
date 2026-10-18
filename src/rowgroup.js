@@ -6,7 +6,8 @@ import { assembleNested } from './assemble.js'
 import { readColumn } from './column.js'
 import { DEFAULT_PARSERS } from './convert.js'
 import { readOffsetIndex } from './indexes.js'
-import { getSchemaPath } from './schema.js'
+import { parquetSchema } from './metadata.js'
+import { getTreePath } from './schema.js'
 import { flatten } from './utils.js'
 
 /**
@@ -20,11 +21,13 @@ import { flatten } from './utils.js'
 export function readRowGroup(options, { metadata }, groupPlan) {
   /** @type {AsyncColumn[]} */
   const asyncColumns = []
+  // build the schema tree once, not per column chunk
+  const schemaTree = parquetSchema(metadata)
 
   // read column data
   for (const chunk of groupPlan.chunks) {
     const { path_in_schema: pathInSchema } = chunk.columnMetadata
-    const schemaPath = getSchemaPath(metadata.schema, pathInSchema)
+    const schemaPath = getTreePath(schemaTree, pathInSchema)
     const columnDecoder = {
       pathInSchema,
       element: schemaPath[schemaPath.length - 1].element,
