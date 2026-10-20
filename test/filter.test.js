@@ -399,4 +399,33 @@ describe('canSkipRowGroup with bloom filters', () => {
       rowGroup, physicalColumns: cols, bloomFilters: { name: present }, schemaElements,
     })).toBe(true)
   })
+
+  it('does not skip on bounds that decoded lossily to U+FFFD', () => {
+    const decoder = new TextDecoder()
+    const prefix = 'a'.repeat(15)
+    // a 16-byte cut through '€' (E2 82 AC): min keeps E2, max rounds up to E3
+    const min = decoder.decode(new Uint8Array([...Array(15).fill(0x61), 0xe2]))
+    const max = decoder.decode(new Uint8Array([...Array(15).fill(0x61), 0xe3]))
+    const truncated = nameRowGroup(min, max)
+    expect(canSkipRowGroup({ filter: { name: { $eq: prefix + '€' } }, rowGroup: truncated, physicalColumns: cols, schemaElements })).toBe(false)
+    expect(canSkipRowGroup({ filter: { name: { $in: [prefix + '€'] } }, rowGroup: truncated, physicalColumns: cols, schemaElements })).toBe(false)
+    expect(canSkipRowGroup({ filter: { name: { $ne: min } }, rowGroup: truncated, physicalColumns: cols, schemaElements })).toBe(false)
+    expect(canSkipRowGroup({ filter: { name: { $nin: [min] } }, rowGroup: truncated, physicalColumns: cols, schemaElements })).toBe(false)
+
+    const highMax = nameRowGroup('a', decoder.decode(new Uint8Array([0xf4, 0x90])))
+    expect(canSkipRowGroup({ filter: { name: { $eq: '\u{10000}' } }, rowGroup: highMax, physicalColumns: cols, schemaElements })).toBe(false)
+  })
+
+  it('does not consult the bloom filter for a target holding U+FFFD', () => {
+    const lossy = new TextDecoder().decode(new Uint8Array([0xff]))
+    const raw = bloomOf([])
+    const hash = hashParquetValue(new Uint8Array([0xff]), nameSchema)
+    if (hash === undefined) throw new Error('expected hash')
+    sbbfInsert(raw.blocks, hash)
+    expect(hashParquetValue(lossy, nameSchema)).toBeUndefined()
+    expect(canSkipRowGroup({
+      filter: { name: { $eq: lossy } }, rowGroup: nameRowGroup('\x00', '\uFFFF'), physicalColumns: cols,
+      bloomFilters: { name: raw }, schemaElements,
+    })).toBe(false)
+  })
 })
