@@ -197,7 +197,7 @@ function flattenAtDepth(arr, depth) {
     if (depth) {
       flattenAtDepth(arr[i], depth - 1)
     } else {
-      arr[i] = arr[i][0]
+      arr[i] = arr[i].length ? arr[i][0] : null
     }
   }
 }

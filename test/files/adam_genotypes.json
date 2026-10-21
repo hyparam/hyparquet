@@ -2,6 +2,7 @@
   [
     {
       "alternateAllele": null,
+      "annotation": null,
       "end": null,
       "filtersApplied": null,
       "filtersFailed": [],

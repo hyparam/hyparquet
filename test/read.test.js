@@ -161,7 +161,7 @@ describe('parquetRead', () => {
       onChunk(chunk) {
         expect(chunk).toEqual({
           columnName: 'e',
-          columnData: [[1, 2, 3], undefined, undefined, [1, 2, 3], [1, 2]],
+          columnData: [[1, 2, 3], null, null, [1, 2, 3], [1, 2]],
           rowStart: 0,
           rowEnd: 5,
         })
@@ -169,8 +169,8 @@ describe('parquetRead', () => {
       onComplete(rows) {
         expect(rows).toEqual([
           [[1, 2, 3]],
-          [undefined],
-          [undefined],
+          [null],
+          [null],
           [[1, 2, 3]],
           [[1, 2]],
         ])
@@ -192,7 +192,7 @@ describe('parquetRead', () => {
             { },
             { },
             { },
-            undefined,
+            null,
             { k1: null, k3: null },
           ],
           rowStart: 0,
@@ -206,7 +206,7 @@ describe('parquetRead', () => {
           [{ }],
           [{ }],
           [{ }],
-          [undefined],
+          [null],
           [{ k1: null, k3: null }],
         ])
       },
@@ -262,8 +262,8 @@ describe('parquetRead', () => {
     const rows = await parquetReadObjects({ file })
     expect(rows).toEqual([
       { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
-      { a: 'abc', b: 2, c: 3, d: true },
-      { a: 'abc', b: 3, c: 4, d: true },
+      { a: 'abc', b: 2, c: 3, d: true, e: null },
+      { a: 'abc', b: 3, c: 4, d: true, e: null },
       { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
       { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
     ])
@@ -500,7 +500,7 @@ describe('parquetRead', () => {
       filter: { b: { $gt: 2 } },
       onComplete(rows) {
         expect(rows).toEqual([
-          { a: 'abc', b: 3, c: 4, d: true },
+          { a: 'abc', b: 3, c: 4, d: true, e: null },
           { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
           { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
         ])
@@ -516,7 +516,7 @@ describe('parquetRead', () => {
     })
     expect(rows).toEqual([
       { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
-      { a: 'abc', b: 2, c: 3, d: true },
+      { a: 'abc', b: 2, c: 3, d: true, e: null },
     ])
   })
 
