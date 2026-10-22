@@ -31,6 +31,14 @@ describe('toJson', () => {
     expect(toJson([null])).toEqual([null])
   })
 
+  it('keep a __proto__ key as an own property', () => {
+    /** @type {any} */
+    const result = toJson(JSON.parse('{"__proto__":{"a":1}}'))
+    expect(Object.keys(result)).toEqual(['__proto__'])
+    expect(Object.getOwnPropertyDescriptor(result, '__proto__')?.value).toEqual({ a: 1 })
+    expect(Object.getPrototypeOf(result)).toBe(Object.prototype)
+  })
+
   it('return other types unchanged', () => {
     expect(toJson('string')).toBe('string')
     expect(toJson(123)).toBe(123)
