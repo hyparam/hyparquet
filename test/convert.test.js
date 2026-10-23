@@ -115,6 +115,27 @@ describe('convert function', () => {
     expect(convert(data, { ...columnDecoder, element })).toEqual([2015])
   })
 
+  it('converts numbers to DECIMAL without rounding error', () => {
+    const data = [3, -3, 7]
+    /** @type {SchemaElement} */
+    const element = { name, converted_type: 'DECIMAL', scale: 1 }
+    expect(convert(data, { ...columnDecoder, element })).toEqual([0.3, -0.3, 0.7])
+  })
+
+  it('converts bigint to DECIMAL without rounding error', () => {
+    const data = [150000n, 10000n]
+    /** @type {SchemaElement} */
+    const element = { name, converted_type: 'DECIMAL', scale: 5 }
+    expect(convert(data, { ...columnDecoder, element })).toEqual([1.5, 0.1])
+  })
+
+  it('converts byte arrays to DECIMAL without rounding error', () => {
+    const data = [new Uint8Array([0, 115]), new Uint8Array([255, 141])]
+    /** @type {SchemaElement} */
+    const element = { name, converted_type: 'DECIMAL', scale: 2 }
+    expect(convert(data, { ...columnDecoder, element })).toEqual([1.15, -1.15])
+  })
+
   it('converts epoch time to DATE', () => {
     const data = [1, 2] // days since epoch
     /** @type {SchemaElement} */

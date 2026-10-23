@@ -58,6 +58,27 @@ describe('readColumnIndex', () => {
       { name: 'decimal64', type: 'INT64', converted_type: 'DECIMAL', precision: 18, scale: 2 }
     ).max_values).toEqual([5])
   })
+
+  it('scales DECIMAL bounds without rounding error', () => {
+    const int32 = new Uint8Array(4)
+    new DataView(int32.buffer).setInt32(0, 3, true)
+    const int64 = new Uint8Array(8)
+    new DataView(int64.buffer).setBigInt64(0, 150000n, true)
+    const fixed = new Uint8Array([0, 115])
+
+    expect(readColumnIndex(
+      { view: new DataView(columnIndexBuffer(int32)), offset: 0 },
+      { name: 'decimal32', type: 'INT32', converted_type: 'DECIMAL', precision: 9, scale: 1 }
+    ).min_values).toEqual([0.3])
+    expect(readColumnIndex(
+      { view: new DataView(columnIndexBuffer(int64)), offset: 0 },
+      { name: 'decimal64', type: 'INT64', converted_type: 'DECIMAL', precision: 18, scale: 5 }
+    ).max_values).toEqual([1.5])
+    expect(readColumnIndex(
+      { view: new DataView(columnIndexBuffer(fixed)), offset: 0 },
+      { name: 'decimal', type: 'FIXED_LEN_BYTE_ARRAY', type_length: 2, converted_type: 'DECIMAL', precision: 4, scale: 2 }
+    ).min_values).toEqual([1.15])
+  })
 })
 
 describe('readOffsetIndex', () => {
