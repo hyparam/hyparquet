@@ -83,7 +83,8 @@ export function assembleLists(output, definitionLevels, repetitionLevels, values
       // assert(currentDepth === maxDefinitionLevel || currentDepth === repetitionPath.length - 2)
       currentContainer.push(values[valueIndex++])
     } else if (currentDepth === repetitionPath.length - 2) {
-      currentContainer.push(null)
+      // an undefined repeated leaf is an empty list, not a null value
+      currentContainer.push(repetitionPath[currentDepth + 1] === 'REPEATED' ? [] : null)
     } else {
       currentContainer.push([])
     }
