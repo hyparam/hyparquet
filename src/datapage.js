@@ -167,7 +167,8 @@ export function readDataPageV2(compressedBytes, ph, columnDecoder) {
   const uncompressedPageSize = ph.uncompressed_page_size - daph2.definition_levels_byte_length - daph2.repetition_levels_byte_length
 
   let page = compressedBytes.subarray(reader.offset)
-  if (daph2.is_compressed !== false) {
+  // a page with no values may have zero compressed bytes, which is not a valid stream
+  if (daph2.is_compressed !== false && uncompressedPageSize) {
     page = decompressPage(page, uncompressedPageSize, codec, compressors)
   }
   const pageView = new DataView(page.buffer, page.byteOffset, page.byteLength)
