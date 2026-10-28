@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { parquetQuery } from '../src/query.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { parquetMetadataAsync } from '../src/metadata.js'
+import { parquetReadColumn, parquetReadObjects } from '../src/read.js'
 import { rowIndex } from '../src/index.js'
 import { countingBuffer } from './helpers.js'
 
@@ -61,6 +62,31 @@ describe('parquetQuery', () => {
     const withoutIndices = await parquetQuery(options)
     expect(withoutIndices.every(row => !Object.hasOwn(row, rowIndex))).toBe(true)
     expect(JSON.stringify(rows)).toBe(JSON.stringify(withoutIndices))
+  })
+
+  it('skips unselected row groups when sorting', async () => {
+    const file = countingBuffer(await asyncBufferFromFile('test/files/alpha.parquet'))
+    const metadata = await parquetMetadataAsync(file)
+    const firstGroupEnd = Number(metadata.row_groups[0].num_rows)
+
+    file.bytes = 0
+    const ids = await parquetReadColumn({ file, metadata, columns: ['id'] })
+    const sortBytes = file.bytes
+    const rowStart = Array.from(ids, (value, index) => ({ value, index }))
+      .sort((a, b) => a.value < b.value ? -1 : a.value > b.value ? 1 : 0)
+      .findIndex(row => row.index < firstGroupEnd)
+
+    file.bytes = 0
+    await parquetReadObjects({ file, metadata, columns: ['id'], rowStart: 0, rowEnd: firstGroupEnd })
+    const groupBytes = file.bytes
+
+    file.bytes = 0
+    const rows = await parquetQuery({
+      file, metadata, columns: ['id'], orderBy: 'id', rowStart, rowEnd: rowStart + 1,
+    })
+    expect(rows).toHaveLength(1)
+    expect(rows[0].__index__).toBeLessThan(firstGroupEnd)
+    expect(file.bytes).toBe(sortBytes + groupBytes)
   })
 
   it('reads data with rowStart and rowEnd without orderBy', async () => {

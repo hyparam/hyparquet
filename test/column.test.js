@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { readColumn, readPage } from '../src/column.js'
+import { parquetHeader, readColumn, readPage } from '../src/column.js'
 import { DEFAULT_PARSERS } from '../src/convert.js'
 import { parquetMetadata } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
@@ -112,6 +112,39 @@ describe('readPage', () => {
     const result = readPage(reader, header, columnDecoder, undefined, undefined, 6)
     expect(result).toEqual({ skipped: 5 })
     expect(reader.offset).toBe(8)
+  })
+})
+
+describe('parquetHeader', () => {
+  it('walks the pages of a column chunk', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    const arrayBuffer = await file.slice(0)
+    const metadata = parquetMetadata(arrayBuffer)
+    const meta = metadata.row_groups[0].columns[0].meta_data
+    if (!meta) throw new Error('No column metadata')
+    const { startByte, endByte } = getChunkPlan(meta)
+    const reader = { view: new DataView(arrayBuffer, startByte, endByte - startByte), offset: 0 }
+
+    const headers = []
+    while (reader.offset < reader.view.byteLength) {
+      const header = parquetHeader(reader)
+      headers.push(header)
+      reader.offset += header.compressed_page_size
+    }
+
+    expect(reader.offset).toBe(Number(meta.total_compressed_size))
+    expect(headers.map(header => header.type)).toEqual(['DICTIONARY_PAGE', 'DATA_PAGE_V2'])
+    expect(headers[0].dictionary_page_header).toEqual({ num_values: 1, encoding: 'PLAIN', is_sorted: undefined })
+    expect(headers[1].data_page_header_v2).toMatchObject({
+      num_values: 5,
+      num_nulls: 1,
+      num_rows: 5,
+      encoding: 'RLE_DICTIONARY',
+      definition_levels_byte_length: 2,
+      repetition_levels_byte_length: 0,
+      is_compressed: true,
+      statistics: { null_count: 1n },
+    })
   })
 })
 

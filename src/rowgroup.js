@@ -6,7 +6,8 @@ import { assembleNested } from './assemble.js'
 import { readColumn } from './column.js'
 import { DEFAULT_PARSERS } from './convert.js'
 import { readOffsetIndex } from './indexes.js'
-import { getSchemaPath } from './schema.js'
+import { parquetSchema } from './metadata.js'
+import { getTreePath } from './schema.js'
 import { flatten } from './utils.js'
 
 /**
@@ -20,11 +21,13 @@ import { flatten } from './utils.js'
 export function readRowGroup(options, { metadata }, groupPlan) {
   /** @type {AsyncColumn[]} */
   const asyncColumns = []
+  // build the schema tree once, not per column chunk
+  const schemaTree = parquetSchema(metadata)
 
-  // Resolve every schema path before starting async reads. An invalid later
-  // chunk must not strand rejecting promises from earlier chunks.
+  // Validate schema paths before launching asynchronous column reads.
+  // If a later path is invalid, no earlier read can be left unobserved.
   const schemaPaths = groupPlan.chunks.map(chunk =>
-    getSchemaPath(metadata.schema, chunk.columnMetadata.path_in_schema)
+    getTreePath(schemaTree, chunk.columnMetadata.path_in_schema)
   )
 
   // read column data
@@ -63,8 +66,7 @@ export function readRowGroup(options, { metadata }, groupPlan) {
           return readColumn(reader, groupPlan, columnDecoder, options.onPage)
         })
     }
-    // Preserve the rejecting promise for callers, but attach a rejection
-    // observer immediately in case a later synchronous operation throws.
+    // Keep caller-visible rejections, but observe them if a later operation throws.
     data.catch(() => {})
     asyncColumns.push({ pathInSchema, data })
   }

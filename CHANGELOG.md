@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.31.5]
+ - Export parquetHeader from column.js (#191)
+ - Accept Uint8Array in parquetMetadata and avoid a copy in asyncBufferFromFile (#192)
+ - Fix sparse query ranges including an unselected row group (#196)
+ - Fix quadratic schema tree rebuild on wide nested schemas (#195)
+
 ## [1.31.4]
  - Fix DELTA_BYTE_ARRAY decoding in v1 data pages (#186)
  - Fix row count of skipped v2 pages in nested columns (#187)
