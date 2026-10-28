@@ -130,6 +130,8 @@ describe('readRowGroup synchronous failure cleanup', () => {
       selectStart: 0,
       selectEnd: 1,
     }
+    // JSDoc type assertions require parentheses in checked JavaScript.
+    // eslint-disable-next-line no-extra-parens
     return /** @type {import('../src/types.js').QueryPlan['groups'][number]} */ (group)
   }
 
