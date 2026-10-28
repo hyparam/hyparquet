@@ -102,33 +102,42 @@ describe('readRowGroup synchronous failure cleanup', () => {
       { name: 'second', type: 'INT32', repetition_type: 'OPTIONAL' },
     ],
   }
+  /** @type {import('../src/types.js').QueryPlan} */
+  const queryPlan = { metadata, rowStart: 0, fetches: [], groups: [] }
+
   /**
    * @param {string} name
    * @param {number} startByte
+   * @returns {{columnMetadata: {path_in_schema: string[]}, range: {startByte: number, endByte: number}}}
    */
-  const makeChunk = (name, startByte) => ({
-    columnMetadata: { path_in_schema: [name] },
-    range: { startByte, endByte: startByte + 1 },
-  })
+  function makeChunk(name, startByte) {
+    return {
+      columnMetadata: { path_in_schema: [name] },
+      range: { startByte, endByte: startByte + 1 },
+    }
+  }
+
   /**
    * @param {ReturnType<typeof makeChunk>[]} chunks
    * @returns {import('../src/types.js').QueryPlan['groups'][number]}
    */
-  const makePlan = chunks => /** @type {import('../src/types.js').QueryPlan['groups'][number]} */ (
-    /** @type {unknown} */ ({
+  function makePlan(chunks) {
+    /** @type {unknown} */
+    const group = {
       chunks,
       groupStart: 0,
       groupRows: 1,
       selectStart: 0,
       selectEnd: 1,
-    })
-  )
+    }
+    return /** @type {import('../src/types.js').QueryPlan['groups'][number]} */ (group)
+  }
 
   it('validates every schema path before issuing any column reads', () => {
     const slice = vi.fn(() => Promise.reject(new Error('should never be fetched')))
     const plan = makePlan([makeChunk('first', 0), makeChunk('missing', 1)])
 
-    expect(() => readRowGroup({ file: { byteLength: 2, slice } }, { metadata }, plan))
+    expect(() => readRowGroup({ file: { byteLength: 2, slice } }, queryPlan, plan))
       .toThrow('parquet schema element not found: missing')
     expect(slice).not.toHaveBeenCalled()
   })
@@ -140,12 +149,15 @@ describe('readRowGroup synchronous failure cleanup', () => {
     })
     /** @type {unknown[]} */
     const unhandled = []
-    /** @param {unknown} reason */
-    const onUnhandled = reason => unhandled.push(reason)
+    /**
+     * @param {unknown} reason
+     * @returns {void}
+     */
+    function onUnhandled(reason) { unhandled.push(reason) }
     process.on('unhandledRejection', onUnhandled)
     try {
       const plan = makePlan([makeChunk('first', 0), makeChunk('second', 1)])
-      expect(() => readRowGroup({ file: { byteLength: 2, slice } }, { metadata }, plan))
+      expect(() => readRowGroup({ file: { byteLength: 2, slice } }, queryPlan, plan))
         .toThrow('synchronous slice failure')
       expect(slice).toHaveBeenCalledTimes(2)
       await new Promise(resolve => setTimeout(resolve, 50))
@@ -159,7 +171,7 @@ describe('readRowGroup synchronous failure cleanup', () => {
     const failure = new Error('decode failure')
     const slice = vi.fn(() => Promise.reject(failure))
     const plan = makePlan([makeChunk('first', 0)])
-    const result = readRowGroup({ file: { byteLength: 2, slice } }, { metadata }, plan)
+    const result = readRowGroup({ file: { byteLength: 2, slice } }, queryPlan, plan)
     await expect(result.asyncColumns[0].data).rejects.toBe(failure)
   })
 })
@@ -173,6 +185,7 @@ describe('corrupt Parquet file with mismatched column schema (issue #197)', () =
       /**
        * @param {number} start
        * @param {number} [end]
+       * @returns {ArrayBuffer}
        */
       slice(start, end) {
         return bytes.buffer.slice(bytes.byteOffset + start, bytes.byteOffset + (end ?? bytes.length))
@@ -181,8 +194,11 @@ describe('corrupt Parquet file with mismatched column schema (issue #197)', () =
     const metadata = await parquetMetadataAsync(file)
     /** @type {unknown[]} */
     const unhandled = []
-    /** @param {unknown} reason */
-    const onUnhandled = reason => unhandled.push(reason)
+    /**
+     * @param {unknown} reason
+     * @returns {void}
+     */
+    function onUnhandled(reason) { unhandled.push(reason) }
     process.on('unhandledRejection', onUnhandled)
     try {
       await expect(parquetRead({ file, metadata, onComplete: () => {} }))
