@@ -92,7 +92,8 @@ export function convert(data, columnDecoder) {
     const arr = new Array(data.length)
     for (let i = 0; i < arr.length; i++) {
       if (data[i] instanceof Uint8Array) {
-        arr[i] = parseDecimal(data[i]) / factor
+        // Large scales can overflow the divisor while the result is still representable.
+        arr[i] = scale > 308 ? parseDecimal(data[i]) * 10 ** -scale : parseDecimal(data[i]) / factor
       } else {
         arr[i] = Number(data[i]) / factor
       }

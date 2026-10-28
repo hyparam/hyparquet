@@ -346,7 +346,10 @@ export function convertMetadata(value, schema, parsers) {
   if (type === 'INT64' && unsigned && view.byteLength === 8) return view.getBigUint64(0, true)
   if (type === 'INT32' && view.byteLength === 4) return view.getInt32(0, true)
   if (type === 'INT64' && view.byteLength === 8) return view.getBigInt64(0, true)
-  if (converted_type === 'DECIMAL') return parseDecimal(value) / 10 ** (schema.scale || 0)
+  if (converted_type === 'DECIMAL') {
+    const scale = schema.scale || 0
+    return scale > 308 ? parseDecimal(value) * 10 ** -scale : parseDecimal(value) / 10 ** scale
+  }
   if (logical_type?.type === 'FLOAT16') return parseFloat16(value)
   if (logical_type?.type === 'UUID') return parsers.uuidFromBytes(value)
   if (type === 'FIXED_LEN_BYTE_ARRAY') return value

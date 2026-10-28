@@ -136,6 +136,15 @@ describe('convert function', () => {
     expect(convert(data, { ...columnDecoder, element })).toEqual([1.15, -1.15])
   })
 
+  it('preserves subnormal DECIMAL values when the scale exceeds 308', () => {
+    const positive = new Uint8Array(129)
+    positive[128] = 1
+    const negative = new Uint8Array(129).fill(255)
+    /** @type {SchemaElement} */
+    const element = { name, type: 'FIXED_LEN_BYTE_ARRAY', type_length: 129, converted_type: 'DECIMAL', precision: 310, scale: 309 }
+    expect(convert([positive, negative], { ...columnDecoder, element })).toEqual([1e-309, -1e-309])
+  })
+
   it('converts epoch time to DATE', () => {
     const data = [1, 2] // days since epoch
     /** @type {SchemaElement} */
