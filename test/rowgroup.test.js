@@ -1,6 +1,7 @@
-import { describe, expect, it } from 'vitest'
-import { assembleAsync, asyncGroupToRows } from '../src/rowgroup.js'
+import { describe, expect, it, vi } from 'vitest'
+import { assembleAsync, asyncGroupToRows, readRowGroup } from '../src/rowgroup.js'
 import { parquetSchema } from '../src/metadata.js'
+import { parquetMetadataAsync, parquetRead } from '../src/index.js'
 
 /** @import {SchemaTree} from '../src/types.js' */
 
@@ -85,5 +86,129 @@ describe('assembleAsync', () => {
       { details: { left: 30, right: 30 } },
       { details: { left: 40, right: 40 } },
     ])
+  })
+})
+
+describe('readRowGroup synchronous failure cleanup', () => {
+  /** @type {import('../src/types.js').FileMetaData} */
+  const metadata = {
+    version: 1,
+    num_rows: 1n,
+    row_groups: [],
+    metadata_length: 0,
+    schema: [
+      { name: 'schema', num_children: 2 },
+      { name: 'first', type: 'INT32', repetition_type: 'OPTIONAL' },
+      { name: 'second', type: 'INT32', repetition_type: 'OPTIONAL' },
+    ],
+  }
+  /** @type {import('../src/types.js').QueryPlan} */
+  const queryPlan = { metadata, rowStart: 0, fetches: [], groups: [] }
+
+  /**
+   * @param {string} name
+   * @param {number} startByte
+   * @returns {{columnMetadata: {path_in_schema: string[]}, range: {startByte: number, endByte: number}}}
+   */
+  function makeChunk(name, startByte) {
+    return {
+      columnMetadata: { path_in_schema: [name] },
+      range: { startByte, endByte: startByte + 1 },
+    }
+  }
+
+  /**
+   * @param {ReturnType<typeof makeChunk>[]} chunks
+   * @returns {import('../src/types.js').QueryPlan['groups'][number]}
+   */
+  function makePlan(chunks) {
+    /** @type {unknown} */
+    const group = {
+      chunks,
+      groupStart: 0,
+      groupRows: 1,
+      selectStart: 0,
+      selectEnd: 1,
+    }
+    // JSDoc type assertions require parentheses in checked JavaScript.
+    // eslint-disable-next-line no-extra-parens
+    return /** @type {import('../src/types.js').QueryPlan['groups'][number]} */ (group)
+  }
+
+  it('validates every schema path before issuing any column reads', () => {
+    const slice = vi.fn(() => Promise.reject(new Error('should never be fetched')))
+    const plan = makePlan([makeChunk('first', 0), makeChunk('missing', 1)])
+
+    expect(() => readRowGroup({ file: { byteLength: 2, slice } }, queryPlan, plan))
+      .toThrow('parquet schema element not found: missing')
+    expect(slice).not.toHaveBeenCalled()
+  })
+
+  it('observes earlier rejected reads when a later slice throws synchronously', async () => {
+    const slice = vi.fn((/** @type {number} */ start) => {
+      if (start === 0) return Promise.reject(new Error('earlier read failed'))
+      throw new Error('synchronous slice failure')
+    })
+    /** @type {unknown[]} */
+    const unhandled = []
+    /**
+     * @param {unknown} reason
+     * @returns {void}
+     */
+    function onUnhandled(reason) { unhandled.push(reason) }
+    process.on('unhandledRejection', onUnhandled)
+    try {
+      const plan = makePlan([makeChunk('first', 0), makeChunk('second', 1)])
+      expect(() => readRowGroup({ file: { byteLength: 2, slice } }, queryPlan, plan))
+        .toThrow('synchronous slice failure')
+      expect(slice).toHaveBeenCalledTimes(2)
+      await new Promise(resolve => setTimeout(resolve, 50))
+      expect(unhandled).toEqual([])
+    } finally {
+      process.off('unhandledRejection', onUnhandled)
+    }
+  })
+
+  it('does not consume failures that callers need to observe', async () => {
+    const failure = new Error('decode failure')
+    const slice = vi.fn(() => Promise.reject(failure))
+    const plan = makePlan([makeChunk('first', 0)])
+    const result = readRowGroup({ file: { byteLength: 2, slice } }, queryPlan, plan)
+    await expect(result.asyncColumns[0].data).rejects.toBe(failure)
+  })
+})
+
+describe('corrupt Parquet file with mismatched column schema (issue #197)', () => {
+  it('rejects the original failing file without an unhandled read error', async () => {
+    // Byte-for-byte fixture reported in https://github.com/hyparam/hyparquet/issues/197
+    const bytes = Buffer.from('UEFSMRUAFcACFcACFYGj5Y8JHBUoFQAVCBUIAAAAAAAAAAAAAAEAAAAAAAAAAgAAAAAAAAADAAAAAAAAAAQAAAAAAAAABQAAAAAAAAAGAAAAAAAAAAcAAAAAAAAACAAAAAAAAAAJAAAAAAAAAAoAAAAAAAAACwAAAAAAAAAMAAAAAAAAAA0AAAAAAAAADgAAAAAAAAAPAAAAAAAAABAAAAAAAAAAEQAAAAAAAAASAAAAAAAAABMAAAAAAAAAFQAVwAIVwAIVr6HOyA4cFSiNABUGFQgAAAQAAAAH3nsPBQAAAHJvdy0xBQAAAHJvdy0yBQAAAHJvdy0zBQAAAHJvdy00BQAAAHJvdy02BQAAAHJvdy03BQAAAHJvdy04BQAAAHJvdy05BgAAAHJvd8UxMQYAAAByb3ctMTIGAAAAcm93LTEzBgAAAHJvdy0xNAYAAAByb3ctMTYGAAAAcm93LTE3BgAAAHJvdy0xOAYAAAByb3ctMTkVABXgARXgARWI2rT4DBwVKBUAFQYVCAAABAAAAAe2bQsAAAAAAADgPwAAAAAAAPA/AAAAAAAAAEAAAAAAAAAEQAAAAAAAAAxAAAAAAAAAEEAAAAAAAAAUQAAAAAAAABZAAAAAAAAAGkAAAAAAAAAcQAAAAAAAACBAAAAAAAAAIUAAAAAnAAAjQBUAFRQVFBXm86DUCRwVKBUAFQYVCAAABAAAAAdVVQVVARkRAhkYCAAAAAAAAAAAGRgIEwAAAAAAAAAVAhkWABkWKBkWKAAZEQIZGAVyb3ctMRkYBXJvdy05FQIZFggZFigZJgggABkRAhkYCAAAAAAAAOA/GRgIAAAAAAAAI0AVAhkWDhkWKBkmDhoAGRECGRgBABkYAQEVAhkWFBkWKBkmFBQAGRwWCBXyAhYAAAAZHBb6AhXyAhYAABkWsAGUGRwW7AUVkgIWAAAAGRwW/gcVQhYAAAAVAhlcSAViYXNpYxUIABUEJQAYAmlkABUMJQIYBG5hbWUlAEwcAAAAFQolAhgFc2NvcmUAFQAlAhgEZmxhNAAWKBkcGUwmABwVBBklCAAZGAJpZBUAFigW8gIW8gImCDwYCEEAAAAAAAAAGAgAAAAAAAAAABYAKAgTAAAAAAAAABgIAAAAAAAAAAAAGRwVABUAFQIAPCkWKBkWKAAAFsYKFRYWwAgVSgAmABwVDBk1CAYAGRgEbmFtZRUAFigW8gIW8gIm+gI8NggoBXJvdy05GAVyb3ctMQAZHBUAFQAVAgA8FrABGRYoGSYIIAAAFtwKFSAWigkVQAAmABwVChk1CAYAGRgFc2NvcmUVABYoFpICFpICJuwFPBgIAAAAAAAAI0AYCAAAAAAAAOA/Fg4oCAAAAAAAACNAGAgAAAAAAADgPwAZHBUAFQAVAgA8KRYoGSYOGgAAFvwKFRgWygkVTAAmABwVABk1CAYAGRgEZmxhZxUAFigWQhZCJv4HPBgBARgBABYUKAEBGAEAABkcFQAVABUCADwpFigZJhQUAAAWlAsVFhaWChUwABa4CBYoJggWuAgUAAAZHBgRd3JpdGVyLm1vZGVsLm5hbWUYB2V4YW1wbGUAGEpwYXJxdWV0LW1yIHZlcnNpb24gMS4xNS4yIChidWlsZCA4NTllYWMxNjViMDhmOTI3ZmExNDU5MGMzM2JjNWY0NzY0MDVmYjY4KRlMHAAAHAAAHAAAHAAAADMCAABQQVIx', 'base64')
+    const file = {
+      byteLength: bytes.length,
+      /**
+       * @param {number} start
+       * @param {number} [end]
+       * @returns {ArrayBuffer}
+       */
+      slice(start, end) {
+        return bytes.buffer.slice(bytes.byteOffset + start, bytes.byteOffset + (end ?? bytes.length))
+      },
+    }
+    const metadata = await parquetMetadataAsync(file)
+    /** @type {unknown[]} */
+    const unhandled = []
+    /**
+     * @param {unknown} reason
+     * @returns {void}
+     */
+    function onUnhandled(reason) { unhandled.push(reason) }
+    process.on('unhandledRejection', onUnhandled)
+    try {
+      await expect(parquetRead({ file, metadata, onComplete: () => {} }))
+        .rejects.toThrow('parquet schema element not found: flag')
+      await new Promise(resolve => setTimeout(resolve, 50))
+      expect(unhandled).toEqual([])
+    } finally {
+      process.off('unhandledRejection', onUnhandled)
+    }
   })
 })
