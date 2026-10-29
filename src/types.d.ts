@@ -242,6 +242,7 @@ export type LogicalType =
   | { type: 'VARIANT', specification_version?: number }
   | { type: 'GEOMETRY', crs?: string }
   | { type: 'GEOGRAPHY', crs?: string, algorithm?: EdgeInterpolationAlgorithm }
+  | { type: 'FILE' }
 
 export interface RowGroup {
   columns: ColumnChunk[]

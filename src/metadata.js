@@ -279,6 +279,7 @@ function logicalType(logicalType) {
     crs: decode(logicalType.field_18.field_1),
     algorithm: EdgeInterpolationAlgorithms[logicalType.field_18.field_2],
   }
+  if (logicalType?.field_19) return { type: 'FILE' }
   return logicalType
 }
 

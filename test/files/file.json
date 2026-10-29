@@ -1,0 +1,59 @@
+[
+  [
+    {
+      "inline": [
+        0,
+        255,
+        128
+      ],
+      "size": null,
+      "uri": null,
+      "checksum": null,
+      "offset": null,
+      "content_type": "image/png"
+    }
+  ],
+  [
+    {
+      "inline": [],
+      "size": 0,
+      "uri": "s3://bucket/original",
+      "checksum": null,
+      "offset": 3,
+      "content_type": null
+    }
+  ],
+  [
+    {
+      "inline": null,
+      "size": null,
+      "uri": "s3://bucket/whole",
+      "checksum": "ETAG:abc",
+      "offset": null,
+      "content_type": null
+    }
+  ],
+  [
+    {
+      "inline": null,
+      "size": 7,
+      "uri": "relative.bin",
+      "checksum": null,
+      "offset": 9007199254740992,
+      "content_type": null
+    }
+  ],
+  [
+    {
+      "inline": null,
+      "size": 4,
+      "uri": null,
+      "checksum": null,
+      "offset": 0,
+      "content_type": null
+    }
+  ],
+  [
+    null
+  ]
+]

@@ -79,6 +79,11 @@ export function convert(data, columnDecoder) {
   const { type, converted_type: ctype, logical_type: ltype } = element
   const nullable = element.repetition_type !== 'REQUIRED'
 
+  // FILE inline data is binary, even when utf8 conversion is enabled.
+  if (type === 'BYTE_ARRAY' && element.name === 'inline' && schemaPath?.at(-2)?.element.logical_type?.type === 'FILE') {
+    return data
+  }
+
   // Skip utf8 conversion for plain BYTE_ARRAY inside VARIANT
   const isVariant = schemaPath?.some(s => s.element.logical_type?.type === 'VARIANT')
   if (isVariant && type === 'BYTE_ARRAY' && ctype !== 'UTF8' && ltype?.type !== 'STRING') {
