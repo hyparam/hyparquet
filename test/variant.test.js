@@ -159,6 +159,22 @@ describe('variant binary encoding', () => {
     expect(result).toHaveProperty('observation')
     expect(result.observation).toHaveProperty('location', 'In the Volcano')
   })
+
+  it('decodes decimals without rounding error', () => {
+    const metadata = Uint8Array.from([0x11, 0x00, 0x00])
+    const decimal4 = Uint8Array.from([0x20, 0x01, 0x03, 0x00, 0x00, 0x00]) // 3, scale 1
+    const decimal8 = Uint8Array.from([0x24, 0x05, 0xf0, 0x49, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00]) // 150000, scale 5
+    const decimal16 = new Uint8Array(18)
+    decimal16.set([0x28, 0x02, 0x73]) // 115, scale 2
+
+    const subcolumnData = new Map()
+    subcolumnData.set('variant.metadata', [metadata, metadata, metadata])
+    subcolumnData.set('variant.value', [decimal4, decimal8, decimal16])
+
+    assembleNested(subcolumnData, variantSchema, DEFAULT_PARSERS)
+
+    expect(subcolumnData.get('variant')).toEqual([0.3, 1.5, 1.15])
+  })
 })
 
 describe('shredded variant', () => {

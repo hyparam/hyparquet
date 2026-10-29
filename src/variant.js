@@ -350,7 +350,7 @@ function readVariantDecimal(reader, width) {
     reader.offset += 16
   }
 
-  return Number(unscaled) * 10 ** -scale
+  return Number(unscaled) / 10 ** scale
 }
 
 /**

@@ -58,6 +58,43 @@ describe('readColumnIndex', () => {
       { name: 'decimal64', type: 'INT64', converted_type: 'DECIMAL', precision: 18, scale: 2 }
     ).max_values).toEqual([5])
   })
+
+  it('preserves subnormal DECIMAL bounds when the scale exceeds 308', () => {
+    const positive = new Uint8Array(129)
+    positive[128] = 1
+    const negative = new Uint8Array(129).fill(255)
+    /** @type {[Uint8Array, number][]} */
+    const cases = [[positive, 1e-309], [negative, -1e-309]]
+    for (const [bytes, expected] of cases) {
+      const index = readColumnIndex(
+        { view: new DataView(columnIndexBuffer(bytes)), offset: 0 },
+        { name: 'decimal', type: 'FIXED_LEN_BYTE_ARRAY', type_length: 129, converted_type: 'DECIMAL', precision: 310, scale: 309 }
+      )
+      expect(index.min_values).toEqual([expected])
+      expect(index.max_values).toEqual([expected])
+    }
+  })
+
+  it('scales DECIMAL bounds without rounding error', () => {
+    const int32 = new Uint8Array(4)
+    new DataView(int32.buffer).setInt32(0, 3, true)
+    const int64 = new Uint8Array(8)
+    new DataView(int64.buffer).setBigInt64(0, 150000n, true)
+    const fixed = new Uint8Array([0, 115])
+
+    expect(readColumnIndex(
+      { view: new DataView(columnIndexBuffer(int32)), offset: 0 },
+      { name: 'decimal32', type: 'INT32', converted_type: 'DECIMAL', precision: 9, scale: 1 }
+    ).min_values).toEqual([0.3])
+    expect(readColumnIndex(
+      { view: new DataView(columnIndexBuffer(int64)), offset: 0 },
+      { name: 'decimal64', type: 'INT64', converted_type: 'DECIMAL', precision: 18, scale: 5 }
+    ).max_values).toEqual([1.5])
+    expect(readColumnIndex(
+      { view: new DataView(columnIndexBuffer(fixed)), offset: 0 },
+      { name: 'decimal', type: 'FIXED_LEN_BYTE_ARRAY', type_length: 2, converted_type: 'DECIMAL', precision: 4, scale: 2 }
+    ).min_values).toEqual([1.15])
+  })
 })
 
 describe('readOffsetIndex', () => {
@@ -99,10 +136,17 @@ function readFileToArrayBuffer(filename) {
  * @returns {ArrayBuffer}
  */
 function columnIndexBuffer(value) {
+  const length = []
+  let remaining = value.length
+  while (remaining >= 128) {
+    length.push(remaining & 127 | 128)
+    remaining >>>= 7
+  }
+  length.push(remaining)
   const bytes = Uint8Array.from([
     0x19, 0x12, 0, // field 1: list<bool> null_pages = [false]
-    0x19, 0x18, value.length, ...value, // field 2: list<binary> min_values
-    0x19, 0x18, value.length, ...value, // field 3: list<binary> max_values
+    0x19, 0x18, ...length, ...value, // field 2: list<binary> min_values
+    0x19, 0x18, ...length, ...value, // field 3: list<binary> max_values
     0x15, 0, // field 4: boundary_order = UNORDERED
     0, // struct stop
   ])

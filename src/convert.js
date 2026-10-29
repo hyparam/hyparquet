@@ -86,13 +86,16 @@ export function convert(data, columnDecoder) {
   }
   if (ctype === 'DECIMAL') {
     const scale = element.scale || 0
-    const factor = 10 ** -scale
+    // divide rather than multiply by 10 ** -scale, which is inexact
+    // (3 * 10 ** -1 is 0.30000000000000004, 3 / 10 ** 1 is 0.3)
+    const factor = 10 ** scale
     const arr = new Array(data.length)
     for (let i = 0; i < arr.length; i++) {
       if (data[i] instanceof Uint8Array) {
-        arr[i] = parseDecimal(data[i]) * factor
+        // Large scales can overflow the divisor while the result is still representable.
+        arr[i] = scale > 308 ? parseDecimal(data[i]) * 10 ** -scale : parseDecimal(data[i]) / factor
       } else {
-        arr[i] = Number(data[i]) * factor
+        arr[i] = Number(data[i]) / factor
       }
     }
     return arr
