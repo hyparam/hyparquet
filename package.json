@@ -1,6 +1,6 @@
 {
   "name": "hyparquet",
-  "version": "1.31.5",
+  "version": "1.32.0",
   "description": "Parquet file parser for JavaScript",
   "author": "Hyperparam",
   "homepage": "https://hyperparam.app",
@@ -61,10 +61,10 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
-    "@types/node": "26.6.5",
+    "@types/node": "26.6.6",
     "@vitest/coverage-v8": "5.0.5",
     "eslint": "10.13.0",
-    "eslint-plugin-jsdoc": "65.3.12",
+    "eslint-plugin-jsdoc": "65.4.2",
     "globals": "17.13.0",
     "hyparquet-compressors": "1.1.2",
     "typescript": "7.0.2",

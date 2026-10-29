@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.32.0]
+ - Adaptive Lossless Floating Point (ALP) encoding support (#161)
+ - FILE logical type support
+ - Fix DECIMAL values off by one ulp from inexact scaling (#199)
+ - Read empty repeated leaf fields as empty lists (#201)
+ - Skip decompressing empty v2 data pages (#200)
+
 ## [1.31.5]
  - Export parquetHeader from column.js (#191)
  - Accept Uint8Array in parquetMetadata and avoid a copy in asyncBufferFromFile (#192)
