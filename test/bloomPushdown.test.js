@@ -1,12 +1,42 @@
 import { describe, expect, it } from 'vitest'
-import { parquetMetadataAsync, parquetReadObjects } from '../src/index.js'
+import { parquetMetadataAsync, parquetQuery, parquetReadObjects } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { parquetSchema } from '../src/metadata.js'
 import { parquetPlan, prefetchBloomFilters } from '../src/plan.js'
 
 /**
- * @import {SchemaElement} from '../src/types.js'
+ * @import {AsyncBuffer, FileMetaData, SchemaElement} from '../src/types.js'
  */
+
+/**
+ * Wrap an AsyncBuffer to record fetched byte ranges.
+ *
+ * @param {AsyncBuffer} file
+ * @returns {AsyncBuffer & {ranges: [number, number][]}}
+ */
+function recordingBuffer(file) {
+  /** @type {[number, number][]} */
+  const ranges = []
+  return {
+    byteLength: file.byteLength,
+    slice(start, end = file.byteLength) {
+      ranges.push([start, end])
+      return file.slice(start, end)
+    },
+    ranges,
+  }
+}
+
+/**
+ * @param {FileMetaData} metadata
+ * @returns {[number, number][]}
+ */
+function bloomRanges(metadata) {
+  return metadata.row_groups.map(rg => {
+    const start = Number(rg.columns[0].meta_data?.bloom_filter_offset)
+    return [start, start + Number(rg.columns[0].meta_data?.bloom_filter_length)]
+  })
+}
 
 /**
  * End-to-end bloom-filter pushdown against a tiny real parquet file.
@@ -79,5 +109,43 @@ describe('bloom filter pushdown against test/files/bloom_filter.parquet', () => 
     const rows = await parquetReadObjects({ file, filter: { code: { $in: [30, 50] } }, useBloomFilters: true })
     expect(rows).toHaveLength(1024)
     expect(rows.every(r => r.code === 30)).toBe(true)
+  })
+
+  it('coalesces adjacent bloom filters into one request', async () => {
+    const file = await asyncBufferFromFile(path)
+    const metadata = await parquetMetadataAsync(file)
+    const [[start0, end0], [start1, end1]] = bloomRanges(metadata)
+    expect(end0).toBe(start1)
+
+    const recorded = recordingBuffer(file)
+    const blooms = await prefetchBloomFilters({ file: recorded, metadata, filter: { code: { $eq: 30 } } })
+    expect(recorded.ranges).toEqual([[start0, end1]])
+    expect(blooms[0].code).toBeDefined()
+    expect(blooms[1].code).toBeDefined()
+  })
+
+  it('fetches only the bloom filters of row groups within rowStart and rowEnd', async () => {
+    const file = await asyncBufferFromFile(path)
+    const metadata = await parquetMetadataAsync(file)
+    const [, range1] = bloomRanges(metadata)
+
+    const recorded = recordingBuffer(file)
+    const blooms = await prefetchBloomFilters({ file: recorded, metadata, filter: { code: { $eq: 30 } }, rowStart: 2048, rowEnd: 4096 })
+    expect(recorded.ranges).toEqual([range1])
+    expect(blooms[0]).toEqual({})
+    expect(blooms[1].code).toBeDefined()
+  })
+
+  it('parquetQuery with a filter and a limit fetches each bloom filter once', async () => {
+    const file = await asyncBufferFromFile(path)
+    const metadata = await parquetMetadataAsync(file)
+    const recorded = recordingBuffer(file)
+    const rows = await parquetQuery({ file: recorded, metadata, filter: { code: { $eq: 30 } }, rowEnd: 10, useBloomFilters: true })
+    expect(rows).toHaveLength(10)
+    expect(rows.every(r => r.code === 30)).toBe(true)
+    for (const [start, end] of bloomRanges(metadata)) {
+      const reads = recorded.ranges.filter(([s, e]) => s < end && start < e)
+      expect(reads).toHaveLength(1)
+    }
   })
 })
