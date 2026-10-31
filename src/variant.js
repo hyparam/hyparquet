@@ -1,4 +1,5 @@
 import { DEFAULT_PARSERS } from './convert.js'
+import { setOwnKey } from './utils.js'
 
 /**
  * @import {DataReader, ParquetParsers, VariantMetadata} from '../src/types.js'
@@ -291,7 +292,7 @@ function readVariantObject(reader, header, metadata, parsers) {
       view: reader.view,
       offset: reader.offset + offsets[i],
     }
-    out[key] = readVariant(valueReader, metadata, parsers)
+    setOwnKey(out, key, readVariant(valueReader, metadata, parsers))
   }
   reader.offset += offsets[offsets.length - 1]
   return out
