@@ -18,7 +18,7 @@ const expected = [
   { file: { ...empty, uri: 's3://bucket/whole', checksum: 'ETAG:abc' } },
   { file: { ...empty, uri: 'relative.bin', offset: 9007199254740993n, size: 7n } },
   { file: { ...empty, offset: 0n, size: 4n } },
-  { file: undefined },
+  { file: null },
 ]
 
 describe('FILE logical type', () => {
