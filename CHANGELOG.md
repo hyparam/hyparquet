@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.33.0]
+ - Read null optional struct, list and map values as null instead of undefined (#168)
+
 ## [1.32.0]
  - Adaptive Lossless Floating Point (ALP) encoding support (#161)
  - FILE logical type support
