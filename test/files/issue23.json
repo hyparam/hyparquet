@@ -58,6 +58,7 @@
                         }
                       },
                       "volume": {
+                        "int_val": null,
                         "scale": 0
                       }
                     },
@@ -80,6 +81,7 @@
                         }
                       },
                       "volume": {
+                        "int_val": null,
                         "scale": 0
                       }
                     }
@@ -115,6 +117,7 @@
                         }
                       },
                       "volume": {
+                        "int_val": null,
                         "scale": 0
                       }
                     },
@@ -145,6 +148,7 @@
                         }
                       },
                       "volume": {
+                        "int_val": null,
                         "scale": 0
                       }
                     },
@@ -169,9 +173,11 @@
                       },
                       "unitSize": "KG",
                       "price": {
+                        "int_val": null,
                         "scale": 0
                       },
                       "volume": {
+                        "int_val": null,
                         "scale": 0
                       }
                     }

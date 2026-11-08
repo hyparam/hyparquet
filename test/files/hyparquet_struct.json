@@ -1,6 +1,6 @@
 [
   [{ "name": "Ada", "address": { "city": "London" } }],
   [null],
-  [{ "name": "Ben" }],
+  [{ "name": "Ben", "address": null }],
   [{ "name": "Cara", "address": { "city": null } }]
 ]
