@@ -1,4 +1,5 @@
 import { getMaxDefinitionLevel, isListLike, isMapLike } from './schema.js'
+import { setOwnKey } from './utils.js'
 import { decodeVariantColumn } from './variant.js'
 
 /**
@@ -219,7 +220,7 @@ function assembleMaps(keys, values, depth) {
         const obj = {}
         for (let j = 0; j < keys[i].length; j++) {
           const value = values[i][j]
-          obj[keys[i][j]] = value === undefined ? null : value
+          setOwnKey(obj, keys[i][j], value === undefined ? null : value)
         }
         out.push(obj)
       } else {

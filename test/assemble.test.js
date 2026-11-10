@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { assembleLists } from '../src/assemble.js'
+import { assembleLists, assembleNested } from '../src/assemble.js'
+import { DEFAULT_PARSERS } from '../src/convert.js'
 
 /** @import {FieldRepetitionType, SchemaTree} from '../src/types.js' */
 
@@ -206,5 +207,36 @@ describe('assembleLists', () => {
     const schemaPath = toSchemaPath([undefined, 'OPTIONAL', 'REQUIRED', 'REQUIRED'])
     const result = assembleLists([], definitionLevels, [], values, schemaPath)
     expect(result).toEqual([['a'], ['b']])
+  })
+})
+
+describe('assembleNested maps', () => {
+  /** @type {SchemaTree} */
+  const mapSchema = {
+    path: ['m'],
+    element: { name: 'm', repetition_type: 'REQUIRED', converted_type: 'MAP' },
+    count: 4,
+    children: [{
+      path: ['m', 'key_value'],
+      element: { name: 'key_value', repetition_type: 'REPEATED' },
+      count: 3,
+      children: [
+        { path: ['m', 'key_value', 'key'], element: { name: 'key', repetition_type: 'REQUIRED' }, count: 1, children: [] },
+        { path: ['m', 'key_value', 'value'], element: { name: 'value', repetition_type: 'OPTIONAL' }, count: 1, children: [] },
+      ],
+    }],
+  }
+
+  it('keeps a __proto__ key as an own property', () => {
+    const subcolumnData = new Map()
+    subcolumnData.set('m.key_value.key', [['__proto__', 'a'], ['__proto__']])
+    subcolumnData.set('m.key_value.value', [[1, 2], [{ polluted: true }]])
+    assembleNested(subcolumnData, mapSchema, DEFAULT_PARSERS)
+    const [first, second] = subcolumnData.get('m')
+    expect(Object.keys(first)).toEqual(['__proto__', 'a'])
+    expect(Object.getOwnPropertyDescriptor(first, '__proto__')?.value).toBe(1)
+    expect(Object.getPrototypeOf(second)).toBe(Object.prototype)
+    expect(second.polluted).toBeUndefined()
+    expect(Object.getOwnPropertyDescriptor(second, '__proto__')?.value).toEqual({ polluted: true })
   })
 })
