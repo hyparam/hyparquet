@@ -302,6 +302,8 @@ async function withBloomFilters(options) {
     metadata: options.metadata,
     filter: options.filter,
     filterStrict: options.filterStrict,
+    rowStart: options.rowStart,
+    rowEnd: options.rowEnd,
   })
   return { ...options, bloomFiltersByGroup, schemaElements }
 }
