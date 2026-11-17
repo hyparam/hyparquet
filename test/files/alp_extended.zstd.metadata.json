@@ -1,0 +1,1895 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "schema",
+      "num_children": 8
+    },
+    {
+      "type": "FLOAT",
+      "repetition_type": "OPTIONAL",
+      "name": "float_plain"
+    },
+    {
+      "type": "DOUBLE",
+      "repetition_type": "OPTIONAL",
+      "name": "double_plain"
+    },
+    {
+      "type": "FLOAT",
+      "repetition_type": "OPTIONAL",
+      "name": "float_alp_1024"
+    },
+    {
+      "type": "DOUBLE",
+      "repetition_type": "OPTIONAL",
+      "name": "double_alp_1024"
+    },
+    {
+      "type": "FLOAT",
+      "repetition_type": "OPTIONAL",
+      "name": "float_alp_4096"
+    },
+    {
+      "type": "DOUBLE",
+      "repetition_type": "OPTIONAL",
+      "name": "double_alp_4096"
+    },
+    {
+      "type": "FLOAT",
+      "repetition_type": "OPTIONAL",
+      "name": "float_alp_32"
+    },
+    {
+      "type": "DOUBLE",
+      "repetition_type": "OPTIONAL",
+      "name": "double_alp_32"
+    }
+  ],
+  "num_rows": 9032,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "float_plain"
+            ],
+            "codec": "ZSTD",
+            "num_values": 6144,
+            "total_uncompressed_size": 24605,
+            "total_compressed_size": 21005,
+            "data_page_offset": 4,
+            "statistics": {
+              "max": null,
+              "min": null,
+              "null_count": 0,
+              "max_value": null,
+              "min_value": null,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                6144
+              ]
+            }
+          },
+          "offset_index_offset": 213725,
+          "offset_index_length": 12,
+          "column_index_offset": 212453,
+          "column_index_length": 28
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "double_plain"
+            ],
+            "codec": "ZSTD",
+            "num_values": 6144,
+            "total_uncompressed_size": 49181,
+            "total_compressed_size": 24880,
+            "data_page_offset": 21009,
+            "statistics": {
+              "max": null,
+              "min": null,
+              "null_count": 0,
+              "max_value": null,
+              "min_value": null,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                6144
+              ]
+            }
+          },
+          "offset_index_offset": 213737,
+          "offset_index_length": 14,
+          "column_index_offset": 212481,
+          "column_index_length": 36
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "float_alp_1024"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6144,
+            "total_uncompressed_size": 16430,
+            "total_compressed_size": 16430,
+            "data_page_offset": 45889,
+            "statistics": {
+              "max": null,
+              "min": null,
+              "null_count": 0,
+              "max_value": null,
+              "min_value": null,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                6144
+              ]
+            }
+          },
+          "offset_index_offset": 213751,
+          "offset_index_length": 14,
+          "column_index_offset": 212517,
+          "column_index_length": 28
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "double_alp_1024"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6144,
+            "total_uncompressed_size": 22638,
+            "total_compressed_size": 22638,
+            "data_page_offset": 62319,
+            "statistics": {
+              "max": null,
+              "min": null,
+              "null_count": 0,
+              "max_value": null,
+              "min_value": null,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                6144
+              ]
+            }
+          },
+          "offset_index_offset": 213765,
+          "offset_index_length": 14,
+          "column_index_offset": 212545,
+          "column_index_length": 36
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "float_alp_4096"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6144,
+            "total_uncompressed_size": 17786,
+            "total_compressed_size": 17786,
+            "data_page_offset": 84957,
+            "statistics": {
+              "max": null,
+              "min": null,
+              "null_count": 0,
+              "max_value": null,
+              "min_value": null,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                6144
+              ]
+            }
+          },
+          "offset_index_offset": 213779,
+          "offset_index_length": 14,
+          "column_index_offset": 212581,
+          "column_index_length": 28
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "double_alp_4096"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6144,
+            "total_uncompressed_size": 23978,
+            "total_compressed_size": 23978,
+            "data_page_offset": 102743,
+            "statistics": {
+              "max": null,
+              "min": null,
+              "null_count": 0,
+              "max_value": null,
+              "min_value": null,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                6144
+              ]
+            }
+          },
+          "offset_index_offset": 213793,
+          "offset_index_length": 14,
+          "column_index_offset": 212609,
+          "column_index_length": 36
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "float_alp_32"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6144,
+            "total_uncompressed_size": 18848,
+            "total_compressed_size": 18848,
+            "data_page_offset": 126721,
+            "statistics": {
+              "max": null,
+              "min": null,
+              "null_count": 0,
+              "max_value": null,
+              "min_value": null,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                6144
+              ]
+            }
+          },
+          "offset_index_offset": 213807,
+          "offset_index_length": 14,
+          "column_index_offset": 212645,
+          "column_index_length": 28
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "double_alp_32"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6144,
+            "total_uncompressed_size": 25800,
+            "total_compressed_size": 25800,
+            "data_page_offset": 145569,
+            "statistics": {
+              "max": null,
+              "min": null,
+              "null_count": 0,
+              "max_value": null,
+              "min_value": null,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                6144
+              ]
+            }
+          },
+          "offset_index_offset": 213821,
+          "offset_index_length": 14,
+          "column_index_offset": 212673,
+          "column_index_length": 36
+        }
+      ],
+      "total_byte_size": 199266,
+      "num_rows": 6144,
+      "file_offset": 4,
+      "total_compressed_size": 171365
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "float_plain"
+            ],
+            "codec": "ZSTD",
+            "num_values": 1024,
+            "total_uncompressed_size": 4123,
+            "total_compressed_size": 3863,
+            "data_page_offset": 171369,
+            "statistics": {
+              "max": 9.994799613952637,
+              "min": -9.993399620056152,
+              "null_count": 0,
+              "max_value": 9.994799613952637,
+              "min_value": -9.993399620056152,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                1024
+              ]
+            }
+          },
+          "offset_index_offset": 213835,
+          "offset_index_length": 13,
+          "column_index_offset": 212709,
+          "column_index_length": 28
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "double_plain"
+            ],
+            "codec": "ZSTD",
+            "num_values": 1024,
+            "total_uncompressed_size": 8220,
+            "total_compressed_size": 5882,
+            "data_page_offset": 175232,
+            "statistics": {
+              "max": 9.9948,
+              "min": -9.9934,
+              "null_count": 0,
+              "max_value": 9.9948,
+              "min_value": -9.9934,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                1024
+              ]
+            }
+          },
+          "offset_index_offset": 213848,
+          "offset_index_length": 13,
+          "column_index_offset": 212737,
+          "column_index_length": 36
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "float_alp_1024"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1024,
+            "total_uncompressed_size": 2351,
+            "total_compressed_size": 2351,
+            "data_page_offset": 181114,
+            "statistics": {
+              "max": 9.994799613952637,
+              "min": -9.993399620056152,
+              "null_count": 0,
+              "max_value": 9.994799613952637,
+              "min_value": -9.993399620056152,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                1024
+              ]
+            }
+          },
+          "offset_index_offset": 213861,
+          "offset_index_length": 13,
+          "column_index_offset": 212773,
+          "column_index_length": 28
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "double_alp_1024"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1024,
+            "total_uncompressed_size": 2355,
+            "total_compressed_size": 2355,
+            "data_page_offset": 183465,
+            "statistics": {
+              "max": 9.9948,
+              "min": -9.9934,
+              "null_count": 0,
+              "max_value": 9.9948,
+              "min_value": -9.9934,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                1024
+              ]
+            }
+          },
+          "offset_index_offset": 213874,
+          "offset_index_length": 13,
+          "column_index_offset": 212801,
+          "column_index_length": 36
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "float_alp_4096"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1024,
+            "total_uncompressed_size": 2351,
+            "total_compressed_size": 2351,
+            "data_page_offset": 185820,
+            "statistics": {
+              "max": 9.994799613952637,
+              "min": -9.993399620056152,
+              "null_count": 0,
+              "max_value": 9.994799613952637,
+              "min_value": -9.993399620056152,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                1024
+              ]
+            }
+          },
+          "offset_index_offset": 213887,
+          "offset_index_length": 13,
+          "column_index_offset": 212837,
+          "column_index_length": 28
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "double_alp_4096"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1024,
+            "total_uncompressed_size": 2355,
+            "total_compressed_size": 2355,
+            "data_page_offset": 188171,
+            "statistics": {
+              "max": 9.9948,
+              "min": -9.9934,
+              "null_count": 0,
+              "max_value": 9.9948,
+              "min_value": -9.9934,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                1024
+              ]
+            }
+          },
+          "offset_index_offset": 213900,
+          "offset_index_length": 13,
+          "column_index_offset": 212865,
+          "column_index_length": 36
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "float_alp_32"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1024,
+            "total_uncompressed_size": 2754,
+            "total_compressed_size": 2754,
+            "data_page_offset": 190526,
+            "statistics": {
+              "max": 9.994799613952637,
+              "min": -9.993399620056152,
+              "null_count": 0,
+              "max_value": 9.994799613952637,
+              "min_value": -9.993399620056152,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                1024
+              ]
+            }
+          },
+          "offset_index_offset": 213913,
+          "offset_index_length": 13,
+          "column_index_offset": 212901,
+          "column_index_length": 28
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "double_alp_32"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1024,
+            "total_uncompressed_size": 2882,
+            "total_compressed_size": 2882,
+            "data_page_offset": 193280,
+            "statistics": {
+              "max": 9.9948,
+              "min": -9.9934,
+              "null_count": 0,
+              "max_value": 9.9948,
+              "min_value": -9.9934,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                1024
+              ]
+            }
+          },
+          "offset_index_offset": 213926,
+          "offset_index_length": 13,
+          "column_index_offset": 212929,
+          "column_index_length": 36
+        }
+      ],
+      "total_byte_size": 27391,
+      "num_rows": 1024,
+      "file_offset": 171369,
+      "total_compressed_size": 24793
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "float_plain"
+            ],
+            "codec": "ZSTD",
+            "num_values": 1024,
+            "total_uncompressed_size": 4122,
+            "total_compressed_size": 47,
+            "data_page_offset": 196162,
+            "statistics": {
+              "max": 7.769999980926514,
+              "min": 7.769999980926514,
+              "null_count": 0,
+              "max_value": 7.769999980926514,
+              "min_value": 7.769999980926514,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                1024
+              ]
+            }
+          },
+          "offset_index_offset": 213939,
+          "offset_index_length": 12,
+          "column_index_offset": 212965,
+          "column_index_length": 28
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "double_plain"
+            ],
+            "codec": "ZSTD",
+            "num_values": 1024,
+            "total_uncompressed_size": 8219,
+            "total_compressed_size": 53,
+            "data_page_offset": 196209,
+            "statistics": {
+              "max": 7.77,
+              "min": 7.77,
+              "null_count": 0,
+              "max_value": 7.77,
+              "min_value": 7.77,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                1024
+              ]
+            }
+          },
+          "offset_index_offset": 213951,
+          "offset_index_length": 12,
+          "column_index_offset": 212993,
+          "column_index_length": 36
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "float_alp_1024"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1024,
+            "total_uncompressed_size": 45,
+            "total_compressed_size": 45,
+            "data_page_offset": 196262,
+            "statistics": {
+              "max": 7.769999980926514,
+              "min": 7.769999980926514,
+              "null_count": 0,
+              "max_value": 7.769999980926514,
+              "min_value": 7.769999980926514,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                1024
+              ]
+            }
+          },
+          "offset_index_offset": 213963,
+          "offset_index_length": 12,
+          "column_index_offset": 213029,
+          "column_index_length": 28
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "double_alp_1024"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1024,
+            "total_uncompressed_size": 49,
+            "total_compressed_size": 49,
+            "data_page_offset": 196307,
+            "statistics": {
+              "max": 7.77,
+              "min": 7.77,
+              "null_count": 0,
+              "max_value": 7.77,
+              "min_value": 7.77,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                1024
+              ]
+            }
+          },
+          "offset_index_offset": 213975,
+          "offset_index_length": 12,
+          "column_index_offset": 213057,
+          "column_index_length": 36
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "float_alp_4096"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1024,
+            "total_uncompressed_size": 45,
+            "total_compressed_size": 45,
+            "data_page_offset": 196356,
+            "statistics": {
+              "max": 7.769999980926514,
+              "min": 7.769999980926514,
+              "null_count": 0,
+              "max_value": 7.769999980926514,
+              "min_value": 7.769999980926514,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                1024
+              ]
+            }
+          },
+          "offset_index_offset": 213987,
+          "offset_index_length": 12,
+          "column_index_offset": 213093,
+          "column_index_length": 28
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "double_alp_4096"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1024,
+            "total_uncompressed_size": 49,
+            "total_compressed_size": 49,
+            "data_page_offset": 196401,
+            "statistics": {
+              "max": 7.77,
+              "min": 7.77,
+              "null_count": 0,
+              "max_value": 7.77,
+              "min_value": 7.77,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                1024
+              ]
+            }
+          },
+          "offset_index_offset": 213999,
+          "offset_index_length": 12,
+          "column_index_offset": 213121,
+          "column_index_length": 36
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "float_alp_32"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1024,
+            "total_uncompressed_size": 450,
+            "total_compressed_size": 450,
+            "data_page_offset": 196450,
+            "statistics": {
+              "max": 7.769999980926514,
+              "min": 7.769999980926514,
+              "null_count": 0,
+              "max_value": 7.769999980926514,
+              "min_value": 7.769999980926514,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                1024
+              ]
+            }
+          },
+          "offset_index_offset": 214011,
+          "offset_index_length": 13,
+          "column_index_offset": 213157,
+          "column_index_length": 28
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "double_alp_32"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 1024,
+            "total_uncompressed_size": 578,
+            "total_compressed_size": 578,
+            "data_page_offset": 196900,
+            "statistics": {
+              "max": 7.77,
+              "min": 7.77,
+              "null_count": 0,
+              "max_value": 7.77,
+              "min_value": 7.77,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                1024
+              ]
+            }
+          },
+          "offset_index_offset": 214024,
+          "offset_index_length": 13,
+          "column_index_offset": 213185,
+          "column_index_length": 36
+        }
+      ],
+      "total_byte_size": 13557,
+      "num_rows": 1024,
+      "file_offset": 196162,
+      "total_compressed_size": 1316
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "float_plain"
+            ],
+            "codec": "ZSTD",
+            "num_values": 808,
+            "total_uncompressed_size": 3266,
+            "total_compressed_size": 2672,
+            "data_page_offset": 197478,
+            "statistics": {
+              "max": 9.970000267028809,
+              "min": -9.989999771118164,
+              "null_count": 8,
+              "max_value": 9.970000267028809,
+              "min_value": -9.989999771118164,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                8,
+                800
+              ]
+            }
+          },
+          "offset_index_offset": 214037,
+          "offset_index_length": 13,
+          "column_index_offset": 213221,
+          "column_index_length": 28
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "double_plain"
+            ],
+            "codec": "ZSTD",
+            "num_values": 808,
+            "total_uncompressed_size": 6466,
+            "total_compressed_size": 2376,
+            "data_page_offset": 200150,
+            "statistics": {
+              "max": 9.97,
+              "min": -9.99,
+              "null_count": 8,
+              "max_value": 9.97,
+              "min_value": -9.99,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                8,
+                800
+              ]
+            }
+          },
+          "offset_index_offset": 214050,
+          "offset_index_length": 13,
+          "column_index_offset": 213249,
+          "column_index_length": 36
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "float_alp_1024"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 808,
+            "total_uncompressed_size": 1186,
+            "total_compressed_size": 1186,
+            "data_page_offset": 202526,
+            "statistics": {
+              "max": 9.970000267028809,
+              "min": -9.989999771118164,
+              "null_count": 8,
+              "max_value": 9.970000267028809,
+              "min_value": -9.989999771118164,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                8,
+                800
+              ]
+            }
+          },
+          "offset_index_offset": 214063,
+          "offset_index_length": 13,
+          "column_index_offset": 213285,
+          "column_index_length": 28
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "double_alp_1024"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 808,
+            "total_uncompressed_size": 1190,
+            "total_compressed_size": 1190,
+            "data_page_offset": 203712,
+            "statistics": {
+              "max": 9.97,
+              "min": -9.99,
+              "null_count": 8,
+              "max_value": 9.97,
+              "min_value": -9.99,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                8,
+                800
+              ]
+            }
+          },
+          "offset_index_offset": 214076,
+          "offset_index_length": 13,
+          "column_index_offset": 213313,
+          "column_index_length": 36
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "float_alp_4096"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 808,
+            "total_uncompressed_size": 1186,
+            "total_compressed_size": 1186,
+            "data_page_offset": 204902,
+            "statistics": {
+              "max": 9.970000267028809,
+              "min": -9.989999771118164,
+              "null_count": 8,
+              "max_value": 9.970000267028809,
+              "min_value": -9.989999771118164,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                8,
+                800
+              ]
+            }
+          },
+          "offset_index_offset": 214089,
+          "offset_index_length": 13,
+          "column_index_offset": 213349,
+          "column_index_length": 28
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "double_alp_4096"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 808,
+            "total_uncompressed_size": 1190,
+            "total_compressed_size": 1190,
+            "data_page_offset": 206088,
+            "statistics": {
+              "max": 9.97,
+              "min": -9.99,
+              "null_count": 8,
+              "max_value": 9.97,
+              "min_value": -9.99,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                8,
+                800
+              ]
+            }
+          },
+          "offset_index_offset": 214102,
+          "offset_index_length": 13,
+          "column_index_offset": 213377,
+          "column_index_length": 36
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "float_alp_32"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 808,
+            "total_uncompressed_size": 1498,
+            "total_compressed_size": 1498,
+            "data_page_offset": 207278,
+            "statistics": {
+              "max": 9.970000267028809,
+              "min": -9.989999771118164,
+              "null_count": 8,
+              "max_value": 9.970000267028809,
+              "min_value": -9.989999771118164,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                8,
+                800
+              ]
+            }
+          },
+          "offset_index_offset": 214115,
+          "offset_index_length": 13,
+          "column_index_offset": 213413,
+          "column_index_length": 28
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "double_alp_32"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 808,
+            "total_uncompressed_size": 1598,
+            "total_compressed_size": 1598,
+            "data_page_offset": 208776,
+            "statistics": {
+              "max": 9.97,
+              "min": -9.99,
+              "null_count": 8,
+              "max_value": 9.97,
+              "min_value": -9.99,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                8,
+                800
+              ]
+            }
+          },
+          "offset_index_offset": 214128,
+          "offset_index_length": 13,
+          "column_index_offset": 213441,
+          "column_index_length": 36
+        }
+      ],
+      "total_byte_size": 17580,
+      "num_rows": 808,
+      "file_offset": 197478,
+      "total_compressed_size": 12896
+    },
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "float_plain"
+            ],
+            "codec": "ZSTD",
+            "num_values": 32,
+            "total_uncompressed_size": 153,
+            "total_compressed_size": 162,
+            "data_page_offset": 210374,
+            "statistics": {
+              "max": 7999999874453996000,
+              "min": -7999999874453996000,
+              "null_count": 0,
+              "max_value": 7999999874453996000,
+              "min_value": -7999999874453996000,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                32
+              ]
+            }
+          },
+          "offset_index_offset": 214141,
+          "offset_index_length": 13,
+          "column_index_offset": 213477,
+          "column_index_length": 27
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "double_plain"
+            ],
+            "codec": "ZSTD",
+            "num_values": 32,
+            "total_uncompressed_size": 281,
+            "total_compressed_size": 291,
+            "data_page_offset": 210536,
+            "statistics": {
+              "max": 8000000000000000000,
+              "min": -8000000000000000000,
+              "null_count": 0,
+              "max_value": 8000000000000000000,
+              "min_value": -8000000000000000000,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                32
+              ]
+            }
+          },
+          "offset_index_offset": 214154,
+          "offset_index_length": 13,
+          "column_index_offset": 213504,
+          "column_index_length": 35
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "float_alp_1024"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 32,
+            "total_uncompressed_size": 237,
+            "total_compressed_size": 237,
+            "data_page_offset": 210827,
+            "statistics": {
+              "max": 7999999874453996000,
+              "min": -7999999874453996000,
+              "null_count": 0,
+              "max_value": 7999999874453996000,
+              "min_value": -7999999874453996000,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                32
+              ]
+            }
+          },
+          "offset_index_offset": 214167,
+          "offset_index_length": 13,
+          "column_index_offset": 213539,
+          "column_index_length": 27
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "double_alp_1024"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 32,
+            "total_uncompressed_size": 305,
+            "total_compressed_size": 305,
+            "data_page_offset": 211064,
+            "statistics": {
+              "max": 8000000000000000000,
+              "min": -8000000000000000000,
+              "null_count": 0,
+              "max_value": 8000000000000000000,
+              "min_value": -8000000000000000000,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                32
+              ]
+            }
+          },
+          "offset_index_offset": 214180,
+          "offset_index_length": 13,
+          "column_index_offset": 213566,
+          "column_index_length": 35
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "float_alp_4096"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 32,
+            "total_uncompressed_size": 237,
+            "total_compressed_size": 237,
+            "data_page_offset": 211369,
+            "statistics": {
+              "max": 7999999874453996000,
+              "min": -7999999874453996000,
+              "null_count": 0,
+              "max_value": 7999999874453996000,
+              "min_value": -7999999874453996000,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                32
+              ]
+            }
+          },
+          "offset_index_offset": 214193,
+          "offset_index_length": 13,
+          "column_index_offset": 213601,
+          "column_index_length": 27
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "double_alp_4096"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 32,
+            "total_uncompressed_size": 305,
+            "total_compressed_size": 305,
+            "data_page_offset": 211606,
+            "statistics": {
+              "max": 8000000000000000000,
+              "min": -8000000000000000000,
+              "null_count": 0,
+              "max_value": 8000000000000000000,
+              "min_value": -8000000000000000000,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                32
+              ]
+            }
+          },
+          "offset_index_offset": 214206,
+          "offset_index_length": 13,
+          "column_index_offset": 213628,
+          "column_index_length": 35
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "FLOAT",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "float_alp_32"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 32,
+            "total_uncompressed_size": 237,
+            "total_compressed_size": 237,
+            "data_page_offset": 211911,
+            "statistics": {
+              "max": 7999999874453996000,
+              "min": -7999999874453996000,
+              "null_count": 0,
+              "max_value": 7999999874453996000,
+              "min_value": -7999999874453996000,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                32
+              ]
+            }
+          },
+          "offset_index_offset": 214219,
+          "offset_index_length": 13,
+          "column_index_offset": 213663,
+          "column_index_length": 27
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "DOUBLE",
+            "encodings": [
+              "RLE",
+              "ALP"
+            ],
+            "path_in_schema": [
+              "double_alp_32"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 32,
+            "total_uncompressed_size": 305,
+            "total_compressed_size": 305,
+            "data_page_offset": 212148,
+            "statistics": {
+              "max": 8000000000000000000,
+              "min": -8000000000000000000,
+              "null_count": 0,
+              "max_value": 8000000000000000000,
+              "min_value": -8000000000000000000,
+              "is_max_value_exact": true,
+              "is_min_value_exact": true
+            },
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "ALP",
+                "count": 1
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                32
+              ]
+            }
+          },
+          "offset_index_offset": 214232,
+          "offset_index_length": 13,
+          "column_index_offset": 213690,
+          "column_index_length": 35
+        }
+      ],
+      "total_byte_size": 2060,
+      "num_rows": 32,
+      "file_offset": 210374,
+      "total_compressed_size": 2079
+    }
+  ],
+  "created_by": "parquet-cpp-arrow version 23.0.0-SNAPSHOT",
+  "metadata_length": 4739
+}

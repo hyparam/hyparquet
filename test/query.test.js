@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { parquetQuery } from '../src/query.js'
 import { asyncBufferFromFile } from '../src/node.js'
 import { parquetMetadataAsync } from '../src/metadata.js'
+import { parquetReadColumn, parquetReadObjects } from '../src/read.js'
 import { rowIndex } from '../src/index.js'
 import { countingBuffer } from './helpers.js'
 
@@ -17,8 +18,8 @@ describe('parquetQuery', () => {
     const rows = await parquetQuery({ file })
     expect(rows).toEqual([
       { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
-      { a: 'abc', b: 2, c: 3, d: true },
-      { a: 'abc', b: 3, c: 4, d: true },
+      { a: 'abc', b: 2, c: 3, d: true, e: null },
+      { a: 'abc', b: 3, c: 4, d: true, e: null },
       { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
       { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
     ])
@@ -30,8 +31,8 @@ describe('parquetQuery', () => {
     expect(rows).toEqual([
       { __index__: 0, a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
       { __index__: 4, a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
-      { __index__: 1, a: 'abc', b: 2, c: 3, d: true },
-      { __index__: 2, a: 'abc', b: 3, c: 4, d: true },
+      { __index__: 1, a: 'abc', b: 2, c: 3, d: true, e: null },
+      { __index__: 2, a: 'abc', b: 3, c: 4, d: true, e: null },
       { __index__: 3, a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
     ])
   })
@@ -41,8 +42,8 @@ describe('parquetQuery', () => {
     const rows = await parquetQuery({ file, orderBy: 'c', rowStart: 1, rowEnd: 4 })
     expect(rows).toEqual([
       { __index__: 4, a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
-      { __index__: 1, a: 'abc', b: 2, c: 3, d: true },
-      { __index__: 2, a: 'abc', b: 3, c: 4, d: true },
+      { __index__: 1, a: 'abc', b: 2, c: 3, d: true, e: null },
+      { __index__: 2, a: 'abc', b: 3, c: 4, d: true, e: null },
     ])
   })
 
@@ -63,12 +64,37 @@ describe('parquetQuery', () => {
     expect(JSON.stringify(rows)).toBe(JSON.stringify(withoutIndices))
   })
 
+  it('skips unselected row groups when sorting', async () => {
+    const file = countingBuffer(await asyncBufferFromFile('test/files/alpha.parquet'))
+    const metadata = await parquetMetadataAsync(file)
+    const firstGroupEnd = Number(metadata.row_groups[0].num_rows)
+
+    file.bytes = 0
+    const ids = await parquetReadColumn({ file, metadata, columns: ['id'] })
+    const sortBytes = file.bytes
+    const rowStart = Array.from(ids, (value, index) => ({ value, index }))
+      .sort((a, b) => a.value < b.value ? -1 : a.value > b.value ? 1 : 0)
+      .findIndex(row => row.index < firstGroupEnd)
+
+    file.bytes = 0
+    await parquetReadObjects({ file, metadata, columns: ['id'], rowStart: 0, rowEnd: firstGroupEnd })
+    const groupBytes = file.bytes
+
+    file.bytes = 0
+    const rows = await parquetQuery({
+      file, metadata, columns: ['id'], orderBy: 'id', rowStart, rowEnd: rowStart + 1,
+    })
+    expect(rows).toHaveLength(1)
+    expect(rows[0].__index__).toBeLessThan(firstGroupEnd)
+    expect(file.bytes).toBe(sortBytes + groupBytes)
+  })
+
   it('reads data with rowStart and rowEnd without orderBy', async () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     const rows = await parquetQuery({ file, rowStart: 1, rowEnd: 4 })
     expect(rows).toEqual([
-      { a: 'abc', b: 2, c: 3, d: true },
-      { a: 'abc', b: 3, c: 4, d: true },
+      { a: 'abc', b: 2, c: 3, d: true, e: null },
+      { a: 'abc', b: 3, c: 4, d: true, e: null },
       { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
     ])
   })
@@ -108,7 +134,7 @@ describe('parquetQuery', () => {
     const rows = await parquetQuery({ file, filter: { c: { $gt: 1, $lt: 4 }, d: { $eq: true } } })
     expect(rows).toEqual([
       { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
-      { a: 'abc', b: 2, c: 3, d: true },
+      { a: 'abc', b: 2, c: 3, d: true, e: null },
       { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
     ])
   })
@@ -143,8 +169,8 @@ describe('parquetQuery', () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     const rows = await parquetQuery({ file, filter: { c: { $not: { $eq: 2 } } } })
     expect(rows).toEqual([
-      { a: 'abc', b: 2, c: 3, d: true },
-      { a: 'abc', b: 3, c: 4, d: true },
+      { a: 'abc', b: 2, c: 3, d: true, e: null },
+      { a: 'abc', b: 3, c: 4, d: true, e: null },
       { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
     ])
   })
@@ -163,7 +189,7 @@ describe('parquetQuery', () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     const rows = await parquetQuery({ file, filter: { b: { $gte: 3 } } })
     expect(rows).toEqual([
-      { a: 'abc', b: 3, c: 4, d: true },
+      { a: 'abc', b: 3, c: 4, d: true, e: null },
       { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
       { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
     ])
@@ -174,7 +200,7 @@ describe('parquetQuery', () => {
     const rows = await parquetQuery({ file, filter: { b: { $lt: 3 } } })
     expect(rows).toEqual([
       { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
-      { a: 'abc', b: 2, c: 3, d: true },
+      { a: 'abc', b: 2, c: 3, d: true, e: null },
     ])
   })
 
@@ -183,8 +209,8 @@ describe('parquetQuery', () => {
     const rows = await parquetQuery({ file, filter: { b: { $lte: 3 } } })
     expect(rows).toEqual([
       { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
-      { a: 'abc', b: 2, c: 3, d: true },
-      { a: 'abc', b: 3, c: 4, d: true },
+      { a: 'abc', b: 2, c: 3, d: true, e: null },
+      { a: 'abc', b: 3, c: 4, d: true, e: null },
     ])
   })
 
@@ -193,7 +219,7 @@ describe('parquetQuery', () => {
     const rows = await parquetQuery({ file, filter: { b: { $ne: 3 } } })
     expect(rows).toEqual([
       { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
-      { a: 'abc', b: 2, c: 3, d: true },
+      { a: 'abc', b: 2, c: 3, d: true, e: null },
       { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
       { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
     ])
@@ -203,7 +229,7 @@ describe('parquetQuery', () => {
     const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
     const rows = await parquetQuery({ file, filter: { b: { $in: [2, 4] } } })
     expect(rows).toEqual([
-      { a: 'abc', b: 2, c: 3, d: true },
+      { a: 'abc', b: 2, c: 3, d: true, e: null },
       { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
     ])
   })
@@ -213,7 +239,7 @@ describe('parquetQuery', () => {
     const rows = await parquetQuery({ file, filter: { b: { $nin: [2, 4] } } })
     expect(rows).toEqual([
       { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
-      { a: 'abc', b: 3, c: 4, d: true },
+      { a: 'abc', b: 3, c: 4, d: true, e: null },
       { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
     ])
   })
@@ -267,7 +293,7 @@ describe('parquetQuery', () => {
     const file = await asyncBufferFromFile('test/files/hyparquet_struct.parquet')
     const rows = await parquetQuery({ file, filter: { 'person.name': { $gte: 'B' } } })
     expect(rows).toEqual([
-      { person: { name: 'Ben' } },
+      { person: { name: 'Ben', address: null } },
       { person: { name: 'Cara', address: { city: null } } },
     ])
   })

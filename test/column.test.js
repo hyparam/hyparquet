@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { readColumn } from '../src/column.js'
+import { parquetHeader, readColumn, readPage } from '../src/column.js'
 import { DEFAULT_PARSERS } from '../src/convert.js'
 import { parquetMetadata } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
@@ -75,8 +75,81 @@ describe('readColumn', () => {
   })
 })
 
+describe('readPage', () => {
+  it('skips a v2 page of a nested column by its row count', () => {
+    /** @type {SchemaElement[]} */
+    const schema = [
+      { name: 'root', num_children: 1 },
+      { name: 'list', repetition_type: 'OPTIONAL', converted_type: 'LIST', num_children: 1 },
+      { name: 'list', repetition_type: 'REPEATED', num_children: 1 },
+      { name: 'element', repetition_type: 'OPTIONAL', type: 'INT32' },
+    ]
+    const schemaPath = getSchemaPath(schema, ['list', 'list', 'element'])
+    /** @type {ColumnDecoder} */
+    const columnDecoder = {
+      pathInSchema: ['list', 'list', 'element'],
+      type: 'INT32',
+      element: schema[3],
+      schemaPath,
+      parsers: DEFAULT_PARSERS,
+      codec: 'UNCOMPRESSED',
+    }
+    /** @type {PageHeader} */
+    const header = {
+      type: 'DATA_PAGE_V2',
+      uncompressed_page_size: 8,
+      compressed_page_size: 8,
+      data_page_header_v2: {
+        num_values: 10,
+        num_nulls: 0,
+        num_rows: 5,
+        encoding: 'PLAIN',
+        definition_levels_byte_length: 0,
+        repetition_levels_byte_length: 0,
+      },
+    }
+    const reader = { view: new DataView(new ArrayBuffer(8)), offset: 0 }
+    const result = readPage(reader, header, columnDecoder, undefined, undefined, 6)
+    expect(result).toEqual({ skipped: 5 })
+    expect(reader.offset).toBe(8)
+  })
+})
+
+describe('parquetHeader', () => {
+  it('walks the pages of a column chunk', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2.snappy.parquet')
+    const arrayBuffer = await file.slice(0)
+    const metadata = parquetMetadata(arrayBuffer)
+    const meta = metadata.row_groups[0].columns[0].meta_data
+    if (!meta) throw new Error('No column metadata')
+    const { startByte, endByte } = getChunkPlan(meta)
+    const reader = { view: new DataView(arrayBuffer, startByte, endByte - startByte), offset: 0 }
+
+    const headers = []
+    while (reader.offset < reader.view.byteLength) {
+      const header = parquetHeader(reader)
+      headers.push(header)
+      reader.offset += header.compressed_page_size
+    }
+
+    expect(reader.offset).toBe(Number(meta.total_compressed_size))
+    expect(headers.map(header => header.type)).toEqual(['DICTIONARY_PAGE', 'DATA_PAGE_V2'])
+    expect(headers[0].dictionary_page_header).toEqual({ num_values: 1, encoding: 'PLAIN', is_sorted: undefined })
+    expect(headers[1].data_page_header_v2).toMatchObject({
+      num_values: 5,
+      num_nulls: 1,
+      num_rows: 5,
+      encoding: 'RLE_DICTIONARY',
+      definition_levels_byte_length: 2,
+      repetition_levels_byte_length: 0,
+      is_compressed: true,
+      statistics: { null_count: 1n },
+    })
+  })
+})
+
 /**
- * @import {ByteRange, ColumnMetaData} from '../src/types.js'
+ * @import {ByteRange, ColumnDecoder, ColumnMetaData, PageHeader, SchemaElement} from '../src/types.js'
  * @param {ColumnMetaData} meta
  * @returns {ByteRange}
  */

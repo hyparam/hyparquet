@@ -27,7 +27,12 @@ export async function asyncBufferFromFile(filename) {
         reader.on('error', reject)
         reader.on('end', () => {
           const buffer = Buffer.concat(chunks)
-          resolve(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength))
+          if (buffer.byteOffset === 0 && buffer.byteLength === buffer.buffer.byteLength) {
+            resolve(buffer.buffer)
+          } else {
+            // small buffers share node's allocation pool
+            resolve(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength))
+          }
         })
       })
     },

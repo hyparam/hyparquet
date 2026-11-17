@@ -15,7 +15,7 @@ Dependency free since 2023!
 
 **Hyparquet** is a JavaScript library for parsing [Apache Parquet](https://parquet.apache.org) files in the browser. Apache Parquet is a popular columnar storage format that is widely used in data engineering, data science, and machine learning applications for storing large datasets. Hyparquet is designed to read parquet files efficiently over http, so that parquet files in cloud storage can be queried directly from the browser without needing a server.
 
-> Part of **[HypStack](https://hypstack.ai/)**, an open-source stack for AI observability.
+> Powers **[HypAware](https://hypaware.ai/?utm_source=github-readme)**, the improvement loop for all your agents.
 
  - Works in browsers and node.js
  - Pure JavaScript, no dependencies
@@ -84,6 +84,8 @@ const schema = parquetSchema(metadata)
 // Get top-level column header names
 const columnNames = schema.children.map(e => e.element.name)
 ```
+
+If the file (or at least its footer) is already in memory, `parquetMetadata` parses it synchronously from an `ArrayBuffer` or a `Uint8Array`, such as a node `Buffer`.
 
 ### AsyncBuffer
 

@@ -26,7 +26,8 @@ export function deserializeTCompactProtocol(reader) {
   const value = {}
   let fid = 0
 
-  while (reader.offset < reader.view.byteLength) {
+  while (true) {
+    if (reader.offset >= reader.view.byteLength) throw new Error('thrift struct ended without STOP')
     // Parse each field based on its type and add to the result object
     const byte = reader.view.getUint8(reader.offset++)
     const type = byte & 0x0f
@@ -66,6 +67,9 @@ function readElement(reader, type) {
   }
   case BINARY: {
     const stringLength = readVarInt(reader)
+    if (reader.offset + stringLength > reader.view.byteLength) {
+      throw new Error(`thrift binary length ${stringLength} exceeds remaining ${reader.view.byteLength - reader.offset} bytes`)
+    }
     const strBytes = new Uint8Array(reader.view.buffer, reader.view.byteOffset + reader.offset, stringLength)
     reader.offset += stringLength
     return strBytes

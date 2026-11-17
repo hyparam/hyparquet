@@ -1,0 +1,180 @@
+{
+  "version": 1,
+  "schema": [
+    {
+      "name": "schema",
+      "num_children": 1
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "file",
+      "num_children": 6,
+      "logical_type": {
+        "type": "FILE"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "inline"
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "size"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "uri",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "checksum",
+      "logical_type": {
+        "type": "STRING"
+      }
+    },
+    {
+      "type": "INT64",
+      "repetition_type": "OPTIONAL",
+      "name": "offset"
+    },
+    {
+      "type": "BYTE_ARRAY",
+      "repetition_type": "OPTIONAL",
+      "name": "content_type",
+      "logical_type": {
+        "type": "STRING"
+      }
+    }
+  ],
+  "num_rows": 6,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 4,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "file",
+              "inline"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6,
+            "total_uncompressed_size": 44,
+            "total_compressed_size": 44,
+            "data_page_offset": 4
+          }
+        },
+        {
+          "file_offset": 48,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "file",
+              "size"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6,
+            "total_uncompressed_size": 57,
+            "total_compressed_size": 57,
+            "data_page_offset": 48
+          }
+        },
+        {
+          "file_offset": 105,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "file",
+              "uri"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6,
+            "total_uncompressed_size": 96,
+            "total_compressed_size": 96,
+            "data_page_offset": 105
+          }
+        },
+        {
+          "file_offset": 201,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "file",
+              "checksum"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6,
+            "total_uncompressed_size": 45,
+            "total_compressed_size": 45,
+            "data_page_offset": 201
+          }
+        },
+        {
+          "file_offset": 246,
+          "meta_data": {
+            "type": "INT64",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "file",
+              "offset"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6,
+            "total_uncompressed_size": 57,
+            "total_compressed_size": 57,
+            "data_page_offset": 246
+          }
+        },
+        {
+          "file_offset": 303,
+          "meta_data": {
+            "type": "BYTE_ARRAY",
+            "encodings": [
+              "PLAIN",
+              "RLE"
+            ],
+            "path_in_schema": [
+              "file",
+              "content_type"
+            ],
+            "codec": "UNCOMPRESSED",
+            "num_values": 6,
+            "total_uncompressed_size": 46,
+            "total_compressed_size": 46,
+            "data_page_offset": 303
+          }
+        }
+      ],
+      "total_byte_size": 345,
+      "num_rows": 6
+    }
+  ],
+  "metadata_length": 360
+}

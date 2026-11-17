@@ -242,6 +242,7 @@ export type LogicalType =
   | { type: 'VARIANT', specification_version?: number }
   | { type: 'GEOMETRY', crs?: string }
   | { type: 'GEOGRAPHY', crs?: string, algorithm?: EdgeInterpolationAlgorithm }
+  | { type: 'FILE' }
 
 export interface RowGroup {
   columns: ColumnChunk[]
@@ -298,6 +299,7 @@ export type Encoding =
   | 'DELTA_BYTE_ARRAY'
   | 'RLE_DICTIONARY'
   | 'BYTE_STREAM_SPLIT'
+  | 'ALP'
 
 export type CompressionCodec =
   | 'UNCOMPRESSED'

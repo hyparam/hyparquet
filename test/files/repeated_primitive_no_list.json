@@ -1,0 +1,6 @@
+[
+  [[0, 1, 2, 3], ["foo", "zero", "one", "two"], {"Int32_list_in_group": [0, 1, 2, 3], "String_list_in_group": ["foo", "zero", "one", "two"]}],
+  [[], ["three"], {"Int32_list_in_group": [], "String_list_in_group": ["three"]}],
+  [[4], ["four"], {"Int32_list_in_group": [4], "String_list_in_group": ["four"]}],
+  [[5, 6, 7, 8], ["five", "six", "seven", "eight"], {"Int32_list_in_group": [5, 6, 7, 8], "String_list_in_group": ["five", "six", "seven", "eight"]}]
+]

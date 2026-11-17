@@ -4,7 +4,10 @@ import { wkbToGeojson } from './wkb.js'
  * @import {ColumnDecoder, DecodedArray, Encoding, ParquetParsers} from '../src/types.js'
  */
 
-const decoder = new TextDecoder()
+// ignoreBOM keeps a leading U+FEFF in strings instead of stripping it
+const decoder = new TextDecoder('utf-8', { ignoreBOM: true })
+// JSON.parse rejects a leading BOM, so strip it for json
+const jsonDecoder = new TextDecoder()
 
 /**
  * Default type parsers when no custom ones are given
@@ -27,7 +30,7 @@ export const DEFAULT_PARSERS = {
     return bytes && decoder.decode(bytes)
   },
   jsonFromBytes(bytes) {
-    return bytes && JSON.parse(decoder.decode(bytes))
+    return bytes && JSON.parse(jsonDecoder.decode(bytes))
   },
   geometryFromBytes(bytes) {
     return bytes && wkbToGeojson({ view: new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), offset: 0 })
@@ -79,6 +82,11 @@ export function convert(data, columnDecoder) {
   const { type, converted_type: ctype, logical_type: ltype } = element
   const nullable = element.repetition_type !== 'REQUIRED'
 
+  // FILE inline data is binary, even when utf8 conversion is enabled.
+  if (type === 'BYTE_ARRAY' && element.name === 'inline' && schemaPath?.at(-2)?.element.logical_type?.type === 'FILE') {
+    return data
+  }
+
   // Skip utf8 conversion for plain BYTE_ARRAY inside VARIANT
   const isVariant = schemaPath?.some(s => s.element.logical_type?.type === 'VARIANT')
   if (isVariant && type === 'BYTE_ARRAY' && ctype !== 'UTF8' && ltype?.type !== 'STRING') {
@@ -86,13 +94,16 @@ export function convert(data, columnDecoder) {
   }
   if (ctype === 'DECIMAL') {
     const scale = element.scale || 0
-    const factor = 10 ** -scale
+    // divide rather than multiply by 10 ** -scale, which is inexact
+    // (3 * 10 ** -1 is 0.30000000000000004, 3 / 10 ** 1 is 0.3)
+    const factor = 10 ** scale
     const arr = new Array(data.length)
     for (let i = 0; i < arr.length; i++) {
       if (data[i] instanceof Uint8Array) {
-        arr[i] = parseDecimal(data[i]) * factor
+        // Large scales can overflow the divisor while the result is still representable.
+        arr[i] = scale > 308 ? parseDecimal(data[i]) * 10 ** -scale : parseDecimal(data[i]) / factor
       } else {
-        arr[i] = Number(data[i]) * factor
+        arr[i] = Number(data[i]) / factor
       }
     }
     return arr

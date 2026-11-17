@@ -127,7 +127,7 @@ async function parquetReadRows(options) {
       }
     } else {
       if (rangeStart !== undefined) {
-        rowRanges.push([rangeStart, groupEnd])
+        rowRanges.push([rangeStart, groupStart])
         rangeStart = undefined
       }
     }

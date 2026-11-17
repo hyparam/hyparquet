@@ -1,0 +1,222 @@
+{
+  "version": 2,
+  "schema": [
+    {
+      "repetition_type": "REQUIRED",
+      "name": "schema",
+      "num_children": 3
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "id"
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "list",
+      "num_children": 1,
+      "converted_type": "LIST",
+      "logical_type": {
+        "type": "LIST"
+      }
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "list",
+      "num_children": 1
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "element"
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "struct",
+      "num_children": 2
+    },
+    {
+      "repetition_type": "OPTIONAL",
+      "name": "a",
+      "num_children": 1,
+      "converted_type": "LIST",
+      "logical_type": {
+        "type": "LIST"
+      }
+    },
+    {
+      "repetition_type": "REPEATED",
+      "name": "list",
+      "num_children": 1
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "element"
+    },
+    {
+      "type": "INT32",
+      "repetition_type": "OPTIONAL",
+      "name": "b"
+    }
+  ],
+  "num_rows": 60,
+  "row_groups": [
+    {
+      "columns": [
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE",
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "id"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 60,
+            "total_uncompressed_size": 324,
+            "total_compressed_size": 324,
+            "data_page_offset": 4,
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 3
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                60
+              ]
+            }
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE",
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "list",
+              "list",
+              "element"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 102,
+            "total_uncompressed_size": 516,
+            "total_compressed_size": 458,
+            "data_page_offset": 328,
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 5
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [
+                60,
+                42
+              ],
+              "definition_level_histogram": [
+                5,
+                14,
+                0,
+                83
+              ]
+            }
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE",
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "struct",
+              "a",
+              "list",
+              "element"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 120,
+            "total_uncompressed_size": 667,
+            "total_compressed_size": 511,
+            "data_page_offset": 786,
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 6
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [
+                60,
+                60
+              ],
+              "definition_level_histogram": [
+                0,
+                0,
+                0,
+                0,
+                120
+              ]
+            }
+          }
+        },
+        {
+          "file_offset": 0,
+          "meta_data": {
+            "type": "INT32",
+            "encodings": [
+              "RLE",
+              "PLAIN"
+            ],
+            "path_in_schema": [
+              "struct",
+              "b"
+            ],
+            "codec": "SNAPPY",
+            "num_values": 60,
+            "total_uncompressed_size": 324,
+            "total_compressed_size": 324,
+            "data_page_offset": 1297,
+            "encoding_stats": [
+              {
+                "page_type": "DATA_PAGE",
+                "encoding": "PLAIN",
+                "count": 3
+              }
+            ],
+            "size_statistics": {
+              "repetition_level_histogram": [],
+              "definition_level_histogram": [
+                0,
+                0,
+                60
+              ]
+            }
+          }
+        }
+      ],
+      "total_byte_size": 1831,
+      "num_rows": 60,
+      "file_offset": 4,
+      "total_compressed_size": 1617
+    }
+  ],
+  "created_by": "parquet-cpp-arrow version 25.0.1",
+  "metadata_length": 431
+}

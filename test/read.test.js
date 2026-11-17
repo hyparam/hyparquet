@@ -3,6 +3,8 @@ import { parquetMetadataAsync, parquetRead, parquetReadObjects, rowIndex } from 
 import { asyncBufferFromFile } from '../src/node.js'
 import { countingBuffer } from './helpers.js'
 
+/** @import {ColumnData} from '../src/types.js' */
+
 vi.mock('../src/convert.js', { spy: true })
 
 /**
@@ -192,7 +194,7 @@ describe('parquetRead', () => {
       onChunk(chunk) {
         expect(chunk).toEqual({
           columnName: 'e',
-          columnData: [[1, 2, 3], undefined, undefined, [1, 2, 3], [1, 2]],
+          columnData: [[1, 2, 3], null, null, [1, 2, 3], [1, 2]],
           rowStart: 0,
           rowEnd: 5,
         })
@@ -200,8 +202,8 @@ describe('parquetRead', () => {
       onComplete(rows) {
         expect(rows).toEqual([
           [[1, 2, 3]],
-          [undefined],
-          [undefined],
+          [null],
+          [null],
           [[1, 2, 3]],
           [[1, 2]],
         ])
@@ -223,7 +225,7 @@ describe('parquetRead', () => {
             { },
             { },
             { },
-            undefined,
+            null,
             { k1: null, k3: null },
           ],
           rowStart: 0,
@@ -237,7 +239,7 @@ describe('parquetRead', () => {
           [{ }],
           [{ }],
           [{ }],
-          [undefined],
+          [null],
           [{ k1: null, k3: null }],
         ])
       },
@@ -293,8 +295,8 @@ describe('parquetRead', () => {
     const rows = await parquetReadObjects({ file })
     expect(rows).toEqual([
       { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
-      { a: 'abc', b: 2, c: 3, d: true },
-      { a: 'abc', b: 3, c: 4, d: true },
+      { a: 'abc', b: 2, c: 3, d: true, e: null },
+      { a: 'abc', b: 3, c: 4, d: true, e: null },
       { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
       { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
     ])
@@ -412,6 +414,34 @@ describe('parquetRead', () => {
     expect(laterRows).toEqual(allRows.slice(15, 18))
   })
 
+  it('skips v2 pages of nested columns by rows', async () => {
+    const file = await asyncBufferFromFile('test/files/nested_v2_pages.parquet')
+    const allRows = await parquetReadObjects({ file })
+    for (let rowStart = 0; rowStart < allRows.length; rowStart++) {
+      const rows = await parquetReadObjects({ file, rowStart, rowEnd: rowStart + 3 })
+      expect(rows).toEqual(allRows.slice(rowStart, rowStart + 3))
+    }
+  })
+
+  it('reports row positions of nested v2 chunks after skipped pages', async () => {
+    const file = await asyncBufferFromFile('test/files/nested_v2_pages.parquet')
+    const allRows = await parquetReadObjects({ file })
+    /** @type {ColumnData[]} */
+    const chunks = []
+    await parquetRead({
+      file,
+      columns: ['list'],
+      rowStart: 30,
+      onChunk(chunk) {
+        chunks.push(chunk)
+      },
+    })
+    expect(chunks.length).toBeGreaterThan(0)
+    for (const { columnData, rowStart, rowEnd } of chunks) {
+      expect(Array.from(columnData)).toEqual(allRows.slice(rowStart, rowEnd).map(row => row.list))
+    }
+  })
+
   it('reads only required row groups on the boundary', async () => {
     const originalFile = await asyncBufferFromFile('test/files/alpha.parquet')
     const metadata = await parquetMetadataAsync(originalFile)
@@ -503,7 +533,7 @@ describe('parquetRead', () => {
       filter: { b: { $gt: 2 } },
       onComplete(rows) {
         expect(rows).toEqual([
-          { a: 'abc', b: 3, c: 4, d: true },
+          { a: 'abc', b: 3, c: 4, d: true, e: null },
           { a: null, b: 4, c: 5, d: false, e: [1, 2, 3] },
           { a: 'abc', b: 5, c: 2, d: true, e: [1, 2] },
         ])
@@ -519,7 +549,7 @@ describe('parquetRead', () => {
     })
     expect(rows).toEqual([
       { a: 'abc', b: 1, c: 2, d: true, e: [1, 2, 3] },
-      { a: 'abc', b: 2, c: 3, d: true },
+      { a: 'abc', b: 2, c: 3, d: true, e: null },
     ])
   })
 

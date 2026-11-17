@@ -3,6 +3,7 @@ import {
   getMaxDefinitionLevel,
   getMaxRepetitionLevel,
   getSchemaPath,
+  getTreePath,
   isListLike,
   isMapLike,
 } from '../src/schema.js'
@@ -59,6 +60,14 @@ describe('Parquet schema utils', () => {
     it('throw an error if element not found', () => {
       expect(() => getSchemaPath(schema, ['nonexistent']))
         .toThrow('parquet schema element not found: nonexistent')
+    })
+
+    it('walk a prebuilt tree without rebuilding it', () => {
+      const tree = getSchemaPath(schema, [])[0]
+      const path = getTreePath(tree, ['mappy', 'map', 'key'])
+      expect(path).toEqual(getSchemaPath(schema, ['mappy', 'map', 'key']))
+      expect(path[0]).toBe(tree)
+      expect(path[1]).toBe(tree.children.find(child => child.element.name === 'mappy'))
     })
   })
 

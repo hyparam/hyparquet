@@ -6,8 +6,9 @@ import { assembleNested } from './assemble.js'
 import { readColumn } from './column.js'
 import { DEFAULT_PARSERS } from './convert.js'
 import { readOffsetIndex } from './indexes.js'
+import { parquetSchema } from './metadata.js'
 import { coalesceByteRanges, prefetchAsyncBuffer, runLimit } from './plan.js'
-import { getSchemaPath } from './schema.js'
+import { getTreePath } from './schema.js'
 import { flatten } from './utils.js'
 
 /**
@@ -21,6 +22,8 @@ import { flatten } from './utils.js'
 export function readRowGroup(options, { metadata }, groupPlan) {
   /** @type {AsyncColumn[]} */
   const asyncColumns = []
+  // build the schema tree once, not per column chunk
+  const schemaTree = parquetSchema(metadata)
 
   // read all offset indexes, then fetch the selected pages of every column
   // together so neighboring pages share one request instead of one per column
@@ -41,7 +44,7 @@ export function readRowGroup(options, { metadata }, groupPlan) {
   let pagedChunkIndex = 0
   for (const chunk of groupPlan.chunks) {
     const { path_in_schema: pathInSchema } = chunk.columnMetadata
-    const schemaPath = getSchemaPath(metadata.schema, pathInSchema)
+    const schemaPath = getTreePath(schemaTree, pathInSchema)
     const columnDecoder = {
       pathInSchema,
       element: schemaPath[schemaPath.length - 1].element,

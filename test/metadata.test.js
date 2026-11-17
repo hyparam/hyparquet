@@ -11,11 +11,48 @@ describe('parquetMetadata', () => {
     it(`parse metadata from ${file}`, async () => {
       const asyncBuffer = await asyncBufferFromFile(`test/files/${file}`)
       const arrayBuffer = await asyncBuffer.slice(0)
-      const result = toJson(parquetMetadata(arrayBuffer))
+      // stringify and parse to make legal json (Infinity, etc)
+      const result = JSON.parse(JSON.stringify(toJson(parquetMetadata(arrayBuffer))))
       const base = file.replace('.parquet', '')
       const expected = fileToJson(`test/files/${base}.metadata.json`)
       expect(result, JSON.stringify(result, null, 2)).toEqual(expected)
     })
+  })
+
+  it('parses a Uint8Array view at a non-zero offset', async () => {
+    const asyncBuffer = await asyncBufferFromFile('test/files/alpha.parquet')
+    const arrayBuffer = await asyncBuffer.slice(0)
+    const padded = new Uint8Array(arrayBuffer.byteLength + 16).fill(0xff)
+    padded.set(new Uint8Array(arrayBuffer), 8)
+    const bytes = padded.subarray(8, 8 + arrayBuffer.byteLength)
+    const expected = fileToJson('test/files/alpha.metadata.json')
+    expect(toJson(parquetMetadata(bytes))).toEqual(expected)
+  })
+
+  it('preserves leading U+FEFF in schema names and key-value metadata', () => {
+    const footer = [
+      0x15, 0x02, // version 1
+      0x19, 0x1c, // schema list of 1 struct
+      0x48, 0x07, 0xef, 0xbb, 0xbf, 0x72, 0x6f, 0x6f, 0x74, // name '\uFEFFroot'
+      0x15, 0x00, // num_children 0
+      0x00,
+      0x16, 0x00, // num_rows 0
+      0x19, 0x0c, // row_groups empty
+      0x19, 0x1c, // key_value_metadata list of 1 struct
+      0x18, 0x04, 0xef, 0xbb, 0xbf, 0x6b, // key '\uFEFFk'
+      0x18, 0x04, 0xef, 0xbb, 0xbf, 0x76, // value '\uFEFFv'
+      0x00,
+      0x00,
+    ]
+    const bytes = Uint8Array.from([
+      0x50, 0x41, 0x52, 0x31, // PAR1
+      ...footer,
+      footer.length, 0x00, 0x00, 0x00,
+      0x50, 0x41, 0x52, 0x31, // PAR1
+    ])
+    const metadata = parquetMetadata(bytes.buffer)
+    expect(metadata.schema[0].name).toBe('\uFEFFroot')
+    expect(metadata.key_value_metadata).toEqual([{ key: '\uFEFFk', value: '\uFEFFv' }])
   })
 
   it('throws for arrayBuffer undefined', () => {
@@ -58,7 +95,7 @@ describe('parquetMetadataAsync', () => {
       const result = await parquetMetadataAsync(asyncBuffer)
       const base = file.replace('.parquet', '')
       const expected = fileToJson(`test/files/${base}.metadata.json`)
-      expect(toJson(result)).toEqual(expected)
+      expect(JSON.parse(JSON.stringify(toJson(result)))).toEqual(expected)
     })
   })
 

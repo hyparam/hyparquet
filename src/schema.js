@@ -32,7 +32,17 @@ function schemaTree(schema, rootIndex, path) {
  * @returns {SchemaTree[]} list of schema elements
  */
 export function getSchemaPath(schema, name) {
-  let tree = schemaTree(schema, 0, [])
+  return getTreePath(schemaTree(schema, 0, []), name)
+}
+
+/**
+ * Get schema tree nodes from the root of a prebuilt tree to the given element name.
+ *
+ * @param {SchemaTree} tree root of the schema tree
+ * @param {string[]} name path to the element
+ * @returns {SchemaTree[]} list of schema elements
+ */
+export function getTreePath(tree, name) {
   const path = [tree]
   for (const part of name) {
     const child = tree.children.find(child => child.element.name === part)

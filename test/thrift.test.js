@@ -93,6 +93,24 @@ describe('deserializeTCompactProtocol function', () => {
     expect(value.field_8).toBeUndefined()
   })
 
+  it('throws when the buffer ends before STOP', () => {
+    expect(() => deserializeTCompactProtocol(reader([]))).toThrow('thrift struct ended without STOP')
+    expect(() => deserializeTCompactProtocol(reader([0x15, 0x02]))).toThrow('thrift struct ended without STOP')
+  })
+
+  it('throws on a list of structs that runs past the buffer', () => {
+    // field 1: list of 2^24 structs, with no bytes left for them
+    expect(() => deserializeTCompactProtocol(reader([0x19, 0xfc, 0x80, 0x80, 0x80, 0x08])))
+      .toThrow('thrift struct ended without STOP')
+  })
+
+  it('throws when a binary length exceeds the view', () => {
+    const bytes = new Uint8Array([0x18, 0x05, 0x61, 0x62, 0x00, 0x63, 0x64, 0x65])
+    const view = new DataView(bytes.buffer, 0, 5)
+    expect(() => deserializeTCompactProtocol({ view, offset: 0 }))
+      .toThrow('thrift binary length 5 exceeds remaining 3 bytes')
+  })
+
 })
 
 describe('readVarInt', () => {

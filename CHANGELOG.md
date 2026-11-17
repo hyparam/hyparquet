@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.33.0]
+ - Read null optional struct, list and map values as null instead of undefined (#168)
+
+## [1.32.0]
+ - Adaptive Lossless Floating Point (ALP) encoding support (#161)
+ - FILE logical type support
+ - Fix DECIMAL values off by one ulp from inexact scaling (#199)
+ - Read empty repeated leaf fields as empty lists (#201)
+ - Skip decompressing empty v2 data pages (#200)
+
+## [1.31.5]
+ - Export parquetHeader from column.js (#191)
+ - Accept Uint8Array in parquetMetadata and avoid a copy in asyncBufferFromFile (#192)
+ - Fix sparse query ranges including an unselected row group (#196)
+ - Fix quadratic schema tree rebuild on wide nested schemas (#195)
+
+## [1.31.4]
+ - Fix DELTA_BYTE_ARRAY decoding in v1 data pages (#186)
+ - Fix row count of skipped v2 pages in nested columns (#187)
+ - Throw on malformed thrift structs that end before STOP (#189)
+
+## [1.31.3]
+ - Fix INT32 delta binary packed decoding when deltas need 33 bits
+
 ## [1.31.2]
  - Coalesce column chunk reads within a row group when gaps are at most 8 KB (#182)
  - Faster INT32 and INT64 delta binary packed decoding (#180, #181)
