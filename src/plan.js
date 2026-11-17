@@ -242,7 +242,7 @@ function pagesForRange([rangeStart, rangeEnd], pages, groupRows) {
  * requested rows and are not already provably skippable by statistics alone.
  * Returns an array indexed by row-group ordinal; each entry maps top-level
  * column name → BloomFilter for any chunk whose bloom filter we were able to
- * parse. Adjacent bloom filters are coalesced into a single request.
+ * parse. Adjacent bloom filters are coalesced into requests of up to 2mb.
  *
  * @param {object} options
  * @param {AsyncBuffer} options.file
@@ -281,7 +281,7 @@ export async function prefetchBloomFilters({ file, metadata, filter, filterStric
   })
 
   if (blooms.length) {
-    const prefetchedFile = prefetchAsyncBuffer(file, { fetches: coalesceByteRanges(blooms) })
+    const prefetchedFile = prefetchAsyncBuffer(file, { fetches: coalesceByteRanges(blooms, 0, runLimit) })
     await Promise.all(blooms.map(async ({ rgIdx, colName, startByte, endByte }) => {
       const buffer = await prefetchedFile.slice(startByte, endByte)
       const bloom = readBloomFilter({ view: new DataView(buffer), offset: 0 })

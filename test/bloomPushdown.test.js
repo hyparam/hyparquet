@@ -124,6 +124,25 @@ describe('bloom filter pushdown against test/files/bloom_filter.parquet', () => 
     expect(blooms[1].code).toBeDefined()
   })
 
+  it('does not coalesce adjacent bloom filters beyond the run limit', async () => {
+    const metadata = structuredClone(await parquetMetadataAsync(await asyncBufferFromFile(path)))
+    // pretend each row group has an adjacent 1.5mb bloom filter
+    const size = 1.5 * (1 << 20)
+    metadata.row_groups.forEach((rg, i) => {
+      const meta = rg.columns[0].meta_data
+      if (!meta) throw new Error('expected column metadata')
+      meta.bloom_filter_offset = BigInt((i + 1) * size)
+      meta.bloom_filter_length = size
+    })
+    // zero-filled buffers parse as unsupported bloom filters
+    const recorded = recordingBuffer({
+      byteLength: 3 * size,
+      slice: (start, end = 3 * size) => new ArrayBuffer(end - start),
+    })
+    await prefetchBloomFilters({ file: recorded, metadata, filter: { code: { $eq: 30 } } })
+    expect(recorded.ranges).toEqual([[size, 2 * size], [2 * size, 3 * size]])
+  })
+
   it('fetches only the bloom filters of row groups within rowStart and rowEnd', async () => {
     const file = await asyncBufferFromFile(path)
     const metadata = await parquetMetadataAsync(file)
