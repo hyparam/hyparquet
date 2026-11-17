@@ -526,6 +526,23 @@ describe('filterPageRanges', () => {
     expect(filterPageRanges({ word: { $eq: '\u{10000}' } }, stringPages, 100)).toEqual([[0, 100]])
   })
 
+  it('keeps pages whose STRING bounds decoded lossily to U+FFFD', () => {
+    const decoder = new TextDecoder()
+    /** @type {Record<string, ColumnPageStats>} */
+    const stringPages = {
+      word: {
+        minValues: ['a', decoder.decode(new Uint8Array([0x61, 0xe2]))],
+        maxValues: [decoder.decode(new Uint8Array([0xf4, 0x90])), decoder.decode(new Uint8Array([0x61, 0xe3]))],
+        nullPages: [false, false],
+        pageStarts: [0, 100],
+        element: { name: 'word', type: 'BYTE_ARRAY', logical_type: { type: 'STRING' } },
+      },
+    }
+
+    expect(filterPageRanges({ word: { $eq: '\u{10000}' } }, stringPages, 200)).toEqual([[0, 200]])
+    expect(filterPageRanges({ word: { $eq: 'a€' } }, stringPages, 200)).toEqual([[0, 200]])
+  })
+
   it('keeps exactly the pages whose Date values satisfy equality', () => {
     const first = new Date('2024-01-01T00:00:00Z')
     const second = new Date('2024-01-02T00:00:00Z')

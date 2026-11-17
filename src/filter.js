@@ -190,6 +190,7 @@ export function canSkipRowGroup({ rowGroup, physicalColumns, filter, strict = tr
 function canSkipStats(condition, minVal, maxVal, strict, element) {
   if (minVal === undefined || maxVal === undefined) return false
   const mayContainNaN = element?.type === 'FLOAT' || element?.type === 'DOUBLE' || element?.logical_type?.type === 'FLOAT16'
+  const uniform = !mayContainNaN && !isLossyString(minVal) && equals(minVal, maxVal, strict)
   for (const [operator, target] of Object.entries(condition || {})) {
     const minComparison = compareParquetValues(minVal, target, strict, element)
     const maxComparison = compareParquetValues(maxVal, target, strict, element)
@@ -210,14 +211,14 @@ function canSkipStats(condition, minVal, maxVal, strict, element) {
       if (targetMinComparison !== undefined && targetMinComparison < 0 ||
           targetMaxComparison !== undefined && targetMaxComparison > 0) return true
     }
-    if (operator === '$ne' && !mayContainNaN && equals(minVal, maxVal, strict) && equals(minVal, target, strict)) return true
+    if (operator === '$ne' && uniform && equals(minVal, target, strict)) return true
     if (operator === '$in' && Array.isArray(target) && target.every(value => {
       const valueMinComparison = compareParquetValues(value, minVal, strict, element)
       const valueMaxComparison = compareParquetValues(value, maxVal, strict, element)
       return valueMinComparison !== undefined && valueMinComparison < 0 ||
         valueMaxComparison !== undefined && valueMaxComparison > 0
     })) return true
-    if (operator === '$nin' && !mayContainNaN && Array.isArray(target) && equals(minVal, maxVal, strict) && target.some(value => equals(minVal, value, strict))) return true
+    if (operator === '$nin' && uniform && Array.isArray(target) && target.some(value => equals(minVal, value, strict))) return true
   }
   return false
 }
@@ -233,6 +234,7 @@ function canSkipStats(condition, minVal, maxVal, strict, element) {
  * @returns {-1 | 0 | 1 | undefined}
  */
 function compareParquetValues(a, b, strict, element) {
+  if (isLossyString(a) || isLossyString(b)) return undefined
   // BYTE_ARRAY values are decoded as UTF-8 strings by the default parser even
   // without an explicit UTF8/STRING annotation.
   if (element?.type === 'BYTE_ARRAY') {
@@ -247,6 +249,16 @@ function compareParquetValues(a, b, strict, element) {
   if (a > b) return 1
   if (equals(a, b, strict)) return 0
   return undefined
+}
+
+/**
+ * U+FFFD may stand in for invalid or truncated UTF-8, so the stored bytes are unknown.
+ *
+ * @param {any} value
+ * @returns {boolean}
+ */
+function isLossyString(value) {
+  return typeof value === 'string' && value.includes('\uFFFD')
 }
 
 /**
