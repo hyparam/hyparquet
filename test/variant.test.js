@@ -110,6 +110,25 @@ describe('variant decoding', () => {
   })
 })
 
+describe('variant strings with leading U+FEFF', () => {
+  it('preserves leading U+FEFF in keys and string values', () => {
+    // dictionary: ['\uFEFFk']
+    const metadata = Uint8Array.from([0x11, 0x01, 0x00, 0x04, 0xef, 0xbb, 0xbf, 0x6b])
+    // object { '\uFEFFk': '\uFEFFa' } with short string value
+    const value = Uint8Array.from([0x02, 0x01, 0x00, 0x00, 0x05, 0x11, 0xef, 0xbb, 0xbf, 0x61])
+    // long string '\uFEFFa'
+    const longString = Uint8Array.from([0x40, 0x04, 0x00, 0x00, 0x00, 0xef, 0xbb, 0xbf, 0x61])
+
+    const subcolumnData = new Map()
+    subcolumnData.set('variant.metadata', [metadata, metadata])
+    subcolumnData.set('variant.value', [value, longString])
+
+    assembleNested(subcolumnData, variantSchema, DEFAULT_PARSERS)
+
+    expect(subcolumnData.get('variant')).toEqual([{ '\uFEFFk': '\uFEFFa' }, '\uFEFFa'])
+  })
+})
+
 describe('variant binary encoding', () => {
   it('decodes primitive_null', () => {
     expect(decodeFixture('primitive_null')).toBe(null)

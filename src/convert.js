@@ -4,7 +4,10 @@ import { wkbToGeojson } from './wkb.js'
  * @import {ColumnDecoder, DecodedArray, Encoding, ParquetParsers} from '../src/types.js'
  */
 
-const decoder = new TextDecoder()
+// ignoreBOM keeps a leading U+FEFF in strings instead of stripping it
+const decoder = new TextDecoder('utf-8', { ignoreBOM: true })
+// JSON.parse rejects a leading BOM, so strip it for json
+const jsonDecoder = new TextDecoder()
 
 /**
  * Default type parsers when no custom ones are given
@@ -27,7 +30,7 @@ export const DEFAULT_PARSERS = {
     return bytes && decoder.decode(bytes)
   },
   jsonFromBytes(bytes) {
-    return bytes && JSON.parse(decoder.decode(bytes))
+    return bytes && JSON.parse(jsonDecoder.decode(bytes))
   },
   geometryFromBytes(bytes) {
     return bytes && wkbToGeojson({ view: new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), offset: 0 })
