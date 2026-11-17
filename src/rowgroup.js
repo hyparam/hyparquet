@@ -24,10 +24,17 @@ export function readRowGroup(options, { metadata }, groupPlan) {
   // build the schema tree once, not per column chunk
   const schemaTree = parquetSchema(metadata)
 
+  // Validate schema paths before launching asynchronous column reads.
+  // If a later path is invalid, no earlier read can be left unobserved.
+  const schemaPaths = groupPlan.chunks.map(chunk =>
+    getTreePath(schemaTree, chunk.columnMetadata.path_in_schema)
+  )
+
   // read column data
-  for (const chunk of groupPlan.chunks) {
+  for (let i = 0; i < groupPlan.chunks.length; i++) {
+    const chunk = groupPlan.chunks[i]
     const { path_in_schema: pathInSchema } = chunk.columnMetadata
-    const schemaPath = getTreePath(schemaTree, pathInSchema)
+    const schemaPath = schemaPaths[i]
     const columnDecoder = {
       pathInSchema,
       element: schemaPath[schemaPath.length - 1].element,
@@ -39,33 +46,29 @@ export function readRowGroup(options, { metadata }, groupPlan) {
     }
     const { startByte, endByte } = chunk.range
 
+    /** @type {AsyncColumn['data']} */
+    let data
     if ('pageLocations' in chunk) {
       // page locations already parsed from the offset index
-      asyncColumns.push({
-        pathInSchema,
-        data: readSelectedPages(options, groupPlan, chunk, chunk.pageLocations, columnDecoder),
-      })
+      data = readSelectedPages(options, groupPlan, chunk, chunk.pageLocations, columnDecoder)
     } else if ('offsetIndex' in chunk) {
-      asyncColumns.push({
-        pathInSchema,
-        // fetch offset index
-        data: Promise.resolve(options.file.slice(chunk.offsetIndex.startByte, chunk.offsetIndex.endByte))
-          .then(arrayBuffer => {
-            const pages = readOffsetIndex({ view: new DataView(arrayBuffer), offset: 0 }).page_locations
-            return readSelectedPages(options, groupPlan, chunk, pages, columnDecoder)
-          }),
-      })
+      // fetch offset index
+      data = Promise.resolve(options.file.slice(chunk.offsetIndex.startByte, chunk.offsetIndex.endByte))
+        .then(arrayBuffer => {
+          const pages = readOffsetIndex({ view: new DataView(arrayBuffer), offset: 0 }).page_locations
+          return readSelectedPages(options, groupPlan, chunk, pages, columnDecoder)
+        })
     } else {
       // full column chunk
-      asyncColumns.push({
-        pathInSchema,
-        data: Promise.resolve(options.file.slice(startByte, endByte))
-          .then(buffer => {
-            const reader = { view: new DataView(buffer), offset: 0 }
-            return readColumn(reader, groupPlan, columnDecoder, options.onPage)
-          }),
-      })
+      data = Promise.resolve(options.file.slice(startByte, endByte))
+        .then(buffer => {
+          const reader = { view: new DataView(buffer), offset: 0 }
+          return readColumn(reader, groupPlan, columnDecoder, options.onPage)
+        })
     }
+    // Keep caller-visible rejections, but observe them if a later operation throws.
+    data.catch(() => {})
+    asyncColumns.push({ pathInSchema, data })
   }
 
   return {
