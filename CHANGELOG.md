@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.33.1]
+ - Combine offset index and page reads across columns (#185)
+ - Coalesce bloom filter reads and limit them to the requested rows (#190)
+ - Preserve leading U+FEFF in decoded strings (#204)
+
 ## [1.33.0]
  - Read null optional struct, list and map values as null instead of undefined (#168)
 
