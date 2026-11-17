@@ -38,7 +38,7 @@ export function parquetPlan(options) {
     fetches.push(...groupPlan.fetches)
     indexes.push(...groupPlan.indexes)
   }
-  fetches.push(...coalesceByteRanges(indexes))
+  fetches.push(...coalesceByteRanges(indexes, 0, runLimit))
 
   return { metadata, rowStart, rowEnd: scanPlan.rowEnd, columns, fetches, groups }
 }
