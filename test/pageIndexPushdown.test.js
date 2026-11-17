@@ -104,6 +104,34 @@ describe('page index pushdown against test/files/page_index.parquet', () => {
     expect(actual).toEqual(expected)
   })
 
+  it('reads touching pushdown pages of all columns together', async () => {
+    const file = await asyncBufferFromFile(path)
+    const metadata = await parquetMetadataAsync(file)
+    const counted = countingBuffer(file)
+    const options = { metadata, filter: { id: { $gte: 0 } }, rowStart: 1, rowEnd: 1500 }
+    const actual = await parquetReadObjects({ ...options, file: counted, usePageIndex: true })
+    const expected = await parquetReadObjects({ ...options, file })
+    expect(actual).toEqual(expected)
+    // column index, offset indexes, then the pages of all four columns in one read
+    expect(counted.ranges().at(-1)).toEqual([4, 24361])
+    expect(counted.fetches()).toBe(3)
+  })
+
+  it('reads pushdown pages together with offset-indexed pages', async () => {
+    const file = await asyncBufferFromFile(path)
+    const metadata = await parquetMetadataAsync(file)
+    const options = { metadata, rowStart: 1, rowEnd: 1500 }
+    const { pageLocationsByGroup } = await prefetchPageIndexes({ ...options, file, filter: { id: { $gte: 0 } } })
+    // id has page locations, the other columns read their offset index
+    const mixed = { ...options, useOffsetIndex: true, pageLocationsByGroup: pageLocationsByGroup.map(group => ({ id: group.id })) }
+    const counted = countingBuffer(file)
+    const actual = await parquetReadObjects({ ...mixed, file: counted })
+    const expected = await parquetReadObjects({ ...options, file })
+    expect(actual).toEqual(expected)
+    // one read for the offset indexes, one for the pages of all four columns
+    expect(counted.ranges()).toEqual([[49867, 50407], [4, 24361]])
+  })
+
   it('keeps non-adjacent page indexes in separate fetches', async () => {
     const file = await asyncBufferFromFile(path)
     const metadata = await parquetMetadataAsync(file)

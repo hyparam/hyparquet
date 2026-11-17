@@ -65,6 +65,21 @@ describe('parquetPlan', () => {
     expect(hasOffsetIndex).toBe(true)
   })
 
+  it('does not coalesce adjacent offset indexes beyond the run limit', async () => {
+    const file = await asyncBufferFromFile('test/files/offset_indexed.parquet')
+    const metadata = await parquetMetadataAsync(file)
+    // pretend each column has an adjacent 1.5mb offset index
+    const size = 1.5 * (1 << 20)
+    const { columns } = metadata.row_groups[0]
+    columns.forEach((chunk, i) => {
+      chunk.offset_index_offset = BigInt((i + 1) * size)
+      chunk.offset_index_length = size
+    })
+    const plan = parquetPlan({ file, metadata, useOffsetIndex: true, rowStart: 50, rowEnd: 150 })
+    expect(columns.length).toBeGreaterThan(1)
+    expect(plan.fetches.filter(fetch => fetch.startByte >= size)).toEqual(columns.map((_, i) => ({ startByte: (i + 1) * size, endByte: (i + 2) * size })))
+  })
+
   it('does not fetch page indexes for top-level $nor filters', async () => {
     const source = await asyncBufferFromFile('test/files/offset_indexed.parquet')
     const metadata = await parquetMetadataAsync(source)
