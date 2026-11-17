@@ -31,6 +31,14 @@ describe('convert function', () => {
     expect(convert(data, { ...columnDecoder, element })).toEqual(['foo', 'bar'])
   })
 
+  it('preserves leading U+FEFF in utf8 strings', () => {
+    const strings = ['\uFEFF', '\uFEFFabc', 'a\uFEFFb', '\uFEFF\uFEFFx']
+    const data = strings.map(str => encoder.encode(str))
+    /** @type {SchemaElement} */
+    const element = { name, converted_type: 'UTF8' }
+    expect(convert(data, { ...columnDecoder, element })).toEqual(strings)
+  })
+
   it('converts byte arrays to utf8 default true', () => {
     const data = [encoder.encode('foo'), encoder.encode('bar')]
     /** @type {SchemaElement} */
@@ -186,6 +194,13 @@ describe('convert function', () => {
     /** @type {SchemaElement} */
     const element = { name, converted_type: 'JSON' }
     expect(convert(data, { ...columnDecoder, element })).toEqual([{ key: true }, { quay: 314 }])
+  })
+
+  it('parses JSON with a leading BOM', () => {
+    const data = [encoder.encode('\uFEFF{"key": true}')]
+    /** @type {SchemaElement} */
+    const element = { name, converted_type: 'JSON' }
+    expect(convert(data, { ...columnDecoder, element })).toEqual([{ key: true }])
   })
 
   it('parses JSON with a custom jsonFromBytes parser', () => {

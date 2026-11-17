@@ -4,7 +4,7 @@ import { DEFAULT_PARSERS } from './convert.js'
  * @import {DataReader, ParquetParsers, VariantMetadata} from '../src/types.js'
  */
 
-const decoder = new TextDecoder()
+const decoder = new TextDecoder('utf-8', { ignoreBOM: true })
 /** @type {WeakMap<object, Map<string, VariantMetadata>>} */
 const metadataCache = new WeakMap()
 

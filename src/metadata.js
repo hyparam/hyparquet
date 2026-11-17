@@ -10,7 +10,7 @@ import { markGeoColumns } from './geoparquet.js'
 
 export const defaultInitialFetchSize = 1 << 19 // 512kb
 
-const decoder = new TextDecoder()
+const decoder = new TextDecoder('utf-8', { ignoreBOM: true })
 function decode(/** @type {Uint8Array} */ value) {
   return value && decoder.decode(value)
 }
