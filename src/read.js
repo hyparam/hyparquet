@@ -1,5 +1,5 @@
 /**
- * @import {AsyncRowGroup, BaseParquetReadOptions, DecodedArray, ParquetReadOptions, ParquetRow} from '../src/types.js'
+ * @import {AsyncRowGroup, BaseParquetReadOptions, DecodedArray, ParquetReadOptions, ParquetRow, rowIndex as RowIndex} from '../src/types.js'
  */
 
 import { columnsNeededForFilter, matchFilter } from './filter.js'
@@ -11,10 +11,10 @@ import { concat } from './utils.js'
 
 /**
  * Symbol for the absolute, zero-based physical position of an object row.
- * @type {typeof import('../src/types.js').rowIndex}
+ * @type {typeof RowIndex}
  */
 // eslint-disable-next-line no-extra-parens
-export const rowIndex = /** @type {typeof import('../src/types.js').rowIndex} */ (Symbol('rowIndex'))
+export const rowIndex = /** @type {typeof RowIndex} */ (/** @type {unknown} */ (Symbol('rowIndex')))
 
 /**
  * Read parquet data rows from a file-like object.

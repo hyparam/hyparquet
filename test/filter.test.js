@@ -401,7 +401,9 @@ describe('canSkipRowGroup with bloom filters', () => {
   })
 
   it('keeps matching signed zeros when pruning FLOAT and DOUBLE with bloom filters', () => {
-    for (const type of /** @type {const} */ (['FLOAT', 'DOUBLE'])) {
+    /** @type {('FLOAT' | 'DOUBLE')[]} */
+    const types = ['FLOAT', 'DOUBLE']
+    for (const type of types) {
       /** @type {SchemaElement} */
       const element = { name: 'f', type }
       /** @type {RowGroup} */
@@ -426,7 +428,18 @@ describe('canSkipRowGroup with bloom filters', () => {
         expect(canSkipRowGroup({ ...args, filter: { f: { $in: [opposite, 9] } } })).toBe(false)
         expect(canSkipRowGroup({ ...args, filter: { f: { $eq: 9 } } })).toBe(true)
       }
+
+      // neither zero present: both signs can still be skipped
+      const nonzeroHash = hashParquetValue(9, element)
+      if (nonzeroHash === undefined) throw new Error('expected nonzero hash')
+      const blocks = new Uint32Array(8 * 4)
+      sbbfInsert(blocks, nonzeroHash)
+      const args = { rowGroup: group, physicalColumns: ['f'], schemaElements: { f: element },
+        bloomFilters: { f: { numBytes: blocks.byteLength, blocks } } }
+      expect(canSkipRowGroup({ ...args, filter: { f: { $eq: 0 } } })).toBe(true)
+      expect(canSkipRowGroup({ ...args, filter: { f: { $eq: -0 } } })).toBe(true)
+      expect(canSkipRowGroup({ ...args, filter: { f: { $in: [0, -0] } } })).toBe(true)
+      expect(canSkipRowGroup({ ...args, filter: { f: { $eq: 9 } } })).toBe(false)
     }
   })
-
 })

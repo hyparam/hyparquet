@@ -150,7 +150,7 @@ export function canSkipRowGroup({ rowGroup, physicalColumns, filter, strict = tr
       return true
     }
 
-    // Bloom filtering must account for values with multiple equal encodings.
+    // Bloom-filter skipping for equality predicates (proves absence, never presence)
     for (const [operator, target] of Object.entries(condition || {})) {
       if (bloom && element) {
         if (operator === '$eq' && bloomExcludes(bloom, element, target)) return true
