@@ -399,4 +399,47 @@ describe('canSkipRowGroup with bloom filters', () => {
       rowGroup, physicalColumns: cols, bloomFilters: { name: present }, schemaElements,
     })).toBe(true)
   })
+
+  it('keeps matching signed zeros when pruning FLOAT and DOUBLE with bloom filters', () => {
+    /** @type {('FLOAT' | 'DOUBLE')[]} */
+    const types = ['FLOAT', 'DOUBLE']
+    for (const type of types) {
+      /** @type {SchemaElement} */
+      const element = { name: 'f', type }
+      /** @type {RowGroup} */
+      const group = {
+        num_rows: 1n, total_byte_size: type === 'FLOAT' ? 4n : 8n,
+        columns: [{ file_offset: 4n, meta_data: {
+          type, path_in_schema: ['f'], encodings: ['PLAIN'], codec: 'UNCOMPRESSED',
+          num_values: 1n, total_compressed_size: type === 'FLOAT' ? 4n : 8n,
+          total_uncompressed_size: type === 'FLOAT' ? 4n : 8n, data_page_offset: 4n,
+        } }],
+      }
+      for (const stored of [-0, 0]) {
+        const hash = hashParquetValue(stored, element)
+        if (hash === undefined) throw new Error('expected zero hash')
+        const blocks = new Uint32Array(8 * 4)
+        sbbfInsert(blocks, hash)
+        const args = { rowGroup: group, physicalColumns: ['f'], schemaElements: { f: element },
+          bloomFilters: { f: { numBytes: blocks.byteLength, blocks } } }
+        const opposite = Object.is(stored, -0) ? 0 : -0
+        expect(matchFilter({ f: stored }, { f: { $eq: opposite } })).toBe(true)
+        expect(canSkipRowGroup({ ...args, filter: { f: { $eq: opposite } } })).toBe(false)
+        expect(canSkipRowGroup({ ...args, filter: { f: { $in: [opposite, 9] } } })).toBe(false)
+        expect(canSkipRowGroup({ ...args, filter: { f: { $eq: 9 } } })).toBe(true)
+      }
+
+      // neither zero present: both signs can still be skipped
+      const nonzeroHash = hashParquetValue(9, element)
+      if (nonzeroHash === undefined) throw new Error('expected nonzero hash')
+      const blocks = new Uint32Array(8 * 4)
+      sbbfInsert(blocks, nonzeroHash)
+      const args = { rowGroup: group, physicalColumns: ['f'], schemaElements: { f: element },
+        bloomFilters: { f: { numBytes: blocks.byteLength, blocks } } }
+      expect(canSkipRowGroup({ ...args, filter: { f: { $eq: 0 } } })).toBe(true)
+      expect(canSkipRowGroup({ ...args, filter: { f: { $eq: -0 } } })).toBe(true)
+      expect(canSkipRowGroup({ ...args, filter: { f: { $in: [0, -0] } } })).toBe(true)
+      expect(canSkipRowGroup({ ...args, filter: { f: { $eq: 9 } } })).toBe(false)
+    }
+  })
 })
