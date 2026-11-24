@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.33.2]
+ - Fix signed-zero false negatives in Bloom filter pruning (#206)
+
 ## [1.33.1]
  - Combine offset index and page reads across columns (#185)
  - Coalesce bloom filter reads and limit them to the requested rows (#190)
