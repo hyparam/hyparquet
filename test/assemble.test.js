@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { assembleLists } from '../src/assemble.js'
+import { assembleLists, assembleNested } from '../src/assemble.js'
+import { DEFAULT_PARSERS } from '../src/convert.js'
 
 /** @import {FieldRepetitionType, SchemaTree} from '../src/types.js' */
 
@@ -207,5 +208,41 @@ describe('assembleLists', () => {
     const result = assembleLists([], definitionLevels, [], values, schemaPath)
     // non-repeated columns are one value per row, with a marker for a null ancestor
     expect(result).toEqual(['a', 'b', { def: 0 }])
+  })
+})
+
+describe('assembleNested', () => {
+  it('handles a struct field named def', () => {
+    /** @type {SchemaTree} */
+    const leaf = {
+      path: ['outer', 'child', 'def', 'toString'],
+      element: { name: 'toString', type: 'INT32', repetition_type: 'REQUIRED' },
+      children: [],
+      count: 1,
+    }
+    /** @type {SchemaTree} */
+    const def = {
+      path: ['outer', 'child', 'def'],
+      element: { name: 'def', repetition_type: 'REQUIRED', num_children: 1 },
+      children: [leaf],
+      count: 2,
+    }
+    /** @type {SchemaTree} */
+    const child = {
+      path: ['outer', 'child'],
+      element: { name: 'child', repetition_type: 'REQUIRED', num_children: 1 },
+      children: [def],
+      count: 3,
+    }
+    /** @type {SchemaTree} */
+    const outer = {
+      path: ['outer'],
+      element: { name: 'outer', repetition_type: 'REQUIRED', num_children: 1 },
+      children: [child],
+      count: 4,
+    }
+    const subcolumnData = new Map([['outer.child.def.toString', [1]]])
+    assembleNested(subcolumnData, outer, DEFAULT_PARSERS)
+    expect(subcolumnData.get('outer')).toEqual([{ child: { def: { toString: 1 } } }])
   })
 })

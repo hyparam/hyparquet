@@ -157,7 +157,7 @@ function assembleColumn(subcolumnData, schema, parsers, parentDefinitionLevel) {
   let out = new Array(length)
   for (let i = 0; i < length; i++) {
     const first = columns[0][i]
-    if (first !== undefined && first === nullMarkers[first?.def]) {
+    if (typeof first?.def === 'number' && first === nullMarkers[first.def]) {
       // this struct is null, or one of its ancestors is
       out[i] = first.def < parentDefinitionLevel ? first : null
     } else {
