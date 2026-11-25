@@ -19,7 +19,7 @@ export function decodeVariantColumn(value, parsers = DEFAULT_PARSERS) {
   if (Array.isArray(value)) {
     return value.map(entry => decodeVariantColumn(entry, parsers))
   }
-  if (typeof value !== 'object') return value
+  if (!value || typeof value !== 'object') return value
 
   if ('metadata' in value) {
     const metadata = parseVariantMetadata(value.metadata)

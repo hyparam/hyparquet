@@ -201,10 +201,11 @@ describe('assembleLists', () => {
   })
 
   it('handle complex.parquet with nested require', () => {
-    const definitionLevels = [1, 1]
+    const definitionLevels = [1, 1, 0]
     const values = ['a', 'b']
     const schemaPath = toSchemaPath([undefined, 'OPTIONAL', 'REQUIRED', 'REQUIRED'])
     const result = assembleLists([], definitionLevels, [], values, schemaPath)
-    expect(result).toEqual([['a'], ['b']])
+    // non-repeated columns are one value per row, with a marker for a null ancestor
+    expect(result).toEqual(['a', 'b', { def: 0 }])
   })
 })

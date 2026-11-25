@@ -23,27 +23,14 @@ export function assembleLists(output, definitionLevels, repetitionLevels, values
   const repetitionPath = schemaPath.map(({ element }) => element.repetition_type)
   let valueIndex = 0
 
-  // Fast path: no repetition anywhere in the path, so every row starts at the root
-  // and its nesting depends only on its definition level.
+  // No repetition: one value per row. Rows where an ancestor struct is null
+  // get a NullAt marker so assembleNested can tell which ancestor is null.
   if (!repetitionLevels.length && definitionLevels && !repetitionPath.includes('REPEATED', 1)) {
-    const depths = new Array(maxDefinitionLevel + 1)
-    const emptyLeaf = new Array(maxDefinitionLevel + 1)
-    let depth = 0
-    let nest = 0
-    for (let def = 0; def <= maxDefinitionLevel; def++) {
-      while (depth < repetitionPath.length - 2 && (nest < def || repetitionPath[depth + 1] === 'REQUIRED')) {
-        depth++
-        if (repetitionPath[depth] !== 'REQUIRED') nest++
-      }
-      depths[def] = nest
-      emptyLeaf[def] = depth !== repetitionPath.length - 2
-    }
+    const parentDefinitionLevel = repetitionPath.at(-1) === 'REQUIRED' ? maxDefinitionLevel : maxDefinitionLevel - 1
     for (let i = 0; i < n; i++) {
       const def = definitionLevels[i]
-      // build bottom-up with literals: push() on an empty array over-allocates
-      let item = def === maxDefinitionLevel ? values[valueIndex++] : emptyLeaf[def] ? [] : null
-      for (let k = depths[def]; k; k--) item = [item]
-      output.push(item)
+      if (def === maxDefinitionLevel) output.push(values[valueIndex++])
+      else output.push(def < parentDefinitionLevel ? nullAt(def) : null)
     }
     return output
   }
@@ -130,14 +117,71 @@ export function assembleLists(output, definitionLevels, repetitionLevels, values
 }
 
 /**
- * Assemble a nested structure from subcolumn data.
+ * Assemble a nested column from subcolumn data, one value per row.
  *
  * @param {Map<string, DecodedArray>} subcolumnData
  * @param {SchemaTree} schema top-level schema element
  * @param {ParquetParsers} parsers
- * @param {number} [depth] depth of nested structure
  */
-export function assembleNested(subcolumnData, schema, parsers, depth = 0) {
+export function assembleNested(subcolumnData, schema, parsers) {
+  subcolumnData.set(schema.path.join('.'), assembleColumn(subcolumnData, schema, parsers, 0))
+}
+
+/**
+ * Assemble a column with no repeated ancestors, one value per row.
+ * Rows where an ancestor is null hold a NullAt marker for the parent to resolve.
+ *
+ * @param {Map<string, DecodedArray>} subcolumnData
+ * @param {SchemaTree} schema
+ * @param {ParquetParsers} parsers
+ * @param {number} parentDefinitionLevel
+ * @returns {DecodedArray}
+ */
+function assembleColumn(subcolumnData, schema, parsers, parentDefinitionLevel) {
+  const path = schema.path.join('.')
+  if (isListLike(schema) || isMapLike(schema) || schema.element.repetition_type === 'REPEATED') {
+    // repeated columns have a wrapper array for each optional ancestor
+    assembleWrapped(subcolumnData, schema, parsers, parentDefinitionLevel)
+    return unwrapAncestors(takeColumn(subcolumnData, path), parentDefinitionLevel)
+  }
+  if (!schema.children.length) return takeColumn(subcolumnData, path)
+
+  // Struct-like column
+  const definitionLevel = schema.element.repetition_type === 'REQUIRED' ? parentDefinitionLevel : parentDefinitionLevel + 1
+  const keys = schema.children.map(child => child.element.name)
+  const columns = schema.children.map(child => assembleColumn(subcolumnData, child, parsers, definitionLevel))
+  const { length } = columns[0]
+  for (const column of columns) {
+    if (column.length !== length) throw new Error('parquet struct parsing error')
+  }
+  let out = new Array(length)
+  for (let i = 0; i < length; i++) {
+    const first = columns[0][i]
+    if (first instanceof NullAt) {
+      // this struct is null, or one of its ancestors is
+      out[i] = first.def < parentDefinitionLevel ? first : null
+    } else {
+      /** @type {Record<string, any>} */
+      const obj = {}
+      for (let k = 0; k < keys.length; k++) obj[keys[k]] = columns[k][i]
+      out[i] = obj
+    }
+  }
+  if (schema.element.logical_type?.type === 'VARIANT') {
+    out = decodeVariantColumn(out, parsers)
+  }
+  return out
+}
+
+/**
+ * Assemble a nested structure where each optional level is a wrapper array.
+ *
+ * @param {Map<string, DecodedArray>} subcolumnData
+ * @param {SchemaTree} schema
+ * @param {ParquetParsers} parsers
+ * @param {number} depth depth of nested structure
+ */
+function assembleWrapped(subcolumnData, schema, parsers, depth) {
   const path = schema.path.join('.')
   const optional = schema.element.repetition_type === 'OPTIONAL'
   const nextDepth = optional ? depth + 1 : depth
@@ -149,7 +193,7 @@ export function assembleNested(subcolumnData, schema, parsers, depth = 0) {
       sublist = sublist.children[0]
       subDepth++
     }
-    assembleNested(subcolumnData, sublist, parsers, subDepth)
+    assembleWrapped(subcolumnData, sublist, parsers, subDepth)
 
     const subcolumn = sublist.path.join('.')
     const values = subcolumnData.get(subcolumn)
@@ -164,8 +208,8 @@ export function assembleNested(subcolumnData, schema, parsers, depth = 0) {
     const mapName = schema.children[0].element.name
 
     // Assemble keys and values
-    assembleNested(subcolumnData, schema.children[0].children[0], parsers, nextDepth + 1)
-    assembleNested(subcolumnData, schema.children[0].children[1], parsers, nextDepth + 1)
+    assembleWrapped(subcolumnData, schema.children[0].children[0], parsers, nextDepth + 1)
+    assembleWrapped(subcolumnData, schema.children[0].children[1], parsers, nextDepth + 1)
 
     const keys = subcolumnData.get(`${path}.${mapName}.key`)
     const values = subcolumnData.get(`${path}.${mapName}.value`)
@@ -192,7 +236,7 @@ export function assembleNested(subcolumnData, schema, parsers, depth = 0) {
     /** @type {Record<string, any>} */
     const struct = {}
     for (const child of schema.children) {
-      assembleNested(subcolumnData, child, parsers, invertDepth)
+      assembleWrapped(subcolumnData, child, parsers, invertDepth)
       const childData = subcolumnData.get(child.path.join('.'))
       if (!childData) throw new Error('parquet struct missing child data')
       struct[child.element.name] = childData
@@ -210,6 +254,63 @@ export function assembleNested(subcolumnData, schema, parsers, depth = 0) {
     if (optional) flattenAtDepth(inverted, depth)
     subcolumnData.set(path, inverted)
   }
+}
+
+/**
+ * Replace the wrapper array of each optional ancestor with its contents,
+ * or with a NullAt marker if the ancestor is null.
+ *
+ * @param {DecodedArray} rows
+ * @param {number} depth number of wrapper arrays
+ * @returns {DecodedArray}
+ */
+function unwrapAncestors(rows, depth) {
+  if (!depth) return rows
+  for (let i = 0; i < rows.length; i++) {
+    let value = rows[i]
+    for (let def = 0; def < depth; def++) {
+      if (!value.length) {
+        value = nullAt(def)
+        break
+      }
+      value = value[0]
+    }
+    rows[i] = value
+  }
+  return rows
+}
+
+/**
+ * @param {Map<string, DecodedArray>} subcolumnData
+ * @param {string} path
+ * @returns {DecodedArray}
+ */
+function takeColumn(subcolumnData, path) {
+  const data = subcolumnData.get(path)
+  if (!data) throw new Error('parquet struct missing child data')
+  subcolumnData.delete(path)
+  return data
+}
+
+/**
+ * Marks a row where an ancestor struct is null, at the row's definition level.
+ */
+class NullAt {
+  /** @param {number} def */
+  constructor(def) {
+    this.def = def
+  }
+}
+
+/** @type {NullAt[]} */
+const nullMarkers = []
+
+/**
+ * @param {number} def
+ * @returns {NullAt}
+ */
+function nullAt(def) {
+  return nullMarkers[def] ??= new NullAt(def)
 }
 
 /**
