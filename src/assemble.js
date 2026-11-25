@@ -24,7 +24,7 @@ export function assembleLists(output, definitionLevels, repetitionLevels, values
   let valueIndex = 0
 
   // No repetition: one value per row. Rows where an ancestor struct is null
-  // get a NullAt marker so assembleNested can tell which ancestor is null.
+  // get a null marker so assembleNested can tell which ancestor is null.
   if (!repetitionLevels.length && definitionLevels && !repetitionPath.includes('REPEATED', 1)) {
     const parentDefinitionLevel = repetitionPath.at(-1) === 'REQUIRED' ? maxDefinitionLevel : maxDefinitionLevel - 1
     for (let i = 0; i < n; i++) {
@@ -129,7 +129,7 @@ export function assembleNested(subcolumnData, schema, parsers) {
 
 /**
  * Assemble a column with no repeated ancestors, one value per row.
- * Rows where an ancestor is null hold a NullAt marker for the parent to resolve.
+ * Rows where an ancestor is null hold a null marker for the parent to resolve.
  *
  * @param {Map<string, DecodedArray>} subcolumnData
  * @param {SchemaTree} schema
@@ -157,7 +157,7 @@ function assembleColumn(subcolumnData, schema, parsers, parentDefinitionLevel) {
   let out = new Array(length)
   for (let i = 0; i < length; i++) {
     const first = columns[0][i]
-    if (first instanceof NullAt) {
+    if (first !== undefined && first === nullMarkers[first?.def]) {
       // this struct is null, or one of its ancestors is
       out[i] = first.def < parentDefinitionLevel ? first : null
     } else {
@@ -258,7 +258,7 @@ function assembleWrapped(subcolumnData, schema, parsers, depth) {
 
 /**
  * Replace the wrapper array of each optional ancestor with its contents,
- * or with a NullAt marker if the ancestor is null.
+ * or with a null marker if the ancestor is null.
  *
  * @param {DecodedArray} rows
  * @param {number} depth number of wrapper arrays
@@ -293,24 +293,19 @@ function takeColumn(subcolumnData, path) {
 }
 
 /**
- * Marks a row where an ancestor struct is null, at the row's definition level.
+ * Shared markers for rows where an ancestor struct is null, indexed by the
+ * row's definition level. Compared by identity.
+ *
+ * @type {{ def: number }[]}
  */
-class NullAt {
-  /** @param {number} def */
-  constructor(def) {
-    this.def = def
-  }
-}
-
-/** @type {NullAt[]} */
 const nullMarkers = []
 
 /**
  * @param {number} def
- * @returns {NullAt}
+ * @returns {{ def: number }}
  */
 function nullAt(def) {
-  return nullMarkers[def] ??= new NullAt(def)
+  return nullMarkers[def] ??= { def }
 }
 
 /**
