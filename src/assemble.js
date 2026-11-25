@@ -28,9 +28,9 @@ export function assembleLists(output, definitionLevels, repetitionLevels, values
   if (!repetitionLevels.length && definitionLevels && !repetitionPath.includes('REPEATED', 1)) {
     const depths = new Array(maxDefinitionLevel + 1)
     const emptyLeaf = new Array(maxDefinitionLevel + 1)
+    let depth = 0
+    let nest = 0
     for (let def = 0; def <= maxDefinitionLevel; def++) {
-      let depth = 0
-      let nest = 0
       while (depth < repetitionPath.length - 2 && (nest < def || repetitionPath[depth + 1] === 'REQUIRED')) {
         depth++
         if (repetitionPath[depth] !== 'REQUIRED') nest++
