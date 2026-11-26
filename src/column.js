@@ -1,8 +1,8 @@
 /**
- * @import {ColumnDecoder, DataReader, DecodedArray, PageHeader, PageResult, RowGroupSelect, Statistics, SubColumnData} from '../src/types.js'
+ * @import {AsyncPages, ColumnDecoder, DataReader, DecodedArray, PageHeader, PageResult, RowGroupSelect, SchemaTree, Statistics, SubColumnData} from '../src/types.js'
  */
 
-import { assembleLists } from './assemble.js'
+import { assembleColumn } from './assemble.js'
 import { Encodings, PageTypes } from './constants.js'
 import { convert, convertWithDictionary } from './convert.js'
 import { decompressPage, readDataPage, readDataPageV2 } from './datapage.js'
@@ -13,32 +13,30 @@ import { deserializeTCompactProtocol } from './thrift.js'
 /**
  * Parse column data from a buffer.
  *
+ * Flat columns return rows. Nested columns return levels and non-null
+ * values, to be assembled with the other leaves of the column.
+ *
  * @param {DataReader} reader
  * @param {RowGroupSelect} rowGroupSelect row group selection
  * @param {ColumnDecoder} columnDecoder column decoder params
  * @param {(chunk: SubColumnData) => void} [onPage] callback for each page
- * @returns {{ data: DecodedArray[], skipped: number }}
+ * @returns {AsyncPages}
  */
 export function readColumn(reader, { groupStart, selectStart, selectEnd }, columnDecoder, onPage) {
   const { pathInSchema, schemaPath } = columnDecoder
   const isFlat = isFlatColumn(schemaPath)
   /** @type {DecodedArray[]} */
   const chunks = []
+  /** @type {Uint8Array[]} */
+  const definitionLevels = []
+  /** @type {Uint8Array[]} */
+  const repetitionLevels = []
+  /** @type {number[]} */
+  const pageRows = [] // row index after each page
   /** @type {DecodedArray | undefined} */
   let dictionary = undefined
-  /** @type {DecodedArray | undefined} */
-  let lastChunk = undefined
   let rowCount = 0
   let skipped = 0
-
-  const emitLastChunk = onPage && (() => {
-    lastChunk && onPage({
-      pathInSchema,
-      columnData: lastChunk,
-      rowStart: groupStart + rowCount - lastChunk.length,
-      rowEnd: groupStart + rowCount,
-    })
-  })
 
   while (isFlat ? rowCount < selectEnd : reader.offset < reader.view.byteLength - 1) {
     if (reader.offset >= reader.view.byteLength - 1) break // end of reader
@@ -46,31 +44,80 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
     // read page header
     const header = parquetHeader(reader)
     if (header.type === 'DICTIONARY_PAGE') {
-      const { data } = readPage(reader, header, columnDecoder, dictionary, undefined, 0)
+      const { data } = readPage(reader, header, columnDecoder, dictionary, 0)
       if (data) dictionary = convert(data, columnDecoder)
-    } else {
-      const lastChunkLength = lastChunk?.length || 0
-      const result = readPage(reader, header, columnDecoder, dictionary, lastChunk, selectStart - rowCount)
-      if (result.skipped) {
-        // skipped page - just advance row count, don't add to chunks
-        if (!chunks.length) {
-          skipped += result.skipped
-        }
-        rowCount += result.skipped
-      } else if (result.data && lastChunk === result.data) {
-        // continued from previous page
-        rowCount += result.data.length - lastChunkLength
-      } else if (result.data && result.data.length) {
-        emitLastChunk?.()
-        chunks.push(result.data)
-        rowCount += result.data.length
-        lastChunk = result.data
+      continue
+    }
+    const page = readPage(reader, header, columnDecoder, dictionary, selectStart - rowCount)
+    if (page.skipped) {
+      // skipped page - just advance row count, don't add to chunks
+      if (!chunks.length) skipped += page.skipped
+      rowCount += page.skipped
+    } else if (isFlat && page.data?.length) {
+      chunks.push(page.data)
+      rowCount += page.data.length
+      onPage?.({
+        pathInSchema,
+        columnData: page.data,
+        rowStart: groupStart + rowCount - page.data.length,
+        rowEnd: groupStart + rowCount,
+      })
+    } else if (page.data && page.definitionLevels && page.repetitionLevels) {
+      chunks.push(page.data)
+      definitionLevels.push(page.definitionLevels)
+      repetitionLevels.push(page.repetitionLevels)
+      // a row starts at each repetition level zero
+      let rows = page.repetitionLevels.length ? 0 : page.definitionLevels.length || page.data.length
+      for (let i = 0; i < page.repetitionLevels.length; i++) {
+        if (!page.repetitionLevels[i]) rows++
       }
+      rowCount += rows
+      pageRows.push(rowCount)
     }
   }
-  emitLastChunk?.()
+  if (isFlat) return { data: chunks, skipped }
 
-  return { data: chunks, skipped }
+  const column = {
+    data: chunks,
+    skipped,
+    numRows: rowCount - skipped,
+    definitionLevels: concatLevels(definitionLevels),
+    repetitionLevels: concatLevels(repetitionLevels),
+  }
+  if (onPage) {
+    // assemble lists but not structs, and split at the row where each page ends
+    const columns = new Map([[pathInSchema.join('.'), column]])
+    const rows = assembleColumn(schemaPath[1], columns, columnDecoder.parsers, skipped, rowCount, schemaPath)
+    let rowStart = skipped
+    for (const rowEnd of pageRows) {
+      if (rowEnd === rowStart) continue // page continued a row
+      onPage({
+        pathInSchema,
+        columnData: rows.slice(rowStart - skipped, rowEnd - skipped),
+        rowStart: groupStart + rowStart,
+        rowEnd: groupStart + rowEnd,
+      })
+      rowStart = rowEnd
+    }
+  }
+  return column
+}
+
+/**
+ * @param {Uint8Array[]} pages
+ * @returns {Uint8Array}
+ */
+function concatLevels(pages) {
+  if (pages.length === 1) return pages[0]
+  let length = 0
+  for (const page of pages) length += page.length
+  const levels = new Uint8Array(length)
+  let offset = 0
+  for (const page of pages) {
+    levels.set(page, offset)
+    offset += page.length
+  }
+  return levels
 }
 
 /**
@@ -80,11 +127,10 @@ export function readColumn(reader, { groupStart, selectStart, selectEnd }, colum
  * @param {PageHeader} header
  * @param {ColumnDecoder} columnDecoder
  * @param {DecodedArray | undefined} dictionary
- * @param {DecodedArray | undefined} previousChunk
  * @param {number} pageStart skip this many rows in the page
  * @returns {PageResult}
  */
-export function readPage(reader, header, columnDecoder, dictionary, previousChunk, pageStart) {
+export function readPage(reader, header, columnDecoder, dictionary, pageStart) {
   const { type, element, schemaPath, codec, compressors } = columnDecoder
   // read compressed_page_size bytes
   const compressedBytes = new Uint8Array(
@@ -106,11 +152,9 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
     const { definitionLevels, repetitionLevels, dataPage } = readDataPage(page, daph, columnDecoder)
     // assert(!daph.statistics?.null_count || daph.statistics.null_count === BigInt(daph.num_values - dataPage.length))
 
-    // convert types, dereference dictionary, and assemble lists
+    // convert types and dereference dictionary
     const values = convertWithDictionary(dataPage, dictionary, daph.encoding, columnDecoder)
-    const output = Array.isArray(previousChunk) ? previousChunk : []
-    const assembled = assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
-    return { skipped: 0, data: assembled }
+    return pageResult(values, definitionLevels, repetitionLevels, schemaPath)
   } else if (header.type === 'DATA_PAGE_V2') {
     const daph2 = header.data_page_header_v2
     if (!daph2) throw new Error('parquet data page header v2 is undefined')
@@ -123,11 +167,9 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
     const { definitionLevels, repetitionLevels, dataPage } =
       readDataPageV2(compressedBytes, header, columnDecoder)
 
-    // convert types, dereference dictionary, and assemble lists
+    // convert types and dereference dictionary
     const values = convertWithDictionary(dataPage, dictionary, daph2.encoding, columnDecoder)
-    const output = Array.isArray(previousChunk) ? previousChunk : []
-    const assembled = assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath)
-    return { skipped: 0, data: assembled }
+    return pageResult(values, definitionLevels, repetitionLevels, schemaPath)
   } else if (header.type === 'DICTIONARY_PAGE') {
     const diph = header.dictionary_page_header
     if (!diph) throw new Error('parquet dictionary page header is undefined')
@@ -142,6 +184,27 @@ export function readPage(reader, header, columnDecoder, dictionary, previousChun
   } else {
     throw new Error(`parquet unsupported page type: ${header.type}`)
   }
+}
+
+/**
+ * Flat columns fill in nulls to return rows.
+ * Nested columns keep their levels for assembly.
+ *
+ * @param {DecodedArray} values non-null values
+ * @param {Uint8Array} definitionLevels
+ * @param {Uint8Array} repetitionLevels
+ * @param {SchemaTree[]} schemaPath
+ * @returns {PageResult}
+ */
+function pageResult(values, definitionLevels, repetitionLevels, schemaPath) {
+  if (!isFlatColumn(schemaPath)) return { skipped: 0, data: values, definitionLevels, repetitionLevels }
+  if (values.length === definitionLevels.length || !definitionLevels.length) return { skipped: 0, data: values }
+  const data = new Array(definitionLevels.length)
+  let v = 0
+  for (let i = 0; i < data.length; i++) {
+    data[i] = definitionLevels[i] ? values[v++] : null
+  }
+  return { skipped: 0, data }
 }
 
 /**

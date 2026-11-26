@@ -76,39 +76,33 @@ export function readDataPage(bytes, daph, { type, element, schemaPath }) {
  * @param {DataReader} reader data view for the page
  * @param {DataPageHeader} daph data page header
  * @param {SchemaTree[]} schemaPath
- * @returns {any[]} repetition levels and number of bytes read
+ * @returns {Uint8Array} repetition levels
  */
 function readRepetitionLevels(reader, daph, schemaPath) {
-  if (schemaPath.length > 1) {
-    const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
-    if (maxRepetitionLevel) {
-      const values = new Array(daph.num_values)
-      readRleBitPackedHybrid(reader, bitWidth(maxRepetitionLevel), values)
-      return values
-    }
-  }
-  return []
+  const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
+  const values = new Uint8Array(maxRepetitionLevel ? daph.num_values : 0)
+  if (maxRepetitionLevel) readRleBitPackedHybrid(reader, bitWidth(maxRepetitionLevel), values)
+  return values
 }
 
 /**
  * @param {DataReader} reader data view for the page
  * @param {DataPageHeader} daph data page header
  * @param {SchemaTree[]} schemaPath
- * @returns {{ definitionLevels: number[], numNulls: number }} definition levels
+ * @returns {{ definitionLevels: Uint8Array, numNulls: number }} definition levels
  */
 function readDefinitionLevels(reader, daph, schemaPath) {
   const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
-  if (!maxDefinitionLevel) return { definitionLevels: [], numNulls: 0 }
+  if (!maxDefinitionLevel) return { definitionLevels: new Uint8Array(0), numNulls: 0 }
 
-  const definitionLevels = new Array(daph.num_values)
+  const definitionLevels = new Uint8Array(daph.num_values)
   readRleBitPackedHybrid(reader, bitWidth(maxDefinitionLevel), definitionLevels)
 
   // count nulls
   let numNulls = daph.num_values
-  for (const def of definitionLevels) {
-    if (def === maxDefinitionLevel) numNulls--
+  for (let i = 0; i < definitionLevels.length; i++) {
+    if (definitionLevels[i] === maxDefinitionLevel) numNulls--
   }
-  if (numNulls === 0) definitionLevels.length = 0
 
   return { definitionLevels, numNulls }
 }
@@ -177,7 +171,15 @@ export function readDataPageV2(compressedBytes, ph, columnDecoder) {
   // read values based on encoding
   /** @type {DecodedArray} */
   let dataPage
-  const nValues = daph2.num_values - daph2.num_nulls
+  // count defined values, num_nulls may not include null or empty ancestors
+  let nValues = daph2.num_values
+  if (definitionLevels.length) {
+    const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
+    nValues = 0
+    for (let i = 0; i < definitionLevels.length; i++) {
+      if (definitionLevels[i] === maxDefinitionLevel) nValues++
+    }
+  }
   if (daph2.encoding === 'PLAIN') {
     dataPage = readPlain(pageReader, type, nValues, element.type_length)
   } else if (daph2.encoding === 'RLE') {
@@ -217,14 +219,14 @@ export function readDataPageV2(compressedBytes, ph, columnDecoder) {
  * @param {DataReader} reader
  * @param {DataPageHeaderV2} daph2 data page header v2
  * @param {SchemaTree[]} schemaPath
- * @returns {any[]} repetition levels
+ * @returns {Uint8Array} repetition levels
  */
 function readRepetitionLevelsV2(reader, daph2, schemaPath) {
   const maxRepetitionLevel = getMaxRepetitionLevel(schemaPath)
-  if (!maxRepetitionLevel) return []
-
-  const values = new Array(daph2.num_values)
-  readRleBitPackedHybrid(reader, bitWidth(maxRepetitionLevel), values, daph2.repetition_levels_byte_length)
+  const values = new Uint8Array(maxRepetitionLevel ? daph2.num_values : 0)
+  if (maxRepetitionLevel) {
+    readRleBitPackedHybrid(reader, bitWidth(maxRepetitionLevel), values, daph2.repetition_levels_byte_length)
+  }
   return values
 }
 
@@ -232,16 +234,16 @@ function readRepetitionLevelsV2(reader, daph2, schemaPath) {
  * @param {DataReader} reader
  * @param {DataPageHeaderV2} daph2 data page header v2
  * @param {SchemaTree[]} schemaPath
- * @returns {number[] | undefined} definition levels
+ * @returns {Uint8Array} definition levels
  */
 function readDefinitionLevelsV2(reader, daph2, schemaPath) {
   const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
+  const values = new Uint8Array(maxDefinitionLevel ? daph2.num_values : 0)
   if (maxDefinitionLevel) {
     // V2 we know the length
-    const values = new Array(daph2.num_values)
     readRleBitPackedHybrid(reader, bitWidth(maxDefinitionLevel), values, daph2.definition_levels_byte_length)
-    return values
   }
+  return values
 }
 
 /**

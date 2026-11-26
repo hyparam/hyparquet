@@ -1,14 +1,14 @@
 /**
- * @import {AsyncColumn, AsyncRowGroup, ByteRange, ChunkPlan, ColumnDecoder, DecodedArray, GroupPlan, PageLocation, ParquetParsers, ParquetReadOptions, QueryPlan, SchemaTree} from '../src/types.js'
+ * @import {AsyncColumn, AsyncPages, AsyncRowGroup, ByteRange, ChunkPlan, ColumnDecoder, DecodedArray, GroupPlan, PageLocation, ParquetParsers, ParquetReadOptions, QueryPlan, SchemaTree} from '../src/types.js'
  */
 
-import { assembleNested } from './assemble.js'
+import { assembleColumn } from './assemble.js'
 import { readColumn } from './column.js'
 import { DEFAULT_PARSERS } from './convert.js'
 import { readOffsetIndex } from './indexes.js'
 import { parquetSchema } from './metadata.js'
 import { coalesceByteRanges, prefetchAsyncBuffer, runLimit } from './plan.js'
-import { getTreePath } from './schema.js'
+import { getTreePath, isFlatColumn } from './schema.js'
 import { flatten } from './utils.js'
 
 /**
@@ -133,7 +133,7 @@ function selectedPageRanges(groupPlan, chunk, pages) {
  * @param {GroupPlan} groupPlan
  * @param {{skipped: number, fetches: ByteRange[]}} selection from selectedPageRanges
  * @param {ColumnDecoder} columnDecoder
- * @returns {Promise<{data: DecodedArray[], skipped: number}>}
+ * @returns {Promise<AsyncPages>}
  */
 async function readSelectedPages(options, groupPlan, { skipped, fetches }, columnDecoder) {
   /** @type {DataView} */
@@ -163,11 +163,8 @@ async function readSelectedPages(options, groupPlan, { skipped, fetches }, colum
     selectStart: groupPlan.selectStart - skipped,
     selectEnd: groupPlan.selectEnd - skipped,
   } : groupPlan
-  const { data, skipped: columnSkipped } = readColumn(reader, adjustedGroupPlan, columnDecoder, options.onPage)
-  return {
-    data,
-    skipped: skipped + columnSkipped,
-  }
+  const column = readColumn(reader, adjustedGroupPlan, columnDecoder, options.onPage)
+  return { ...column, skipped: skipped + column.skipped }
 }
 
 /**
@@ -257,46 +254,34 @@ export function assembleAsync(asyncRowGroup, schemaTree, parsers) {
   /** @type {AsyncColumn[]} */
   const assembled = []
   for (const child of schemaTree.children) {
-    if (child.children.length) {
-      const childColumns = asyncColumns.filter(column => column.pathInSchema[0] === child.element.name)
-      if (!childColumns.length) continue
-
-      assembled.push({
-        pathInSchema: child.path,
-        data: (async () => {
-          // collect subcolumn data — Promise.all observes every rejection so
-          // a sibling failure cannot leak as an unhandledRejection
-          const resolved = await Promise.all(childColumns.map(c => c.data))
-          /** @type {Map<string, DecodedArray>} */
-          const subcolumnData = new Map()
-          const flattened = resolved.map(({ data }) => flatten(data))
-          // Physical pages can cover far more rows than the requested range.
-          // Clip before nested/VARIANT assembly, which expands compact binary
-          // values into independent object graphs and strings for every row.
-          const skipped = Math.max(asyncRowGroup.selectStart ?? 0, ...resolved.map(result => result.skipped))
-          const end = Math.min(asyncRowGroup.selectEnd ?? Infinity, ...resolved.map((result, i) => result.skipped + flattened[i].length))
-          for (let i = 0; i < childColumns.length; i++) {
-            // Offset-index reads may start each physical child at a different
-            // page boundary. Align them to their common absolute row range.
-            const start = skipped - resolved[i].skipped
-            const length = Math.max(0, end - skipped)
-            subcolumnData.set(
-              childColumns[i].pathInSchema.join('.'),
-              flattened[i].slice(start, start + length)
-            )
-          }
-          // assemble the column
-          assembleNested(subcolumnData, child, allParsers)
-          const assembled = subcolumnData.get(child.element.name)
-          if (!assembled) throw new Error('parquet column data not assembled')
-          return { data: [assembled], skipped }
-        })(),
-      })
-    } else {
-      // leaf node, return the column
-      const asyncColumn = asyncColumns.find(column => column.pathInSchema[0] === child.element.name)
-      if (asyncColumn) assembled.push(asyncColumn)
+    const childColumns = asyncColumns.filter(column => column.pathInSchema[0] === child.element.name)
+    if (!childColumns.length) continue
+    if (isFlatColumn([schemaTree, child])) {
+      assembled.push(childColumns[0])
+      continue
     }
+
+    assembled.push({
+      pathInSchema: child.path,
+      // Promise.all observes every rejection so a sibling failure cannot
+      // leak as an unhandledRejection
+      data: Promise.all(childColumns.map(c => c.data)).then(resolved => {
+        /** @type {Map<string, AsyncPages>} */
+        const columns = new Map()
+        // Physical pages can cover far more rows than the requested range,
+        // and offset-index reads may start each leaf at a different page
+        // boundary. Assemble only their common range of selected rows.
+        let skipped = asyncRowGroup.selectStart ?? 0
+        let end = asyncRowGroup.selectEnd ?? Infinity
+        for (let i = 0; i < childColumns.length; i++) {
+          const column = resolved[i]
+          columns.set(childColumns[i].pathInSchema.join('.'), column)
+          skipped = Math.max(skipped, column.skipped)
+          end = Math.min(end, column.skipped + (column.numRows ?? 0))
+        }
+        return { data: [assembleColumn(child, columns, allParsers, skipped, end)], skipped }
+      }),
+    })
   }
   return { ...asyncRowGroup, asyncColumns: assembled }
 }

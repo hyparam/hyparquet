@@ -109,7 +109,7 @@ describe('readPage', () => {
       },
     }
     const reader = { view: new DataView(new ArrayBuffer(8)), offset: 0 }
-    const result = readPage(reader, header, columnDecoder, undefined, undefined, 6)
+    const result = readPage(reader, header, columnDecoder, undefined, 6)
     expect(result).toEqual({ skipped: 5 })
     expect(reader.offset).toBe(8)
   })
