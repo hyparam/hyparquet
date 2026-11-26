@@ -418,10 +418,12 @@ export interface DataPageHeaderV2 {
 }
 
 interface DataPage {
-  definitionLevels: Uint8Array // empty if the column is required
-  repetitionLevels: Uint8Array // empty if the column is not repeated
+  definitionLevels: Levels // empty if the column is required
+  repetitionLevels: Levels // empty if the column is not repeated
   dataPage: DecodedArray
 }
+
+export type Levels = Uint8Array | Uint32Array
 
 export type DecodedArray =
   | Uint8Array
@@ -437,8 +439,8 @@ export type DecodedArray =
 export interface PageResult {
   skipped: number
   data?: DecodedArray // rows of a flat column, else non-null values
-  definitionLevels?: Uint8Array
-  repetitionLevels?: Uint8Array
+  definitionLevels?: Levels
+  repetitionLevels?: Levels
 }
 
 export interface OffsetIndex {
@@ -562,8 +564,8 @@ export interface AsyncPages {
   data: DecodedArray[] // rows of a flat or assembled column, else non-null values
   // nested columns keep their levels until assembled with their sibling leaves
   numRows?: number
-  definitionLevels?: Uint8Array // empty if the column is required
-  repetitionLevels?: Uint8Array // empty if the column is not repeated
+  definitionLevels?: Levels // empty if the column is required
+  repetitionLevels?: Levels // empty if the column is not repeated
 }
 
 /**

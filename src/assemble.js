@@ -2,15 +2,15 @@ import { isListLike, isMapLike } from './schema.js'
 import { decodeVariantColumn } from './variant.js'
 
 /**
- * @import {AsyncPages, DecodedArray, ParquetParsers, SchemaTree} from '../src/types.js'
+ * @import {AsyncPages, DecodedArray, Levels, ParquetParsers, SchemaTree} from '../src/types.js'
  */
 /**
  * Cursor into the levels and values of a leaf column.
  *
  * @typedef {object} Leaf
  * @property {number} skipped rows before the first row
- * @property {Uint8Array} definitionLevels
- * @property {Uint8Array} repetitionLevels
+ * @property {Levels} definitionLevels
+ * @property {Levels} repetitionLevels
  * @property {DecodedArray[]} data non-null values of each page
  * @property {DecodedArray} values current page of values
  * @property {number} maxDefinitionLevel

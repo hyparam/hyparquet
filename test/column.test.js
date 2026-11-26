@@ -73,6 +73,43 @@ describe('readColumn', () => {
     const { data } = readColumn(reader, rowGroupSelect, columnDecoder)
     expect(data[0]).toBeInstanceOf(Int32Array)
   })
+
+  it('streams complete v1 rows and preserves deep levels across pages', () => {
+    /** @type {SchemaElement[]} */
+    const schema = [{ name: 'root', num_children: 1 }]
+    const pathInSchema = []
+    for (let i = 0; i < 256; i++) {
+      const name = String(i)
+      pathInSchema.push(name)
+      schema.push(i === 255
+        ? { name, repetition_type: 'REPEATED', type: 'INT32' }
+        : { name, repetition_type: 'REPEATED', num_children: 1 })
+    }
+    /**
+     * @param {number[]} reps
+     * @param {number} first
+     * @returns {number[]}
+     */
+    function page(reps, first) {
+      // Two RLE runs for repetition, one run at definition level 256, two plain ints.
+      const payload = [6, 0, 0, 0, 2, 0, reps[0], 2, 0, reps[1], 3, 0, 0, 0, 4, 0, 1,
+        first, 0, 0, 0, first + 1, 0, 0, 0]
+      const size = payload.length * 2
+      return [0x15, 0, 0x15, size, 0x15, size, 0x2c, 0x15, 4, 0x15, 0, 0x15, 6, 0x15, 6, 0, 0, ...payload]
+    }
+    const first = page([0, 0], 1)
+    const bytes = Uint8Array.from([...first, ...page([1, 0], 3)])
+    const reader = { view: new DataView(bytes.buffer), offset: 0 }
+    /** @type {ColumnDecoder} */
+    const decoder = { type: 'INT32', codec: 'UNCOMPRESSED', parsers: DEFAULT_PARSERS, pathInSchema,
+      element: schema[256], schemaPath: getSchemaPath(schema, pathInSchema) }
+    const result = readColumn(reader, { groupStart: 0, groupRows: 3, selectStart: 0, selectEnd: 3 }, decoder, chunk => {
+      if (chunk.rowStart === 0) expect(reader.offset).toBe(first.length)
+      expect([...chunk.columnData].flat(Infinity)).toEqual(chunk.rowStart === 0 ? [1] : [2, 3, 4])
+    })
+    expect(Array.from(result.definitionLevels ?? [])).toEqual([256, 256, 256, 256])
+    expect(Array.from(result.repetitionLevels ?? [])).toEqual([0, 0, 256, 0])
+  })
 })
 
 describe('readPage', () => {
