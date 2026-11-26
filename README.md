@@ -169,7 +169,7 @@ The reason for this design is that parquet is a column-oriented format, and retu
 
 The `onChunk` callback returns column-oriented data as it is ready. `onChunk` will always return top-level columns, including structs, assembled as a single column. This may require waiting for multiple sub-columns to all load before assembly can occur.
 
-The `onPage` callback returns column-oriented page data as it is ready. `onPage` will NOT assemble struct columns and will always return individual sub-column data. Note that `onPage` _will_ assemble nested lists.
+The `onPage` callback returns column-oriented page data as it is ready. `onPage` will NOT assemble struct columns and will always return individual sub-column data. Note that `onPage` _will_ assemble nested lists, and a null struct is a null value.
 
 In some cases, `onPage` can return data sooner than `onChunk`.
 

@@ -4,6 +4,9 @@ import { parquetSchema } from '../src/metadata.js'
 
 /** @import {SchemaTree} from '../src/types.js' */
 
+// required leaves have no levels
+const levels = { definitionLevels: new Uint8Array(0), repetitionLevels: new Uint8Array(0) }
+
 describe('assembleAsync', () => {
   it('slices physical children before decoding nested variants', async () => {
     const schemaTree = parquetSchema({ schema: [
@@ -23,8 +26,8 @@ describe('assembleAsync', () => {
       selectStart: 2,
       selectEnd: 3,
       asyncColumns: [
-        { pathInSchema: ['payload', 'metadata'], data: Promise.resolve({ skipped: 1, data: [[invalid, valid, invalid, invalid]] }) },
-        { pathInSchema: ['payload', 'value'], data: Promise.resolve({ skipped: 0, data: [[hi, hi, hi, hi, hi]] }) },
+        { pathInSchema: ['payload', 'metadata'], data: Promise.resolve({ skipped: 1, numRows: 4, data: [[invalid, valid, invalid, invalid]], ...levels }) },
+        { pathInSchema: ['payload', 'value'], data: Promise.resolve({ skipped: 0, numRows: 5, data: [[hi, hi, hi, hi, hi]], ...levels }) },
       ],
     }
     const assembled = assembleAsync(group, schemaTree)
@@ -68,11 +71,11 @@ describe('assembleAsync', () => {
       asyncColumns: [
         {
           pathInSchema: ['details', 'left'],
-          data: Promise.resolve({ skipped: 2, data: [[20, 30, 40]] }),
+          data: Promise.resolve({ skipped: 2, numRows: 3, data: [[20, 30, 40]], ...levels }),
         },
         {
           pathInSchema: ['details', 'right'],
-          data: Promise.resolve({ skipped: 1, data: [[10, 20, 30, 40]] }),
+          data: Promise.resolve({ skipped: 1, numRows: 4, data: [[10, 20, 30, 40]], ...levels }),
         },
       ],
     }

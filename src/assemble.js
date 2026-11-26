@@ -1,296 +1,211 @@
-import { getMaxDefinitionLevel, isListLike, isMapLike } from './schema.js'
+import { isListLike, isMapLike } from './schema.js'
 import { decodeVariantColumn } from './variant.js'
 
 /**
- * Reconstructs a complex nested structure from flat arrays of values and
- * definition and repetition levels, according to Dremel encoding.
- *
- * @param {any[]} output
- * @param {number[] | undefined} definitionLevels
- * @param {number[]} repetitionLevels
- * @param {DecodedArray} values
- * @param {SchemaTree[]} schemaPath
- * @returns {DecodedArray}
+ * @import {AsyncPages, DecodedArray, Levels, ParquetParsers, SchemaTree} from '../src/types.js'
  */
-export function assembleLists(output, definitionLevels, repetitionLevels, values, schemaPath) {
-  const maxDefinitionLevel = getMaxDefinitionLevel(schemaPath)
-  // If no def/rep levels, synthesize def levels at max
-  if (!definitionLevels?.length && !repetitionLevels.length) {
-    if (!maxDefinitionLevel || !values.length) return values
-    definitionLevels = new Array(values.length).fill(maxDefinitionLevel)
-  }
-  const n = definitionLevels?.length || repetitionLevels.length
-  const repetitionPath = schemaPath.map(({ element }) => element.repetition_type)
-  let valueIndex = 0
+/**
+ * Cursor into the levels and values of a leaf column.
+ *
+ * @typedef {object} Leaf
+ * @property {number} skipped rows before the first row
+ * @property {Levels} definitionLevels
+ * @property {Levels} repetitionLevels
+ * @property {DecodedArray[]} data non-null values of each page
+ * @property {DecodedArray} values current page of values
+ * @property {number} maxDefinitionLevel
+ * @property {number} i level index
+ * @property {number} v value index in the current page
+ * @property {number} page
+ */
+/**
+ * @typedef {object} Context
+ * @property {Map<string, AsyncPages>} columns
+ * @property {ParquetParsers} parsers
+ * @property {Leaf[]} leaves every leaf cursor, in schema order
+ * @property {SchemaTree[]} [schemaPath]
+ */
 
-  // Fast path: no repetition anywhere in the path, so every row starts at the root
-  // and its nesting depends only on its definition level.
-  if (!repetitionLevels.length && definitionLevels && !repetitionPath.includes('REPEATED', 1)) {
-    const depths = new Array(maxDefinitionLevel + 1)
-    const emptyLeaf = new Array(maxDefinitionLevel + 1)
-    let depth = 0
-    let nest = 0
-    for (let def = 0; def <= maxDefinitionLevel; def++) {
-      while (depth < repetitionPath.length - 2 && (nest < def || repetitionPath[depth + 1] === 'REQUIRED')) {
-        depth++
-        if (repetitionPath[depth] !== 'REQUIRED') nest++
-      }
-      depths[def] = nest
-      emptyLeaf[def] = depth !== repetitionPath.length - 2
-    }
-    for (let i = 0; i < n; i++) {
-      const def = definitionLevels[i]
-      // build bottom-up with literals: push() on an empty array over-allocates
-      let item = def === maxDefinitionLevel ? values[valueIndex++] : emptyLeaf[def] ? [] : null
-      for (let k = depths[def]; k; k--) item = [item]
-      output.push(item)
-    }
-    return output
-  }
-
-  // Track state of nested structures
-  const containerStack = [output]
-  let currentContainer = output
-  let currentDepth = 0 // schema depth
-  let currentDefLevel = 0 // list depth
-  let currentRepLevel = 0
-
-  if (repetitionLevels[0]) {
-    // continue previous row
-    while (currentDepth < repetitionPath.length - 2 && currentRepLevel < repetitionLevels[0]) {
-      currentDepth++
-      if (repetitionPath[currentDepth] !== 'REQUIRED') {
-        // go into last list
-        currentContainer = currentContainer.at(-1)
-        containerStack.push(currentContainer)
-        currentDefLevel++
-      }
-      if (repetitionPath[currentDepth] === 'REPEATED') currentRepLevel++
-    }
-  }
-
-  for (let i = 0; i < n; i++) {
-    // assert(currentDefLevel === containerStack.length - 1)
-    const def = definitionLevels?.length ? definitionLevels[i] : maxDefinitionLevel
-    const rep = repetitionLevels[i]
-
-    // Pop up to start of rep level
-    while (currentDepth && (rep < currentRepLevel || repetitionPath[currentDepth] !== 'REPEATED')) {
-      if (repetitionPath[currentDepth] !== 'REQUIRED') {
-        containerStack.pop()
-        currentDefLevel--
-      }
-      if (repetitionPath[currentDepth] === 'REPEATED') currentRepLevel--
-      currentDepth--
-    }
-    // @ts-expect-error won't be empty
-    currentContainer = containerStack.at(-1)
-
-    // Go deeper to end of definition level
-    while (
-      (currentDepth < repetitionPath.length - 2 || repetitionPath[currentDepth + 1] === 'REPEATED') &&
-      (currentDefLevel < def || repetitionPath[currentDepth + 1] === 'REQUIRED')
-    ) {
-      currentDepth++
-      if (repetitionPath[currentDepth] !== 'REQUIRED') {
-        /** @type {any[]} */
-        const newList = []
-        currentContainer.push(newList)
-        currentContainer = newList
-        containerStack.push(newList)
-        currentDefLevel++
-      }
-      if (repetitionPath[currentDepth] === 'REPEATED') currentRepLevel++
-    }
-
-    // Add value or null based on definition level
-    if (def === maxDefinitionLevel) {
-      // assert(currentDepth === maxDefinitionLevel || currentDepth === repetitionPath.length - 2)
-      currentContainer.push(values[valueIndex++])
-    } else if (currentDepth === repetitionPath.length - 2) {
-      // an undefined repeated leaf is an empty list, not a null value
-      currentContainer.push(repetitionPath[currentDepth + 1] === 'REPEATED' ? [] : null)
-    } else {
-      currentContainer.push([])
-    }
-  }
-
-  // Handle edge cases for empty inputs or single-level data
-  if (!output.length) {
-    // return max definition level of nested lists
-    for (let i = 0; i < maxDefinitionLevel; i++) {
-      /** @type {any[]} */
-      const newList = []
-      currentContainer.push(newList)
-      currentContainer = newList
-    }
-  }
-
-  return output
+/**
+ * Assemble rows of a top-level column from its leaf columns, according to
+ * Dremel encoding. Walks the schema once per row with a cursor into each
+ * leaf's levels and values, so only the output rows are allocated.
+ *
+ * @param {SchemaTree} schema top-level schema element
+ * @param {Map<string, AsyncPages>} columns leaf columns by dotted path
+ * @param {ParquetParsers} parsers
+ * @param {number} rowStart first row to assemble, relative to the row group
+ * @param {number} rowEnd
+ * @param {SchemaTree[]} [schemaPath] assemble only the lists of this leaf, not structs
+ * @returns {any[]}
+ */
+export function assembleColumn(schema, columns, parsers, rowStart, rowEnd, schemaPath) {
+  /** @type {Leaf[]} */
+  const leaves = []
+  const read = reader(schema, 0, 0, { columns, parsers, leaves, schemaPath })
+  for (const leaf of leaves) skipRows(leaf, rowStart - leaf.skipped)
+  const rows = new Array(Math.max(rowEnd - rowStart, 0))
+  for (let row = 0; row < rows.length; row++) rows[row] = read()
+  return rows
 }
 
 /**
- * Assemble a nested structure from subcolumn data.
+ * Build a function that reads the next value of a schema node.
+ * Every leaf under the node must be positioned at the same record, and is
+ * left at the start of the next one.
  *
- * @param {Map<string, DecodedArray>} subcolumnData
- * @param {SchemaTree} schema top-level schema element
- * @param {ParquetParsers} parsers
- * @param {number} [depth] depth of nested structure
+ * @param {SchemaTree} node
+ * @param {number} def definition level of the parent
+ * @param {number} rep repetition level of the parent
+ * @param {Context} ctx
+ * @param {boolean} [unwrap] return an only child in place of a struct
+ * @returns {() => any}
  */
-export function assembleNested(subcolumnData, schema, parsers, depth = 0) {
-  const path = schema.path.join('.')
-  const optional = schema.element.repetition_type === 'OPTIONAL'
-  const nextDepth = optional ? depth + 1 : depth
+function reader(node, def, rep, ctx, unwrap) {
+  const { repetition_type } = node.element
+  if (repetition_type !== 'REQUIRED') def++
+  if (repetition_type === 'REPEATED') rep++
+  const start = ctx.leaves.length
+  const read = element(node, def, rep, ctx, unwrap)
+  const leaves = ctx.leaves.slice(start)
+  const [first] = leaves
 
-  if (isListLike(schema)) {
-    let sublist = schema.children[0]
-    let subDepth = nextDepth
-    if (sublist.children.length === 1) {
-      sublist = sublist.children[0]
-      subDepth++
+  if (repetition_type === 'REPEATED') {
+    return () => {
+      if (first.definitionLevels[first.i] < def) return skip(leaves, [])
+      // count elements first, push() over-allocates small lists
+      const { repetitionLevels } = first
+      let length = 1
+      for (let i = first.i + 1; repetitionLevels[i] >= rep; i++) {
+        if (repetitionLevels[i] === rep) length++
+      }
+      const list = new Array(length)
+      for (let k = 0; k < length; k++) list[k] = read()
+      return list
     }
-    assembleNested(subcolumnData, sublist, parsers, subDepth)
+  }
+  if (repetition_type === 'OPTIONAL') {
+    if (!node.children.length) {
+      // optional leaf: one closure in the hottest path
+      const { definitionLevels } = first
+      return () => definitionLevels[first.i++] === def ? nextValue(first) : null
+    }
+    return () => first.definitionLevels[first.i] < def ? skip(leaves, null) : read()
+  }
+  return read
+}
 
-    const subcolumn = sublist.path.join('.')
-    const values = subcolumnData.get(subcolumn)
-    if (!values) throw new Error('parquet list column missing values')
-    if (optional) flattenAtDepth(values, depth)
-    subcolumnData.set(path, values)
-    subcolumnData.delete(subcolumn)
-    return
+/**
+ * Build a function that reads a defined value of a schema node.
+ *
+ * @param {SchemaTree} node
+ * @param {number} def definition level of the node
+ * @param {number} rep repetition level of the node
+ * @param {Context} ctx
+ * @param {boolean} [unwrap]
+ * @returns {() => any}
+ */
+function element(node, def, rep, ctx, unwrap) {
+  const { children } = node
+  if (!children.length) {
+    const column = ctx.columns.get(node.path.join('.'))
+    if (!column?.definitionLevels || !column.repetitionLevels) {
+      throw new Error(`parquet column missing levels: ${node.path.join('.')}`)
+    }
+    const { skipped, data, definitionLevels, repetitionLevels } = column
+    const leaf = {
+      skipped, definitionLevels, repetitionLevels, data,
+      values: data[0] ?? [],
+      maxDefinitionLevel: def,
+      i: 0,
+      v: 0,
+      page: 0,
+    }
+    ctx.leaves.push(leaf)
+    return () => {
+      leaf.i++
+      return nextValue(leaf)
+    }
+  }
+  if (ctx.schemaPath) return reader(ctx.schemaPath[node.path.length + 1], def, rep, ctx)
+  if (unwrap && children.length === 1) return reader(children[0], def, rep, ctx)
+  if (isListLike(node)) return reader(children[0], def, rep, ctx, true)
+
+  if (isMapLike(node)) {
+    const start = ctx.leaves.length
+    // levels of the repeated key_value group
+    def++
+    rep++
+    const [key, value] = children[0].children.map(child => reader(child, def, rep, ctx))
+    const leaves = ctx.leaves.slice(start)
+    const [first] = leaves
+    return () => {
+      /** @type {Record<string, any>} */
+      const map = {}
+      if (first.definitionLevels[first.i] < def) return skip(leaves, map)
+      do {
+        const name = key()
+        map[name] = value()
+      } while (first.repetitionLevels[first.i] === rep)
+      return map
+    }
   }
 
-  if (isMapLike(schema)) {
-    const mapName = schema.children[0].element.name
-
-    // Assemble keys and values
-    assembleNested(subcolumnData, schema.children[0].children[0], parsers, nextDepth + 1)
-    assembleNested(subcolumnData, schema.children[0].children[1], parsers, nextDepth + 1)
-
-    const keys = subcolumnData.get(`${path}.${mapName}.key`)
-    const values = subcolumnData.get(`${path}.${mapName}.value`)
-
-    if (!keys) throw new Error('parquet map column missing keys')
-    if (!values) throw new Error('parquet map column missing values')
-    if (keys.length !== values.length) {
-      throw new Error('parquet map column key/value length mismatch')
-    }
-
-    const out = assembleMaps(keys, values, nextDepth)
-    if (optional) flattenAtDepth(out, depth)
-
-    subcolumnData.delete(`${path}.${mapName}.key`)
-    subcolumnData.delete(`${path}.${mapName}.value`)
-    subcolumnData.set(path, out)
-    return
-  }
-
-  // Struct-like column
-  if (schema.children.length) {
-    // construct a meta struct and then invert
-    const invertDepth = schema.element.repetition_type === 'REQUIRED' ? depth : depth + 1
+  // struct
+  const names = children.map(child => child.element.name)
+  const fields = children.map(child => reader(child, def, rep, ctx))
+  const variant = node.element.logical_type?.type === 'VARIANT'
+  return () => {
     /** @type {Record<string, any>} */
     const struct = {}
-    for (const child of schema.children) {
-      assembleNested(subcolumnData, child, parsers, invertDepth)
-      const childData = subcolumnData.get(child.path.join('.'))
-      if (!childData) throw new Error('parquet struct missing child data')
-      struct[child.element.name] = childData
-    }
-    // remove children
-    for (const child of schema.children) {
-      subcolumnData.delete(child.path.join('.'))
-    }
-
-    // invert struct by depth
-    let inverted = invertStruct(struct, invertDepth)
-    if (schema.element.logical_type?.type === 'VARIANT') {
-      inverted = decodeVariantColumn(inverted, parsers)
-    }
-    if (optional) flattenAtDepth(inverted, depth)
-    subcolumnData.set(path, inverted)
+    for (let k = 0; k < fields.length; k++) struct[names[k]] = fields[k]()
+    return variant ? decodeVariantColumn(struct, ctx.parsers) : struct
   }
 }
 
 /**
- * @import {DecodedArray, ParquetParsers, SchemaTree} from '../src/types.js'
- * @param {DecodedArray} arr
- * @param {number} depth
- */
-function flattenAtDepth(arr, depth) {
-  for (let i = 0; i < arr.length; i++) {
-    if (depth) {
-      flattenAtDepth(arr[i], depth - 1)
-    } else {
-      arr[i] = arr[i].length ? arr[i][0] : null
-    }
-  }
-}
-
-/**
- * @param {DecodedArray} keys
- * @param {DecodedArray} values
- * @param {number} depth
- * @returns {any[]}
- */
-function assembleMaps(keys, values, depth) {
-  const out = []
-  for (let i = 0; i < keys.length; i++) {
-    if (depth) {
-      out.push(assembleMaps(keys[i], values[i], depth - 1)) // go deeper
-    } else {
-      if (keys[i]) {
-        /** @type {Record<string, any>} */
-        const obj = {}
-        for (let j = 0; j < keys[i].length; j++) {
-          const value = values[i][j]
-          obj[keys[i][j]] = value === undefined ? null : value
-        }
-        out.push(obj)
-      } else {
-        out.push(undefined)
-      }
-    }
-  }
-  return out
-}
-
-/**
- * Invert a struct-like object by depth.
+ * Read the next non-null value of a leaf, moving on to the next page as needed.
  *
- * @param {Record<string, any[]>} struct
- * @param {number} depth
- * @returns {any[]}
+ * @param {Leaf} leaf
+ * @returns {any}
  */
-function invertStruct(struct, depth) {
-  const keys = Object.keys(struct)
-  return invertColumns(keys, keys.map(key => struct[key]), depth)
+function nextValue(leaf) {
+  while (leaf.v >= leaf.values.length) {
+    leaf.v -= leaf.values.length
+    leaf.values = leaf.data[++leaf.page]
+  }
+  return leaf.values[leaf.v++]
 }
 
 /**
- * @param {string[]} keys
- * @param {any[][]} columns child arrays, parallel to keys
- * @param {number} depth
- * @returns {any[]}
+ * A null or empty value takes one level entry in every leaf below it.
+ *
+ * @template T
+ * @param {Leaf[]} leaves
+ * @param {T} value
+ * @returns {T}
  */
-function invertColumns(keys, columns, depth) {
-  const length = columns[0]?.length
-  if (!length) return []
-  for (const column of columns) {
-    if (column.length !== length) throw new Error('parquet struct parsing error')
+function skip(leaves, value) {
+  for (let k = 0; k < leaves.length; k++) leaves[k].i++
+  return value
+}
+
+/**
+ * Advance a leaf past whole rows.
+ *
+ * @param {Leaf} leaf
+ * @param {number} rows
+ */
+function skipRows(leaf, rows) {
+  const { definitionLevels, repetitionLevels, maxDefinitionLevel } = leaf
+  let { i, v } = leaf
+  for (; rows > 0; rows--) {
+    do {
+      // no definition levels means every value is defined
+      if (!(definitionLevels[i] < maxDefinitionLevel)) v++
+      i++
+    } while (repetitionLevels[i])
   }
-  const out = new Array(length)
-  for (let i = 0; i < length; i++) {
-    if (depth) {
-      const row = new Array(columns.length)
-      for (let k = 0; k < columns.length; k++) row[k] = columns[k][i]
-      out[i] = invertColumns(keys, row, depth - 1) // deeper
-    } else {
-      /** @type {Record<string, any>} */
-      const obj = {}
-      for (let k = 0; k < keys.length; k++) obj[keys[k]] = columns[k][i]
-      out[i] = obj
-    }
-  }
-  return out
+  leaf.i = i
+  leaf.v = v
 }

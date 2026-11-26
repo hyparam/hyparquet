@@ -515,6 +515,27 @@ describe('parquetRead', () => {
     expect(counting.bytes).toBe(14334)
   })
 
+  it('assembles lists but not structs in page callbacks', async () => {
+    const file = await asyncBufferFromFile('test/files/datapage_v2_nested_nulls.parquet')
+    /** @type {import('../src/types.js').SubColumnData[]} */
+    const pages = []
+    await parquetRead({ file, rowEnd: 4, onPage: page => pages.push(page) })
+    expect(pages.map(page => ({ ...page, columnData: page.columnData.slice(0, 4) }))).toEqual([
+      {
+        pathInSchema: ['items', 'list', 'element', 'id'],
+        columnData: [[], [1], null, [3, 3, 3]],
+        rowStart: 0,
+        rowEnd: 20,
+      },
+      {
+        pathInSchema: ['items', 'list', 'element', 'name'],
+        columnData: [[], ['n1'], null, ['n0', null, null]],
+        rowStart: 0,
+        rowEnd: 20,
+      },
+    ])
+  })
+
   it('keeps default parsers for types a custom parser does not override', async () => {
     const file = await asyncBufferFromFile('test/files/duckdb4442.parquet')
     const rows = await parquetReadObjects({

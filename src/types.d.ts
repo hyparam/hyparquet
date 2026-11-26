@@ -418,10 +418,12 @@ export interface DataPageHeaderV2 {
 }
 
 interface DataPage {
-  definitionLevels: number[] | undefined
-  repetitionLevels: number[]
+  definitionLevels: Levels // empty if the column is required
+  repetitionLevels: Levels // empty if the column is not repeated
   dataPage: DecodedArray
 }
+
+export type Levels = Uint8Array | Uint32Array
 
 export type DecodedArray =
   | Uint8Array
@@ -436,7 +438,9 @@ export type DecodedArray =
 /** Wrapper around decoded page data */
 export interface PageResult {
   skipped: number
-  data?: DecodedArray
+  data?: DecodedArray // rows of a flat column, else non-null values
+  definitionLevels?: Levels
+  repetitionLevels?: Levels
 }
 
 export interface OffsetIndex {
@@ -555,9 +559,13 @@ export interface AsyncColumn {
   pathInSchema: string[]
   data: Promise<AsyncPages>
 }
-interface AsyncPages {
+export interface AsyncPages {
   skipped: number // rows skipped from groupStart to first row of this column data
-  data: DecodedArray[]
+  data: DecodedArray[] // rows of a flat or assembled column, else non-null values
+  // nested columns keep their levels until assembled with their sibling leaves
+  numRows?: number
+  definitionLevels?: Levels // empty if the column is required
+  repetitionLevels?: Levels // empty if the column is not repeated
 }
 
 /**

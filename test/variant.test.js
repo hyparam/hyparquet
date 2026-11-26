@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { describe, expect, it } from 'vitest'
-import { assembleNested } from '../src/assemble.js'
+import { assembleColumn } from '../src/assemble.js'
 import { DEFAULT_PARSERS } from '../src/convert.js'
 import { parquetReadObjects } from '../src/index.js'
 import { asyncBufferFromFile } from '../src/node.js'
@@ -56,12 +56,22 @@ function decodeFixture(name) {
   const metadataBytes = new Uint8Array(fs.readFileSync(`test/variant/${name}.metadata`))
   const valueBytes = new Uint8Array(fs.readFileSync(`test/variant/${name}.value`))
 
-  const subcolumnData = new Map()
-  subcolumnData.set('variant.metadata', [metadataBytes])
-  subcolumnData.set('variant.value', [valueBytes])
+  return assembleVariants([metadataBytes], [valueBytes])[0]
+}
 
-  assembleNested(subcolumnData, variantSchema, DEFAULT_PARSERS)
-  return subcolumnData.get('variant')?.[0]
+/**
+ * @param {Uint8Array[]} metadata
+ * @param {Uint8Array[]} values
+ * @returns {any[]} decoded variant values
+ */
+function assembleVariants(metadata, values) {
+  // required leaves have no levels
+  const levels = { skipped: 0, definitionLevels: new Uint8Array(0), repetitionLevels: new Uint8Array(0) }
+  const columns = new Map([
+    ['variant.metadata', { ...levels, data: [metadata] }],
+    ['variant.value', { ...levels, data: [values] }],
+  ])
+  return assembleColumn(variantSchema, columns, DEFAULT_PARSERS, 0, values.length)
 }
 
 describe('variant decoding', () => {
@@ -69,15 +79,7 @@ describe('variant decoding', () => {
     const metadata = Uint8Array.from([0x11, 0x01, 0x00, 0x03, 0x66, 0x6f, 0x6f])
     const value = Uint8Array.from([0x02, 0x01, 0x00, 0x00, 0x05, 0x14, 0x2a, 0x00, 0x00, 0x00])
 
-    const subcolumnData = new Map()
-    subcolumnData.set('variant.metadata', [metadata])
-    subcolumnData.set('variant.value', [value])
-
-    assembleNested(subcolumnData, variantSchema, DEFAULT_PARSERS)
-
-    expect(subcolumnData.has('variant.metadata')).toBe(false)
-    expect(subcolumnData.has('variant.value')).toBe(false)
-    expect(subcolumnData.get('variant')).toEqual([{ foo: 42 }])
+    expect(assembleVariants([metadata], [value])).toEqual([{ foo: 42 }])
   })
 
   it('decodes primitive and array variants', () => {
@@ -100,13 +102,8 @@ describe('variant decoding', () => {
       0x6f,
     ])
 
-    const subcolumnData = new Map()
-    subcolumnData.set('variant.metadata', [metadata, Uint8Array.from(metadata)])
-    subcolumnData.set('variant.value', [stringValue, arrayValue])
-
-    assembleNested(subcolumnData, variantSchema, DEFAULT_PARSERS)
-
-    expect(subcolumnData.get('variant')).toEqual(['hi', [1, 'foo']])
+    expect(assembleVariants([metadata, Uint8Array.from(metadata)], [stringValue, arrayValue]))
+      .toEqual(['hi', [1, 'foo']])
   })
 })
 
@@ -119,13 +116,8 @@ describe('variant strings with leading U+FEFF', () => {
     // long string '\uFEFFa'
     const longString = Uint8Array.from([0x40, 0x04, 0x00, 0x00, 0x00, 0xef, 0xbb, 0xbf, 0x61])
 
-    const subcolumnData = new Map()
-    subcolumnData.set('variant.metadata', [metadata, metadata])
-    subcolumnData.set('variant.value', [value, longString])
-
-    assembleNested(subcolumnData, variantSchema, DEFAULT_PARSERS)
-
-    expect(subcolumnData.get('variant')).toEqual([{ '\uFEFFk': '\uFEFFa' }, '\uFEFFa'])
+    expect(assembleVariants([metadata, metadata], [value, longString]))
+      .toEqual([{ '\uFEFFk': '\uFEFFa' }, '\uFEFFa'])
   })
 })
 
@@ -186,13 +178,8 @@ describe('variant binary encoding', () => {
     const decimal16 = new Uint8Array(18)
     decimal16.set([0x28, 0x02, 0x73]) // 115, scale 2
 
-    const subcolumnData = new Map()
-    subcolumnData.set('variant.metadata', [metadata, metadata, metadata])
-    subcolumnData.set('variant.value', [decimal4, decimal8, decimal16])
-
-    assembleNested(subcolumnData, variantSchema, DEFAULT_PARSERS)
-
-    expect(subcolumnData.get('variant')).toEqual([0.3, 1.5, 1.15])
+    expect(assembleVariants([metadata, metadata, metadata], [decimal4, decimal8, decimal16]))
+      .toEqual([0.3, 1.5, 1.15])
   })
 })
 
