@@ -9,7 +9,7 @@ import { getPhysicalColumns } from './schema.js'
  */
 
 // Combine column chunks if less than 2mb
-const runLimit = 1 << 21 // 2mb
+export const runLimit = 1 << 21 // 2mb
 // When reading selected columns, combine chunks separated by at most this many unrequested bytes.
 // Arrow C++ before 18 and Polars write a copy of each column's metadata after its chunk, leaving small gaps.
 // Same default as Arrow's CacheOptions hole_size_limit.
@@ -38,7 +38,7 @@ export function parquetPlan(options) {
     fetches.push(...groupPlan.fetches)
     indexes.push(...groupPlan.indexes)
   }
-  fetches.push(...indexes)
+  fetches.push(...coalesceByteRanges(indexes, 0, runLimit))
 
   return { metadata, rowStart, rowEnd: scanPlan.rowEnd, columns, fetches, groups }
 }
@@ -238,45 +238,56 @@ function pagesForRange([rangeStart, rangeEnd], pages, groupRows) {
 }
 
 /**
- * Fetch bloom filters for $eq / $in columns of row groups not already provably
- * skippable by statistics alone. Returns an array indexed by row-group ordinal;
- * each entry maps top-level column name → BloomFilter for any chunk whose
- * bloom filter we were able to parse. Adds one round-trip when at least one
- * bloom filter is fetched; otherwise returns synchronously.
+ * Fetch bloom filters for $eq / $in columns of row groups that overlap the
+ * requested rows and are not already provably skippable by statistics alone.
+ * Returns an array indexed by row-group ordinal; each entry maps top-level
+ * column name → BloomFilter for any chunk whose bloom filter we were able to
+ * parse. Adjacent bloom filters are coalesced into requests of up to 2mb.
  *
  * @param {object} options
  * @param {AsyncBuffer} options.file
  * @param {FileMetaData} options.metadata
  * @param {ParquetQueryFilter} options.filter
  * @param {boolean} [options.filterStrict]
+ * @param {number} [options.rowStart]
+ * @param {number} [options.rowEnd]
  * @returns {Promise<Record<string, BloomFilter>[]>}
  */
-export async function prefetchBloomFilters({ file, metadata, filter, filterStrict = true }) {
+export async function prefetchBloomFilters({ file, metadata, filter, filterStrict = true, rowStart = 0, rowEnd = Infinity }) {
   const result = metadata.row_groups.map(() => /** @type {Record<string, BloomFilter>} */ ({}))
   const eligibleCols = bloomEligibleColumns(filter)
   if (eligibleCols.size === 0) return result
   const physicalColumns = getPhysicalColumns(parquetSchema(metadata))
 
-  /** @type {Promise<void>[]} */
-  const tasks = []
+  /** @type {{rgIdx: number, colName: string, startByte: number, endByte: number}[]} */
+  const blooms = []
+  let groupStart = 0
   metadata.row_groups.forEach((rowGroup, rgIdx) => {
+    const groupRows = Number(rowGroup.num_rows)
+    const groupEnd = groupStart + groupRows
+    const overlaps = groupRows > 0 && groupEnd > rowStart && groupStart < rowEnd
+    groupStart = groupEnd
+    if (!overlaps) return
     if (canSkipRowGroup({ rowGroup, physicalColumns, filter, strict: filterStrict })) return
     for (const colName of eligibleCols) {
       const columnIdx = physicalColumns.indexOf(colName)
       if (columnIdx === -1) continue
       const meta = rowGroup.columns[columnIdx]?.meta_data
       if (!meta?.bloom_filter_offset || !meta.bloom_filter_length) continue
-      const start = Number(meta.bloom_filter_offset)
-      const end = start + meta.bloom_filter_length
-      tasks.push((async () => {
-        const buffer = await file.slice(start, end)
-        const bloom = readBloomFilter({ view: new DataView(buffer), offset: 0 })
-        if (bloom) result[rgIdx][colName] = bloom
-      })())
+      const startByte = Number(meta.bloom_filter_offset)
+      const endByte = startByte + meta.bloom_filter_length
+      blooms.push({ rgIdx, colName, startByte, endByte })
     }
   })
 
-  if (tasks.length) await Promise.all(tasks)
+  if (blooms.length) {
+    const prefetchedFile = prefetchAsyncBuffer(file, { fetches: coalesceByteRanges(blooms, 0, runLimit) })
+    await Promise.all(blooms.map(async ({ rgIdx, colName, startByte, endByte }) => {
+      const buffer = await prefetchedFile.slice(startByte, endByte)
+      const bloom = readBloomFilter({ view: new DataView(buffer), offset: 0 })
+      if (bloom) result[rgIdx][colName] = bloom
+    }))
+  }
   return result
 }
 
@@ -430,7 +441,7 @@ export async function prefetchPageIndexes({ file, metadata, filter, filterStrict
  * @param {number} [maxSize]
  * @returns {ByteRange[]}
  */
-function coalesceByteRanges(ranges, maxGap = 0, maxSize = Infinity) {
+export function coalesceByteRanges(ranges, maxGap = 0, maxSize = Infinity) {
   const sorted = ranges
     .map(range => ({ ...range }))
     .sort((a, b) => a.startByte - b.startByte || a.endByte - b.endByte)
@@ -477,7 +488,14 @@ function physicalSchemaElements(schemaTree) {
  */
 export function prefetchAsyncBuffer(file, { fetches }) {
   // fetch byte ranges from the file
-  const promises = fetches.map(({ startByte, endByte }) => file.slice(startByte, endByte))
+  // a synchronous throw becomes a rejection for that range, so earlier requests stay observed
+  const promises = fetches.map(({ startByte, endByte }) => {
+    try {
+      return file.slice(startByte, endByte)
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
   return {
     byteLength: file.byteLength,
     slice(start, end = file.byteLength) {

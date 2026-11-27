@@ -23,6 +23,31 @@ export function assembleLists(output, definitionLevels, repetitionLevels, values
   const repetitionPath = schemaPath.map(({ element }) => element.repetition_type)
   let valueIndex = 0
 
+  // Fast path: no repetition anywhere in the path, so every row starts at the root
+  // and its nesting depends only on its definition level.
+  if (!repetitionLevels.length && definitionLevels && !repetitionPath.includes('REPEATED', 1)) {
+    const depths = new Array(maxDefinitionLevel + 1)
+    const emptyLeaf = new Array(maxDefinitionLevel + 1)
+    let depth = 0
+    let nest = 0
+    for (let def = 0; def <= maxDefinitionLevel; def++) {
+      while (depth < repetitionPath.length - 2 && (nest < def || repetitionPath[depth + 1] === 'REQUIRED')) {
+        depth++
+        if (repetitionPath[depth] !== 'REQUIRED') nest++
+      }
+      depths[def] = nest
+      emptyLeaf[def] = depth !== repetitionPath.length - 2
+    }
+    for (let i = 0; i < n; i++) {
+      const def = definitionLevels[i]
+      // build bottom-up with literals: push() on an empty array over-allocates
+      let item = def === maxDefinitionLevel ? values[valueIndex++] : emptyLeaf[def] ? [] : null
+      for (let k = depths[def]; k; k--) item = [item]
+      output.push(item)
+    }
+    return output
+  }
+
   // Track state of nested structures
   const containerStack = [output]
   let currentContainer = output
@@ -83,7 +108,8 @@ export function assembleLists(output, definitionLevels, repetitionLevels, values
       // assert(currentDepth === maxDefinitionLevel || currentDepth === repetitionPath.length - 2)
       currentContainer.push(values[valueIndex++])
     } else if (currentDepth === repetitionPath.length - 2) {
-      currentContainer.push(null)
+      // an undefined repeated leaf is an empty list, not a null value
+      currentContainer.push(repetitionPath[currentDepth + 1] === 'REPEATED' ? [] : null)
     } else {
       currentContainer.push([])
     }
@@ -196,7 +222,7 @@ function flattenAtDepth(arr, depth) {
     if (depth) {
       flattenAtDepth(arr[i], depth - 1)
     } else {
-      arr[i] = arr[i][0]
+      arr[i] = arr[i].length ? arr[i][0] : null
     }
   }
 }
@@ -238,19 +264,32 @@ function assembleMaps(keys, values, depth) {
  */
 function invertStruct(struct, depth) {
   const keys = Object.keys(struct)
-  const length = struct[keys[0]]?.length
-  const out = []
+  return invertColumns(keys, keys.map(key => struct[key]), depth)
+}
+
+/**
+ * @param {string[]} keys
+ * @param {any[][]} columns child arrays, parallel to keys
+ * @param {number} depth
+ * @returns {any[]}
+ */
+function invertColumns(keys, columns, depth) {
+  const length = columns[0]?.length
+  if (!length) return []
+  for (const column of columns) {
+    if (column.length !== length) throw new Error('parquet struct parsing error')
+  }
+  const out = new Array(length)
   for (let i = 0; i < length; i++) {
-    /** @type {Record<string, any>} */
-    const obj = {}
-    for (const key of keys) {
-      if (struct[key].length !== length) throw new Error('parquet struct parsing error')
-      obj[key] = struct[key][i]
-    }
     if (depth) {
-      out.push(invertStruct(obj, depth - 1)) // deeper
+      const row = new Array(columns.length)
+      for (let k = 0; k < columns.length; k++) row[k] = columns[k][i]
+      out[i] = invertColumns(keys, row, depth - 1) // deeper
     } else {
-      out.push(obj)
+      /** @type {Record<string, any>} */
+      const obj = {}
+      for (let k = 0; k < keys.length; k++) obj[keys[k]] = columns[k][i]
+      out[i] = obj
     }
   }
   return out

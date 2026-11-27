@@ -2,7 +2,7 @@
   [
     ["adipiscing","elit"],
     [267],
-    null
+    []
   ],
   [
     ["adipiscing","elit"],
@@ -21,7 +21,7 @@
   ],
   [
     ["consectetur","adipiscing","elit"],
-    null,
+    [],
     [4921.065813194329]
   ],
   [
@@ -37,7 +37,7 @@
   [
     ["consectetur","adipiscing","elit"],
     [822,843,702,469],
-    null
+    []
   ],
   [
     ["dolor","sit","amet","consectetur","adipiscing","elit"],
@@ -67,12 +67,12 @@
   [
     ["dolor","sit","amet","consectetur","adipiscing","elit"],
     [315,936],
-    null
+    []
   ],
   [
     ["consectetur","adipiscing","elit"],
     [844,175,911,241],
-    null
+    []
   ],
   [
     ["adipiscing","elit"],
@@ -86,7 +86,7 @@
   ],
   [
     ["dolor","sit","amet","consectetur","adipiscing","elit"],
-    null,
+    [],
     [7888.953864907877]
   ],
   [
@@ -97,12 +97,12 @@
   [
     ["adipiscing","elit"],
     [17,940],
-    null
+    []
   ],
   [
     ["Lorem","ipsum","dolor","sit","amet","consectetur","adipiscing","elit"],
     [150,457,406,128],
-    null
+    []
   ],
   [
     ["Lorem","ipsum","dolor","sit","amet","consectetur","adipiscing","elit"],
@@ -116,7 +116,7 @@
   ],
   [
     ["amet","consectetur","adipiscing","elit"],
-    null,
+    [],
     [5480.171753257772,8836.074587570927]
   ],
   [
@@ -146,7 +146,7 @@
   ],
   [
     ["consectetur","adipiscing","elit"],
-    null,
+    [],
     [2464.480077569758,8697.46909254981]
   ],
   [
@@ -157,7 +157,7 @@
   [
     ["Lorem","ipsum","dolor","sit","amet","consectetur","adipiscing","elit"],
     [3,794,11],
-    null
+    []
   ],
   [
     ["amet","consectetur","adipiscing","elit"],
@@ -166,8 +166,8 @@
   ],
   [
     ["Lorem","ipsum","dolor","sit","amet","consectetur","adipiscing","elit"],
-    null,
-    null
+    [],
+    []
   ],
   [
     ["Lorem","ipsum","dolor","sit","amet","consectetur","adipiscing","elit"],
@@ -181,7 +181,7 @@
   ],
   [
     ["sit","amet","consectetur","adipiscing","elit"],
-    null,
+    [],
     [5269.5337341809945,6144.28443776808,3284.873639079399,5904.365808300479]
   ],
   [
@@ -196,8 +196,8 @@
   ],
   [
     ["elit"],
-    null,
-    null
+    [],
+    []
   ],
   [
     ["sit","amet","consectetur","adipiscing","elit"],
@@ -217,7 +217,7 @@
   [
     ["ipsum","dolor","sit","amet","consectetur","adipiscing","elit"],
     [689,573,154],
-    null
+    []
   ],
   [
     ["Lorem","ipsum","dolor","sit","amet","consectetur","adipiscing","elit"],
@@ -227,7 +227,7 @@
   [
     ["sit","amet","consectetur","adipiscing","elit"],
     [605],
-    null
+    []
   ],
   [
     ["elit"],
@@ -256,13 +256,13 @@
   ],
   [
     ["Lorem","ipsum","dolor","sit","amet","consectetur","adipiscing","elit"],
-    null,
+    [],
     [4125.175201983808,1696.1916192518433,7171.897025370562]
   ],
   [
     ["dolor","sit","amet","consectetur","adipiscing","elit"],
     [533,132,478,258],
-    null
+    []
   ],
   [
     ["ipsum","dolor","sit","amet","consectetur","adipiscing","elit"],
@@ -282,7 +282,7 @@
   [
     ["adipiscing","elit"],
     [970],
-    null
+    []
   ],
   [
     ["adipiscing","elit"],
@@ -292,7 +292,7 @@
   [
     ["Lorem","ipsum","dolor","sit","amet","consectetur","adipiscing","elit"],
     [531],
-    null
+    []
   ],
   [
     ["Lorem","ipsum","dolor","sit","amet","consectetur","adipiscing","elit"],
@@ -301,7 +301,7 @@
   ],
   [
     ["Lorem","ipsum","dolor","sit","amet","consectetur","adipiscing","elit"],
-    null,
+    [],
     [682.3737905128879,3021.2450897276713,3922.2218598695717,6382.788491011993]
   ],
   [
@@ -321,7 +321,7 @@
   ],
   [
     ["Lorem","ipsum","dolor","sit","amet","consectetur","adipiscing","elit"],
-    null,
+    [],
     [1882.1189849132475,7050.232591848215,6808.016315248813]
   ],
   [
@@ -336,7 +336,7 @@
   ],
   [
     ["sit","amet","consectetur","adipiscing","elit"],
-    null,
+    [],
     [267.2495106375208,3087.341650241528,9858.741302383121]
   ],
   [
@@ -367,7 +367,7 @@
   [
     ["amet","consectetur","adipiscing","elit"],
     [341,101,341],
-    null
+    []
   ],
   [
     ["ipsum","dolor","sit","amet","consectetur","adipiscing","elit"],
@@ -387,7 +387,7 @@
   [
     ["sit","amet","consectetur","adipiscing","elit"],
     [711,710],
-    null
+    []
   ],
   [
     ["adipiscing","elit"],
@@ -397,7 +397,7 @@
   [
     ["Lorem","ipsum","dolor","sit","amet","consectetur","adipiscing","elit"],
     [356,811],
-    null
+    []
   ],
   [
     ["adipiscing","elit"],
@@ -407,7 +407,7 @@
   [
     ["Lorem","ipsum","dolor","sit","amet","consectetur","adipiscing","elit"],
     [716,347,577,65],
-    null
+    []
   ],
   [
     ["sit","amet","consectetur","adipiscing","elit"],
@@ -422,7 +422,7 @@
   [
     ["adipiscing","elit"],
     [349,298],
-    null
+    []
   ],
   [
     ["sit","amet","consectetur","adipiscing","elit"],
@@ -437,7 +437,7 @@
   [
     ["elit"],
     [420,236,397,232],
-    null
+    []
   ],
   [
     ["amet","consectetur","adipiscing","elit"],
@@ -467,12 +467,12 @@
   [
     ["dolor","sit","amet","consectetur","adipiscing","elit"],
     [491,324,927,928],
-    null
+    []
   ],
   [
     ["Lorem","ipsum","dolor","sit","amet","consectetur","adipiscing","elit"],
     [230],
-    null
+    []
   ],
   [
     ["amet","consectetur","adipiscing","elit"],
@@ -487,7 +487,7 @@
   [
     ["adipiscing","elit"],
     [181,228],
-    null
+    []
   ],
   [
     ["consectetur","adipiscing","elit"],
@@ -496,7 +496,7 @@
   ],
   [
     ["amet","consectetur","adipiscing","elit"],
-    null,
+    [],
     [2785.6660943419297,7838.997264980804,8751.793158344097]
   ]
 ]

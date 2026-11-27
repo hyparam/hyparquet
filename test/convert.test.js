@@ -31,6 +31,14 @@ describe('convert function', () => {
     expect(convert(data, { ...columnDecoder, element })).toEqual(['foo', 'bar'])
   })
 
+  it('preserves leading U+FEFF in utf8 strings', () => {
+    const strings = ['\uFEFF', '\uFEFFabc', 'a\uFEFFb', '\uFEFF\uFEFFx']
+    const data = strings.map(str => encoder.encode(str))
+    /** @type {SchemaElement} */
+    const element = { name, converted_type: 'UTF8' }
+    expect(convert(data, { ...columnDecoder, element })).toEqual(strings)
+  })
+
   it('converts byte arrays to utf8 default true', () => {
     const data = [encoder.encode('foo'), encoder.encode('bar')]
     /** @type {SchemaElement} */
@@ -115,6 +123,36 @@ describe('convert function', () => {
     expect(convert(data, { ...columnDecoder, element })).toEqual([2015])
   })
 
+  it('converts numbers to DECIMAL without rounding error', () => {
+    const data = [3, -3, 7]
+    /** @type {SchemaElement} */
+    const element = { name, converted_type: 'DECIMAL', scale: 1 }
+    expect(convert(data, { ...columnDecoder, element })).toEqual([0.3, -0.3, 0.7])
+  })
+
+  it('converts bigint to DECIMAL without rounding error', () => {
+    const data = [150000n, 10000n]
+    /** @type {SchemaElement} */
+    const element = { name, converted_type: 'DECIMAL', scale: 5 }
+    expect(convert(data, { ...columnDecoder, element })).toEqual([1.5, 0.1])
+  })
+
+  it('converts byte arrays to DECIMAL without rounding error', () => {
+    const data = [new Uint8Array([0, 115]), new Uint8Array([255, 141])]
+    /** @type {SchemaElement} */
+    const element = { name, converted_type: 'DECIMAL', scale: 2 }
+    expect(convert(data, { ...columnDecoder, element })).toEqual([1.15, -1.15])
+  })
+
+  it('preserves subnormal DECIMAL values when the scale exceeds 308', () => {
+    const positive = new Uint8Array(129)
+    positive[128] = 1
+    const negative = new Uint8Array(129).fill(255)
+    /** @type {SchemaElement} */
+    const element = { name, type: 'FIXED_LEN_BYTE_ARRAY', type_length: 129, converted_type: 'DECIMAL', precision: 310, scale: 309 }
+    expect(convert([positive, negative], { ...columnDecoder, element })).toEqual([1e-309, -1e-309])
+  })
+
   it('converts epoch time to DATE', () => {
     const data = [1, 2] // days since epoch
     /** @type {SchemaElement} */
@@ -156,6 +194,13 @@ describe('convert function', () => {
     /** @type {SchemaElement} */
     const element = { name, converted_type: 'JSON' }
     expect(convert(data, { ...columnDecoder, element })).toEqual([{ key: true }, { quay: 314 }])
+  })
+
+  it('parses JSON with a leading BOM', () => {
+    const data = [encoder.encode('\uFEFF{"key": true}')]
+    /** @type {SchemaElement} */
+    const element = { name, converted_type: 'JSON' }
+    expect(convert(data, { ...columnDecoder, element })).toEqual([{ key: true }])
   })
 
   it('parses JSON with a custom jsonFromBytes parser', () => {

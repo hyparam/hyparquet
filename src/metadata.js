@@ -10,7 +10,7 @@ import { markGeoColumns } from './geoparquet.js'
 
 export const defaultInitialFetchSize = 1 << 19 // 512kb
 
-const decoder = new TextDecoder()
+const decoder = new TextDecoder('utf-8', { ignoreBOM: true })
 function decode(/** @type {Uint8Array} */ value) {
   return value && decoder.decode(value)
 }
@@ -279,6 +279,7 @@ function logicalType(logicalType) {
     crs: decode(logicalType.field_18.field_1),
     algorithm: EdgeInterpolationAlgorithms[logicalType.field_18.field_2],
   }
+  if (logicalType?.field_19) return { type: 'FILE' }
   return logicalType
 }
 
@@ -329,10 +330,10 @@ export function convertMetadata(value, schema, parsers) {
   if (type === 'FLOAT' && view.byteLength === 4) return view.getFloat32(0, true)
   if (type === 'DOUBLE' && view.byteLength === 8) return view.getFloat64(0, true)
   if (type === 'INT32' && converted_type === 'DECIMAL' && view.byteLength === 4) {
-    return view.getInt32(0, true) * 10 ** -(schema.scale || 0)
+    return view.getInt32(0, true) / 10 ** (schema.scale || 0)
   }
   if (type === 'INT64' && converted_type === 'DECIMAL' && view.byteLength === 8) {
-    return Number(view.getBigInt64(0, true)) * 10 ** -(schema.scale || 0)
+    return Number(view.getBigInt64(0, true)) / 10 ** (schema.scale || 0)
   }
   if (type === 'INT32' && converted_type === 'DATE') return parsers.dateFromDays(view.getInt32(0, true))
   if (type === 'INT64' && converted_type === 'TIMESTAMP_MILLIS') return parsers.timestampFromMilliseconds(view.getBigInt64(0, true))
@@ -346,7 +347,10 @@ export function convertMetadata(value, schema, parsers) {
   if (type === 'INT64' && unsigned && view.byteLength === 8) return view.getBigUint64(0, true)
   if (type === 'INT32' && view.byteLength === 4) return view.getInt32(0, true)
   if (type === 'INT64' && view.byteLength === 8) return view.getBigInt64(0, true)
-  if (converted_type === 'DECIMAL') return parseDecimal(value) * 10 ** -(schema.scale || 0)
+  if (converted_type === 'DECIMAL') {
+    const scale = schema.scale || 0
+    return scale > 308 ? parseDecimal(value) * 10 ** -scale : parseDecimal(value) / 10 ** scale
+  }
   if (logical_type?.type === 'FLOAT16') return parseFloat16(value)
   if (logical_type?.type === 'UUID') return parsers.uuidFromBytes(value)
   if (type === 'FIXED_LEN_BYTE_ARRAY') return value

@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.33.2]
+ - Fix signed-zero false negatives in Bloom filter pruning (#206)
+
+## [1.33.1]
+ - Combine offset index and page reads across columns (#185)
+ - Coalesce bloom filter reads and limit them to the requested rows (#190)
+ - Preserve leading U+FEFF in decoded strings (#204)
+
+## [1.33.0]
+ - Read null optional struct, list and map values as null instead of undefined (#168)
+
+## [1.32.0]
+ - Adaptive Lossless Floating Point (ALP) encoding support (#161)
+ - FILE logical type support
+ - Fix DECIMAL values off by one ulp from inexact scaling (#199)
+ - Read empty repeated leaf fields as empty lists (#201)
+ - Skip decompressing empty v2 data pages (#200)
+
 ## [1.31.5]
  - Export parquetHeader from column.js (#191)
  - Accept Uint8Array in parquetMetadata and avoid a copy in asyncBufferFromFile (#192)

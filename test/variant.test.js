@@ -110,6 +110,25 @@ describe('variant decoding', () => {
   })
 })
 
+describe('variant strings with leading U+FEFF', () => {
+  it('preserves leading U+FEFF in keys and string values', () => {
+    // dictionary: ['\uFEFFk']
+    const metadata = Uint8Array.from([0x11, 0x01, 0x00, 0x04, 0xef, 0xbb, 0xbf, 0x6b])
+    // object { '\uFEFFk': '\uFEFFa' } with short string value
+    const value = Uint8Array.from([0x02, 0x01, 0x00, 0x00, 0x05, 0x11, 0xef, 0xbb, 0xbf, 0x61])
+    // long string '\uFEFFa'
+    const longString = Uint8Array.from([0x40, 0x04, 0x00, 0x00, 0x00, 0xef, 0xbb, 0xbf, 0x61])
+
+    const subcolumnData = new Map()
+    subcolumnData.set('variant.metadata', [metadata, metadata])
+    subcolumnData.set('variant.value', [value, longString])
+
+    assembleNested(subcolumnData, variantSchema, DEFAULT_PARSERS)
+
+    expect(subcolumnData.get('variant')).toEqual([{ '\uFEFFk': '\uFEFFa' }, '\uFEFFa'])
+  })
+})
+
 describe('variant binary encoding', () => {
   it('decodes primitive_null', () => {
     expect(decodeFixture('primitive_null')).toBe(null)
@@ -158,6 +177,22 @@ describe('variant binary encoding', () => {
     expect(result.species).toHaveProperty('population', 6789)
     expect(result).toHaveProperty('observation')
     expect(result.observation).toHaveProperty('location', 'In the Volcano')
+  })
+
+  it('decodes decimals without rounding error', () => {
+    const metadata = Uint8Array.from([0x11, 0x00, 0x00])
+    const decimal4 = Uint8Array.from([0x20, 0x01, 0x03, 0x00, 0x00, 0x00]) // 3, scale 1
+    const decimal8 = Uint8Array.from([0x24, 0x05, 0xf0, 0x49, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00]) // 150000, scale 5
+    const decimal16 = new Uint8Array(18)
+    decimal16.set([0x28, 0x02, 0x73]) // 115, scale 2
+
+    const subcolumnData = new Map()
+    subcolumnData.set('variant.metadata', [metadata, metadata, metadata])
+    subcolumnData.set('variant.value', [decimal4, decimal8, decimal16])
+
+    assembleNested(subcolumnData, variantSchema, DEFAULT_PARSERS)
+
+    expect(subcolumnData.get('variant')).toEqual([0.3, 1.5, 1.15])
   })
 })
 

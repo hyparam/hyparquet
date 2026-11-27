@@ -150,30 +150,35 @@ export function canSkipRowGroup({ rowGroup, physicalColumns, filter, strict = tr
       return true
     }
 
-    // Handle operators
+    // Bloom-filter skipping for equality predicates (proves absence, never presence)
     for (const [operator, target] of Object.entries(condition || {})) {
-      // Bloom-filter skipping for equality predicates (proves absence, never presence)
       if (bloom && element) {
-        if (operator === '$eq') {
-          const hash = hashParquetValue(target, element)
-          if (hash !== undefined && !sbbfContains(bloom.blocks, hash)) return true
-        }
-        if (operator === '$in' && Array.isArray(target) && target.length > 0) {
-          let allAbsent = true
-          for (const v of target) {
-            const h = hashParquetValue(v, element)
-            if (h === undefined || sbbfContains(bloom.blocks, h)) {
-              allAbsent = false
-              break
-            }
-          }
-          if (allAbsent) return true
-        }
+        if (operator === '$eq' && bloomExcludes(bloom, element, target)) return true
+        if (operator === '$in' && Array.isArray(target) && target.length > 0 &&
+            target.every(value => bloomExcludes(bloom, element, value))) return true
       }
     }
   }
 
   return false
+}
+
+/**
+ * Signed zeros compare equal but have different FLOAT/DOUBLE Bloom hashes.
+ *
+ * @param {BloomFilter} bloom
+ * @param {SchemaElement} element
+ * @param {any} value
+ * @returns {boolean}
+ */
+function bloomExcludes(bloom, element, value) {
+  const hash = hashParquetValue(value, element)
+  if (hash === undefined || sbbfContains(bloom.blocks, hash)) return false
+  if (value === 0 && (element.type === 'FLOAT' || element.type === 'DOUBLE')) {
+    const otherHash = hashParquetValue(Object.is(value, -0) ? 0 : -0, element)
+    return otherHash !== undefined && !sbbfContains(bloom.blocks, otherHash)
+  }
+  return true
 }
 
 /**
